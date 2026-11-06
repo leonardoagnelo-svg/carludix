@@ -103,6 +103,7 @@ img{display:block;max-width:100%}
 .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .ico{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:#1a2440;color:#fff}
 .ico svg{width:22px;height:22px}
+.card .logo{width:56px;height:56px;object-fit:contain;border-radius:12px}
 .status{font-size:12px;font-weight:600;color:var(--dim);display:flex;align-items:center;gap:6px}
 .status:before{content:"";width:7px;height:7px;border-radius:50%;background:#4a5878}
 .status.live{color:#7ee2a8}
@@ -254,7 +255,7 @@ const ICONS = {
   taca:'<path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/>'
 };
 const games = [
-  {id:'artilhetra', name:'Artilhetra', icon:'letras', url:'', cats:['quiz'], meta:'Com amigos',
+  {id:'artilhetra', name:'Artilhetra', icon:'letras', url:'artilhetra/', cats:['quiz'], meta:'Com amigos',
    desc:'Letras sorteadas: escale um time com craques que começam com cada uma delas.'},
   {id:'caminho', name:'Caminho do Craque', icon:'caminho', url:'', cats:['quiz'], meta:'Carreira',
    desc:'Os clubes aparecem um a um. Descubra o jogador com o menor número de pistas.'},
@@ -264,7 +265,7 @@ const games = [
    desc:'Complete a grade 3×3 com jogadores que atendam aos critérios da linha e da coluna.'},
   {id:'quem', name:'Quem é o Jogador?', icon:'lupa', url:'', cats:['quiz','diario'], meta:'Diário',
    desc:'Um jogador misterioso por dia. Use as pistas e acerte em até oito tentativas.'},
-  {id:'racha', name:'Racha dos Campeões', icon:'taca', url:'', cats:['estrategia'], meta:'Online · Mesma tela',
+  {id:'racha', name:'Racha dos Campeões', icon:'taca', url:'racha-dos-campeoes/', cats:['estrategia'], meta:'Online · Mesma tela',
    desc:'Tire jogadores de elencos campeões, use cartas especiais e monte o melhor time.'}
 ];
 const TABS = [
@@ -286,8 +287,8 @@ function card(g){
   const action = live
     ? `<a class="link" href="${g.url}">Jogar ${arrow}</a>`
     : `<button class="link soon" data-game="${g.id}">Em breve</button>`;
-  return `<article class="card">
-    <div class="card-top"><span class="ico">${svg(ICONS[g.icon])}</span><span class="status${live?' live':''}">${live?'Disponível':'Em desenvolvimento'}</span></div>
+  return `<article class="card${live?' is-live':''}">
+    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}<span class="status${live?' live':''}">${live?'Disponível':'Em desenvolvimento'}</span></div>
     <h3>${g.name}</h3><p>${g.desc}</p>
     <div class="card-foot"><span class="meta">${g.meta}</span>${action}</div>
   </article>`;
