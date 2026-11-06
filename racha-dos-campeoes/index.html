@@ -132,7 +132,7 @@ h2{background:var(--gold-grad);-webkit-background-clip:text;background-clip:text
 .note{color:var(--muted);font-size:13px;margin:0}
 
 /* cartas */
-.overlay{position:fixed;inset:0;background:rgba(3,8,6,.82);display:grid;place-items:center;z-index:20;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+.overlay{position:fixed;inset:0;background:rgba(5,7,10,.95);display:grid;place-items:center;z-index:20;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
 .reveal{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
 .card{width:min(270px,78vw);aspect-ratio:5/7;border-radius:16px;color:var(--chalk);padding:18px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;box-sizing:border-box;animation:flip .6s ease-out;
   background:linear-gradient(115deg,transparent 0 70%,rgba(212,175,55,.18) 70% 72%,transparent 72%),linear-gradient(160deg,#18202b,#07090c);
@@ -260,6 +260,69 @@ h2{background:var(--gold-grad);-webkit-background-clip:text;background-clip:text
 .reacts{display:flex;gap:8px;justify-content:center}.reacts button{font-size:22px;width:44px;height:44px;border-radius:50%;background:#0d131b;border:1px solid var(--slate)}
 #toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#0d131b;border:1px solid var(--gold);color:var(--white);padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;z-index:30;transition:all .25s;max-width:90vw;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+
+.pick4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:min(420px,100%)}
+.pk4{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;background:none;border:0;cursor:pointer;transition:transform .15s}
+.pk4 .card.back.minib{width:100%;aspect-ratio:5/7;box-sizing:border-box}
+button.pk4:hover,button.pk4:focus-visible{transform:translateY(-6px) rotate(-2deg)}
+button.pk4 .card{animation:deal .45s ease-out both}button.pk4:nth-child(2) .card{animation-delay:.08s}button.pk4:nth-child(3) .card{animation-delay:.16s}button.pk4:nth-child(4) .card{animation-delay:.24s}
+@keyframes deal{from{transform:translateY(40px) rotate(8deg);opacity:0}to{transform:none;opacity:1}}
+.pk4.gone .card{opacity:.3;filter:grayscale(1)}.pk4.gone small{font-size:11px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){button.pk4 .card{animation:none}}
+/* v24: partida ao vivo */
+body.lv-on{overflow:hidden}
+.live{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:radial-gradient(90% 60% at 50% 0%,rgba(212,175,55,.18),transparent 70%),#05070a;padding:calc(12px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));animation:lvIn .35s ease-out;overflow:hidden}
+.live.out{opacity:0;transition:opacity .3s}
+@keyframes lvIn{from{opacity:0}to{opacity:1}}
+.lv-box{width:min(560px,100%);display:flex;flex-direction:column;gap:12px}
+.lv-sb{display:grid;grid-template-columns:1fr auto 1fr;border:1px solid var(--gold);border-radius:12px;overflow:hidden}
+.lvt{display:flex;align-items:center;gap:10px;padding:10px 12px;color:#fff;font-family:var(--display);font-weight:900;font-style:italic;text-transform:uppercase;min-width:0}
+.lvt span{font-size:clamp(13px,3.4vw,18px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.lvt b{font-size:clamp(30px,8vw,44px);line-height:1;font-variant-numeric:tabular-nums;margin-left:auto}
+.lvt.B b{margin-left:0;margin-right:auto}.lvt.B{justify-content:flex-end}
+.lvt.A{background:linear-gradient(100deg,#1d4ed8,#0b1f5c)}.lvt.B{background:linear-gradient(260deg,#b91c1c,#4a0b0b)}
+.lvt b.bump{animation:bump .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.7);color:var(--gold)}100%{transform:scale(1)}}
+.lv-clock{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 12px;background:#07090c;min-width:78px}
+.lv-clock b{font-family:var(--display);font-weight:900;font-size:26px;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1}
+.lv-clock small{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lv-pitch{position:relative;aspect-ratio:2.1/1;max-width:100%;border:2px solid var(--gold);border-radius:10px;overflow:hidden;background:repeating-linear-gradient(90deg,#1b6b30 0 10%,#1f7a37 10% 20%)}
+.lv-mid{position:absolute;left:50%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.5)}
+.lv-mid::after{content:"";position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1;border:2px solid rgba(255,255,255,.5);border-radius:50%;transform:translate(-50%,-50%)}
+.lv-pitch .lv-mid::after{width:auto;height:36%;aspect-ratio:1}
+.lv-g{position:absolute;top:30%;height:40%;width:9%;border:2px solid rgba(255,255,255,.55)}.lv-g.l{left:-2px;border-left:0}.lv-g.r{right:-2px;border-right:0}
+.lv-ball{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff 0 40%,#cbd5e1 70%,#64748b);box-shadow:0 2px 6px rgba(0,0,0,.6);transition:left .45s ease-in-out,top .45s ease-in-out;z-index:2}
+.lv-bar{height:4px;border-radius:99px;background:var(--line);overflow:hidden}.lv-bar i{display:block;height:100%;width:0;background:var(--gold-grad);transition:width .1s linear}
+.lv-feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.lv-feed li{background:#0d131b;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;animation:feedIn .3s ease-out}
+.lv-feed li:not(:first-child){opacity:.6}
+.lv-feed li b{color:var(--gold);margin-right:4px;font-variant-numeric:tabular-nums}
+.lv-feed li small{color:var(--muted)}
+.lv-feed li.goal{font-weight:800;color:#fff}.lv-feed li.goal.A{border-color:#3b82f6;background:linear-gradient(90deg,rgba(37,99,235,.35),#0d131b)}.lv-feed li.goal.B{border-color:#ef4444;background:linear-gradient(90deg,rgba(220,38,38,.35),#0d131b)}
+.lv-feed li.half{border-color:var(--gold)}
+@keyframes feedIn{from{transform:translateY(-8px);opacity:0}to{transform:none}}
+.lv-skip{align-self:center;color:var(--muted)}
+.lv-pens{display:flex;flex-direction:column;gap:6px;background:#0d131b;border:1px solid var(--gold);border-radius:10px;padding:10px}
+.lv-pens .pr{display:grid;grid-template-columns:minmax(0,1fr) auto 28px;gap:10px;align-items:center}
+.lv-pens .pr span{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv-pens .pr div{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.lv-pens .pr b{font-family:var(--display);font-size:22px;color:var(--gold);text-align:right}
+.pk{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:12px;color:#fff;animation:pop .35s ease-out}.pk.ok{background:#16a34a}.pk.no{background:#dc2626}
+.lv-flash{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;text-align:center;padding:16px}
+.lv-flash.show{display:flex;animation:flIn .25s ease-out;background:radial-gradient(60% 40% at 50% 50%,rgba(212,175,55,.35),transparent 70%)}
+.lv-flash.show.A{background:radial-gradient(60% 40% at 50% 50%,rgba(37,99,235,.55),transparent 70%)}.lv-flash.show.B{background:radial-gradient(60% 40% at 50% 50%,rgba(220,38,38,.55),transparent 70%)}
+.lv-flash b{font-family:var(--display);font-weight:900;font-style:italic;font-size:clamp(44px,14vw,96px);line-height:.95;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 20px rgba(0,0,0,.8));animation:zoomIn .5s cubic-bezier(.2,1.5,.4,1)}
+.lv-flash span{font-weight:900;font-size:clamp(16px,4.6vw,24px);color:#fff;text-transform:uppercase;text-shadow:0 2px 10px #000;background:rgba(7,9,12,.7);border-radius:8px;padding:4px 12px}
+@keyframes flIn{from{opacity:0}to{opacity:1}}
+@keyframes zoomIn{from{transform:scale(.2) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+.live.shake .lv-box{animation:shk .5s}
+@keyframes shk{20%{transform:translate(-6px,2px)}40%{transform:translate(6px,-2px)}60%{transform:translate(-4px,1px)}80%{transform:translate(3px,0)}}
+.lv-conf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lv-conf i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;animation:conf 2.4s ease-in forwards}
+@keyframes conf{to{transform:translate(var(--dx),105vh) rotate(var(--r));opacity:.9}}
+.panel.final.pop{animation:pop .5s ease-out}
+@media (prefers-reduced-motion:reduce){.lv-flash b,.live.shake .lv-box,.lvt b.bump{animation:none}}
+
 /* v22: visual da arte de divulgação */
 :root{--grass1:#1b6b30;--grass2:#1f7a37;--chalkline:rgba(255,255,255,.55);--ta:#2563eb;--tb:#dc2626}
 .pitch{border:2px solid var(--gold)!important;background:radial-gradient(120% 80% at 50% 50%,transparent 40%,rgba(0,0,0,.35)),repeating-linear-gradient(180deg,var(--grass1) 0 12.5%,var(--grass2) 12.5% 25%)}
@@ -495,7 +558,7 @@ const SQUADS=[
 ,
  {id:"esp26",c:["copa"],n:"Espanha 2026",t:"ESP 26",p:"Unai Simón:GOL,Pedro Porro:LAT,Cucurella:LAT,Cubarsí:ZAG,Laporte:ZAG,Rodri:VOL,Fabián Ruiz:MEI,Dani Olmo:MEI,Lamine Yamal:ATA,Álex Baena:MEI,Oyarzabal:ATA,*Eric García:ZAG,*Zubimendi:VOL,*Pedri:MEI,*Merino:MEI,*Nico Williams:ATA,*Ferran Torres:ATA"}
 ];
-const OVR={"bra70": "78,92,82,84,82,86,91,90,94,90,97", "bra94": "86,87,84,85,83,87,88,82,83,90,96,82,74", "bra02": "88,90,90,89,82,83,88,85,90,94,96,77,78", "esp10": "92,82,88,89,92,88,87,94,93,84,92,82,80,78", "ale14": "95,90,82,87,90,90,77,90,85,92,85,83,80,85", "fra18": "86,84,85,89,85,90,90,85,93,93,82,79,78,77", "arg22": "90,82,82,87,85,87,88,86,98,90,90,79,79,80,78,76,79", "spfc92": "84,82,81,83,82,80,82,90,85,86,86,78", "san11": "79,82,80,84,80,84,79,82,86,91,82,77", "cor12": "86,82,82,84,83,84,88,85,82,81,86,78,80,75", "gre17": "84,81,79,88,80,79,85,82,90,84,85,79,80,76", "fla19": "82,83,84,84,86,86,88,89,92,93,94,80,78,74", "pal20": "87,82,81,84,85,83,82,82,88,86,83,80,78,77", "flu23": "82,81,85,84,83,86,82,86,89,82,88,84,78,78,76", "bot24": "85,81,84,84,86,84,87,90,86,90,87,79,82,80,77", "spfc05": "92,85,82,82,87,79,88,82,82,88,84", "int06": "82,80,78,83,82,80,79,87,84,85,83,84,81", "bar11": "85,90,85,89,87,89,94,93,84,82,97,85,79,84", "cor12m": "92,82,83,86,84,85,88,86,82,84,88", "rea14": "82,86,87,85,88,88,85,86,88,92,87,80,79", "che21": "86,82,82,85,86,86,88,82,86,85,82,80,81,80", "cru03": "83,84,80,85,85,82,84,82,92,86,84,78,79,78", "cor15": "84,87,80,82,84,83,89,91,90,84,85,78,82,79", "pal18": "84,84,80,86,82,84,86,82,90,85,84,80,76,77", "mil07": "84,83,82,90,87,88,90,82,88,96,88,80,74,79", "bar09": "86,80,89,85,88,85,95,94,96,92,88,80,82", "rea17": "85,86,89,90,87,89,89,92,87,96,85,82,83,80", "liv19": "90,87,88,85,94,88,86,86,92,90,88,84,82,80", "bay20": "92,90,82,85,91,88,90,89,90,89,96,80,82,80,79", "city23": "86,86,91,84,87,93,90,90,89,86,93,82,82", "bra58": "82,85,87,83,82,85,92,93,90,93,85", "bra62": "83,85,85,82,81,84,89,97,90,88,85", "arg86": "80,79,80,82,85,82,83,82,87,99,87,74", "fra98": "87,90,86,82,89,86,85,82,95,86,74,80,80,78", "ita06": "93,86,88,96,85,87,92,82,84,86,84,84,80,84", "pal99": "90,84,82,86,85,88,84,90,86,88,84,82,80", "cam13": "89,82,79,85,86,80,83,93,85,88,87,79,78", "pal21": "86,83,83,82,86,84,85,88,86,86,85,82,78,78", "fla22": "82,80,82,84,83,82,86,85,91,88,90,79,80,77,77", "fla81": "85,88,90,84,86,87,87,97,85,86,82", "spfc92m": "87,83,81,82,83,82,87,93,88,85,86", "pal16": "82,82,84,84,82,83,85,86,90,84,89,79,78", "cam21": "84,82,87,82,84,85,83,82,88,84,92,82,79,80", "pal23": "84,82,83,86,82,84,82,88,82,88,84,79,79", "rea02": "78,84,89,85,82,87,90,96,82,90,84,85,78,80", "liv05": "85,82,78,88,86,86,92,80,85,78,82,85,80,79", "mun08": "90,82,86,90,90,84,85,87,96,88,86,78,82,80", "int10": "91,90,82,89,88,90,88,93,89,82,94,81,80", "che12": "92,80,86,82,84,84,89,85,82,78,95,78,79", "bay13": "91,89,88,86,84,87,89,90,93,92,86,82,79", "bar15": "90,85,88,89,85,89,88,88,96,93,93,82,78,79", "rea22": "93,85,82,88,86,86,87,89,86,92,96,85,86,78", "rea24": "90,90,82,88,83,88,85,88,92,94,84,85,80,82", "cor90": "82,79,79,82,80,80,82,92,85,78,78", "sao91": "86,86,85,84,86,80,92,82,82,88,84", "fla92": "83,80,80,84,86,79,90,88,82,84,84", "pal93": "81,82,90,85,85,87,85,89,88,93,92", "pal94": "82,80,90,85,85,87,86,92,88,91,90", "bot95": "80,80,78,82,83,82,80,80,84,85,93", "gre96": "86,84,80,84,85,83,82,86,85,88,80", "vas97": "87,80,86,82,88,82,83,85,90,97,89", "cor98": "80,80,85,82,87,86,86,88,92,90,80", "cor99": "89,80,80,82,85,87,87,90,93,92,90", "vas00": "84,80,82,82,85,80,79,93,88,86,96", "cap01": "80,82,80,82,81,82,87,84,82,90,94", "san02": "85,80,85,82,83,80,84,88,92,93,82", "san04": "79,80,85,80,82,80,86,86,90,94,82", "cor05": "86,80,84,82,80,82,82,89,82,94,88", "sao06": "91,82,84,82,85,79,88,85,82,85,82", "sao07": "92,82,86,85,90,85,82,91,86,88,86", "sao08": "92,81,85,86,82,90,82,91,86,88,88", "fla09": "86,85,82,82,83,80,82,79,84,92,93", "flu10": "80,84,82,84,84,82,82,94,82,87,90", "cor11": "84,82,83,85,85,85,89,86,85,86,85", "flu12": "89,82,82,85,85,82,84,84,90,86,93", "cru13": "88,84,86,85,83,84,85,93,90,86,82", "cru14": "88,84,85,82,83,84,87,93,92,84,88", "cor17": "90,89,85,85,88,82,86,88,90,84,92", "fla20": "81,82,83,84,84,85,88,86,92,91,91", "pal22": "86,83,86,90,85,86,86,90,88,88,87", "fla25": "88,85,84,86,85,88,85,93,90,85,90", "mil90": "82,85,90,88,94,92,80,84,82,92,96,82", "est91": "80,80,85,82,80,85,82,90,88,89,88,78", "bar92": "85,80,82,90,80,86,85,82,91,92,82,78,79", "mar93": "86,82,80,86,89,87,82,84,90,88,86,78", "mil94": "84,84,83,82,93,90,86,84,86,92,86,76", "aja95": "88,85,87,86,89,88,86,86,85,91,90,82,86", "juv96": "86,82,80,85,84,85,86,83,90,90,88,80,79,78", "bvb97": "82,84,84,85,90,80,85,88,89,87,86,84,80,80", "rea98": "82,84,90,86,85,92,82,88,91,88,85,78,79,82", "mun99": "89,86,84,82,90,84,92,88,82,88,90,86,88", "rea00": "84,85,91,84,82,85,91,93,94,88,86,82,80,79", "bay01": "93,85,86,84,85,91,82,84,82,88,84,80,80", "mil03": "90,85,84,92,92,88,91,88,88,93,88,80,82,80", "por04": "85,86,82,84,90,85,88,85,95,85,86,82,79,80", "bar06": "84,80,82,84,88,85,84,92,86,94,94,85,85,86", "bar11c": "86,91,85,88,88,90,94,94,98,88,88,84,79,77", "rea14c": "87,86,85,88,90,82,90,91,90,85,94,85,84,80", "rea16": "88,86,85,85,88,86,89,87,86,85,92,80,82,82", "rea18": "86,86,88,87,88,88,89,88,86,86,90,80,92,80", "che21c": "89,86,86,86,88,87,93,86,89,90,82,82,82,82", "psg25": "90,91,91,88,85,92,90,89,93,95,92,85,79,79,80", "uru30": "82,90,85,90,85,84,84,88,85,88,86", "ita34": "88,82,82,84,87,82,85,93,88,86,87", "ita38": "86,84,84,82,88,85,86,92,93,85,86", "uru50": "91,83,84,84,93,86,92,84,85,92,82", "ale54": "90,84,82,86,86,84,85,91,90,86,85", "ing66": "90,82,85,86,93,86,93,88,86,92,85", "ale74": "92,88,90,86,96,84,85,88,84,93,84", "arg78": "91,80,82,84,92,84,88,95,86,86,82,78,79", "ita82": "93,87,86,82,86,90,82,90,89,94,85,80,79", "ale90": "86,82,90,86,86,84,95,85,85,85,89,79", "esp26": "86,86,87,88,85,92,86,88,94,84,86,80,86,89,82,89,86"};
+const OVR={"bra70": "78,92,82,84,82,86,91,90,94,90,97", "bra94": "89,87,84,85,83,87,88,82,83,90,96,82,74", "bra02": "90,90,90,89,82,83,88,85,90,94,96,77,78", "esp10": "92,82,88,89,92,88,87,94,95,84,92,82,80,78", "ale14": "95,90,82,87,90,90,77,90,85,92,85,83,80,88", "fra18": "86,84,85,89,85,90,90,85,93,93,82,79,78,77", "arg22": "93,82,82,87,85,87,88,86,98,90,90,79,79,80,78,76,79", "spfc92": "88,82,81,83,82,80,82,90,85,86,86,78", "san11": "84,82,80,84,80,84,79,82,86,91,82,77", "cor12": "93,82,82,84,83,84,88,85,82,81,90,78,84,75", "gre17": "87,81,79,88,80,79,85,82,92,84,85,79,80,76", "fla19": "82,83,84,84,86,86,88,89,92,93,94,80,78,74", "pal20": "87,82,81,84,85,83,82,82,88,86,83,85,78,77", "flu23": "82,81,85,84,83,86,82,86,89,82,91,87,78,78,76", "bot24": "85,81,84,84,86,84,87,90,86,90,87,79,82,80,77", "spfc05": "94,85,82,82,87,79,88,82,82,88,84", "int06": "84,80,78,83,82,80,79,89,84,85,83,84,81", "bar11": "85,90,85,89,87,89,94,93,84,82,97,85,79,84", "cor12m": "95,82,83,86,84,85,88,86,82,84,91", "rea14": "82,86,87,85,88,88,85,86,88,92,87,80,79", "che21": "86,82,82,85,86,86,88,82,86,85,82,80,81,80", "cru03": "83,84,80,85,85,82,84,82,94,86,84,78,79,78", "cor15": "86,87,80,82,84,83,89,91,90,84,85,78,82,79", "pal18": "84,84,80,86,82,84,86,82,90,85,84,80,76,77", "mil07": "84,83,82,90,87,88,90,82,88,96,91,80,74,79", "bar09": "86,80,89,85,88,85,95,94,96,92,88,80,82", "rea17": "85,86,89,90,87,89,89,92,87,96,85,82,83,80", "liv19": "90,87,88,85,94,88,86,86,92,90,88,86,82,80", "bay20": "92,90,82,85,91,88,90,89,90,91,96,80,82,80,79", "city23": "86,86,91,84,87,93,90,90,89,86,93,82,82", "bra58": "82,85,87,83,82,85,92,93,90,93,85", "bra62": "83,85,85,82,81,84,89,97,90,88,85", "arg86": "80,79,80,82,85,82,83,82,87,99,87,74", "fra98": "87,90,86,82,89,86,85,82,95,86,74,80,80,78", "ita06": "93,86,88,96,85,87,92,82,84,86,84,84,80,84", "pal99": "93,84,82,86,85,88,84,90,86,88,84,82,80", "cam13": "93,82,79,85,86,80,83,93,85,88,89,79,78", "pal21": "86,83,83,82,86,84,85,88,86,86,85,86,78,78", "fla22": "82,80,82,84,83,82,86,85,91,90,90,79,80,77,77", "fla81": "85,88,90,84,86,87,87,97,85,90,82", "spfc92m": "87,83,81,82,83,82,87,93,88,85,86", "pal16": "82,82,84,84,82,83,85,86,90,84,89,79,78", "cam21": "84,82,87,82,84,85,83,82,88,84,92,82,79,80", "pal23": "84,82,83,86,82,84,82,88,82,88,84,79,79", "rea02": "78,84,89,85,82,87,90,96,82,90,84,85,78,80", "liv05": "91,82,78,88,86,86,94,80,85,78,82,85,83,79", "mun08": "92,82,86,90,90,84,85,87,96,88,86,78,82,80", "int10": "91,90,82,89,88,90,88,93,89,82,94,81,80", "che12": "94,80,86,82,84,84,89,85,82,78,95,78,79", "bay13": "91,89,88,86,84,87,89,90,93,92,86,82,79", "bar15": "90,85,88,89,85,89,88,88,96,93,93,82,78,79", "rea22": "95,85,82,88,86,86,87,89,86,92,96,85,86,78", "rea24": "90,90,82,88,83,88,85,88,92,94,84,85,80,82", "cor90": "84,79,79,82,80,80,82,92,87,78,78", "sao91": "86,86,85,84,86,80,92,82,82,88,84", "fla92": "83,80,80,84,86,79,90,88,82,84,84", "pal93": "81,82,90,85,85,87,85,89,88,93,92", "pal94": "82,80,90,85,85,87,86,92,88,91,90", "bot95": "80,80,78,82,83,82,80,80,84,85,93", "gre96": "86,84,80,84,85,83,82,86,85,88,80", "vas97": "87,80,86,82,88,82,83,85,90,97,89", "cor98": "80,80,85,82,87,86,86,88,92,90,80", "cor99": "89,80,80,82,85,87,87,90,93,92,90", "vas00": "84,80,82,82,85,80,79,93,88,86,96", "cap01": "80,82,80,82,81,82,87,84,82,90,94", "san02": "85,80,85,82,83,80,84,88,92,93,82", "san04": "79,80,85,80,82,80,86,86,90,94,82", "cor05": "86,80,84,82,80,82,82,89,82,94,88", "sao06": "91,82,84,82,85,79,88,85,82,85,82", "sao07": "92,82,86,85,90,85,82,91,86,88,86", "sao08": "92,81,85,86,82,90,82,91,86,88,88", "fla09": "86,85,82,82,83,80,82,79,84,92,93", "flu10": "80,84,82,84,84,82,82,94,82,87,90", "cor11": "84,82,83,85,85,85,89,86,85,86,85", "flu12": "89,82,82,85,85,82,84,84,90,86,93", "cru13": "88,84,86,85,83,84,85,93,90,86,82", "cru14": "88,84,85,82,83,84,87,93,92,84,88", "cor17": "90,89,85,85,88,82,86,88,90,84,92", "fla20": "81,82,83,84,84,85,88,86,92,91,91", "pal22": "86,83,86,90,85,86,86,90,88,88,87", "fla25": "88,85,84,86,85,88,85,93,90,85,90", "mil90": "82,85,90,88,94,92,80,84,82,92,96,82", "est91": "80,80,85,82,80,85,82,90,88,89,88,78", "bar92": "85,80,82,90,80,86,85,82,91,92,82,78,79", "mar93": "86,82,80,88,89,87,82,84,90,88,86,78", "mil94": "84,84,83,82,93,90,86,84,86,92,86,76", "aja95": "88,85,87,86,89,88,86,86,85,91,90,82,88", "juv96": "88,82,80,85,84,85,86,83,90,90,88,80,79,78", "bvb97": "82,84,84,85,90,80,85,88,89,87,89,87,80,80", "rea98": "82,84,90,86,85,92,82,88,91,90,85,78,79,82", "mun99": "89,86,84,82,90,84,92,88,82,88,90,88,90", "rea00": "84,85,91,84,82,85,91,93,94,88,86,82,80,79", "bay01": "95,85,86,84,85,91,82,84,82,88,84,80,80", "mil03": "92,85,84,92,92,88,91,88,88,93,88,80,82,80", "por04": "85,86,82,84,90,85,88,85,95,85,86,82,79,80", "bar06": "84,80,82,84,88,85,84,92,86,94,94,85,87,86", "bar11c": "86,91,85,88,88,90,94,94,98,88,88,84,79,77", "rea14c": "87,86,85,88,92,82,90,91,90,85,94,85,84,80", "rea16": "88,86,85,85,88,86,89,87,86,85,92,80,82,82", "rea18": "86,86,88,87,88,88,89,88,86,86,90,80,92,80", "che21c": "89,86,86,86,88,87,93,86,89,90,82,82,82,82", "psg25": "90,91,91,88,85,92,90,89,93,95,92,85,79,79,80", "uru30": "82,90,85,90,85,84,84,88,85,88,86", "ita34": "88,82,82,84,87,82,85,93,88,86,87", "ita38": "86,84,84,82,88,85,86,92,93,85,86", "uru50": "91,83,84,84,93,86,92,84,85,92,82", "ale54": "90,84,82,86,86,84,85,91,90,86,85", "ing66": "90,82,85,86,93,86,93,88,86,92,85", "ale74": "92,88,90,86,96,84,85,88,84,93,84", "arg78": "91,80,82,84,92,84,88,95,86,86,82,78,79", "ita82": "93,87,86,82,86,90,82,90,89,94,85,80,79", "ale90": "86,82,90,86,86,84,95,85,85,85,89,79", "esp26": "86,86,87,88,85,92,86,88,94,84,86,80,86,89,82,89,88"};
 const ovrAt=(id,idx)=>+((OVR[id]||"").split(",")[idx])||78;
 const FORMS={
  "4-3-3":[["GOL"],["LD","ZAG","ZAG","LE"],["VOL"],["MEI","MEI"],["PD","CA","PE"]],
@@ -537,7 +600,7 @@ function fresh(){return Object.assign({screen:"home",play:"local",seat:null,room
 const CARDS={
  troca:{n:1,t:"Troca",d:"Troque um jogador seu por um do adversário. Cada um vai para a posição do outro."},
  surpresa:{n:2,t:"Jogador surpresa",d:"O sistema sorteia um jogador que entrou durante a final e ele vai para o seu time sem gastar sua escolha."},
- goleiro:{n:3,t:"Goleiro",d:"Escolha um dos goleiros ainda disponíveis na lista e ele vai para o seu gol sem gastar sua escolha. Se você já tinha goleiro, ele volta para a lista."},
+ goleiro:{n:3,t:"Goleiro",d:"Escolha um dos goleiros ainda disponíveis na lista e ele vai para o seu gol sem gastar sua escolha. Só sai para quem ainda não tem goleiro."},
  mesma:{n:4,t:"Mesma posição",d:"Pegue mais um jogador da mesma posição que o adversário escolheu por último, sem gastar sua escolha."}
 };
 const STARS=new Set(["Lamine Yamal","Pedri","Nico Williams","Dani Olmo","Beckenbauer","Gerd Müller","Bobby Charlton","Bobby Moore","Kempes","Passarella","Paolo Rossi","Zoff","Matthäus","Klinsmann","Meazza","Schiaffino","Obdulio Varela","Ghiggia","Fritz Walter","Piola","Banks","Maier","Breitner","Hurst","Fillol","Scirea","Brehme","Baresi","Van Basten","Gullit","Rijkaard","Stoichkov","Laudrup","Koeman","Guardiola","Litmanen","Kluivert","Davids","Vialli","Sammer","Beckham","Schmeichel","Kahn","Effenberg","Shevchenko","Rui Costa","Deco","Edmundo","Marcelinho Carioca","Neto","Túlio","Robinho","Fred","Conca","Dembélé","Kvaratskhelia","Hakimi","Vitinha","Petković","Adriano Imperador","Hernanes","Rincón","Juninho Pernambucano","Ricardinho","Redondo","Möller","Overmars","Savićević","Prosinečki","Abedi Pelé","Völler","Paulo Sousa","Maldini","Zidane","Garrincha","Maradona","Zico","Cannavaro","Buffon","Totti","Gerrard","Drogba","Lampard","Ribéry","Robben","Vinícius Júnior","Bellingham","Figo","Raúl","Didi","Vavá","Nílton Santos","Djalma Santos","Hulk","Luis Suárez","Endrick","Rooney","Sneijder","Milito","Courtois","Van der Sar","Junior Baiano","Marcos","Pelé","Messi","Cristiano Ronaldo","Ronaldo","Ronaldinho","Romário","Rivaldo","Kaká","Neymar","Xavi","Iniesta","Maldini","Pirlo","Casillas","Neuer","Lahm","Kroos","Modric","Mbappé","Griezmann","Kanté","Haaland","De Bruyne","Rodri","Salah","Van Dijk","Alisson","Lewandowski","Müller","Benzema","Sergio Ramos","Puyol","Piqué","Busquets","Cafu","Roberto Carlos","Taffarel","Carlos Alberto Torres","Jairzinho","Tostão","Rivellino","Gérson","Di María","Bale","Marcelo","Henry","Eto'o","Seedorf","Nesta","Gabigol","Arrascaeta","Raí","Rogério Ceni","Pogba","Lloris","Schweinsteiger","Özil","Klose","Dunga","Bebeto","Lúcio","Emiliano Martínez","Julián Álvarez","Thiago Silva","Dani Alves","Ganso","Alex","Luis Suárez","Casemiro","Bernardo Silva","Davies","Kimmich","Alexander-Arnold","Valdés"]);
@@ -613,8 +676,11 @@ function changeForm(t,f){const players=S.lineup[t].filter(x=>x!==null).sort((a,b
  S.lineup[t]=lu;S.move=null;S.history=[]}
 
 /* ações do jogo */
-function checkDraw(t){if(S.cards[t]||count(t)<5)return;const taken=S.cards[other(t)]?.id;
- const opts=Object.keys(CARDS).filter(k=>k!==taken);S.cards[t]={id:opts[Math.floor(Math.random()*opts.length)],used:false,seen:false};
+function hasGK(t){const L=slots(t);return S.lineup[t].some((pk,i)=>pk!==null&&pk!==undefined&&(L[i]==="GOL"||S.pool[pk].pos==="GOL"))}
+function checkDraw(t){if(S.cards[t]||count(t)<5)return;const taken=S.cards[other(t)]?.id;const gk=hasGK(t);
+ const opts=Object.keys(CARDS).filter(k=>k!==taken&&!(gk&&k==="goleiro"));
+ const nx=[];if(taken)nx.push(`${S.names[other(t)]} já tirou`);if(gk&&taken!=="goleiro")nx.push("Goleiro não vale: já tem goleiro");
+ S.cards[t]={id:opts[Math.floor(Math.random()*opts.length)],used:false,seen:false,nx};
  S.pending=t;S.sel=null;S.move=null;S.news=`${S.names[t]} tirou uma cartinha surpresa`;S.newsBy=t;
  if(isBot(t))botCard(t);else if(controls(t)){S.reveal=t;S.peek=false}}
 function loseCard(t){const c=S.cards[t];c.used=true;c.lost=true;S.pending=null;S.cmode=null;S.news=`${S.names[t]} tirou ${CARDS[c.id].t}, mas não tinha jogada possível`}
@@ -668,7 +734,7 @@ function scheduleBot(){if(S.play!=="bot"||botTimer)return;
  botTimer=setTimeout(()=>{botTimer=null;if(S.screen==="draft"&&turn()===BOT&&!S.reveal&&!S.cmode&&!S.pending){botMove();render()}},1100)}
 
 /* online fora do Claude: servidor público de mensagens, o anfitrião guarda a sala */
-const VERSION="23";
+const VERSION="24";
 const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
 const TOPIC=c=>"racha-dos-campeoes/v1/"+c;
 let MQ=null,STANDALONE=false;const ROOMS={};
@@ -848,10 +914,86 @@ function simulate(){const a=teamOvr("A"),b=teamOvr("B");
   const tot=c.reduce((s,x)=>s+x[1],0);let r=Math.random()*tot;for(const [n,w] of c){r-=w;if(r<=0)return n}return c[0][0]};
  const goals=[];for(let k=0;k<ga;k++)goals.push({t:"A",name:scorer("A"),min:1+Math.floor(Math.random()*90)});for(let k=0;k<gb;k++)goals.push({t:"B",name:scorer("B"),min:1+Math.floor(Math.random()*90)});
  goals.sort((x,y)=>x.min-y.min);let pens=null,winner=ga>gb?"A":gb>ga?"B":null;
- if(!winner){const pa=.74+(a-b)/200,pb=.74+(b-a)/200;let x=0,y=0,i=0;for(;i<5;i++){x+=Math.random()<pa;y+=Math.random()<pb}while(x===y){x+=Math.random()<pa;y+=Math.random()<pb}pens={a:x,b:y};winner=x>y?"A":"B"}
+ if(!winner){const pa=.74+(a-b)/200,pb=.74+(b-a)/200;let x=0,y=0,na=0,nb=0;const seq=[];const kick=t=>{const ok=Math.random()<(t==="A"?pa:pb);seq.push([t,ok]);if(t==="A"){na++;x+=ok}else{nb++;y+=ok}};
+ const over=()=>x+(5-na)<y||y+(5-nb)<x;
+ for(let r=0;r<5&&!over();r++){kick("A");if(over())break;kick("B")}
+ if(!over())while(x===y){kick("A");kick("B")}
+ pens={a:x,b:y,seq};winner=x>y?"A":"B"}
  const L=slots(winner),gc={};goals.filter(g=>g.t===winner).forEach(g=>gc[g.name]=(gc[g.name]||0)+1);
  let best=null;S.lineup[winner].forEach((pk,i)=>{const p=S.pool[pk];const sc=(gc[p.name]||0)*10+effOvr(p,L[i]);if(!best||sc>best.sc)best={sc,pk,name:p.name,goals:gc[p.name]||0,ovr:effOvr(p,L[i])}});
  return {a:ga,b:gb,goals,pens,winner,oa:a,ob:b,mvp:best}}
+/* partida ao vivo: anima a simulação já sorteada (S.sim), igual para todos os aparelhos */
+let LIVE=null;
+function rngFrom(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19}
+ return ()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);h^=h>>>16;return (h>>>0)/4294967296}}
+function whistle(n){if(!SND.on)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();let t=AC.currentTime;
+ for(let k=0;k<n;k++){const d=k===n-1?.5:.16;const o=AC.createOscillator(),g=AC.createGain();o.type="square";o.frequency.setValueAtTime(2300,t);o.frequency.linearRampToValueAtTime(2050,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.02);t+=d+.08}}catch(e){}}
+function liveEvents(s){
+ const R=rngFrom(JSON.stringify([s.a,s.b,s.goals,s.oa,s.ob]));
+ const gk=t=>{const L=slots(t);const i=L.indexOf("GOL");const pk=S.lineup[t][i>=0?i:0];return S.pool[pk]?S.pool[pk].name:"o goleiro"};
+ const att=t=>{const L=slots(t);const c=S.lineup[t].map((pk,i)=>[S.pool[pk]&&S.pool[pk].name,L[i]]).filter(x=>x[0]&&x[1]!=="GOL"&&x[1]!=="ZAG");return c.length?c[Math.floor(R()*c.length)][0]:"Atacante"};
+ const ev=s.goals.map(g=>({min:g.min,t:g.t,k:"goal",name:g.name}));
+ const used=new Set(ev.map(e=>e.min));
+ const nC=4+Math.floor(R()*3);
+ for(let k=0;k<nC;k++){let m=2+Math.floor(R()*87);while(used.has(m)||m===45)m=(m%88)+2;used.add(m);
+  const t=R()<(s.oa/(s.oa+s.ob))?"A":"B",o=t==="A"?"B":"A",n=att(t),r=R();
+  ev.push({min:m,t,k:"chance",txt:r<.4?`Defesaça de ${gk(o)} no chute de ${n}!`:r<.65?`${n} acerta a trave!`:r<.85?`${n} chuta por cima do gol.`:`Cartão amarelo para ${att(o)}.`,kind:r<.4?"save":r<.65?"post":r<.85?"miss":"card"})}
+ return ev.sort((x,y)=>x.min-y.min)}
+function startLive(s){if(!s||LIVE)return;
+ const rm=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const el=document.createElement("div");el.id="live";el.className="live";el.setAttribute("role","dialog");el.setAttribute("aria-label","Partida ao vivo");
+ el.innerHTML=`<div class="lv-box">
+  <div class="lv-sb"><div class="lvt A"><span>${esc(S.names.A)}</span><b id="lvA">0</b></div><div class="lv-clock"><b id="lvT">0'</b><small id="lvP">1º tempo</small></div><div class="lvt B"><b id="lvB">0</b><span>${esc(S.names.B)}</span></div></div>
+  <div class="lv-pitch"><div class="lv-g l"></div><div class="lv-g r"></div><i class="lv-mid"></i><i class="lv-ball" id="lvBall"></i></div>
+  <div class="lv-bar"><i id="lvProg"></i></div>
+  <div class="lv-pens" id="lvPens" hidden></div>
+  <ol class="lv-feed" id="lvFeed" aria-live="polite"></ol>
+  <button class="linkbtn lv-skip" id="lvSkip">Pular para o resultado ›</button>
+ </div><div class="lv-flash" id="lvFlash" aria-hidden="true"></div><div class="lv-conf" id="lvConf" aria-hidden="true"></div>`;
+ document.body.appendChild(el);document.body.classList.add("lv-on");
+ const $=id=>document.getElementById(id);const L={stop:false};LIVE=L;
+ const end=()=>{if(L.done)return;L.done=true;L.stop=true;LIVE=null;el.classList.add("out");document.body.classList.remove("lv-on");setTimeout(()=>el.remove(),350);
+  const f=document.querySelector(".panel.final");if(f){f.classList.add("pop");f.scrollIntoView({block:"start",behavior:"smooth"})}};
+ $("lvSkip").onclick=end;
+ const sleep=ms=>new Promise(r=>{if(L.stop)return r();setTimeout(r,ms)});
+ const feed=(html,cls)=>{const li=document.createElement("li");li.className=cls||"";li.innerHTML=html;$("lvFeed").prepend(li);while($("lvFeed").children.length>5)$("lvFeed").lastChild.remove()};
+ const ball=(x,y)=>{const b=$("lvBall");if(b){b.style.left=x+"%";b.style.top=y+"%"}};
+ const confetti=t=>{if(rm)return;const c=$("lvConf");const cols=t==="A"?["#60a5fa","#2563eb","#D4AF37","#fff"]:t==="B"?["#f87171","#dc2626","#D4AF37","#fff"]:["#D4AF37","#fff"];
+  for(let i=0;i<46;i++){const p=document.createElement("i");p.style.left=Math.random()*100+"%";p.style.background=cols[i%cols.length];p.style.animationDelay=(Math.random()*.4)+"s";p.style.setProperty("--dx",(Math.random()*120-60)+"px");p.style.setProperty("--r",(Math.random()*720)+"deg");c.appendChild(p);setTimeout(()=>p.remove(),2600)}};
+ const flash=async(big,sub,t,ms)=>{const f=$("lvFlash");f.className="lv-flash show "+(t||"");f.innerHTML=`<b>${big}</b>${sub?`<span>${sub}</span>`:""}`;if(!rm)el.classList.add("shake");await sleep(ms);el.classList.remove("shake");f.className="lv-flash"};
+ const ev=liveEvents(s);let ga=0,gb=0;
+ (async()=>{
+  whistle(1);feed(`<b>0'</b> Rola a bola!`,"start");ball(50,50);await sleep(700);
+  let i=0;
+  for(let m=1;m<=90&&!L.stop;m++){
+   $("lvT").textContent=m+"'";$("lvProg").style.width=(m/90*100)+"%";
+   if(m===46){$("lvP").textContent="2º tempo";}
+   if(m%3===0)ball(20+Math.random()*60,15+Math.random()*70);
+   while(i<ev.length&&ev[i].min===m){const e=ev[i++];const atk=e.t==="A"?94:6;
+    if(e.k==="goal"){ball(atk-(e.t==="A"?8:-8),48);await sleep(260);ball(atk,50);
+     if(e.t==="A")ga++;else gb++;const sc=$(e.t==="A"?"lvA":"lvB");sc.textContent=e.t==="A"?ga:gb;sc.classList.remove("bump");void sc.offsetWidth;sc.classList.add("bump");
+     sfx("goal");confetti(e.t);feed(`<b>${m}'</b> ⚽ GOL! ${esc(e.name)} <small>${esc(S.names[e.t])}</small>`,"goal "+e.t);
+     await flash("GOOOOL!",`${esc(e.name)} · ${esc(S.names[e.t])}`,e.t,1700);ball(50,50);await sleep(250)}
+    else{ball(e.t==="A"?80:20,30+Math.random()*40);feed(`<b>${m}'</b> ${esc(e.txt)}`,"ch "+e.kind);if(e.kind!=="card")sfx("flip");await sleep(650)}}
+   if(m===45){whistle(2);feed(`<b>45'</b> Intervalo · ${ga} × ${gb}`,"half");$("lvP").textContent="Intervalo";ball(50,50);await sleep(1100)}
+   await sleep(m>80&&Math.abs(ga-gb)<=1?150:95)}
+  if(L.stop)return;
+  whistle(3);
+  if(s.pens){$("lvP").textContent="Pênaltis";feed(`<b>90'</b> Fim do tempo normal: ${ga} × ${gb}. Vai para os pênaltis!`,"half");await flash("PÊNALTIS!","",null,1300);
+   const P=$("lvPens");P.hidden=false;const seq=s.pens.seq||null;
+   P.innerHTML=`<div class="pr A"><span>${esc(S.names.A)}</span><div id="pkA"></div><b id="pkAs">0</b></div><div class="pr B"><span>${esc(S.names.B)}</span><div id="pkB"></div><b id="pkBs">0</b></div>`;
+   if(seq){let x=0,y=0;for(const [t,ok] of seq){if(L.stop)return;const d=document.createElement("i");d.className="pk "+(ok?"ok":"no");d.textContent=ok?"✓":"✕";
+     ball(t==="A"?88:12,50);await sleep(500);$(t==="A"?"pkA":"pkB").appendChild(d);if(ok){t==="A"?x++:y++;sfx("pick")}else sfx("flip");$("pkAs").textContent=x;$("pkBs").textContent=y;await sleep(450)}}
+   else{$("pkAs").textContent=s.pens.a;$("pkBs").textContent=s.pens.b;await sleep(900)}
+   $("lvA").textContent=`${s.a} (${s.pens.a})`;$("lvB").textContent=`(${s.pens.b}) ${s.b}`}
+  else{feed(`<b>90'</b> Fim de jogo!`,"half")}
+  if(L.stop)return;
+  $("lvP").textContent="Fim de jogo";confetti(s.winner);
+  await flash(`VITÓRIA DE ${esc(S.names[s.winner]).toUpperCase()}`,s.mvp?`Craque da partida: ${esc(s.mvp.name)}`:"",s.winner,2200);
+  end()})();
+}
+
 /* telas */
 
 const ONB=[["Escolha 2 campeões","Cada campeão entra com os 11 titulares da final. Juntos, eles formam a lista do racha. Quem entrou durante o jogo vira Jogador surpresa."],
@@ -1100,9 +1242,12 @@ function draft(){
   </div></div>`
   :`<div class="overlay" role="dialog" aria-label="Carta surpresa"><div class="reveal">
    <span class="label" style="color:var(--chalk)">${N} escolheu o 5º jogador e tirou uma cartinha surpresa</span>
-   ${cardBack(false)}
-   <h2 style="font-size:24px;text-transform:uppercase">${S.play==="local"?`Só ${N} pode olhar`:"Só você vê essa carta"}</h2>
-   <div class="row" style="justify-content:center"><button class="btn" data-act="flip">Virar carta</button></div>
+   ${S.cards[r].seen?`${cardBack(false)}<div class="row" style="justify-content:center"><button class="btn" data-act="flip">Virar carta</button></div>`
+    :`<h2 style="font-size:24px;text-transform:uppercase">Escolha uma cartinha</h2>
+   <div class="pick4">${(()=>{const nx=S.cards[r].nx||(S.cards[other(r)]?[`${S.names[other(r)]} já tirou`]:[]);const off=4-nx.length;return [0,1,2,3].map(k=>k>=off
+     ?`<div class="pk4 gone" aria-hidden="true">${cardBack(true)}<small>${esc(nx[k-off])}</small></div>`
+     :`<button class="pk4" data-act="flip" aria-label="Cartinha ${k+1}">${cardBack(true)}</button>`).join("")})()}</div>`}
+   <p class="note">${S.play==="local"?`Só ${N} pode olhar.`:"Só você vê a sua carta."} As cartas são diferentes para cada time.</p>
   </div></div>`}
  const foot=S.play==="online"
   ?`<button class="btn ghost small" data-act="leave">Sair da sala</button>`
@@ -1141,7 +1286,7 @@ function vote(){
  const canPub=!on||S.seat==="A";
  const primary=on?(S.seat==="A"?`<button class="btn" data-act="again">Novo racha</button>`:""):`<button class="btn" data-act="again">Jogar de novo</button>`;
  const links=[canPub?`<button class="linkbtn" data-act="publish">${S.publishedId?"Ver no mural":"Publicar no mural (24h)"}</button>`:"",
-  on?`<button class="linkbtn" data-act="leave">Sair da sala</button>`:`<button class="linkbtn" data-act="backDraft">Voltar à escolha</button>`].join("");
+  `<button class="linkbtn" data-act="replay">Ver o jogo de novo</button>`,on?`<button class="linkbtn" data-act="leave">Sair da sala</button>`:`<button class="linkbtn" data-act="backDraft">Voltar à escolha</button>`].join("");
  return `${scoreboard()}${sim}
  <div class="endact">${primary}<div class="links">${links}</div></div>
  ${voting}${reacts()}
@@ -1157,9 +1302,10 @@ function render(){
  const screens={home,setup,join,lobby,start:startScreen,draft,vote,mural};
  OVK=0;ANIM=false;
  if((S.screen==="draft"||S.screen==="vote")&&showOvr()&&!S.ovrShown){S.ovrShown=true;ANIM=true;setTimeout(()=>sfx("reveal"),300)}
- if(S.screen==="vote"&&S.sim&&!S.simShown){S.simShown=true;setTimeout(()=>sfx("goal"),900)}
+ const goLive=S.screen==="vote"&&S.sim&&!S.simShown;if(goLive)S.simShown=true;
  const ae=document.activeElement,focusId=ae&&ae.id&&ae.tagName==="INPUT"?ae.id:null,caret=focusId?ae.selectionStart:null;
  app.innerHTML=head+(screens[S.screen]||home)()+`<p class="ver">Racha dos Campeões · versão ${VERSION}</p>`+(S.screen==="draft"||S.screen==="vote"?infoSheet():"")+onbSheet();
+ if(goLive)setTimeout(()=>startLive(S.sim),60);
  if(focusId){const el=document.getElementById(focusId);if(el){el.focus();try{el.setSelectionRange(caret,caret)}catch(e){}}}
  if(S.screen==="draft"&&S.news&&S.news!==S._newsSeen){if(S._newsSeen!==undefined&&S.newsBy&&(!controls(S.newsBy)||isBot(S.newsBy))&&!S.reveal)toast(S.news);S._newsSeen=S.news}
  if(S.scroll&&window.innerWidth<760){const k=S.scroll;requestAnimationFrame(()=>{const el=k==="field"?document.querySelector(".field-wrap:not(.mhide) .pitch"):document.getElementById("poolPanel");if(el)el.scrollIntoView({behavior:"smooth",block:k==="field"?"center":"start"})})}
@@ -1250,6 +1396,7 @@ document.addEventListener("click",e=>{
   cancelMode(){},
   restart(){S.screen="setup"},
   legend(){S.legend=true},
+  replay(){if(S.sim)startLive(S.sim);return "norender"},
   toVote(){S.screen="vote";if(!S.sim){S.sim=simulate();GAMES++;try{localStorage.setItem("racha_games",String(GAMES))}catch(e){}}S.view=null;window.scrollTo({top:0});if(S.play==="online")commit()},
   startMove(){if(S.info&&canArrange(S.info.t)){S.move={t:S.info.t,i:S.info.i}}S.info=null},
   closeInfo(){S.info=null},
