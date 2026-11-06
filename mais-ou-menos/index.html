@@ -481,6 +481,49 @@ body.compact .pitch{display:none}
   .extras button,.extras span{font-size:12px; text-align:center; padding:4px 6px}
 }
 
+
+/* ===== tela inicial: escolha do modo ===== */
+.home{display:flex; flex-direction:column; gap:14px}
+.home .modes-head{display:flex}
+.home-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:14px; border-radius:16px;
+  border:1.5px solid transparent; background:var(--panel-fill) padding-box, var(--gold-edge) border-box; box-shadow:var(--glow)}
+.hcard{position:relative; display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:14px; text-align:left; color:var(--fg); cursor:pointer;
+  padding:16px; min-height:112px; border-radius:14px; font:inherit;
+  border:1.5px solid transparent; background:radial-gradient(120% 90% at 100% 0, rgba(246,181,18,.12), transparent 60%) padding-box, var(--panel-fill) padding-box, var(--gold-edge) border-box;
+  box-shadow:var(--glow); transition:transform .15s, box-shadow .15s}
+div.hcard{cursor:default; grid-template-columns:minmax(0,1fr); gap:10px}
+.hcard.wide{grid-column:1 / -1}
+.hcard:active{transform:scale(.985)}
+@media (hover:hover){button.hcard:hover,.hmain:hover{box-shadow:0 0 30px rgba(246,181,18,.3), var(--glow)} button.hcard:hover{transform:translateY(-2px)}}
+.hmain{display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:14px; background:none; border:0; color:var(--fg); text-align:left; cursor:pointer; padding:0; font:inherit; border-radius:10px}
+.hico{width:44px; height:44px; color:var(--led); filter:drop-shadow(0 0 10px rgba(246,181,18,.35))}
+.hico .eye{fill:#1a1003}
+.htxt{display:flex; flex-direction:column; gap:4px; min-width:0}
+.htxt b{font:900 italic 26px var(--display); line-height:1.05; display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.htxt > span{font-size:14.5px; color:#d9d0bd; line-height:1.4}
+.excl{font:800 italic 11px var(--display); text-transform:uppercase; letter-spacing:.06em; color:#fff; background:linear-gradient(180deg,#8b6cff,#5b3fd6); padding:3px 9px; border-radius:999px}
+.pills{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+.pills i,.lv{font:700 12.5px var(--body); font-style:normal; color:var(--fg); padding:4px 10px; border-radius:999px; border:1px solid var(--edge); background:var(--panel-2)}
+.pills i.up{color:var(--ok); border-color:rgba(60,207,78,.5)} .pills i.down{color:var(--bad); border-color:rgba(239,59,44,.5)}
+.levels-pills{margin:0; gap:8px}
+.lv{font:900 italic 16px var(--display); padding:8px 18px; min-height:42px; cursor:pointer; border:0; color:#fff}
+.lv.facil{background:linear-gradient(180deg,#4fd760,#1e8a2c)} .lv.medio{background:var(--gold-fill); color:#1a1003} .lv.dificil{background:linear-gradient(180deg,#ff6a5b,#b01e10)}
+.lv:active{transform:scale(.97)}
+.hstat{display:flex; flex-direction:column; align-items:flex-end; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-align:right}
+.hstat:empty{display:none}
+.hstat b{font:900 italic 28px var(--display); letter-spacing:0; background:var(--gold-fill); -webkit-background-clip:text; background-clip:text; color:transparent}
+.home-cta{display:flex; flex-direction:column; align-items:center; gap:6px}
+.home-cta .btn{min-width:min(320px,100%); font-size:26px}
+.play-ico{width:0; height:0; border-left:16px solid currentColor; border-top:10px solid transparent; border-bottom:10px solid transparent}
+@media (max-width:620px){
+  .home-grid{grid-template-columns:1fr; padding:10px; gap:10px}
+  .hcard{min-height:0; padding:14px; gap:12px}
+  .hico{width:36px; height:36px}
+  .htxt b{font-size:22px}
+  .htxt > span{font-size:13.5px}
+  .hstat b{font-size:24px}
+}
+
 @media (prefers-reduced-motion:reduce){
   .duel.enter .card,.card.shake,.val.flip,.bump,.record,.shot,.dot.next,.toast{animation:none}
   .plusone{display:none}
@@ -493,19 +536,27 @@ body.compact .pitch{display:none}
 <body>
 <div class="wrap">
   <div class="top">
-    <a class="back" href="https://carludix.com/">← CARLUDIX</a>
+    <a class="back" id="toPortal" href="https://carludix.com/">← CARLUDIX</a>
+    <button class="back" id="toHome" type="button" hidden>← Modos</button>
     <button class="iconbtn" id="openStats" type="button">Estatísticas</button>
   </div>
-  <div class="hero"><img src="escudo.webp" alt="Mais ou Menos: gols, títulos e valor de mercado" width="480" height="378"><div class="pitch"><p class="tagline">O desafio dos números do <em>futebol!</em></p><div class="nums"><div><b>297</b><span>nomes</span></div><div><b>16</b><span>categorias</span></div><div><b>~2.500</b><span>duelos possíveis</span></div></div></div></div>
+  <div class="hero"><img src="escudo.webp" alt="Mais ou Menos: gols, títulos e valor de mercado" width="480" height="378"><div class="pitch"><p class="tagline">O desafio dos números do <em>futebol!</em></p></div></div>
 
-  <div class="modes-head" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 7h11a5 5 0 0 1 4.9 6l-.9 4.2a2.6 2.6 0 0 1-4.4 1.3L14.6 16H9.4l-2.5 2.5a2.6 2.6 0 0 1-4.4-1.3L1.6 13A5 5 0 0 1 6.5 7zm1 3v1.7H5.8v1.6h1.7V15h1.6v-1.7h1.7v-1.6H9.1V10zm8.7.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm2.4 2.3a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/></svg>Modos de jogo</div>
-  <nav class="modes" id="modes" aria-label="Modo de jogo">
-    <button class="mode" id="m-solo" data-m="solo" aria-pressed="true"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7.5" r="4.2"/><path d="M3.5 21c.6-4.6 4.1-7.2 8.5-7.2s7.9 2.6 8.5 7.2z"/></svg><span>Sozinho</span><small>bata seu recorde</small></button>
-    <button class="mode" id="m-diario" data-m="diario" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M8.5 15.5l2.3 2.3 4.7-4.6"/></svg><span>Diário</span><small>10 duelos do dia</small></button>
-    <button class="mode" id="m-robo" data-m="robo" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="11" y="1.5" width="2" height="4" rx="1"/><circle cx="12" cy="1.8" r="1.6"/><rect x="4" y="6" width="16" height="13" rx="4"/><rect x="1" y="10" width="2.5" height="5" rx="1.2"/><rect x="20.5" y="10" width="2.5" height="5" rx="1.2"/><circle class="eye" cx="9" cy="12" r="1.8"/><circle class="eye" cx="15" cy="12" r="1.8"/><rect class="eye" x="8.5" y="15.5" width="7" height="1.6" rx=".8"/></svg><span>Robô</span><small>pênaltis contra a máquina</small></button>
-    <button class="mode" id="m-penaltis" data-m="penaltis" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="7.5" r="3.5"/><circle cx="16.5" cy="8.5" r="3"/><path d="M1.5 20c.5-3.9 3.2-6.2 6.5-6.2s6 2.3 6.5 6.2z"/><path d="M14.6 13.9c.6-.1 1.2-.2 1.9-.2 3 0 5.3 2.1 5.8 5.6h-6.4c-.2-2.2-.6-3.9-1.3-5.4z"/></svg><span>Pênaltis</span><small>2 no mesmo celular</small></button>
-    <button class="mode" id="m-online" data-m="online" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M2.5 9a14 14 0 0 1 19 0M5.8 12.6a9 9 0 0 1 12.4 0M9.1 16.1a4.2 4.2 0 0 1 5.8 0"/><circle cx="12" cy="19.4" r="1.4" fill="currentColor" stroke="none"/></svg><span>Online</span><small>desafio com código</small></button>
-  </nav>
+  <section id="home" class="home" aria-labelledby="homeTitle">
+  <div class="modes-head" id="homeTitle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 7h11a5 5 0 0 1 4.9 6l-.9 4.2a2.6 2.6 0 0 1-4.4 1.3L14.6 16H9.4l-2.5 2.5a2.6 2.6 0 0 1-4.4-1.3L1.6 13A5 5 0 0 1 6.5 7zm1 3v1.7H5.8v1.6h1.7V15h1.6v-1.7h1.7v-1.6H9.1V10zm8.7.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm2.4 2.3a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/></svg>Modos de jogo</div>
+    <div class="home-grid">
+      <button class="hcard" data-go="solo"><svg class="hico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7.5" r="4.2"/><path d="M3.5 21c.6-4.6 4.1-7.2 8.5-7.2s7.9 2.6 8.5 7.2z"/></svg><span class="htxt"><b>Sozinho</b><span>Sequência crescente até você errar. Fica mais difícil a cada acerto.</span>
+        <span class="pills"><i>Filtros</i><i class="up">▲ Mais</i><i class="down">▼ Menos</i><i>VAR</i></span></span><span class="hstat" id="hsSolo"></span></button>
+      <button class="hcard" data-go="diario"><svg class="hico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M8.5 15.5l2.3 2.3 4.7-4.6"/></svg><span class="htxt"><b>Diário</b><span>10 duelos iguais para todos no dia. Mantenha sua sequência de dias seguidos.</span></span><span class="hstat" id="hsDiario"></span></button>
+      <div class="hcard">
+        <button class="hmain" data-go="robo"><svg class="hico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="11" y="1.5" width="2" height="4" rx="1"/><circle cx="12" cy="1.8" r="1.6"/><rect x="4" y="6" width="16" height="13" rx="4"/><rect x="1" y="10" width="2.5" height="5" rx="1.2"/><rect x="20.5" y="10" width="2.5" height="5" rx="1.2"/><circle class="eye" cx="9" cy="12" r="1.8"/><circle class="eye" cx="15" cy="12" r="1.8"/><rect class="eye" x="8.5" y="15.5" width="7" height="1.6" rx=".8"/></svg><span class="htxt"><b>Robô</b><span>Dispute pênaltis contra o computador.</span></span></button>
+        <span class="pills levels-pills"><button class="lv facil" data-level="facil">Fácil</button><button class="lv medio" data-level="medio">Médio</button><button class="lv dificil" data-level="dificil">Difícil</button></span>
+      </div>
+      <button class="hcard" data-go="penaltis"><svg class="hico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="7.5" r="3.5"/><circle cx="16.5" cy="8.5" r="3"/><path d="M1.5 20c.5-3.9 3.2-6.2 6.5-6.2s6 2.3 6.5 6.2z"/><path d="M14.6 13.9c.6-.1 1.2-.2 1.9-.2 3 0 5.3 2.1 5.8 5.6h-6.4c-.2-2.2-.6-3.9-1.3-5.4z"/></svg><span class="htxt"><b>Pênaltis</b><span>Duas pessoas passando o mesmo celular.</span></span></button>
+      <button class="hcard wide" data-go="online" id="homeOnline"><svg class="hico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M2.5 9a14 14 0 0 1 19 0M5.8 12.6a9 9 0 0 1 12.4 0M9.1 16.1a4.2 4.2 0 0 1 5.8 0"/><circle cx="12" cy="19.4" r="1.4" fill="currentColor" stroke="none"/></svg><span class="htxt"><b>Online <em class="excl">Só no Claude</em></b><span>Desafie amigos por código, acompanhe a classificação e jogue o desafio da semana.</span></span></button>
+    </div>
+    <div class="home-cta"><button class="btn big" id="playNow"><span class="play-ico" aria-hidden="true"></span>Jogar agora</button><span class="hint" id="resumeNote"></span></div>
+  </section>
 
   <header class="board" id="board"></header>
 
@@ -1263,7 +1314,7 @@ function robotChance(){
 function penKick(){
   const t = $("turn"); t.hidden = false; t.classList.remove("next");
   const isRobot = pen.turn === pen.robot;
-  t.textContent = isRobot ? "Cobrança do robô" : `Cobrança de ${pen.names[pen.turn]}`;
+  t.textContent = isRobot ? "Cobrança do robô" : (pen.robot >= 0 ? "Sua cobrança" : `Cobrança de ${pen.names[pen.turn]}`);
   const level = pen.kicks[pen.turn].length * 2; // mesma dificuldade para os dois lados em cada cobrança
   if (!isRobot){ showDuel(penAnswer, level); return; }
   showDuel(penAnswer, level, { lockCards:true, noFocus:true, hint:`<span class="hint thinking">O robô está pensando</span>` });
@@ -1284,7 +1335,7 @@ function penAnswer(right, fact){
   penBoard();
   const t = $("turn");
   if (w >= 0) t.hidden = true;
-  else { t.textContent = pen.turn === pen.robot ? "Próximo: robô" : `Próximo: ${pen.names[pen.turn]}`; t.classList.add("next"); }
+  else { t.textContent = pen.turn === pen.robot ? "Próximo: robô" : (pen.robot >= 0 ? "Próximo: você" : `Próximo: ${pen.names[pen.turn]}`); t.classList.add("next"); }
   const goodForHuman = pen.robot >= 0 ? (isRobot ? !right : right) : right;
   const shot = right ? `<span class="shot ${goodForHuman ? "ok" : "bad"}">⚽ GOL${isRobot ? " DO ROBÔ" : ""}!</span>` : `<span class="shot ${goodForHuman ? "ok" : "bad"}">🧤 ${isRobot ? "O ROBÔ ERROU" : "DEFENDEU"}!</span>`;
   const msg = `<p class="msg small ${goodForHuman ? "ok" : "bad"}">${esc(fact)}</p>`;
@@ -1536,7 +1587,8 @@ function setMode(m){
 }
 function applyMode(m){
   mode = m; current = null; locked = true;
-  document.querySelectorAll(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.m===m));
+  $("home").hidden = true; $("board").hidden = false; $("toHome").hidden = false; $("toPortal").hidden = true;
+  compact();
   $("turn").hidden = true; $("duel").hidden = false;
   $("chips").hidden = m !== "solo";
   if (m === "solo"){ filter = store.get("filtro", "all"); syncChips(); soloEnter(); }
@@ -1549,7 +1601,33 @@ function syncChips(){
   document.querySelectorAll("#chips [data-f]").forEach(x => x.setAttribute("aria-pressed", x.dataset.f === filter));
   $("fmtClassic").setAttribute("aria-pressed", classic);
 }
-document.querySelectorAll(".mode").forEach(b => b.onclick = () => setMode(b.dataset.m));
+/* ================= tela inicial ================= */
+function showHome(){
+  clearAuto(); pendingNext = null;
+  mode = null; current = null; locked = true; classicTurn = false;
+  $("home").hidden = false; $("board").hidden = true; $("setup").hidden = true; $("play").hidden = true;
+  $("toHome").hidden = true; $("toPortal").hidden = false;
+  document.body.classList.remove("compact");
+  if (/^#desafio-/.test(location.hash)) { try { history.replaceState(null, "", location.pathname); } catch(e){} }
+  const s = stats(), best = Math.max(0, ...Object.values(s.rec || {}));
+  $("hsSolo").innerHTML = best ? `Seu recorde<b>${best}</b>` : "";
+  const d = store.get("diario:" + today(), { res:[] }), of = store.get("ofensiva", { n:0, last:null });
+  $("hsDiario").innerHTML = d.res.length >= 10 ? `Hoje<b>${d.res.filter(Boolean).length}/10</b>` : d.res.length ? `Em andamento<b>${d.res.length}/10</b>` : (of.n > 0 ? `Dias seguidos<b>🔥${of.n}</b>` : `Novo desafio<b>hoje</b>`);
+  const saved = store.get("partida", null);
+  $("resumeNote").textContent = saved && saved.streak > 0 ? `Você tem uma sequência de ${saved.streak} em andamento.` : "";
+  $("playNow").lastChild.textContent = saved && saved.streak > 0 ? "Continuar sequência" : "Jogar agora";
+  window.scrollTo({ top:0 });
+}
+function goHome(){ guard(() => { leaveCurrent(); if (mode === "online") onl = { phase:"lobby" }; showHome(); }); }
+$("toHome").onclick = goHome;
+$("playNow").onclick = () => applyMode("solo");
+document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => applyMode(b.dataset.go));
+document.querySelectorAll("[data-level]").forEach(b => b.onclick = e => {
+  e.stopPropagation();
+  applyMode("robo");
+  startPen([store.get("jogador1", "") || "Você", "Robô"], 1, b.dataset.level, "all");
+  store.set("nivel-robo", b.dataset.level);
+});
 document.querySelectorAll("#chips [data-f]").forEach(c => c.onclick = () => {
   if (c.dataset.f === filter) return;
   guard(() => { if (solo && !solo.over && solo.streak > 0) finishRun(solo.streak); filter = c.dataset.f; store.set("filtro", filter); syncChips(); soloStart(); });
@@ -1571,11 +1649,11 @@ document.addEventListener("keydown", e => {
 });
 
 /* ================= início ================= */
-if (ON_SITE){ $("m-online").hidden = true; $("modes").classList.add("four"); }
+if (ON_SITE){ $("homeOnline").hidden = true; }
 (function start(){
   const m = /^#desafio-([A-Z0-9]{5})$/.exec(location.hash);
   if (m && !ON_SITE){ onl = { phase:"room", code:m[1] }; applyMode("online"); return; }
-  applyMode("solo");
+  showHome();
 })();
 addEventListener("hashchange", () => {
   const m = /^#desafio-([A-Z0-9]{5})$/.exec(location.hash);
