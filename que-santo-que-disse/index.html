@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="logo.png">
+<title>Que santo que disse?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Spectral:ital,wght@0,400;1,400;1,500&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout do Leo (banner Carludix Play): logo + chamada no topo; à esquerda frase e 4 opções com Confirmar; à direita painel do resultado; faixa de placar embaixo. Visual único: noite azul-marinho e ouro. */
+:root{
+  color-scheme:dark;
+  --bg:#0a1430; --bg2:#0f1d44; --panel:#101f4a; --panel2:#0c1838;
+  --gold:#f2c14e; --gold2:#c98d1a; --goldline:rgba(242,193,78,.55);
+  --ink:#f3ecd8; --muted:#a9b3cf; --line:#2a3d73;
+  --ok:#3fd07a; --no:#ef5a5a;
+  --display:"Cinzel","Trajan Pro",Georgia,serif;
+  --quote:"Spectral",Georgia,serif;
+  --ui:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:var(--ui);font-size:15px;line-height:1.45;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 32px;
+  background:radial-gradient(1200px 600px at 75% -10%,#1d3a86 0%,transparent 60%),radial-gradient(800px 500px at 0% 30%,rgba(201,141,26,.18),transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+
+.top{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:20px;align-items:center}
+.logo{width:100%;aspect-ratio:1;object-fit:contain;height:auto;display:block;filter:drop-shadow(0 6px 24px rgba(0,0,0,.5))}
+.tag{font-family:var(--ui);font-weight:800;font-style:italic;font-size:clamp(18px,2.6vw,28px);line-height:1.2;text-wrap:balance;transform:rotate(-2deg);margin:0}
+.tag::after{content:"";display:block;width:220px;max-width:60%;height:3px;margin-top:10px;background:linear-gradient(90deg,var(--gold),transparent);border-radius:2px}
+.feats{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px;color:var(--muted);font-size:13px;font-weight:700}
+.feats b{color:var(--gold);font-size:16px}
+
+.board{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;border:2px solid var(--goldline);border-radius:18px;padding:18px;background:linear-gradient(180deg,rgba(16,31,74,.92),rgba(10,20,48,.92));box-shadow:0 0 0 1px rgba(242,193,78,.12) inset,0 0 40px rgba(242,193,78,.12)}
+.play{display:flex;flex-direction:column;gap:16px;min-width:0}
+.prog{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.pill{border:1px solid var(--goldline);border-radius:999px;padding:5px 14px;font-weight:700;font-size:13.5px;font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:16px;height:16px;border-radius:50%;border:2px solid #4a5d93;display:grid;place-items:center;font-size:10px;font-weight:800;color:#0a1430}
+.dot.cur{border-color:var(--gold);box-shadow:0 0 8px rgba(242,193,78,.6)}
+.dot.ok{background:var(--ok);border-color:var(--ok)}
+.dot.no{background:var(--no);border-color:var(--no)}
+
+.qcard{position:relative;border:1.5px solid var(--goldline);border-radius:14px;padding:28px 26px;background:radial-gradient(400px 200px at 0% 100%,rgba(242,193,78,.14),transparent 70%),var(--panel2);min-height:150px;display:flex;align-items:center}
+.qcard blockquote{margin:0;font-family:var(--quote);font-style:italic;font-weight:500;font-size:clamp(20px,2.7vw,28px);line-height:1.35;text-align:center;width:100%;text-wrap:balance}
+.qcard blockquote::before,.qcard blockquote::after{font-family:Georgia,serif;font-style:normal;color:var(--gold);font-size:1.5em;line-height:0;vertical-align:-.3em}
+.qcard blockquote::before{content:"\201C";margin-right:.15em}
+.qcard blockquote::after{content:"\201D";margin-left:.1em}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{font:inherit;color:var(--ink);text-align:left;display:flex;align-items:center;gap:12px;padding:8px 14px 8px 8px;border-radius:12px;border:1.5px solid var(--line);background:linear-gradient(180deg,#14275a,#0f1e48);cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .1s;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--goldline)}
+.opt:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.opt.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset,0 0 18px rgba(242,193,78,.35)}
+.opt.ok{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok) inset,0 0 18px rgba(63,208,122,.35)}
+.opt.no{border-color:var(--no);box-shadow:0 0 0 1px var(--no) inset}
+.opt:disabled{cursor:default}
+.opt:disabled:not(.ok):not(.no){opacity:.55}
+.av{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;color:#2a1a00;background:radial-gradient(circle at 35% 30%,#ffe7a3,var(--gold) 55%,var(--gold2));box-shadow:0 0 0 2px #0a1430,0 0 0 3.5px var(--gold)}
+.ot{display:flex;flex-direction:column;min-width:0}
+.on{font-weight:800;font-size:15.5px}
+.od{font-size:12px;color:var(--muted)}
+.confirm{align-self:center;font:inherit;font-weight:800;font-size:17px;color:#1f1400;border:0;border-radius:999px;padding:12px 30px;cursor:pointer;background:linear-gradient(180deg,#ffd970,var(--gold) 50%,var(--gold2));box-shadow:0 4px 0 #8a5c08,0 0 22px rgba(242,193,78,.35);display:flex;align-items:center;gap:10px}
+.confirm:disabled{filter:grayscale(.8) brightness(.6);cursor:not-allowed;box-shadow:none}
+.confirm:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.confirm:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 #8a5c08}
+.tri{width:0;height:0;border-left:12px solid currentColor;border-top:8px solid transparent;border-bottom:8px solid transparent}
+
+.side{border:1.5px solid var(--goldline);border-radius:14px;background:var(--panel2);padding:20px 18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.side .wait{color:var(--muted);text-align:center;margin:auto 0;display:flex;flex-direction:column;align-items:center;gap:10px}
+.side .wait .av{width:72px;height:72px;font-size:28px;opacity:.5}
+.verdict{font-family:var(--ui);font-weight:800;font-size:24px;display:flex;align-items:center;gap:10px;justify-content:center}
+.verdict.ok{color:var(--ok)} .verdict.no{color:var(--no)}
+.mark{width:32px;height:32px;border-radius:50%;border:2.5px solid currentColor;display:grid;place-items:center;font-size:17px}
+.who{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.who .av{width:84px;height:84px;font-size:30px}
+.who .n{font-family:var(--display);font-weight:800;color:var(--gold);font-size:19px;line-height:1.2}
+.who .d{font-size:12.5px;color:var(--muted)}
+.info{display:grid;grid-template-columns:24px 1fr;gap:10px;font-size:14px}
+.info .ic{color:var(--gold);font-weight:800;font-family:Georgia,serif;font-size:20px;line-height:1}
+.info b{display:block;color:var(--gold);font-size:13px}
+.next{font:inherit;font-weight:800;color:var(--ink);background:transparent;border:1.5px solid var(--gold);border-radius:999px;padding:10px 18px;cursor:pointer;margin-top:auto}
+.next:hover{background:rgba(242,193,78,.12)}
+.next:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1.5px solid var(--line);border-radius:14px;background:rgba(12,24,56,.85)}
+.cell{display:flex;align-items:center;gap:12px;padding:14px 18px;border-left:1px solid var(--line);min-width:0}
+.cell:first-child{border-left:0}
+.cell .k{font-family:var(--display);font-weight:800;color:var(--gold);font-size:26px;font-variant-numeric:tabular-nums;line-height:1}
+.cell .l{font-size:13px;color:var(--muted);font-weight:600;line-height:1.25}
+
+.end{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:10px 0}
+.end .big{font-family:var(--display);font-weight:800;font-size:72px;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.end h2{font-family:var(--display);margin:0;font-size:24px}
+.share{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;white-space:pre-wrap;user-select:all;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.review{list-style:none;margin:0;padding:0;display:grid;gap:6px;text-align:left;font-size:14px;max-width:640px;width:100%}
+.review li{display:flex;gap:8px}
+.review .m{font-weight:800;width:1.2em;flex:none}
+.review .m.ok{color:var(--ok)} .review .m.no{color:var(--no)}
+.review i{color:var(--ink)} .review span.a{color:var(--muted)}
+.back{align-self:flex-start;font-family:var(--display);font-weight:800;letter-spacing:.08em;font-size:13px;color:var(--gold);text-decoration:none;border:1.5px solid var(--goldline);border-radius:999px;padding:6px 14px}
+.back:hover{background:rgba(242,193,78,.12)}
+.back:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+footer{font-size:12px;color:var(--muted);text-align:center}
+
+@media (max-width:860px){
+  .top{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .logo{max-width:280px}
+  .tag{transform:none}.tag::after{margin-inline:auto}
+  .feats{justify-content:center}
+  .board{grid-template-columns:1fr;padding:14px}
+  .strip{grid-template-columns:1fr 1fr}
+  .cell:nth-child(3){border-left:0}
+  .cell:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:520px){
+  .opts{grid-template-columns:1fr}
+  .qcard{padding:22px 16px}
+  .cell{padding:12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="https://carludix.com/catolicos/">&larr; CARLUDIX</a>
+  <section class="top">
+    <img class="logo" src="logo.png" alt="Que santo que disse?">
+    <div>
+      <p class="tag">Descubra quem disse cada frase e aprofunde-se na sabedoria dos santos e dos papas!</p>
+      <div class="feats"><span><b id="fq">0</b> frases</span><span>Santos e papas</span><span>Cada frase com a fonte</span></div>
+    </div>
+  </section>
+
+  <section class="board" id="board"></section>
+
+  <section class="strip">
+    <div class="cell"><span class="k" id="sc">0</span><span class="l">acertos<br>nesta partida</span></div>
+    <div class="cell"><span class="k" id="st">0</span><span class="l">sequência<br>atual</span></div>
+    <div class="cell"><span class="k" id="bs">0</span><span class="l">maior<br>sequência</span></div>
+    <div class="cell"><span class="k">10</span><span class="l">frases<br>por partida</span></div>
+  </section>
+  <footer>Carludix Play · Clique no autor, confirme e veja a fonte da frase.</footer>
+</div>
+
+<script>
+const A = {
+  agostinho:{n:"Santo Agostinho",d:"Bispo de Hipona, 354–430",g:"antigo"},
+  irineu:{n:"Santo Irineu de Lião",d:"Padre da Igreja, c. 130–202",g:"antigo"},
+  atanasio:{n:"Santo Atanásio",d:"Bispo de Alexandria, c. 296–373",g:"antigo"},
+  jeronimo:{n:"São Jerônimo",d:"Tradutor da Vulgata, c. 347–420",g:"antigo"},
+  cipriano:{n:"São Cipriano",d:"Bispo de Cartago, c. 200–258",g:"antigo"},
+  crisostomo:{n:"São João Crisóstomo",d:"Bispo de Constantinopla, c. 349–407",g:"antigo"},
+  leaomagno:{n:"São Leão Magno",d:"Papa, 440–461",g:"papa"},
+  bento:{n:"São Bento de Núrsia",d:"Pai do monaquismo, c. 480–547",g:"medieval"},
+  anselmo:{n:"Santo Anselmo",d:"Arcebispo de Cantuária, 1033–1109",g:"medieval"},
+  bernardo:{n:"São Bernardo de Claraval",d:"Abade cisterciense, 1090–1153",g:"medieval"},
+  francisco:{n:"São Francisco de Assis",d:"Fundador dos franciscanos, 1182–1226",g:"medieval"},
+  tomas:{n:"São Tomás de Aquino",d:"Doutor Angélico, 1225–1274",g:"medieval"},
+  catarina:{n:"Santa Catarina de Sena",d:"Doutora da Igreja, 1347–1380",g:"medieval"},
+  inacio:{n:"Santo Inácio de Loyola",d:"Fundador dos jesuítas, 1491–1556",g:"moderno"},
+  teresa:{n:"Santa Teresa de Ávila",d:"Mística carmelita, 1515–1582",g:"moderno"},
+  joaocruz:{n:"São João da Cruz",d:"Místico carmelita, 1542–1591",g:"moderno"},
+  bosco:{n:"São João Bosco",d:"Fundador dos salesianos, 1815–1888",g:"moderno"},
+  savio:{n:"São Domingos Sávio",d:"Aluno de Dom Bosco, 1842–1857",g:"moderno"},
+  teresinha:{n:"Santa Teresinha",d:"Carmelita de Lisieux, 1873–1897",g:"moderno"},
+  faustina:{n:"Santa Faustina",d:"Apóstola da Misericórdia, 1905–1938",g:"moderno"},
+  padrepio:{n:"São Padre Pio",d:"Frade capuchinho, 1887–1968",g:"moderno"},
+  madreteresa:{n:"Santa Teresa de Calcutá",d:"Missionárias da Caridade, 1910–1997",g:"moderno"},
+  carlo:{n:"São Carlo Acutis",d:"Jovem italiano, 1991–2006",g:"moderno"},
+  pio10:{n:"São Pio X",d:"Papa, 1903–1914",g:"papa"},
+  joao23:{n:"São João XXIII",d:"Papa, 1958–1963",g:"papa"},
+  paulo6:{n:"São Paulo VI",d:"Papa, 1963–1978",g:"papa"},
+  jp2:{n:"São João Paulo II",d:"Papa, 1978–2005",g:"papa"},
+  bento16:{n:"Papa Bento XVI",d:"Papa, 2005–2013",g:"papa"},
+  papafrancisco:{n:"Papa Francisco",d:"Papa, 2013–2025",g:"papa"},
+  leao14:{n:"Papa Leão XIV",d:"Papa desde 2025",g:"papa"}
+};
+
+const Q = [
+  {a:"agostinho",t:"Fizeste-nos para ti, e inquieto está o nosso coração enquanto não repousa em ti.",s:"Confissões, I, 1",c:"Abertura do livro em que Agostinho conta a própria conversão."},
+  {a:"agostinho",t:"Tarde te amei, ó beleza tão antiga e tão nova, tarde te amei!",s:"Confissões, X, 27",c:"Lida na Liturgia das Horas na memória de Santo Agostinho, 28 de agosto."},
+  {a:"agostinho",t:"Ama e faze o que quiseres.",s:"Homilias sobre a Primeira Carta de João, 7, 8",c:"No contexto, o amor verdadeiro é o critério que orienta cada ação."},
+  {a:"irineu",t:"A glória de Deus é o homem vivo, e a vida do homem é a visão de Deus.",s:"Contra as Heresias, IV, 20, 7",c:"Escrito contra os gnósticos, que desprezavam o corpo e a matéria."},
+  {a:"atanasio",t:"Ele se fez homem para que nós fôssemos feitos Deus.",s:"Sobre a Encarnação do Verbo, 54",c:"Resumo clássico da doutrina da divinização, citado no Catecismo, n. 460."},
+  {a:"jeronimo",t:"Ignorar as Escrituras é ignorar Cristo.",s:"Comentário a Isaías, prólogo",c:"Citada pelo Concílio Vaticano II na Dei Verbum, n. 25."},
+  {a:"cipriano",t:"Não pode ter Deus por Pai quem não tem a Igreja por Mãe.",s:"Sobre a Unidade da Igreja Católica, 6",c:"Escrita durante os cismas que seguiram a perseguição de Décio."},
+  {a:"crisostomo",t:"Queres honrar o corpo de Cristo? Não o desprezes quando está nu.",s:"Homilias sobre o Evangelho de Mateus, 50",c:"Crisóstomo liga a reverência ao altar ao cuidado com os pobres."},
+  {a:"leaomagno",t:"Reconhece, ó cristão, a tua dignidade.",s:"Sermão 21, 1º sermão do Natal, 3",c:"Lido no Ofício das Leituras do dia de Natal."},
+  {a:"bento",t:"Nada antepor ao amor de Cristo.",s:"Regra de São Bento, cap. 4, 21",c:"Um dos “instrumentos das boas obras” listados para os monges."},
+  {a:"anselmo",t:"Não procuro compreender para crer, mas creio para compreender.",s:"Proslógio, cap. 1",c:"Daí vem a fórmula fides quaerens intellectum, a fé que busca compreender."},
+  {a:"bernardo",t:"Se se levantarem os ventos das tentações, olha a estrela, invoca Maria.",s:"Homilias sobre o Missus est, 2, 17",c:"Comentário à Anunciação; Maria é comparada à estrela do mar."},
+  {a:"francisco",t:"Louvado sejas, meu Senhor, por nossa irmã, a mãe Terra, que nos sustenta e governa.",s:"Cântico das Criaturas",c:"Inspirou o título da encíclica Laudato si’, de 2015."},
+  {a:"tomas",t:"A graça não destrói a natureza, mas a aperfeiçoa.",s:"Suma Teológica, I, q. 1, a. 8, ad 2",c:"Princípio central de toda a teologia tomista."},
+  {a:"catarina",t:"Se fordes o que deveis ser, poreis fogo em toda a Itália.",s:"Carta 368",c:"Retomada por João Paulo II aos jovens na JMJ de Roma, em 2000."},
+  {a:"inacio",t:"Em tudo amar e servir.",s:"Exercícios Espirituais, n. 233",c:"Da “Contemplação para alcançar amor”, no fim dos Exercícios."},
+  {a:"teresa",t:"Nada te perturbe, nada te espante; tudo passa, Deus não muda. Só Deus basta.",s:"Poema encontrado em seu breviário",c:"Musicado em Taizé e cantado no mundo inteiro."},
+  {a:"joaocruz",t:"Ao entardecer desta vida, examinar-te-ão no amor.",s:"Ditos de Luz e Amor, 59",c:"Citado no Catecismo, n. 1022, ao tratar do juízo particular."},
+  {a:"bosco",t:"Basta que sejais jovens para que eu vos ame muito.",s:"O Jovem Instruído (1847), dedicatória",c:"Livro de orações que Dom Bosco escreveu para os meninos do Oratório."},
+  {a:"savio",t:"Antes morrer do que pecar.",s:"Propósitos da Primeira Comunhão",c:"Registrado por Dom Bosco na biografia que escreveu do aluno."},
+  {a:"teresinha",t:"No coração da Igreja, minha Mãe, eu serei o Amor.",s:"História de uma Alma, Manuscrito B",c:"O momento em que ela descobre a sua vocação."},
+  {a:"teresinha",t:"Quero passar o meu céu fazendo o bem sobre a terra.",s:"Últimas Conversas, 17 de julho de 1897",c:"Dita poucos meses antes de morrer, aos 24 anos."},
+  {a:"faustina",t:"Jesus, eu confio em vós.",s:"Diário, n. 47",c:"A inscrição pedida para a imagem de Jesus Misericordioso."},
+  {a:"padrepio",t:"Reza, espera e não te preocupes.",s:"Conselho que repetia nas cartas e na direção espiritual",c:"Uma das frases mais associadas ao frade de Pietrelcina."},
+  {a:"madreteresa",t:"O amor começa em casa.",s:"Discurso do Prêmio Nobel da Paz, 1979",c:"Ela pediu que o banquete do Nobel fosse cancelado e o dinheiro dado aos pobres."},
+  {a:"carlo",t:"A Eucaristia é a minha autoestrada para o Céu.",s:"Frase registrada por sua mãe, Antonia Salzano",c:"Carlo montou uma exposição sobre milagres eucarísticos; foi canonizado em 2025."},
+  {a:"carlo",t:"Todos nascem originais, mas muitos morrem como fotocópias.",s:"Frase registrada por sua família e amigos",c:"Citada pelo Papa Francisco na exortação Christus vivit, n. 106."},
+  {a:"pio10",t:"Restaurar todas as coisas em Cristo.",s:"Encíclica E supremi apostolatus, 1903",c:"Lema do pontificado, tirado de Efésios 1, 10."},
+  {a:"joao23",t:"Devemos discordar desses profetas da desgraça, que anunciam sempre acontecimentos infelizes.",s:"Discurso Gaudet Mater Ecclesia, 11 out. 1962",c:"Na abertura do Concílio Vaticano II."},
+  {a:"paulo6",t:"O homem contemporâneo escuta com melhor boa vontade as testemunhas do que os mestres.",s:"Exortação Evangelii nuntiandi, n. 41",c:"Documento de 1975 sobre a evangelização no mundo moderno."},
+  {a:"jp2",t:"Não tenhais medo! Abri, ou melhor, escancarai as portas a Cristo!",s:"Homilia de início do pontificado, 22 out. 1978",c:"Primeira grande homilia do papa polonês, na Praça de São Pedro."},
+  {a:"bento16",t:"Ao início do ser cristão, não há uma decisão ética ou uma grande ideia, mas o encontro com uma Pessoa.",s:"Encíclica Deus caritas est, n. 1",c:"Primeira encíclica de Bento XVI, de 2005."},
+  {a:"bento16",t:"Quem crê nunca está só.",s:"Homilia de início do pontificado, 24 abr. 2005",c:"Ele repetiu a frase como lema da viagem à Baviera em 2006."},
+  {a:"papafrancisco",t:"Como eu queria uma Igreja pobre e para os pobres!",s:"Encontro com os jornalistas, 16 mar. 2013",c:"Três dias depois da eleição, ao explicar a escolha do nome Francisco."},
+  {a:"papafrancisco",t:"Prefiro uma Igreja acidentada, ferida e enlameada por ter saído pelas estradas.",s:"Exortação Evangelii gaudium, n. 49",c:"Programa do pontificado, publicado em novembro de 2013."},
+  {a:"leao14",t:"A paz esteja com todos vós!",s:"Primeira saudação da sacada de São Pedro, 8 mai. 2025",c:"As primeiras palavras do papa americano-peruano depois da eleição."}
+];
+
+const N = 10;
+let deck = [], i = 0, score = 0, streak = 0, best = 0, log = [], sel = null, done = false;
+const $ = id => document.getElementById(id);
+const shuf = a => { a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; };
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ini = k => { const w = A[k].n.replace(/^(São|Santo|Santa|Papa)\s+/,"").split(/\s+/).filter(x => !/^(de|da|do|dos)$/.test(x)); return (w[0][0] + (w[1] ? w[1][0] : "")).toUpperCase(); };
+
+function options(q) {
+  const keys = Object.keys(A).filter(k => k !== q.a);
+  const same = shuf(keys.filter(k => A[k].g === A[q.a].g));
+  const other = shuf(keys.filter(k => A[k].g !== A[q.a].g));
+  return shuf([q.a, ...[...same.slice(0, 2), ...other].slice(0, 3)]);
+}
+
+function start() {
+  deck = shuf(Q).slice(0, N).map(q => ({...q, o: options(q)}));
+  i = 0; score = 0; streak = 0; best = 0; log = [];
+  render();
+}
+
+function stats() {
+  $("sc").textContent = score; $("st").textContent = streak; $("bs").textContent = best;
+}
+
+function dots() {
+  return Array.from({length:N}, (_, k) => {
+    const l = log[k]; const c = l ? (l.ok ? "ok" : "no") : (k === i ? "cur" : "");
+    return `<span class="dot ${c}">${l ? (l.ok ? "✓" : "✕") : ""}</span>`;
+  }).join("");
+}
+
+function render() {
+  sel = null; done = false; stats();
+  const q = deck[i];
+  $("board").innerHTML = `
+  <div class="play">
+    <div class="prog"><span class="pill">Frase ${i + 1} de ${N}</span><div class="dots">${dots()}</div></div>
+    <div class="qcard"><blockquote>${esc(q.t)}</blockquote></div>
+    <div class="opts">${q.o.map(k => `<button class="opt" data-k="${k}"><span class="av">${ini(k)}</span><span class="ot"><span class="on">${A[k].n}</span><span class="od">${A[k].d}</span></span></button>`).join("")}</div>
+    <button class="confirm" id="cf" disabled><span class="tri"></span>Confirmar resposta</button>
+  </div>
+  <aside class="side" id="side"><div class="wait"><span class="av">?</span><span>Escolha um autor e confirme para ver se acertou, a fonte e o contexto da frase.</span></div></aside>`;
+  document.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+    if (done) return;
+    sel = b.dataset.k;
+    document.querySelectorAll(".opt").forEach(o => o.classList.toggle("sel", o === b));
+    $("cf").disabled = false;
+  }));
+  $("cf").addEventListener("click", confirmA);
+}
+
+function confirmA() {
+  if (!sel || done) return;
+  done = true;
+  const q = deck[i], ok = sel === q.a;
+  document.querySelectorAll(".opt").forEach(b => {
+    b.disabled = true; b.classList.remove("sel");
+    if (b.dataset.k === q.a) b.classList.add("ok");
+    else if (b.dataset.k === sel) b.classList.add("no");
+  });
+  $("cf").disabled = true;
+  if (ok) { score++; streak++; best = Math.max(best, streak); } else streak = 0;
+  log.push({q, ok}); stats();
+  document.querySelector(".dots").innerHTML = dots();
+  const last = i === N - 1;
+  $("side").innerHTML = `
+    <div class="verdict ${ok ? "ok" : "no"}"><span class="mark">${ok ? "✓" : "✕"}</span>${ok ? "Acertou!" : "Errou!"}</div>
+    <div class="who"><span class="av">${ini(q.a)}</span><span class="n">${A[q.a].n}</span><span class="d">${A[q.a].d}</span></div>
+    <div class="info"><span class="ic">§</span><div><b>Fonte</b>${esc(q.s)}</div></div>
+    <div class="info"><span class="ic">“</span><div><b>Contexto</b>${esc(q.c)}</div></div>
+    <button class="next" id="nx">${last ? "Ver resultado" : "Próxima frase"}</button>`;
+  $("nx").addEventListener("click", () => { i++; i < N ? render() : end(); });
+  $("nx").focus();
+}
+
+function end() {
+  const msg = score === N ? "Doutor da Igreja!" : score >= 8 ? "Leitor assíduo da Liturgia das Horas." : score >= 5 ? "Bom catequista." : "Hora de abrir o Catecismo.";
+  const grid = log.map(l => l.ok ? "🟩" : "🟥").join("");
+  const share = `Que santo que disse? ${score}/${N}\n${grid}\nMaior sequência: ${best}`;
+  $("board").innerHTML = `<div class="end">
+    <span class="pill">Resultado</span>
+    <div class="dots">${dots()}</div>
+    <div class="big">${score}<span style="font-size:.4em;color:var(--muted)">/${N}</span></div>
+    <h2>${msg}</h2>
+    <div class="share" id="sh">${esc(share)}</div>
+    <div class="row"><button class="confirm" id="again"><span class="tri"></span>Jogar de novo</button><button class="next" id="cp" style="margin:0">Copiar resultado</button></div>
+    <ul class="review">${log.map(l => `<li><span class="m ${l.ok ? "ok" : "no"}">${l.ok ? "✓" : "✕"}</span><span><i>${esc(l.q.t.length > 64 ? l.q.t.slice(0, 62) + "…" : l.q.t)}</i> <span class="a">— ${A[l.q.a].n} · ${esc(l.q.s)}</span></span></li>`).join("")}</ul>
+  </div>`;
+  $("again").addEventListener("click", start);
+  $("cp").addEventListener("click", () => {
+    const b = $("cp");
+    navigator.clipboard.writeText(share).then(() => b.textContent = "Copiado").catch(() => {
+      const r = document.createRange(); r.selectNodeContents($("sh")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = "Texto selecionado";
+    });
+  });
+}
+
+$("fq").textContent = Q.length;
+start();
+</script>
+</body>
+</html>
