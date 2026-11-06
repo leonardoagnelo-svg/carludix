@@ -64,6 +64,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[t
 .ibtn:hover{border-color:var(--gold2)}
 .ibtn svg{width:20px;height:20px}
 .mini-logo{width:40px;height:40px;border-radius:10px}
+.ibtn.back{text-decoration:none;color:var(--gold2);font-size:15px}
 
 /* ---------- tela inicial ---------- */
 #home{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);align-items:center;padding:70px 4vw 60px;gap:2vw}
@@ -88,90 +89,104 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[t
 .record b{color:var(--gold2)}
 
 /* ---------- jogo ---------- */
-#game{display:grid;grid-template-columns:250px minmax(0,1fr) 290px;gap:18px;padding:68px 18px 34px}
-.panel{background:var(--glass);border:1px solid var(--line);border-radius:20px;backdrop-filter:blur(10px);box-shadow:0 18px 50px rgba(0,0,0,.35)}
-.left,.right{display:flex;flex-direction:column;gap:14px;min-height:0}
-.ptitle{font-family:var(--ui);font-weight:700;letter-spacing:.2em;font-size:13px;color:var(--gold2);text-transform:uppercase;margin:0 0 10px}
-.lifelines{padding:16px}
-.lls{display:grid;gap:10px}
-.ll{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 12px;border-radius:14px;border:1.5px solid var(--line);background:linear-gradient(180deg,rgba(23,59,131,.75),rgba(9,21,47,.85));text-align:left;position:relative;overflow:hidden}
-.ll:hover:not(:disabled){border-color:var(--gold2)}
-.ll .ic{flex:none;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#fff1b5,#d8a637 60%,#8a5d0d);color:#2a1a02;font-family:var(--ui);font-weight:800;font-size:12.5px;letter-spacing:-.02em;box-shadow:0 0 0 2px rgba(255,215,106,.35)}
-.ll .ic svg{width:22px;height:22px}
-.ll b{display:block;font-family:var(--ui);font-size:18px;letter-spacing:.03em}
-.ll.used>div>span{visibility:hidden}
-.ll span{font-size:13px;color:var(--muted)}
-.ll:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.7)}
-.ll.used::after{content:"USADA";position:absolute;right:auto;left:66px;bottom:8px;top:auto;transform:rotate(-6deg);font-family:var(--ui);font-weight:800;letter-spacing:.1em;font-size:11px;color:var(--ruby);border:2px solid var(--ruby);border-radius:6px;padding:1px 6px;background:rgba(255,249,236,.9)}
-.ll.fire{animation:llfire .9s ease-out}
-@keyframes llfire{0%{box-shadow:0 0 0 0 rgba(255,215,106,.9)}100%{box-shadow:0 0 0 22px rgba(255,215,106,0)}}
-.info{padding:16px}
-.info dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:15px}
-.info dt{color:var(--muted)}
-.info dd{margin:0;text-align:right;font-family:var(--ui);font-weight:600;font-size:17px}
-.info .note{margin:12px 0 0;font-size:13px;color:var(--muted);line-height:1.35}
-
-.center{display:flex;flex-direction:column;min-height:0;gap:10px}
+#game{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:22px;padding:66px 22px 40px}
+.center{display:flex;flex-direction:column;min-height:0;gap:12px;max-width:1040px;width:100%;justify-self:center}
 .center .hole{flex:1 1 auto;min-height:250px;position:relative}
-.caption{align-self:center;max-width:min(680px,100%);min-height:0;padding:9px 16px;border-radius:14px;background:rgba(9,21,47,.86);border:1px solid rgba(255,215,106,.35);font-size:16.5px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+/* legenda no estilo "lower third" de TV */
+.caption{align-self:flex-start;margin:-64px 0 0 6%;position:relative;z-index:3;display:flex;align-items:stretch;max-width:min(640px,88%);font-size:16.5px;line-height:1.35;filter:drop-shadow(0 10px 22px rgba(0,0,0,.45))}
 .caption:empty{visibility:hidden}
-.caption .who{font-family:var(--ui);font-weight:700;color:var(--gold2);letter-spacing:.06em;margin-right:6px}
-.qpanel{max-height:calc(100dvh - 400px);min-height:0;overflow:auto;padding:16px 18px 18px;border-radius:22px;background:linear-gradient(180deg,rgba(14,30,66,.9),rgba(9,21,47,.94));border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,215,106,.15)}
-.qmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;font-family:var(--ui);font-size:15px;letter-spacing:.05em}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(23,59,131,.6)}
-.chip.gold{background:linear-gradient(180deg,#ffe28a,#d8a637);color:#2a1a02;border-color:#ffe9a8;font-weight:700}
-.chip.demo{border-color:rgba(243,227,189,.4);color:var(--parch);background:transparent;font-size:13px}
-.qtext{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.1vw,27px);line-height:1.22;margin:2px 0 14px;outline:none}
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ans{position:relative;display:flex;align-items:center;gap:12px;min-height:58px;padding:10px 14px 10px 10px;text-align:left;border-radius:14px;border:1.5px solid rgba(216,166,55,.55);background:linear-gradient(180deg,#183a80,#0d2252);font-size:17px;line-height:1.25;transition:transform .12s,background .2s,border-color .2s,opacity .3s}
-.ans:hover:not(:disabled){border-color:var(--gold2);transform:translateY(-1px)}
-.ans .L{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--ui);font-weight:800;font-size:18px;background:rgba(255,215,106,.14);color:var(--gold2);border:1.5px solid rgba(255,215,106,.5)}
-.ans .tag{position:absolute;right:10px;top:5px;font-family:var(--ui);font-weight:700;font-size:12.5px;letter-spacing:.08em;white-space:nowrap}
+.caption .who{flex:none;display:flex;align-items:center;padding:0 12px;background:linear-gradient(180deg,#ffe28a,#d8a637);color:#2a1a02;font-family:var(--ui);font-weight:700;font-size:15px;letter-spacing:.04em;border-radius:10px 0 0 10px}
+.caption .say{padding:8px 14px;background:rgba(9,21,47,.93);border:1px solid rgba(255,215,106,.4);border-left:0;border-radius:0 10px 10px 0}
+/* faixa de status + ajudas */
+.hud{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hudinfo{flex:1 1 220px;min-width:0;text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)}
+.hudinfo b{display:block;font-family:var(--display);font-size:22px;color:var(--gold2);line-height:1.1}
+.hudinfo span{font-size:14.5px;color:var(--muted)}
+.hudinfo .rev{margin-left:8px;font-size:12.5px;color:var(--parch);opacity:.8;border:1px solid rgba(243,227,189,.35);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.lls{display:flex;gap:10px}
+.ll{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;width:78px;padding:0;font-family:var(--ui);font-size:14px;font-weight:600;color:var(--parch)}
+.ll .ic{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 28%,#fff3c4,#d8a637 58%,#7d540c);color:#2a1a02;font-weight:800;font-size:14px;letter-spacing:-.02em;box-shadow:0 0 0 3px rgba(9,21,47,.9),0 0 0 4.5px rgba(255,215,106,.7),0 8px 18px rgba(0,0,0,.4);transition:transform .15s}
+.ll .ic svg{width:24px;height:24px}
+.ll:hover:not(:disabled) .ic{transform:translateY(-2px) scale(1.04)}
+.ll:disabled{cursor:not-allowed}
+.ll:disabled:not(.used){opacity:.55}
+.ll.used .ic{background:#24304f;color:#6f7b98;box-shadow:0 0 0 3px rgba(9,21,47,.9),0 0 0 4.5px rgba(111,123,152,.5)}
+.ll.used .ic::after{content:"";position:absolute;width:52px;height:3px;background:var(--ruby);transform:rotate(-45deg);border-radius:2px;top:24px}
+.ll.used .nm{color:#6f7b98;text-decoration:line-through}
+.ll.fire .ic{animation:llfire .9s ease-out}
+@keyframes llfire{0%{box-shadow:0 0 0 3px rgba(9,21,47,.9),0 0 0 4px rgba(255,215,106,.95)}100%{box-shadow:0 0 0 3px rgba(9,21,47,.9),0 0 0 26px rgba(255,215,106,0)}}
+.pips{display:none}
+/* placas da pergunta e das alternativas: lâminas douradas com pontas */
+.qpanel{min-height:0;max-height:calc(100dvh - 420px);overflow:auto;padding:4px 4px 6px}
+.plate{--cut:22px;position:relative;display:block;width:100%;filter:drop-shadow(0 8px 16px rgba(0,0,0,.4))}
+.plate::before{content:"";position:absolute;inset:0;clip-path:polygon(var(--cut) 0,calc(100% - var(--cut)) 0,100% 50%,calc(100% - var(--cut)) 100%,var(--cut) 100%,0 50%);background:linear-gradient(180deg,#fff0b0,#d8a637 45%,#8c5f10)}
+.plate>.in{position:relative;margin:2px;clip-path:polygon(calc(var(--cut) - 1px) 0,calc(100% - var(--cut) + 1px) 0,100% 50%,calc(100% - var(--cut) + 1px) 100%,calc(var(--cut) - 1px) 100%,0 50%);background:linear-gradient(180deg,#1c4596 0%,#0f2861 52%,#0b1d49 100%)}
+.qplate{--cut:34px;margin-bottom:14px}
+.qplate>.in{padding:16px calc(var(--cut) + 14px);text-align:center;background:radial-gradient(120% 140% at 50% 0%,#24509f 0%,#0f2861 55%,#0a1a42 100%)}
+.qtext{font-family:var(--display);font-weight:700;font-size:clamp(21px,2.2vw,29px);line-height:1.22;margin:0;outline:none;text-wrap:balance}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.ans{padding:0;border:0;background:none;text-align:left;font-size:17.5px;line-height:1.25;transition:transform .12s,opacity .3s}
+.ans>.in{display:flex;align-items:center;gap:12px;min-height:58px;padding:9px calc(var(--cut) + 6px) 9px calc(var(--cut) - 4px)}
+.ans .L{flex:none;font-family:var(--ui);font-weight:700;font-size:19px;color:var(--gold2);width:22px}
 .ans .tx{flex:1}
-.ans.sel{background:linear-gradient(180deg,#ffe28a,#d8a637 60%,#b8861d);color:#2a1a02;border-color:#fff1bf}
-.ans.sel .L{background:#2a1a02;color:var(--gold2);border-color:#2a1a02}
-.ans.lock{animation:lockpulse 1s ease-in-out infinite}
-@keyframes lockpulse{50%{box-shadow:0 0 0 6px rgba(255,215,106,.25)}}
-.ans.is-right{background:linear-gradient(180deg,#3ac07b,#1d7f4b);color:#fff;border-color:#a7f3c8}
-.ans.is-right .L{background:#fff;color:#1d7f4b;border-color:#fff}
-.ans.is-wrong{background:linear-gradient(180deg,#c43344,#7c1622);color:#fff;border-color:#f3a0a8}
-.ans.is-wrong .L{background:#fff;color:#7c1622;border-color:#fff}
-.ans.gone{opacity:.16;pointer-events:none}
+.ans:hover:not(:disabled){transform:translateY(-1px)}
+.ans:hover:not(:disabled)>.in{background:linear-gradient(180deg,#2654ad,#133272 55%,#0d2252)}
+.ans:focus-visible{outline:none;filter:drop-shadow(0 0 5px #ffd76a) drop-shadow(0 0 2px #fff3c2)}
+.ans.sel>.in{background:linear-gradient(180deg,#ffe795,#e0ad3e 55%,#b8861d);color:#241500}
+.ans.sel .L,.ans.sel .pct{color:#3a2400}
+.ans.lock{animation:lockpulse .9s ease-in-out infinite}
+@keyframes lockpulse{50%{filter:drop-shadow(0 0 10px rgba(255,215,106,.9))}}
+.ans.is-right>.in{background:linear-gradient(180deg,#47d08a,#1d8650 60%,#146a3d);color:#fff}
+.ans.is-right::before{background:linear-gradient(180deg,#d7ffe8,#5fe3a0)}
+.ans.is-right .L{color:#eafff3}
+.ans.is-wrong>.in{background:linear-gradient(180deg,#d23d4e,#8d1a27 60%,#6d121d);color:#fff}
+.ans.is-wrong::before{background:linear-gradient(180deg,#ffd0d5,#f07a86)}
+.ans.is-wrong .L{color:#ffe3e6}
+.ans.gone{opacity:.22;pointer-events:none}
 .ans.gone .tx{text-decoration:line-through}
 .ans:disabled{cursor:default}
-.ans .bar{position:absolute;left:0;bottom:0;height:4px;border-radius:0 4px 4px 4px;background:var(--gold2);transition:width .9s ease}
-.ans .pct{font-family:var(--ui);font-weight:700;color:var(--gold2);font-size:15px;margin-left:auto}
-.ans.sel .pct{color:#2a1a02}
+.ans .tag{position:absolute;right:calc(var(--cut) + 4px);top:3px;font-family:var(--ui);font-weight:700;font-size:12px;letter-spacing:.06em;white-space:nowrap}
+.ans .bar{position:absolute;left:var(--cut);bottom:5px;height:3px;border-radius:3px;background:var(--gold2);max-width:calc(100% - 2*var(--cut));transition:width .9s ease}
+.ans .pct{font-family:var(--ui);font-weight:700;color:var(--gold2);font-size:15px}
 .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
-.actions .btn{flex:1 1 220px;max-width:340px}
-.feedback{margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(243,227,189,.08);border:1px solid rgba(243,227,189,.28)}
-.feedback h3{margin:0 0 4px;font-family:var(--display);font-size:21px}
-.feedback p{margin:0 0 6px}
-.feedback .src{font-size:13.5px;color:var(--muted)}
-.feedback.ok h3{color:#8ef0b8}.feedback.bad h3{color:#ffb3ba}
-.risk{font-size:14px;color:var(--muted);text-align:center;margin-top:8px}
-.crowdnote{font-size:13px;color:var(--parch);opacity:.85;margin-top:8px;text-align:center}
+.actions .btn{flex:1 1 220px;max-width:360px}
+.qpanel.reveal .answers{grid-template-columns:1fr 1fr}
+.qpanel.reveal .ans:not(.is-right):not(.is-wrong){display:none}
+.risk{font-size:14px;color:var(--muted);text-align:center;margin:8px 0 0}
+.crowdnote{font-size:13px;color:var(--parch);opacity:.85;margin:10px 0 0;text-align:center}
+/* veredito após a resposta */
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin-top:14px;padding:14px 16px;border-radius:18px;background:linear-gradient(90deg,rgba(255,215,106,.12),rgba(9,21,47,.6) 40%);border:1px solid rgba(255,215,106,.35)}
+.verdict.bad{background:linear-gradient(90deg,rgba(169,35,50,.28),rgba(9,21,47,.6) 40%);border-color:rgba(240,122,134,.45)}
+.seal{display:grid;place-items:center;text-align:center;width:118px;min-height:104px;padding:10px 6px;border-radius:16px;background:radial-gradient(circle at 50% 30%,#fff1b5,#d8a637 55%,#8a5d0d);color:#2a1a02;box-shadow:inset 0 1px 0 #fff6d0,0 10px 26px rgba(216,166,55,.35)}
+.seal .k{font-family:var(--ui);font-weight:600;font-size:14px}
+.seal .v{font-family:var(--display);font-weight:900;font-size:40px;line-height:.95}
+.seal .t{font-family:var(--ui);font-weight:700;font-size:14.5px;line-height:1.1}
+.verdict.bad .seal{background:radial-gradient(circle at 50% 30%,#ff9aa5,#a92332 60%,#5c0e18);color:#fff;box-shadow:0 10px 26px rgba(169,35,50,.4)}
+.verdict h3{margin:0 0 4px;font-family:var(--display);font-size:22px;color:var(--gold2)}
+.verdict.bad h3{color:#ffc2c8}
+.verdict p{margin:0 0 6px}
+.verdict .src{font-size:13.5px;color:var(--muted)}
 
 /* escada lateral */
-.ladder{padding:14px 12px;display:flex;flex-direction:column;min-height:0;flex:1}
-.ladder ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column-reverse;gap:3px;overflow:auto}
-.ladder li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:8px;padding:5px 10px;border-radius:9px;font-family:var(--ui);font-size:16px;letter-spacing:.02em;color:#a9b6d6;position:relative;transition:background .3s,color .3s}
+.right{display:flex;flex-direction:column;min-height:0}
+.ladder{display:flex;flex-direction:column;min-height:0;flex:1;padding:14px 10px 12px;border-radius:22px;background:linear-gradient(180deg,rgba(9,21,47,.35),rgba(9,21,47,.82) 30%,rgba(9,21,47,.9));border:1px solid rgba(216,166,55,.28);backdrop-filter:blur(8px)}
+.ladder h2{margin:0 6px 8px;font-family:var(--display);font-size:20px;color:var(--gold2)}
+.ladder ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column-reverse;gap:2px;overflow:auto}
+.ladder li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;font-family:var(--ui);font-size:16px;color:#8f9dc0;position:relative;transition:background .3s,color .3s}
 .ladder li .n{font-weight:700;text-align:right}
-.ladder li .t{font-size:14px;line-height:1.1}
+.ladder li .t{font-size:14px;line-height:1.1;font-weight:500}
 .ladder li .p{font-weight:700}
-.ladder li.mile{color:var(--warm)}
-.ladder li.mile::before{content:"";position:absolute;inset:0;border-radius:9px;border:1px solid rgba(169,35,50,.9);pointer-events:none}
-.ladder li.mile .t::after{content:" · marco";color:#ff9aa5}
+.ladder li.mile{color:#f2e8d2}
+.ladder li.mile .n::before{content:"";position:absolute;left:3px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#ff5d6e;box-shadow:0 0 8px #ff5d6e}
 .ladder li.top{color:var(--gold2)}
-.ladder li.done{color:#2a1a02;background:linear-gradient(90deg,rgba(216,166,55,.55),rgba(216,166,55,.25))}
-.ladder li.done .t,.ladder li.done .p{color:#1b1102}
-.ladder li.cur{background:linear-gradient(90deg,#ffe28a,#d8a637);color:#2a1a02;box-shadow:0 0 22px rgba(255,215,106,.55)}
-.ladder li.cur .t::after{content:""}
-.ladder li.cur::after{content:"▶";position:absolute;left:-12px;color:var(--gold2);font-size:12px}
-.score{padding:14px 16px;text-align:center}
-.score .big{font-family:var(--display);font-weight:900;font-size:30px;color:var(--gold2);line-height:1}
-.score .small{font-size:13px;color:var(--muted);margin-top:4px}
-
+.ladder li.done{color:#f6dc92}
+.ladder li.done .p::after{content:" ✓";font-size:12px}
+.ladder li.cur{background:linear-gradient(90deg,#ffe28a,#d8a637);color:#2a1a02;box-shadow:0 0 22px rgba(255,215,106,.45)}
+.ladder li.cur .n::before{background:#2a1a02;box-shadow:none}
+.ladfoot{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;padding:10px 6px 0;border-top:1px solid rgba(216,166,55,.25);font-size:13px;color:var(--muted)}
+.ladfoot b{display:block;font-family:var(--display);font-size:21px;color:var(--gold2);line-height:1.1}
+.ladfoot div+div{text-align:right}
+.ladnote{font-size:12.5px;color:var(--muted);margin:8px 6px 0;line-height:1.35}
 .footnote{position:fixed;left:10px;bottom:max(8px,env(safe-area-inset-bottom));z-index:6;padding:4px 10px;border-radius:999px;background:rgba(9,21,47,.72);backdrop-filter:blur(6px);font-size:12px;color:rgba(243,227,189,.72);display:flex;gap:10px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px)}
 .footnote a{color:rgba(255,215,106,.85);text-decoration:none;font-family:var(--ui);letter-spacing:.06em;font-weight:600}
 .footnote a:hover{text-decoration:underline}
@@ -236,28 +251,41 @@ dialog::backdrop{background:rgba(3,8,20,.7);backdrop-filter:blur(3px)}
 /* ---------- mobile ---------- */
 @media (max-width:860px){
   body{overflow:auto}
+  #scene{position:absolute;height:100svh}
   #app{height:auto;min-height:100dvh}
   .screen{position:relative;inset:auto;min-height:100dvh}
   #home{grid-template-columns:1fr;padding:62px 14px 70px;align-content:start;gap:8px}
   #home .hole{height:38vh;min-height:220px}
   .homecard{padding:22px 16px}
   #game{display:flex;flex-direction:column;gap:10px;padding:62px 12px 64px}
-  #game .left{order:3}
   #game .right{display:none}
-  #game .info{display:none}
-  .center .hole{flex:none;height:30vh;min-height:190px}
-  .qpanel{max-height:none;overflow:visible}
-  .caption{font-size:15px;margin-top:-46px;position:relative;z-index:2}
-  .answers{grid-template-columns:1fr}
-  .ans{min-height:56px}
-  .lifelines{padding:10px 12px}
-  .lls{grid-template-columns:repeat(3,1fr);gap:8px}
-  .ll{flex-direction:column;justify-content:center;text-align:center;gap:4px;padding:8px 4px;min-height:84px}
-  .ll span{display:none}
-  .ll b{font-size:15px}
-  .ll.used::after{font-size:11px;left:auto;bottom:auto;right:4px;top:8px;transform:rotate(-8deg)}
-  .ll.used>div>span{visibility:visible}
+  .center .hole{flex:none;height:32vh;min-height:200px}
+  .qpanel{max-height:none;overflow:visible;padding:0}
+  .caption{margin:-60px 0 0 0;max-width:100%;font-size:15px}
+  .hud{gap:10px}
+  .hudinfo{flex:1 1 100%}
+  .lls{width:100%;justify-content:space-around}
+  .qpanel.reveal .answers{grid-template-columns:1fr}
+  .hudinfo b{font-size:19px}
+  .ll{width:62px;font-size:12.5px}
+  .ll .ic{width:42px;height:42px;font-size:12px}
+  .ll.used .ic::after{width:44px;top:20px}
+  .pips{display:flex;gap:3px;width:100%}
+  .pips i{flex:1;height:6px;border-radius:3px;background:#22345f}
+  .pips i.m{background:#5a2532}
+  .pips i.d{background:#d8a637}
+  .pips i.c{background:#ffe28a;box-shadow:0 0 8px #ffd76a}
+  .answers{grid-template-columns:1fr;gap:8px}
+  .plate{--cut:16px}
+  .qplate{--cut:20px}
+  .qplate>.in{padding:12px calc(var(--cut) + 6px)}
+  .verdict{grid-template-columns:1fr;text-align:left}
+  .seal{width:auto;min-height:0;grid-auto-flow:column;gap:10px;justify-content:start;padding:8px 14px}
+  .seal .v{font-size:30px}
   #ladderBtn{display:inline-flex}
+  .hide-sm{display:none}
+  .topbar{gap:6px;padding-left:10px;padding-right:10px}
+  .topbar .ibtn{padding:0 9px;min-width:40px}
   #result{grid-template-columns:1fr;padding:62px 14px 70px;align-content:start}
   #result .hole{height:30vh;min-height:190px}
   .stats{grid-template-columns:repeat(3,1fr)}
@@ -287,7 +315,7 @@ body.rm *{animation-duration:.01ms!important;animation-iteration-count:1!importa
   <!-- ======================= TELA INICIAL ======================= -->
   <section id="home" class="screen" aria-labelledby="homeTitle">
     <div class="topbar">
-      <img class="mini-logo" src="logo.png" alt="" width="40" height="40">
+      <a class="ibtn back" href="https://carludix.com/catolicos/" aria-label="Voltar aos jogos do CARLUDIX">← CARLUDIX</a>
       <span class="sp"></span>
       <button class="ibtn" data-act="mute" aria-label="Ativar ou silenciar som"><span class="muteic"></span></button>
       <button class="ibtn" data-act="settings" aria-label="Configurações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></button>
@@ -312,7 +340,8 @@ body.rm *{animation-duration:.01ms!important;animation-iteration-count:1!importa
   <!-- ======================= PARTIDA ======================= -->
   <section id="game" class="screen" hidden aria-label="Partida">
     <div class="topbar">
-      <button class="ibtn" data-act="quit" aria-label="Sair da partida e voltar ao início">✕ <span>Sair</span></button>
+      <button class="ibtn" data-act="quit" aria-label="Sair da partida e voltar à tela inicial do jogo">✕ <span class="hide-sm">Sair</span></button>
+      <a class="ibtn back" href="https://carludix.com/catolicos/" aria-label="Voltar aos jogos do CARLUDIX">← CARLUDIX</a>
       <span class="sp"></span>
       <button class="ibtn" id="ladderBtn" data-act="ladder" aria-label="Ver a escada de degraus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4v-4h4v-4h4V8h4V4"/></svg><span id="ladderBtnTxt">Degrau 0</span></button>
       <button class="ibtn" data-act="repeat" aria-label="Repetir a pergunta em áudio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
@@ -320,45 +349,34 @@ body.rm *{animation-duration:.01ms!important;animation-iteration-count:1!importa
       <button class="ibtn" data-act="settings" aria-label="Configurações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
     </div>
 
-    <aside class="left">
-      <div class="panel lifelines">
-        <h2 class="ptitle">Ajudas</h2>
-        <div class="lls">
-          <button class="ll" id="ll50" data-act="fifty"><span class="ic">50:50</span><div><b>50/50</b><span>Remove duas incorretas</span></div></button>
-          <button class="ll" id="llCrowd" data-act="crowd"><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8 13c-2.7 0-6 1.3-6 3.5V19h12v-2.5C14 14.3 10.7 13 8 13zm8 0c-.5 0-1 0-1.6.1 1.3.9 1.6 2 1.6 3.4V19h6v-2.5c0-2.2-3.3-3.5-6-3.5z"/></svg></span><div><b>Comunidade</b><span>Votação simulada</span></div></button>
-          <button class="ll" id="llSwap" data-act="swap"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></span><div><b>Trocar</b><span>Outra pergunta</span></div></button>
-        </div>
-      </div>
-      <div class="panel info">
-        <h2 class="ptitle">Partida</h2>
-        <dl>
-          <dt>Pergunta</dt><dd id="iQ">1 de 15</dd>
-          <dt>Dificuldade</dt><dd id="iDif">Fácil</dd>
-          <dt>Acertos</dt><dd id="iHits">0</dd>
-          <dt>Pontos atuais</dt><dd id="iPts">0</dd>
-          <dt>Garantidos</dt><dd id="iSafe">0</dd>
-        </dl>
-        <p class="note">Marcos de segurança nos degraus 5 e 10. Você pode encerrar antes de cada pergunta e levar os pontos atuais.</p>
-      </div>
-    </aside>
-
     <main class="center">
       <div class="hole" aria-hidden="true"></div>
       <div class="caption" id="caption" aria-live="polite"></div>
-      <div class="qpanel" id="qpanel">
-        <!-- conteúdo gerado -->
+      <div class="hud">
+        <div class="hudinfo"><b id="hQ">Antes de começar</b><span id="hMeta">15 perguntas, 15 degraus</span></div>
+        <div class="lls" role="group" aria-label="Ajudas">
+          <button class="ll" id="ll50" data-act="fifty" data-name="50/50: remove duas alternativas incorretas"><span class="ic">50:50</span><span class="nm">50/50</span></button>
+          <button class="ll" id="llCrowd" data-act="crowd" data-name="Comunidade: votação simulada pelo jogo"><span class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8 13c-2.7 0-6 1.3-6 3.5V19h12v-2.5C14 14.3 10.7 13 8 13zm8 0c-.5 0-1 0-1.6.1 1.3.9 1.6 2 1.6 3.4V19h6v-2.5c0-2.2-3.3-3.5-6-3.5z"/></svg></span><span class="nm">Comunidade</span></button>
+          <button class="ll" id="llSwap" data-act="swap" data-name="Trocar: outra pergunta do mesmo nível"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></span><span class="nm">Trocar</span></button>
+        </div>
+        <div class="pips" id="pips" aria-hidden="true"></div>
       </div>
+      <div class="qpanel" id="qpanel"></div>
     </main>
 
-    <aside class="right">
-      <div class="panel score"><div class="big" id="sBig">0</div><div class="small" id="sSmall">pontos de conhecimento</div></div>
-      <div class="panel ladder"><h2 class="ptitle">Os 15 degraus</h2><ol id="ladderList"></ol></div>
+    <aside class="right" aria-label="Escada de degraus">
+      <div class="ladder">
+        <h2>Os 15 degraus</h2>
+        <ol id="ladderList"></ol>
+        <div class="ladfoot"><div>Agora<b id="sNow">0</b></div><div>Garantido<b id="sSafe">0</b></div></div>
+        <p class="ladnote">Os pontos vermelhos marcam os degraus de segurança.</p>
+      </div>
     </aside>
   </section>
 
   <!-- ======================= RESULTADO ======================= -->
   <section id="result" class="screen" hidden aria-labelledby="resTitle">
-    <div class="topbar"><img class="mini-logo" src="logo.png" alt="" width="40" height="40"><span class="sp"></span>
+    <div class="topbar"><a class="ibtn back" href="https://carludix.com/catolicos/" aria-label="Voltar aos jogos do CARLUDIX">← CARLUDIX</a><span class="sp"></span>
       <button class="ibtn" data-act="mute" aria-label="Ativar ou silenciar som"><span class="muteic"></span></button></div>
     <div class="hole" aria-hidden="true"></div>
     <div class="rescard" id="rescard"></div>
@@ -390,7 +408,7 @@ body.rm *{animation-duration:.01ms!important;animation-iteration-count:1!importa
   <table class="ruletable" id="ruleTable"></table>
   <h3>Sobre o conteúdo</h3>
   <p>Os pontos e títulos são apenas do jogo: representam conhecimento e não concedem graças, indulgências nem méritos espirituais. Cada pergunta traz explicação e fonte (Bíblia, Catecismo, documentos da Igreja). O banco inicial ainda está passando por revisão de conteúdo.</p>
-  <p>O apresentador é uma interpretação artística inspirada em São Carlo Acutis; as falas são roteiros do jogo, não citações dele, e a voz é sintética do seu navegador — não imita a voz real de Carlo.</p>
+  <p>O apresentador é uma interpretação artística inspirada em São Carlo Acutis; as falas são roteiros do jogo, não citações dele, e a voz é sintética, criada para o jogo — não é nem imita a voz real de Carlo.</p>
 </div></dialog>
 
 <dialog id="dlgAch" aria-labelledby="achT"><div class="dlg">
@@ -409,7 +427,7 @@ body.rm *{animation-duration:.01ms!important;animation-iteration-count:1!importa
   <div class="set"><label for="vSfx">Efeitos</label><input type="range" id="vSfx" min="0" max="100"></div>
   <div class="set"><label for="vVoice">Narração</label><input type="range" id="vVoice" min="0" max="100"></div>
   <div class="set"><label for="sVoiceOn">Apresentador fala em voz alta</label><input type="checkbox" class="switch" id="sVoiceOn"></div>
-  <div class="set"><label for="sVoice">Voz</label><select id="sVoice"></select><small>Vozes sintéticas em português do seu navegador/dispositivo.</small></div>
+  <div class="set"><label for="sVoice">Voz</label><select id="sVoice"></select><small>“Voz do jogo” é a narração gravada para o Degraus. As outras são vozes do seu navegador.</small></div>
   <div class="set"><label for="sReadAlt">Ler as alternativas</label><input type="checkbox" class="switch" id="sReadAlt"></div>
   <h3>Tela</h3>
   <div class="set"><label for="sCaptions">Legendas das falas</label><input type="checkbox" class="switch" id="sCaptions"></div>
@@ -422,7 +440,7 @@ body.rm *{animation-duration:.01ms!important;animation-iteration-count:1!importa
 <dialog id="dlgLadder" aria-labelledby="ladT"><div class="dlg">
   <button class="ibtn close" data-close aria-label="Fechar">✕</button>
   <h2 id="ladT">Os 15 degraus</h2>
-  <div class="ladder" style="padding:0"><ol id="ladderList2"></ol></div>
+  <div class="ladder" style="padding:0;border:0;background:none"><ol id="ladderList2"></ol><div class="ladfoot"><div>Agora<b id="sNow2">0</b></div><div>Garantido<b id="sSafe2">0</b></div></div></div>
 </div></dialog>
 
 <script type="module">
@@ -562,19 +580,22 @@ document.body.classList.toggle('rm',settings.motion);
    Nada toca antes do primeiro toque/clique do jogador.
    ===================================================================== */
 const Audio = (()=>{
-  let ctx=null, master, music, sfx, musicTimer=null, mode='off', nextBar=0, bar=0, noiseBuf=null;
+  let ctx=null, master, music, sfx, voiceG, analyser, musicTimer=null, mode='off', nextBar=0, bar=0, noiseBuf=null;
   const midi = m => 440*Math.pow(2,(m-69)/12);
   // progressão original em Ré maior: D – Bm – G – A(sus)
   const CHORDS=[[50,57,62,66,69],[47,54,59,62,66],[43,50,55,59,62],[45,52,57,61,64]];
   function vol(){ if(!ctx)return; const m=settings.muted?0:1;
     music.gain.setTargetAtTime((settings.music/100)*0.22*m,ctx.currentTime,.2);
-    sfx.gain.setTargetAtTime((settings.sfx/100)*0.55*m,ctx.currentTime,.05);}
+    sfx.gain.setTargetAtTime((settings.sfx/100)*0.55*m,ctx.currentTime,.05);
+    voiceG.gain.setTargetAtTime((settings.voice/100)*1.1*m*(settings.voiceOn?1:0),ctx.currentTime,.05);}
   function unlock(){
     if(ctx){ if(ctx.state==='suspended') ctx.resume(); return; }
     const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
     ctx=new AC(); master=ctx.createGain(); master.gain.value=1;
     const comp=ctx.createDynamicsCompressor(); master.connect(comp); comp.connect(ctx.destination);
-    music=ctx.createGain(); sfx=ctx.createGain(); music.connect(master); sfx.connect(master); vol();
+    music=ctx.createGain(); sfx=ctx.createGain(); music.connect(master); sfx.connect(master);
+    voiceG=ctx.createGain(); analyser=ctx.createAnalyser(); analyser.fftSize=1024; voiceG.connect(analyser); analyser.connect(master); vol();
+    document.dispatchEvent(new Event('degraus:audio'));
     noiseBuf=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate); const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
   }
   function tone(f,t,dur,{type='sine',g=.3,dest=sfx,att=.005,slide=0,q=0}={}){
@@ -625,34 +646,47 @@ const Audio = (()=>{
       seq.forEach((ch,i)=>ch.forEach(n=>tone(midi(n),t+i*.42,i===3?3:.5,{type:'sawtooth',g:.05,q:2500,att:.02})));
       [86,90,93,98,102].forEach((n,i)=>bell(midi(n),t+1.3+i*.09,.14,2.4)); noise(t+1.26,2,{g:.08,from:5000,to:9000,type:'highpass'}); },
   };
-  return {unlock,vol,setMusic,...S,get ready(){return !!ctx}};
+  return {unlock,vol,setMusic,...S,get ready(){return !!ctx},get ctx(){return ctx},get voiceOut(){return voiceG},get analyser(){return analyser}};
 })();
 
 /* =====================================================================
-   4. VOZ E LEGENDAS — síntese de voz do navegador (pt-BR)
-   Módulo isolado: para trocar a voz (ex.: áudios gravados ou um serviço
-   de TTS), substitua Voice.speak mantendo a mesma interface:
-     speak(texto) → Promise resolvida ao terminar; chama Stage.mouth(t)
-   O "lip-sync" é aproximado a partir do texto (vogais/consoantes no tempo)
-   e ressincronizado pelos eventos de fronteira de palavra quando o
-   navegador os fornece — não é análise do áudio.
+   4. VOZ E LEGENDAS
+   Narração principal: arquivos gravados em voz/ (voz sintética neural
+   masculina jovem, gerada para o jogo — NÃO imita a voz real de Carlo).
+   Cada arquivo é um "sprite": muitas falas em sequência; os mapas abaixo
+   dizem onde começa e quanto dura cada uma ([início, duração] em segundos).
+   Para trocar a voz: gere novos voz-falas.mp3 / voz-alternativas.mp3 com os
+   mesmos textos e atualize os dois mapas (ver DOCUMENTACAO.md).
+   Se um texto não estiver nos mapas, usa a voz do navegador (reserva).
    ===================================================================== */
+const VOZ_FALAS = {"Bem-vindo aos Degraus da Sabedoria! Vamos descobrir o quanto você conhece sobre a nossa fé?": [0.1, 5.18], "São quinze perguntas e quinze degraus. Nos degraus cinco e dez você garante seus pontos. E pode parar quando quiser antes de cada pergunta. Preparado?": [5.63, 8.522], "Chegou a hora da próxima pergunta. Preste bastante atenção!": [14.502, 3.54], "Vamos para mais um degrau. Atenção!": [18.392, 2.025], "Próxima pergunta. Respire fundo!": [20.767, 2.068], "Lá vem pergunta!": [23.185, 1.301], "Essa é sua resposta definitiva?": [24.836, 1.941], "Vamos ver...": [27.127, 0.902], "Será?": [28.379, 0.615], "Hmm... vamos conferir.": [29.344, 1.725], "Muito bem! Você conquistou mais um degrau!": [31.419, 2.472], "Isso mesmo! Mais um degrau!": [34.241, 1.641], "Resposta certa! Continue subindo!": [36.232, 2.091], "Que maravilha! Você alcançou um marco de segurança. Esses pontos estão garantidos!": [38.673, 4.558], "Não foi dessa vez. Mas cada pergunta também é uma oportunidade de aprender!": [43.58, 4.446], "Ah, quase! Vamos aprender com essa.": [48.376, 2.112], "Decisão prudente! Você leva seus pontos para casa.": [50.838, 3.109], "Parabéns! Você chegou ao último degrau e concluiu o desafio!": [54.297, 3.341], "Cinquenta, cinquenta! Duas alternativas incorretas saíram.": [57.988, 3.456], "Vamos ver o que diz a comunidade. Lembre-se: é uma simulação do jogo.": [61.794, 4.101], "Tudo bem! Vamos trocar por outra pergunta do mesmo nível.": [66.245, 3.238], "Esta é a pergunta final. Valendo o título de Mestre da Sabedoria!": [69.833, 3.817], "Olá! Esta é a voz do apresentador.": [74.0, 2.048], "A.": [76.398, 0.447], "B.": [77.195, 0.497], "C.": [78.042, 0.511], "D.": [78.902, 0.494], "Qual é o primeiro livro da Bíblia?": [79.746, 1.955], "Quem construiu a arca para se salvar do dilúvio?": [82.051, 2.744], "Quem recebeu de Deus as tábuas da Lei no monte Sinai?": [85.145, 3.041], "Com o que o jovem Davi venceu o gigante Golias?": [88.536, 2.813], "Qual profeta foi engolido por um grande peixe?": [91.699, 2.616], "Em que cidade Jesus nasceu?": [94.664, 1.961], "Qual oração Jesus ensinou aos discípulos?": [96.975, 2.603], "Quantos apóstolos Jesus escolheu?": [99.928, 2.09], "Quem é a padroeira do Brasil?": [102.367, 1.818], "Quem era o esposo de Maria e pai adotivo de Jesus?": [104.535, 3.107], "Quem foi o primeiro papa?": [107.992, 1.558], "Qual sacramento é a porta de entrada da vida cristã?": [109.9, 3.215], "O que a Igreja celebra na Páscoa?": [113.465, 1.997], "Qual santo é lembrado pelo amor à pobreza e por chamar as criaturas de “irmão” e “irmã”?": [115.812, 4.841], "Quantos são os Mandamentos da Lei de Deus?": [121.003, 2.443], "Qual oração começa com a saudação do anjo a Maria?": [123.796, 2.862], "Que gesto se faz dizendo “Em nome do Pai, do Filho e do Espírito Santo”?": [127.008, 3.851], "Em que dia a Igreja celebra o Natal do Senhor?": [131.209, 2.564], "Onde Jesus realizou seu primeiro sinal, transformando água em vinho?": [134.123, 3.805], "Qual anjo anunciou a Maria que ela seria a Mãe do Salvador?": [138.278, 3.213], "Em que rio Jesus foi batizado por João Batista?": [141.842, 2.965], "O que aconteceu com os apóstolos no dia de Pentecostes?": [145.157, 3.302], "Qual é a cor litúrgica própria do Advento?": [148.809, 2.349], "Que dia marca o início da Quaresma?": [151.508, 2.108], "Quem eram os três pastorinhos de Fátima, em 1917?": [153.966, 4.083], "Santo Antônio, chamado “de Pádua”, nasceu em qual cidade?": [158.4, 3.127], "Quais são as três virtudes teologais?": [161.876, 2.296], "Quantos são os sacramentos da Igreja?": [164.523, 2.14], "Onde Saulo (São Paulo) teve o encontro com Jesus que mudou sua vida?": [167.012, 3.757], "Por que Zaqueu subiu numa árvore em Jericó?": [171.119, 2.582], "Qual papa convocou o Concílio Vaticano II?": [174.051, 2.685], "Quantas estações tem a Via-Sacra tradicional?": [177.086, 2.818], "Qual é a cor litúrgica do Tempo Comum?": [180.254, 2.167], "Santa Teresinha do Menino Jesus, a do “pequeno caminho”, viveu em que país?": [182.771, 4.117], "No Evangelho de Mateus, as Bem-aventuranças fazem parte de qual discurso?": [187.239, 4.473], "Quantas são, ao todo, as obras de misericórdia corporais e espirituais?": [192.062, 4.258], "Quantos livros compõem a Bíblia católica?": [196.669, 2.494], "Quem traduziu a Bíblia para o latim na versão conhecida como Vulgata?": [199.514, 3.85], "Quem foi escolhido para ocupar o lugar de Judas entre os Doze?": [203.714, 3.451], "Em que ano foi proclamado o dogma da Assunção de Nossa Senhora?": [207.515, 3.443], "Que papa proclamou o dogma da Imaculada Conceição, em 1854?": [211.308, 5.108], "Que papa acrescentou os Mistérios Luminosos ao Rosário?": [216.766, 3.256], "Quem foi o primeiro santo nascido no Brasil?": [220.372, 2.505], "Qual evangelista era médico, segundo a Carta aos Colossenses?": [223.227, 3.464], "O que significa a palavra grega “Eucaristia”?": [227.041, 2.788], "Em que ano o Edito de Milão garantiu liberdade de culto aos cristãos?": [230.179, 4.245], "Quem foi o primeiro mártir cristão, apedrejado em Jerusalém?": [234.774, 3.587], "Quantos dias dura o Tempo Pascal, do domingo da Ressurreição a Pentecostes?": [238.711, 4.201], "Quais são as quatro virtudes cardeais?": [243.263, 2.297], "Qual santo escreveu as “Confissões”?": [245.91, 2.027], "Qual concílio proclamou Maria “Theotókos”, Mãe de Deus?": [248.287, 3.115], "Qual destes livros está no Antigo Testamento católico, mas não na Bíblia usada pelos protestantes?": [251.751, 5.855], "Qual papa escreveu a encíclica Rerum Novarum (1891), marco da Doutrina Social da Igreja?": [257.956, 6.059], "Que concílio, entre 1545 e 1563, respondeu à Reforma Protestante?": [264.366, 6.327], "Em que ano São Carlo Acutis foi canonizado?": [271.043, 2.684], "Na genealogia de Jesus segundo Mateus, quantas gerações há de Abraão até Davi?": [274.077, 4.455]};
+const VOZ_ALTS = {"Gênesis": [0.1, 0.741], "Êxodo": [1.191, 0.667], "Salmos": [2.208, 0.646], "Mateus": [3.204, 0.718], "Noé": [4.272, 0.507], "Abraão": [5.129, 0.7], "Moisés": [6.179, 0.737], "Elias": [7.266, 0.708], "Davi": [8.324, 0.585], "Josué": [9.259, 0.645], "Isaías": [10.254, 0.832], "Uma funda e uma pedra": [11.436, 1.406], "Uma espada": [13.192, 0.882], "Uma lança": [14.424, 0.854], "Um arco e flecha": [15.628, 1.235], "Jonas": [17.213, 0.617], "Daniel": [18.181, 0.673], "Jeremias": [19.204, 0.839], "Belém": [20.393, 0.663], "Nazaré": [21.406, 0.712], "Jerusalém": [22.468, 0.894], "Cafarnaum": [23.712, 0.835], "Pai-Nosso": [24.898, 0.786], "Ave-Maria": [26.034, 0.86], "Glória ao Pai": [27.244, 0.975], "Salve-Rainha": [28.569, 0.981], "12": [29.9, 0.617], "7": [30.867, 0.553], "10": [31.771, 0.521], "40": [32.642, 0.782], "Nossa Senhora Aparecida": [33.774, 1.592], "Nossa Senhora de Fátima": [35.716, 1.725], "Nossa Senhora de Lourdes": [37.792, 1.749], "Nossa Senhora de Guadalupe": [39.891, 1.834], "São José": [42.075, 0.795], "São João Batista": [43.219, 1.298], "São Joaquim": [44.867, 0.94], "São Zacarias": [46.157, 1.067], "São Pedro": [47.574, 0.849], "São Paulo": [48.773, 0.749], "São João": [49.872, 0.865], "São Lino": [51.087, 0.762], "Batismo": [52.199, 0.885], "Crisma": [53.434, 0.732], "Eucaristia": [54.515, 1.0], "Matrimônio": [55.865, 0.887], "A ressurreição de Jesus": [57.103, 1.6], "O nascimento de Jesus": [59.053, 1.56], "A vinda do Espírito Santo": [60.963, 1.6], "A Ascensão de Jesus": [62.913, 1.515], "São Francisco de Assis": [64.777, 1.595], "Santo Agostinho": [66.722, 1.047], "São Bento": [68.119, 0.839], "São Domingos": [69.308, 0.975], "5": [70.633, 0.624], "Credo": [71.607, 0.535], "Glória": [72.492, 0.652], "O sinal da cruz": [73.495, 1.152], "A genuflexão": [74.997, 1.072], "A bênção final": [76.418, 1.131], "O abraço da paz": [77.899, 1.195], "25 de dezembro": [79.444, 1.644], "6 de janeiro": [81.438, 1.131], "2 de fevereiro": [82.919, 1.233], "1º de janeiro": [84.502, 1.344], "Nas bodas de Caná": [86.196, 1.421], "No templo de Jerusalém": [87.967, 1.642], "Numa festa em Betânia": [89.959, 1.513], "Às margens do lago de Genesaré": [91.822, 2.133], "Gabriel": [94.305, 0.691], "Miguel": [95.347, 0.658], "Rafael": [96.355, 0.676], "Uriel": [97.381, 0.599], "Jordão": [98.33, 0.811], "Nilo": [99.49, 0.527], "Eufrates": [100.367, 0.936], "Tigre": [101.653, 0.666], "Receberam o Espírito Santo": [102.669, 1.697], "Viram Jesus subir ao céu": [104.716, 1.643], "Celebraram a Última Ceia": [106.709, 1.643], "Foram presos em Jerusalém": [108.702, 1.819], "Roxo": [110.87, 0.618], "Verde": [111.838, 0.683], "Branco": [112.871, 0.677], "Vermelho": [113.897, 0.745], "Quarta-feira de Cinzas": [114.992, 1.558], "Domingo de Ramos": [116.9, 1.254], "Primeiro domingo do Advento": [118.504, 1.613], "Quinta-feira Santa": [120.468, 1.333], "Lúcia, Francisco e Jacinta": [122.151, 1.721], "Bernadete, Maria e José": [124.222, 1.685], "Juan Diego, Lúcia e Pedro": [126.257, 1.679], "Melânia, Maximino e Clara": [128.287, 1.722], "Lisboa": [130.359, 0.781], "Pádua": [131.49, 0.631], "Roma": [132.471, 0.574], "Assis": [133.395, 0.619], "Fé, esperança e caridade": [134.364, 1.714], "Prudência, justiça e fortaleza": [136.428, 2.091], "Humildade, paciência e obediência": [138.868, 2.283], "Sabedoria, ciência e piedade": [141.501, 1.936], "3": [143.787, 0.555], "No caminho de Damasco": [144.692, 1.506], "Em Jerusalém": [146.548, 1.105], "Em Roma": [148.003, 0.805], "Em Antioquia": [149.158, 1.082], "Era baixo e queria ver Jesus": [150.59, 1.899], "Queria se esconder dos credores": [152.839, 1.877], "Ia colher frutos": [155.066, 1.211], "Queria pregar à multidão": [156.627, 1.596], "João XXIII": [158.573, 1.195], "Pio XII": [160.118, 0.837], "Paulo VI": [161.305, 0.684], "João Paulo II": [162.338, 1.173], "14": [163.862, 0.886], "Rosa": [165.097, 0.617], "França": [166.064, 0.738], "Itália": [167.152, 0.75], "Espanha": [168.252, 0.853], "Portugal": [169.454, 0.772], "Sermão da Montanha": [170.576, 1.323], "Discurso de despedida": [172.249, 1.664], "Discurso das parábolas": [174.263, 1.595], "Discurso missionário": [176.208, 1.444], "73": [178.002, 1.045], "66": [179.398, 1.105], "72": [180.853, 1.045], "80": [182.248, 0.89], "São Jerônimo": [183.488, 1.006], "São Gregório Magno": [184.844, 1.301], "Santo Ambrósio": [186.495, 1.088], "Matias": [187.933, 0.807], "Barnabé": [189.09, 0.786], "Estêvão": [190.226, 0.74], "Timóteo": [191.316, 0.792], "1950": [192.458, 1.637], "1854": [194.445, 1.979], "1870": [196.774, 1.596], "1962": [198.72, 1.934], "Pio IX": [201.004, 0.757], "Leão XIII": [202.111, 0.97], "Pio X": [203.43, 0.763], "Gregório XVI": [204.543, 1.322], "Bento XVI": [206.215, 1.233], "Frei Galvão (Santo Antônio de Sant'Anna Galvão)": [207.798, 2.611], "Santa Dulce dos Pobres": [210.758, 1.426], "São José de Anchieta": [212.534, 1.449], "Santa Paulina": [214.333, 1.065], "Lucas": [215.748, 0.658], "Marcos": [216.756, 0.691], "João": [217.797, 0.683], "Ação de graças": [218.83, 1.173], "Pão partido": [220.353, 0.976], "Assembleia": [221.679, 0.939], "Sacrifício": [222.968, 0.95], "313": [224.267, 1.301], "325": [225.919, 1.643], "380": [227.911, 1.429], "451": [229.69, 1.646], "Santo Estêvão": [231.687, 0.977], "São Tiago": [233.014, 0.852], "São Bartolomeu": [234.216, 1.063], "50": [235.629, 0.944], "33": [236.923, 0.946], "Prudência, justiça, fortaleza e temperança": [238.219, 2.816], "Fé, esperança, caridade e humildade": [241.385, 2.324], "Sabedoria, piedade, ciência e conselho": [244.059, 2.462], "Pobreza, castidade, obediência e paciência": [246.871, 3.003], "São Tomás de Aquino": [250.224, 1.28], "São Bernardo": [251.854, 1.013], "São Francisco de Sales": [253.218, 1.595], "Éfeso (431)": [255.163, 1.98], "Niceia (325)": [257.493, 2.0], "Calcedônia (451)": [259.843, 2.219], "Trento (1545–1563)": [262.412, 3.669], "Tobias": [266.431, 0.786], "Rute": [267.567, 0.638], "Neemias": [268.555, 0.792], "Pio XI": [269.697, 0.832], "Bento XV": [270.878, 0.999], "Trento": [272.227, 0.722], "Latrão V": [273.3, 0.872], "Vaticano I": [274.522, 0.999], "Constança": [275.87, 0.963], "2025": [277.184, 1.465], "2020": [278.999, 1.209], "2013": [280.558, 1.19], "2006": [282.098, 1.126]};
+const Sprites = (()=>{
+  const files={falas:'voz/voz-falas.mp3',alts:'voz/voz-alternativas.mp3'}, raw={}, buf={}, wait={};
+  function prefetch(k){ if(!raw[k]) raw[k]=fetch(files[k]).then(r=>{ if(!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).catch(e=>{ console.warn('voz',k,e); return null; }); return raw[k]; }
+  function decode(k){ if(wait[k]) return wait[k];
+    wait[k]=prefetch(k).then(ab=>{ if(!ab||!Audio.ctx) return null; return new Promise(res=>Audio.ctx.decodeAudioData(ab.slice(0),b=>{buf[k]=b;res(b)},()=>res(null))); }); return wait[k]; }
+  return {prefetch,decode,get(k){return buf[k]}};
+})();
+Sprites.prefetch('falas');
+document.addEventListener('degraus:audio',()=>{ Sprites.decode('falas'); if(settings.readAlt) Sprites.decode('alts'); });
 const Voice = (()=>{
   const synth = window.speechSynthesis;
   let voices=[], speaking=false, startT=0, cps=14, text='', token=0;
   function load(){ if(!synth)return; voices=synth.getVoices().filter(v=>/^pt/i.test(v.lang)); fillSelect(); }
   function best(){
     if(!voices.length) return null;
-    if(settings.voiceName){ const v=voices.find(v=>v.name===settings.voiceName); if(v) return v; }
+    if(settings.voiceName&&settings.voiceName!=='__jogo'){ const v=voices.find(v=>v.name===settings.voiceName); if(v) return v; }
     const br=voices.filter(v=>/pt[-_]BR/i.test(v.lang));
     const pref=[/antonio/i,/donato/i,/fabio/i,/humberto/i,/julio/i,/nicolau/i,/google/i,/daniel/i,/francisca/i,/thalita/i,/luciana/i];
     for(const r of pref){ const v=br.find(v=>r.test(v.name)); if(v) return v; }
     return br[0]||voices[0];
   }
   function fillSelect(){ const s=$('#sVoice'); if(!s)return; s.innerHTML='';
-    if(!voices.length){ s.innerHTML='<option>Nenhuma voz em português encontrada</option>'; s.disabled=true; return; }
+    if(!voices.length){ s.innerHTML='<option value="__jogo">Voz do jogo (recomendada)</option>'; return; }
     s.disabled=false; const cur=best();
-    voices.forEach(v=>{ const o=document.createElement('option'); o.value=v.name; o.textContent=`${v.name} (${v.lang})`; if(cur&&v.name===cur.name)o.selected=true; s.appendChild(o); }); }
+    { const o=document.createElement('option'); o.value='__jogo'; o.textContent='Voz do jogo (recomendada)'; if(!settings.voiceName||settings.voiceName==='__jogo') o.selected=true; s.appendChild(o); }
+    voices.forEach(v=>{ const o=document.createElement('option'); o.value=v.name; o.textContent=`${v.name} (${v.lang})`; if(settings.voiceName&&settings.voiceName!=='__jogo'&&cur&&v.name===cur.name)o.selected=true; s.appendChild(o); }); }
   if(synth){ load(); synth.onvoiceschanged=load; }
   // abertura da boca a partir do texto, no instante t (s)
   function mouthAt(t){
@@ -663,11 +697,33 @@ const Voice = (()=>{
     if('mbp'.includes(ch)) return 0; if(' ,.;:!?'.includes(ch)) return .05; return .28;
   }
   function caption(s){ const c=$('#caption'); if(!c)return; if(!s||!settings.captions){c.innerHTML='';return;}
-    c.innerHTML=`<span class="who">Carlo:</span>${s.replace(/</g,'&lt;')}`; }
-  function speak(s,{wait=true}={}){
+    c.innerHTML=`<span class="who">Carlo</span><span class="say">${s.replace(/</g,'&lt;')}</span>`; }
+  let src=null, rec=false;
+  function useGameVoice(){ return !settings.voiceName || settings.voiceName==='__jogo'; }
+  function findClip(t){ if(VOZ_FALAS[t]) return ['falas',VOZ_FALAS[t]]; if(VOZ_ALTS[t]) return ['alts',VOZ_ALTS[t]]; return null; }
+  async function playClips(parts,my){
+    for(const t of parts){
+      if(my!==token) return;
+      const c=findClip(t); if(!c) continue;
+      let b=Sprites.get(c[0]); if(!b) b=await Promise.race([Sprites.decode(c[0]),new Promise(r=>setTimeout(()=>r(null),2500))]);
+      if(!b||my!==token) continue;
+      await new Promise(res=>{ const n=Audio.ctx.createBufferSource(); n.buffer=b; n.connect(Audio.voiceOut); src=n; rec=true;
+        n.onended=()=>{ if(src===n){src=null;} res(); }; n.start(0,c[1][0],c[1][1]+.05); });
+      if(my===token) await new Promise(r=>setTimeout(r,120));
+    }
+  }
+  function speak(s,{wait=true,parts=null}={}){
+    const segs=parts||[s];
+    if(useGameVoice() && Audio.ready && settings.voiceOn && !settings.muted && settings.voice>0 && segs.every(findClip)){
+      const my=++token; stopNow(); caption(s); speaking=true; rec=true;
+      const pr=playClips(segs,my).then(()=>{ if(my===token){ speaking=false; rec=false; } });
+      return wait?pr:Promise.resolve();
+    }
+    rec=false;
     const my=++token; caption(s); text=s; cps=14; startT=performance.now(); speaking=true;
     const estimate=Math.max(1100,s.length/cps*1000);
     const finish=()=>{ if(my===token){speaking=false;} };
+    stopNow();
     const canTalk = synth && settings.voiceOn && !settings.muted && settings.voice>0 && voices.length;
     if(!canTalk){
       // sem áudio: Carlo ainda "fala" (boca animada) e a legenda aparece; espera curta
@@ -686,8 +742,11 @@ const Voice = (()=>{
       if(!wait) res();
     });
   }
-  function stop(){ token++; speaking=false; if(synth) synth.cancel(); }
-  return {speak,stop,caption,mouth:()=>mouthAt((performance.now()-startT)/1000),get speaking(){return speaking},load};
+  function stopNow(){ if(src){ try{src.onended=null;src.stop();}catch(e){} src=null; } if(synth) synth.cancel(); }
+  function stop(){ token++; speaking=false; rec=false; stopNow(); }
+  const td=new Float32Array(1024);
+  function recMouth(){ const a=Audio.analyser; if(!a) return 0; a.getFloatTimeDomainData(td); let e=0; for(let i=0;i<td.length;i++) e+=td[i]*td[i]; return Math.min(1,Math.sqrt(e/td.length)*7.5); }
+  return {speak,stop,caption,mouth:()=>rec?recMouth():mouthAt((performance.now()-startT)/1000),get speaking(){return speaking},load};
 })();
 
 /* =====================================================================
@@ -936,10 +995,11 @@ async function createStage3D(){
   let W=0,H=0,base=new THREE.Vector3(.35,1.6,5), look=new THREE.Vector3(.35,1.45,0);
   function frame(){
     const pr=Math.min(devicePixelRatio||1, settings.gfx==='high'?2:1.6);
-    W=innerWidth; H=innerHeight; renderer.setPixelRatio(pr); renderer.setSize(W,H,false); camera.aspect=W/H;
+    W=canvas.clientWidth||innerWidth; H=canvas.clientHeight||innerHeight; renderer.setPixelRatio(pr); renderer.setSize(W,H,false); camera.aspect=W/H;
     const hole=document.querySelector('.screen:not([hidden]) .hole'); let r=hole?hole.getBoundingClientRect():{left:0,top:0,width:W,height:H};
     if(r.width<10||r.height<10) r={left:0,top:0,width:W,height:H};
-    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const abs=getComputedStyle(canvas).position==='absolute';
+    const cx=r.left+r.width/2+(abs?scrollX:0), cy=r.top+r.height/2+(abs?scrollY:0);
     const dbg=location.hash==='#rosto'; const targetH=dbg?.55:3.1; // altura de cena (m) que deve caber no buraco do layout
     const visH=targetH*H/Math.max(120,r.height); const d=visH/2/Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
     const dist=THREE.MathUtils.clamp(d,3.2,13);
@@ -1073,27 +1133,30 @@ function setMuteIcons(){ $$('.muteic').forEach(e=>e.textContent=settings.muted?'
 function say(s,state='SPEAKING',opts){ Stage.setState(state); return Voice.speak(s,opts); }
 
 function renderLadder(){
-  const html=LADDER.map((l,i)=>{ const n=i+1; const cls=[l.m?'mile':'',n===15?'top':'', n<=G.step?'done':'', (G.phase!=='home'&&G.phase!=='over'&&n===G.step+1)?'cur':''].join(' ');
-    return `<li class="${cls}" aria-current="${n===G.step+1?'step':'false'}"><span class="n">${n}</span><span class="t">${l.t}</span><span class="p">${fmt(l.p)}</span></li>`; }).join('');
+  const playing=G.phase!=='home'&&G.phase!=='over';
+  const html=LADDER.map((l,i)=>{ const n=i+1; const cls=[l.m?'mile':'',n===15?'top':'', n<=G.step?'done':'', (playing&&n===G.step+1)?'cur':''].join(' ');
+    return `<li class="${cls}" aria-current="${playing&&n===G.step+1?'step':'false'}"><span class="n">${n}</span><span class="t">${l.t}${l.m?'<span class="sr"> (marco de segurança)</span>':''}</span><span class="p">${fmt(l.p)}</span></li>`; }).join('');
   $('#ladderList').innerHTML=html; $('#ladderList2').innerHTML=html;
-  $('#sBig').textContent=fmt(ptsAt(G.step)); $('#sSmall').textContent=G.step?`degrau ${G.step} · ${LADDER[G.step-1].t}`:'pontos de conhecimento';
+  ['#sNow','#sNow2'].forEach(id=>$(id).textContent=fmt(ptsAt(G.step))); ['#sSafe','#sSafe2'].forEach(id=>$(id).textContent=fmt(safePts(G.step)));
   $('#ladderBtnTxt').textContent=`Degrau ${G.step}`;
-  $('#iHits').textContent=G.hits; $('#iPts').textContent=fmt(ptsAt(G.step)); $('#iSafe').textContent=fmt(safePts(G.step));
-  $('#iQ').textContent=`${Math.min(G.n,15)} de 15`; $('#iDif').textContent=DIF_NAME[difFor(G.n)];
-  Stage.setProgress(G.step,G.phase!=='home'&&G.phase!=='over');
+  $('#pips').innerHTML=LADDER.map((l,i)=>`<i class="${i<G.step?'d':(playing&&i===G.step)?'c':l.m?'m':''}"></i>`).join('');
+  if(G.q&&playing){ $('#hQ').textContent=`Pergunta ${Math.min(G.n,15)} de 15`; }
+  Stage.setProgress(G.step,playing);
 }
 function renderLifelines(){
   const map={fifty:'#ll50',crowd:'#llCrowd',swap:'#llSwap'};
-  for(const k in map){ const b=$(map[k]); b.classList.toggle('used',G.ll[k]); b.disabled=G.ll[k]||G.phase!=='answering'; b.setAttribute('aria-label',`${b.querySelector('b').textContent}${G.ll[k]?' (já usada)':''}`); }
+  for(const k in map){ const b=$(map[k]); b.classList.toggle('used',G.ll[k]); b.disabled=G.ll[k]||G.phase!=='answering'; b.setAttribute('aria-label',`${b.dataset.name}${G.ll[k]?' (já usada)':''}`); b.title=b.dataset.name; }
 }
 
 function renderQuestion(){
   const q=G.q, n=G.n; const L=LADDER[n-1];
+  $('#hQ').textContent=`Pergunta ${n} de 15`;
+  $('#hMeta').innerHTML=`Vale ${fmt(L.p)} pontos · ${DIF_NAME[q.dif]} · ${q.cat}${q.rev!=='verificada'?'<span class="rev" title="Conteúdo do banco inicial, aguardando revisão">em revisão</span>':''}`;
+  $('#qpanel').classList.remove('reveal');
   $('#qpanel').innerHTML=`
-    <div class="qmeta"><span class="chip gold">Pergunta ${n} · ${fmt(L.p)} pts</span><span class="chip">${q.cat}</span><span class="chip">${DIF_NAME[q.dif]}</span>${q.rev!=='verificada'?'<span class="chip demo" title="Conteúdo do banco inicial, aguardando revisão">em revisão</span>':''}</div>
-    <h2 class="qtext" id="qtext" tabindex="-1">${q.q}</h2>
+    <div class="plate qplate"><div class="in"><h2 class="qtext" id="qtext" tabindex="-1">${q.q}</h2></div></div>
     <div class="answers" role="group" aria-label="Alternativas">
-      ${q.a.map((a,i)=>`<button class="ans" data-i="${i}" aria-pressed="false"><span class="L">${LETTERS[i]}</span><span class="tx">${a}</span><span class="pct"></span><span class="bar" style="width:0"></span></button>`).join('')}
+      ${q.a.map((a,i)=>`<button class="plate ans" data-i="${i}" aria-pressed="false"><span class="in"><span class="L">${LETTERS[i]}</span><span class="tx">${a}</span><span class="pct"></span><span class="bar" style="width:0"></span></span></button>`).join('')}
     </div>
     <div id="qfoot"></div>`;
   $$('.ans').forEach(b=>b.addEventListener('click',()=>choose(+b.dataset.i)));
@@ -1103,15 +1166,22 @@ function paintAnswers(){
   $$('.ans').forEach(b=>{ const i=+b.dataset.i; b.classList.toggle('sel',G.sel===i); b.setAttribute('aria-pressed',G.sel===i);
     b.classList.toggle('gone',G.removed.has(i)); b.disabled=G.removed.has(i)||G.phase!=='answering'&&G.phase!=='confirm';
     if(G.removed.has(i)) b.setAttribute('aria-label',`${LETTERS[i]}: eliminada`);
-    if(G.crowd){ b.querySelector('.pct').textContent=G.removed.has(i)?'':G.crowd[i]+'%'; b.querySelector('.bar').style.width=(G.removed.has(i)?0:G.crowd[i])+'%'; } });
+    if(G.crowd){ b.querySelector('.pct').textContent=G.removed.has(i)?'':G.crowd[i]+'%'; b.querySelector('.bar').style.width=`calc((100% - 2*var(--cut)) * ${G.removed.has(i)?0:G.crowd[i]/100})`; } });
 }
-function foot(html){ $('#qfoot').innerHTML=html; }
+function speakQuestion(withAlts){
+  const q=G.q; const vis=[0,1,2,3].filter(i=>!G.removed.has(i));
+  const txt=q.q+(withAlts?' '+vis.map(i=>`${LETTERS[i]}: ${q.a[i]}.`).join(' '):'');
+  const parts=[q.q]; if(withAlts){ Sprites.decode('alts'); vis.forEach(i=>parts.push(LETTERS[i]+'.',q.a[i])); }
+  return Voice.speak(txt,{wait:false,parts});
+}
+function foot(html){ $('#qfoot').innerHTML=html; $('#qpanel').classList.toggle('reveal',/class="verdict/.test(html)); }
 
 async function startGame(){
   Audio.unlock(); Audio.click();
   Object.assign(G,{phase:'intro',step:0,n:1,q:null,used:new Set(),ll:{fifty:false,crowd:false,swap:false},removed:new Set(),sel:null,crowd:null,hits:0,catHits:{},ended:null,anyLL:false});
-  show('game'); renderLadder(); renderLifelines(); Audio.setMusic('calm');
-  $('#qpanel').innerHTML=`<div class="introcard"><h2 class="qtext" id="qtext" tabindex="-1">Antes de começar</h2>
+  show('game'); $('#hQ').textContent='Antes de começar'; $('#hMeta').textContent='15 perguntas, 15 degraus'; renderLadder(); renderLifelines(); Audio.setMusic('calm');
+  $('#qpanel').classList.remove('reveal');
+  $('#qpanel').innerHTML=`<div class="plate qplate"><div class="in"><h2 class="qtext" id="qtext" tabindex="-1">Como funciona a jornada</h2></div></div><div class="introcard">
     <ul>
       <li><b>15 perguntas</b> de dificuldade crescente; cada acerto sobe um degrau.</li>
       <li><b>Marcos de segurança:</b> degrau 5 garante <b>1.000</b> pontos; degrau 10 garante <b>32.000</b>.</li>
@@ -1136,8 +1206,7 @@ async function nextQuestion(){
   await say(lead,'ASKING');
   if(G.phase!=='asking') return;
   G.phase='answering'; renderLifelines(); paintAnswers();
-  let txt=G.q.q; if(settings.readAlt) txt+=' '+G.q.a.map((a,i)=>`${LETTERS[i]}: ${a}.`).join(' ');
-  Stage.setState('WAITING'); await Voice.speak(txt,{wait:false}); Stage.setState('WAITING');
+  Stage.setState('WAITING'); speakQuestion(settings.readAlt); Stage.setState('WAITING');
 }
 
 function choose(i){
@@ -1157,11 +1226,11 @@ async function confirmAnswer(){
   await sleep(2100);
   const q=G.q, right=G.sel===q.c; const btns=$$('.ans');
   btns.forEach(b=>b.classList.remove('lock'));
-  btns[q.c].classList.add('is-right'); btns[q.c].querySelector('.pct').textContent=''; btns[q.c].insertAdjacentHTML('beforeend','<span class="tag">✓ CORRETA</span>');
-  if(!right){ btns[G.sel].classList.remove('sel'); btns[G.sel].classList.add('is-wrong'); btns[G.sel].insertAdjacentHTML('beforeend','<span class="tag">✗ SUA RESPOSTA</span>'); }
+  btns[q.c].classList.add('is-right'); btns[q.c].querySelector('.pct').textContent=''; btns[q.c].querySelector('.in').insertAdjacentHTML('beforeend','<span class="tag">✓ Correta</span>');
+  if(!right){ btns[G.sel].classList.remove('sel'); btns[G.sel].classList.add('is-wrong'); btns[G.sel].querySelector('.in').insertAdjacentHTML('beforeend','<span class="tag">✗ Sua resposta</span>'); }
   Audio.setMusic('calm');
   if(right){
-    G.step++; G.hits++; G.catHits[q.cat]=(G.catHits[q.cat]||0)+1; G.n++;
+    G.step++; G.hits++; G.catHits[q.cat]=(G.catHits[q.cat]||0)+1; G.n++; $('#hQ').textContent=`Degrau ${G.step} conquistado`;
     const mile=LADDER[G.step-1].m, top=G.step===15;
     Audio.correct(); setTimeout(()=>Audio.step(G.step),350); if(mile) setTimeout(()=>Audio.milestone(),700);
     Stage.setState('CORRECT'); Stage.celebrate(!!mile); renderLadder();
@@ -1170,8 +1239,8 @@ async function confirmAnswer(){
     G.phase='decide';
     const nextP=LADDER[G.step].p, safe=safePts(G.step);
     foot(`${feedbackHTML(true)}
-      <div class="actions"><button class="btn gold" id="cont">Continuar · pergunta ${G.n} (${fmt(nextP)} pts)</button><button class="btn ruby" id="stop">Encerrar com ${fmt(ptsAt(G.step))} pts</button></div>
-      <p class="risk">Se errar a próxima, você fica com <b>${fmt(safe)}</b> pontos garantidos.</p>`);
+      <div class="actions"><button class="btn gold" id="cont">Arriscar · ${fmt(nextP)} pts</button><button class="btn ruby" id="stop">Parar com ${fmt(ptsAt(G.step))} pts</button></div>
+      <p class="risk">A pergunta ${G.n} vale ${fmt(nextP)} pontos. Se arriscar e errar, você sai com <b>${fmt(safe)}</b>.</p>`);
     $('#cont').addEventListener('click',()=>{ if(G.phase!=='decide')return; Audio.confirm(); G.phase='asking'; nextQuestion(); });
     $('#stop').addEventListener('click',()=>{ if(G.phase!=='decide')return; endGame('stop'); });
     $('#cont').focus({preventScroll:true});
@@ -1185,7 +1254,10 @@ async function confirmAnswer(){
     await say(pick(LINES.wrong),'INCORRECT'); if(G.phase==='wrongshow') Stage.setState('INCORRECT');
   }
 }
-function feedbackHTML(ok){ const q=G.q; return `<div class="feedback ${ok?'ok':'bad'}"><h3>${ok?'✓ Resposta certa!':'✗ Não foi dessa vez'}</h3>${ok?'':`<p>A resposta correta é <b>${LETTERS[q.c]}: ${q.a[q.c]}</b>.</p>`}<p>${q.exp}</p><div class="src">Fonte: ${q.src}</div></div>`; }
+function feedbackHTML(ok){ const q=G.q;
+  const seal= ok ? `<div class="seal"><span class="k">Degrau</span><span class="v">${G.step}</span><span class="t">${LADDER[G.step-1].t}</span></div>`
+                 : `<div class="seal"><span class="k">Você sai com</span><span class="v">${fmt(safePts(G.step))}</span><span class="t">pontos</span></div>`;
+  return `<div class="verdict ${ok?'ok':'bad'}">${seal}<div><h3>${ok?(LADDER[G.step-1].m?'Marco de segurança alcançado!':'Resposta certa!'):'Não foi dessa vez'}</h3>${ok?'':`<p>A resposta correta é <b>${LETTERS[q.c]}: ${q.a[q.c]}</b>.</p>`}<p>${q.exp}</p><div class="src">Fonte: ${q.src}</div></div></div>`; }
 
 async function finalWin(){
   G.phase='finalshow'; Audio.final(); Stage.setState('FINAL'); Stage.celebrate(true); setTimeout(()=>Stage.celebrate(true),1200);
@@ -1216,7 +1288,7 @@ async function useSwap(){
   G.q=nq; G.removed=new Set(); G.crowd=null; G.sel=null; renderQuestion(); G.phase='asking'; renderLifelines();
   $('#qtext').focus({preventScroll:true});
   await say(LINES.swap[0],'SPEAKING'); if(G.phase!=='asking') return;
-  G.phase='answering'; renderLifelines(); paintAnswers(); Stage.setState('WAITING'); Voice.speak(G.q.q,{wait:false});
+  G.phase='answering'; renderLifelines(); paintAnswers(); Stage.setState('WAITING'); speakQuestion(settings.readAlt);
 }
 
 /* ---------- fim de partida, conquistas, resultado ---------- */
@@ -1294,10 +1366,11 @@ function bindSettings(){
   const bindR=(id,key)=>{ const el=$(id); el.value=settings[key]; el.addEventListener('input',()=>{ settings[key]=+el.value; saveSettings(); Audio.vol(); }); };
   bindR('#vMusic','music'); bindR('#vSfx','sfx'); bindR('#vVoice','voice');
   const bindC=(id,key,fn)=>{ const el=$(id); el.checked=!!settings[key]; el.addEventListener('change',()=>{ settings[key]=el.checked; saveSettings(); fn&&fn(); }); };
-  bindC('#sVoiceOn','voiceOn',()=>{ if(!settings.voiceOn) Voice.stop(); });
+  bindC('#sVoiceOn','voiceOn',()=>{ if(!settings.voiceOn) Voice.stop(); Audio.vol(); });
   bindC('#sReadAlt','readAlt'); bindC('#sCaptions','captions',()=>{ if(!settings.captions) Voice.caption(''); });
   bindC('#sMotion','motion',()=>document.body.classList.toggle('rm',settings.motion));
   $('#sVoice').addEventListener('change',e=>{ settings.voiceName=e.target.value; saveSettings(); Audio.unlock(); Voice.speak('Olá! Esta é a voz do apresentador.'); });
+  $('#sReadAlt').addEventListener('change',()=>{ if(settings.readAlt&&Audio.ready) Sprites.decode('alts'); });
   const gfx=$('#sGfx'); gfx.value=settings.gfx; gfx.addEventListener('change',()=>{ settings.gfx=gfx.value; saveSettings(); location.reload(); });
   $('#resetBtn').addEventListener('click',()=>{ if(confirm('Apagar recorde, conquistas e configurações deste jogo neste aparelho?')){ Store.clear(); location.reload(); } });
 }
@@ -1312,7 +1385,7 @@ document.addEventListener('click',e=>{
   else if(act==='settings'){ Audio.click(); Voice.load(); $('#dlgSet').showModal(); }
   else if(act==='ladder'){ Audio.click(); renderLadder(); $('#dlgLadder').showModal(); }
   else if(act==='mute'){ settings.muted=!settings.muted; saveSettings(); Audio.vol(); setMuteIcons(); if(settings.muted) Voice.stop(); }
-  else if(act==='repeat'){ if(G.q&&['answering','confirm','asking'].includes(G.phase)){ let txt=G.q.q+' '+G.q.a.map((a,i)=>G.removed.has(i)?'':`${LETTERS[i]}: ${a}.`).join(' '); Voice.speak(txt,{wait:false}); } }
+  else if(act==='repeat'){ if(G.q&&['answering','confirm','asking'].includes(G.phase)) speakQuestion(true); }
   else if(act==='quit'){ if(G.phase==='over'||confirm('Sair da partida? Você ficará com os pontos atuais.')) { if(G.phase==='home'||G.phase==='intro'){goHome();} else if(G.phase==='wrongshow') endGame('wrong'); else if(G.phase==='finalshow') endGame('win'); else endGame('stop'); } }
   else if(act==='fifty') useFifty(); else if(act==='crowd') useCrowd(); else if(act==='swap') useSwap();
 });
@@ -1335,7 +1408,7 @@ renderRecord(); renderRuleTable(); bindSettings(); setMuteIcons(); renderLadder(
 initStage().then(()=>{ Stage.setState('IDLE'); });
 // recebe o jogador com um aceno quando o palco abre
 setTimeout(()=>{ if(G.phase==='home'){ Stage.setState('WELCOME'); setTimeout(()=>{ if(G.phase==='home') Stage.setState('IDLE'); },2600);} },1600);
-window.__degraus={G,Stage:()=>Stage,QUESTIONS,LADDER}; // apoio a testes
+window.__degraus={G,Stage:()=>Stage,QUESTIONS,LADDER,Voice,Sprites}; // apoio a testes
 </script>
 </body>
 </html>
