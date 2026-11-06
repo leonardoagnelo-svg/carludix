@@ -1958,7 +1958,7 @@ function renderGame(app){
 
  /* painel direito */
  const lg=g.querySelector(".c-leg"),nq=GERAIS.concat(ROUTES[S.route].perguntas).filter(q=>(NIVEL_Q[S.nivel]||NIVEL_Q.misto).lv.includes(q[5])).length;
- lg.appendChild(el(`<div class="parch"><h3>A Jornada</h3><ul><li>${badge("pin","var(--ruby)")}<span><b>36 casas</b> de peregrinação</span></li><li>${badge("cross","var(--royal)")}<span><b>11 cidades reais</b> com curiosidades</span></li><li>${badge("book","#7a4a1f")}<span><b>${nq} perguntas</b> de Bíblia, santos, liturgia e da rota</span></li></ul></div>`));
+ lg.appendChild(el(`<div class="parch"><h3>A Jornada</h3><ul><li>${badge("pin","var(--ruby)")}<span><b>36 casas</b> de peregrinação</span></li><li>${badge("cross","var(--royal)")}<span><b>11 cidades reais</b> com curiosidades</span></li><li>${badge("book","#7a4a1f")}<span><b>Perguntas</b> de Bíblia, santos, liturgia e da rota</span></li></ul></div>`));
  const grid=(title,cls,keys)=>{const box=el(`<div class="evbox ${cls}"><h3>${title}</h3><div class="evgrid"></div></div>`);keys.forEach(k=>{const c=CASAS[k];const b=el(`<button class="ev" aria-label="${c.nome}: ${c.efeito}">${badge(c.ic,COR[k])}<b>${c.nome.replace(" em grupo","")}</b><small>${c.efeito}</small></button>`);b.onclick=()=>casaInfo(k);box.querySelector(".evgrid").appendChild(b)});return box};
  lg.appendChild(grid("Casas de sugestão","sug",["oracao","acao","reflexao","companheiro"]));
  lg.appendChild(grid("Imprevistos","imp",["descanso","bolha","atalho"]));
