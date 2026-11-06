@@ -10,7 +10,7 @@
    O script só carrega depois que a pessoa responder ao aviso; se ela recusar,
    os anúncios são pedidos como NÃO personalizados. */
 (function () {
-  var ADSENSE_CLIENT = ''; // ex.: 'ca-pub-0000000000000000' (deixe vazio até a aprovação)
+  var ADSENSE_CLIENT = 'ca-pub-1981456165037413'; // ex.: 'ca-pub-0000000000000000' (deixe vazio até a aprovação)
   var KEY = 'carludix-consent';
 
   function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
