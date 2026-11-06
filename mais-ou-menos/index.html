@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mais ou Menos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow:wght@400;500;600;700&display=swap">
+<meta name="description" content="Mais ou Menos: quem tem mais gols, títulos ou valor de mercado? Jogue sozinho, contra o robô ou nos pênaltis com um amigo.">
+<meta name="theme-color" content="#070605">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta property="og:title" content="Mais ou Menos">
+<meta property="og:description" content="Quem tem mais gols, títulos ou valor de mercado? Duvido você passar da minha sequência.">
+<meta property="og:image" content="https://carludix.com/mais-ou-menos/logo.png">
+<style>body{margin:0} :root{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)} img{max-width:100%}</style>
+<style>
+/* Layout: logo compacto no topo, abas de modo, placar de estádio em uma linha, dois cartões de duelo lado a lado (também no celular). Visual único escuro, por escolha. */
+:root{
+  --bg:#070605;          /* preto do escudo */
+  --panel:#13110d;
+  --line:#3a2f17;
+  --fg:#f4efe4;
+  --muted:#a89b80;
+  --led:#f6b512;         /* dourado do logo */
+  --ok:#3ccf4e;          /* seta verde */
+  --bad:#ef3b2c;         /* seta vermelha */
+  --display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --body:"Barlow", "Segoe UI", system-ui, sans-serif;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(ellipse 80% 45% at 50% 0%, rgba(246,181,18,.16), transparent 70%);
+  color:var(--fg); font-family:var(--body); font-size:16px;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+.wrap{max-width:860px; margin:0 auto; padding-block:16px 32px; display:flex; flex-direction:column; gap:16px}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+
+/* Voltar ao portal */
+.back{align-self:flex-start; font:800 15px var(--display); letter-spacing:.08em; color:var(--muted); text-decoration:none;
+  border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; min-height:40px; display:inline-flex; align-items:center}
+.back:hover{color:var(--led); border-color:var(--led)}
+.modes.three{grid-template-columns:repeat(3,1fr)}
+
+/* Logo */
+.hero{display:flex; justify-content:center}
+.hero img{width:auto; max-width:100%; max-height:min(22vh,190px); height:auto; filter:drop-shadow(0 8px 30px rgba(246,181,18,.25))}
+
+/* Abas */
+.modes{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+.mode{font:800 18px var(--display); letter-spacing:.04em; text-transform:uppercase; color:var(--muted);
+  background:var(--panel); border:1.5px solid var(--line); border-radius:8px; padding:9px 8px; cursor:pointer; min-height:56px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; line-height:1.05}
+.mode small{font:500 12px var(--body); letter-spacing:0; text-transform:none; color:var(--muted)}
+.mode[aria-pressed="true"]{color:var(--led); border-color:var(--led); background:#1a1407}
+
+/* Placar */
+.board{
+  background:#030302; border:2px solid var(--line); border-radius:6px;
+  display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:12px;
+  padding:10px 16px;
+  box-shadow:inset 0 0 0 4px #0d0b07, 0 10px 30px rgba(0,0,0,.4);
+}
+.brand{font-family:var(--display); font-weight:900; line-height:.95; text-transform:uppercase; text-align:center}
+.brand span{color:var(--led)}
+.brand.wide{grid-column:1 / -1; font-size:clamp(24px,5vw,34px)}
+.stat{display:flex; align-items:baseline; gap:10px}
+.stat.right{justify-content:flex-end}
+.lbl{font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.digits{
+  font-family:var(--display); font-weight:800; font-size:clamp(36px,7vw,52px); line-height:1;
+  color:var(--led); text-shadow:0 0 14px rgba(246,181,18,.45); font-variant-numeric:tabular-nums;
+}
+.digits.dim{color:#8a6a1c; text-shadow:none}
+.digits.sm{font-size:30px}
+.bump{animation:bump .35s ease}
+@keyframes bump{40%{transform:scale(1.18)}}
+
+/* Filtros */
+.chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+.chip{
+  font:600 14px var(--body); color:var(--muted); background:transparent; white-space:nowrap;
+  border:1.5px solid var(--line); border-radius:999px; padding:10px 16px; min-height:44px; cursor:pointer;
+}
+.chip[aria-pressed="true"]{color:#120d02; background:var(--led); border-color:var(--led)}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(--led); outline-offset:3px}
+
+/* Pergunta */
+.play{display:flex; flex-direction:column; gap:16px}
+.q{text-align:center; display:flex; flex-direction:column; gap:4px; align-items:center}
+.q .cat{font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--led)}
+.q h1{margin:0; font-family:var(--display); font-weight:800; font-size:clamp(24px,4.6vw,36px); line-height:1.05; text-wrap:balance}
+.q .note{font-size:13px; color:var(--muted)}
+.turn{font:800 16px var(--display); letter-spacing:.08em; text-transform:uppercase; color:#120d02; background:var(--led); padding:4px 12px; border-radius:4px; margin-bottom:4px}
+
+/* Duelo */
+.duel{display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:stretch}
+.vs{align-self:center; font-family:var(--display); font-weight:900; font-size:28px; color:var(--muted)}
+.card{
+  appearance:none; text-align:left; color:var(--fg); font:inherit; cursor:pointer;
+  background:var(--panel); border:2px solid var(--line); border-radius:10px;
+  padding:18px 16px; min-height:180px; min-width:0;
+  display:flex; flex-direction:column; justify-content:space-between; gap:12px;
+  transition:border-color .15s, transform .15s, background .2s;
+  position:relative; overflow:hidden;
+}
+.card:hover:not(:disabled){border-color:var(--led); transform:translateY(-2px)}
+.card:disabled{cursor:default}
+.card .kind{font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.card .name{font-family:var(--display); font-weight:800; font-size:clamp(26px,4.6vw,38px); line-height:.95; text-transform:uppercase; overflow-wrap:anywhere; hyphens:auto}
+.card .val{font-family:var(--display); font-weight:900; font-size:clamp(32px,6vw,46px); line-height:1; font-variant-numeric:tabular-nums; min-height:1em}
+.card .val small{font-size:.42em; font-weight:700; color:var(--muted); margin-left:4px; letter-spacing:.04em}
+.card .val.hidden{color:var(--line)}
+.card.win{border-color:var(--ok); background:linear-gradient(180deg, rgba(60,207,78,.13), var(--panel) 70%)}
+.card.lose{opacity:.75}
+.card.picked-wrong{border-color:var(--bad); background:linear-gradient(180deg, rgba(239,59,44,.15), var(--panel) 70%)}
+.card.shake{animation:shake .3s ease}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.tag{position:absolute; top:10px; right:10px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:4px}
+.tag.ok{background:var(--ok); color:#06120b}
+.tag.bad{background:var(--bad); color:#1a0503}
+.plus{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%); font:900 26px var(--display); color:var(--led);
+  text-shadow:0 0 18px rgba(246,181,18,.6); white-space:nowrap; pointer-events:none; animation:plus .9s ease forwards}
+@keyframes plus{0%{opacity:0; transform:translate(-50%,-20%) scale(.8)}25%{opacity:1; transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0; transform:translate(-50%,-120%) scale(1)}}
+
+/* Ações */
+.actions{display:flex; flex-direction:column; align-items:center; gap:10px; min-height:90px}
+.msg{font-weight:600; font-size:17px; text-align:center; text-wrap:balance}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.small{font-size:15px}
+.hint{color:var(--muted); font-weight:500}
+.btn{
+  font:800 20px var(--display); letter-spacing:.06em; text-transform:uppercase; text-decoration:none; text-align:center;
+  background:var(--led); color:#1a1205; border:0; border-radius:6px; padding:12px 24px; min-height:48px; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+}
+.btn.ghost{background:transparent; color:var(--fg); border:1.5px solid var(--line)}
+.btn.wa{background:#25d366; color:#04210f}
+.btn.sm{font-size:16px; padding:8px 16px; min-height:44px}
+.btn.next{position:relative; overflow:hidden}
+.btn.next .bar{position:absolute; left:0; bottom:0; height:3px; background:rgba(0,0,0,.35); width:0; animation:fill linear forwards}
+@keyframes fill{to{width:100%}}
+.row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+.row.left{justify-content:flex-start}
+
+/* Fim de jogo */
+.over{
+  border:2px solid var(--bad); border-radius:10px; background:#170908; width:100%;
+  padding:18px; text-align:center; display:flex; flex-direction:column; gap:6px; align-items:center;
+}
+.over.win-panel{border-color:var(--led); background:#171207}
+.over .big{font-family:var(--display); font-weight:900; font-size:56px; line-height:1; color:var(--led); font-variant-numeric:tabular-nums}
+.over .rank{font-weight:600}
+.record{font:900 22px var(--display); letter-spacing:.08em; color:#120d02; background:var(--led); padding:4px 12px; border-radius:4px; animation:bump .5s ease 2}
+.copied{font-size:13px; color:var(--ok); min-height:1em}
+
+/* Configuração */
+.setup{display:flex; flex-direction:column; gap:16px}
+.lead{margin:0; line-height:1.55; max-width:62ch; margin-inline:auto; text-align:center}
+.form{display:flex; flex-direction:column; gap:8px; max-width:360px; width:100%; margin:0 auto}
+.form label,.box label{font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.form input,.form select,.box input{font:600 18px var(--body); color:var(--fg); background:var(--panel); border:1.5px solid var(--line); border-radius:6px; padding:10px 12px; min-width:0; min-height:48px}
+.form input:focus,.form select:focus,.box input:focus{outline:2px solid var(--led); outline-offset:1px}
+.form .btn{margin-top:8px}
+.online-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.box{background:var(--panel); border:1.5px solid var(--line); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.box h2{margin:0; font:800 22px var(--display); text-transform:uppercase; letter-spacing:.03em}
+.box p{margin:0; color:var(--muted)}
+.err{color:var(--bad); font-size:14px; min-height:1em}
+.code-row{display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap}
+.code{font:900 44px var(--display); letter-spacing:.18em; color:var(--led); user-select:all}
+.ranking{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.ranking li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; background:#0c0a07; font-weight:600}
+.ranking li.me{outline:1.5px solid var(--led)}
+.ranking li.empty{color:var(--muted); font-weight:500}
+.ranking .who{min-width:0; overflow-wrap:anywhere}
+.ranking .live{font-size:12px; color:var(--muted); font-weight:500}
+#setup .btn{align-self:center}
+
+/* Placar dos pênaltis */
+.pen{grid-column:1 / -1; display:flex; flex-direction:column; gap:6px}
+.pen-row{display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:12px; padding:4px 6px; border-radius:6px}
+.pen-row.on{background:#1a1407}
+.pen-name{font:800 22px var(--display); text-transform:uppercase; overflow-wrap:anywhere}
+.dots{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end}
+.dot{width:16px; height:16px; border-radius:50%; border:2px solid var(--line)}
+.dot.g{background:var(--ok); border-color:var(--ok)}
+.dot.m{background:var(--bad); border-color:var(--bad)}
+
+/* Rodapé */
+footer{max-width:65ch; margin:8px auto 0; text-align:center}
+footer summary{cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; padding:10px; min-height:44px}
+footer p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
+
+@media (max-width:620px){
+  .wrap{gap:12px; padding-block:10px 24px}
+  .hero img{max-height:104px}
+  .modes{grid-template-columns:repeat(2,1fr)}
+  .modes.three{grid-template-columns:repeat(3,1fr)}
+  .modes.three .mode small{display:none}
+  .mode{font-size:15px; min-height:50px; padding:6px 4px}
+  .mode small{font-size:11px}
+  .chips{flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; scrollbar-width:none; margin-inline:-4px; padding:2px 4px}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{padding:10px 14px}
+  .board{padding:8px 12px}
+  .duel{gap:8px}
+  .vs{font-size:18px}
+  .card{min-height:150px; padding:12px 10px; gap:8px}
+  .card .kind{font-size:10px; letter-spacing:.08em}
+  .card .name{font-size:clamp(18px,5.6vw,24px)}
+  .card .val{font-size:clamp(26px,8vw,34px)}
+  .tag{top:6px; right:6px; font-size:10px}
+  .q h1{font-size:clamp(22px,6vw,28px)}
+  .online-grid{grid-template-columns:1fr}
+  .dot{width:12px; height:12px}
+  .btn{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="https://carludix.com/">← CARLUDIX</a>
+  <div class="hero"><img src="escudo.webp" alt="Mais ou Menos: gols, títulos e valor de mercado" width="480" height="378"></div>
+
+  <nav class="modes" aria-label="Modo de jogo">
+    <button class="mode" id="m-solo" data-m="solo" aria-pressed="true">Sozinho<small>bata seu recorde</small></button>
+    <button class="mode" id="m-robo" data-m="robo" aria-pressed="false">Robô<small>pênaltis contra a máquina</small></button>
+    <button class="mode" id="m-penaltis" data-m="penaltis" aria-pressed="false">Pênaltis<small>2 no mesmo celular</small></button>
+    <button class="mode" id="m-online" data-m="online" aria-pressed="false">Online<small>desafio com código</small></button>
+  </nav>
+
+  <header class="board" id="board" aria-live="polite"></header>
+
+  <section id="setup" class="setup" hidden></section>
+
+  <section id="play" class="play">
+    <nav class="chips" id="chips" aria-label="Categorias">
+      <button class="chip" id="f-all" data-f="all" aria-pressed="true">Tudo</button>
+      <button class="chip" id="f-gols" data-f="gols" aria-pressed="false">Gols</button>
+      <button class="chip" id="f-titulos" data-f="titulos" aria-pressed="false">Títulos</button>
+      <button class="chip" id="f-valor" data-f="valor" aria-pressed="false">Valor de mercado</button>
+    </nav>
+
+    <section class="q">
+      <span class="turn" id="turn" hidden></span>
+      <span class="cat" id="cat"></span>
+      <h1 id="question"></h1>
+      <span class="note" id="note"></span>
+    </section>
+
+    <section class="duel">
+      <button class="card" id="cardA"></button>
+      <div class="vs" aria-hidden="true">×</div>
+      <button class="card" id="cardB"></button>
+    </section>
+
+    <section class="actions" id="actions" aria-live="assertive"></section>
+  </section>
+
+  <footer>
+    <details>
+      <summary>Fontes e critérios</summary>
+      <p>As categorias de gols usam só jogadores que já pararam ou saíram daquela competição, então os números não mudam.
+      Copas do Mundo até 2026 (Espanha bicampeã). Champions até a final de 2026 (PSG bicampeão). Libertadores, Brasileirão e Copa do Brasil até 2025.
+      Brasileirão pela contagem da CBF, que dá o título de 1987 só ao Sport; o duelo Flamengo × Santos fica de fora por causa dessa polêmica.
+      Bola de Ouro até a edição de 2026 (Harry Kane). Valor de mercado: Transfermarkt, em milhões de euros, em duas fotografias: antes da Copa (junho de 2026) e depois da Copa (julho de 2026).</p>
+    </details>
+  </footer>
+</div>
+
+<script>
+const CATS = {
+  copa: { group:"gols", label:"Gols em Copas do Mundo", q:"Quem fez mais gols em Copas do Mundo?", unit:["gol","gols"], kind:"Jogador",
+    note:"Contando todas as Copas que o jogador disputou.",
+    items:[
+      ["Miroslav Klose","Alemanha",16],["Ronaldo Fenômeno","Brasil",15],["Gerd Müller","Alemanha",14],
+      ["Just Fontaine","França",13],["Pelé","Brasil",12],["Sándor Kocsis","Hungria",11],
+      ["Jürgen Klinsmann","Alemanha",11],["Gary Lineker","Inglaterra",10],["Gabriel Batistuta","Argentina",10],
+      ["Teófilo Cubillas","Peru",10],["Grzegorz Lato","Polônia",10],["Thomas Müller","Alemanha",10],
+      ["Vavá","Brasil",9],["Jairzinho","Brasil",9],["Eusébio","Portugal",9],["Paolo Rossi","Itália",9],
+      ["Roberto Baggio","Itália",9],["David Villa","Espanha",9],["Diego Maradona","Argentina",8],
+      ["Rivaldo","Brasil",8],["Rudi Völler","Alemanha",8],["Careca","Brasil",7],["Bebeto","Brasil",6],
+      ["Davor Šuker","Croácia",6],["Hristo Stoichkov","Bulgária",6],["Zico","Brasil",5],["Romário","Brasil",5],
+      ["Zinédine Zidane","França",5],["Garrincha","Brasil",5],["Ronaldinho","Brasil",2],["Kaká","Brasil",1]
+    ]},
+  bola: { group:"titulos", label:"Bolas de Ouro", q:"Quem ganhou mais Bolas de Ouro?", unit:["troféu","troféus"], kind:"Jogador",
+    note:"Prêmio da revista France Football.",
+    items:[
+      ["Lionel Messi","Argentina",8],["Cristiano Ronaldo","Portugal",5],["Johan Cruyff","Holanda",3],
+      ["Michel Platini","França",3],["Marco van Basten","Holanda",3],["Alfredo Di Stéfano","Espanha",2],
+      ["Franz Beckenbauer","Alemanha",2],["Kevin Keegan","Inglaterra",2],["Karl-Heinz Rummenigge","Alemanha",2],
+      ["Ronaldo Fenômeno","Brasil",2],["Zinédine Zidane","França",1],["Kaká","Brasil",1],["Ronaldinho","Brasil",1],
+      ["Rivaldo","Brasil",1],["Luka Modrić","Croácia",1],["Karim Benzema","França",1],["Rodri","Espanha",1],
+      ["Ousmane Dembélé","França",1],["Harry Kane","Inglaterra",1],["George Weah","Libéria",1],["Luís Figo","Portugal",1],["Michael Owen","Inglaterra",1],["Pavel Nedvěd","Rep. Tcheca",1],["Fabio Cannavaro","Itália",1],["Andriy Shevchenko","Ucrânia",1],["Roberto Baggio","Itália",1],["Lothar Matthäus","Alemanha",1],["Ruud Gullit","Holanda",1],["Eusébio","Portugal",1],["Gerd Müller","Alemanha",1],["Hristo Stoichkov","Bulgária",1],["Neymar","Brasil",0],["Thierry Henry","França",0],["Paolo Maldini","Itália",0],["Xavi","Espanha",0],["Andrés Iniesta","Espanha",0],["Gianluigi Buffon","Itália",0]
+    ]},
+  ucl: { group:"titulos", label:"Títulos da Champions", q:"Quem tem mais títulos da Champions League?", unit:["título","títulos"], kind:"Clube",
+    note:"Inclui a antiga Copa dos Campeões Europeus.",
+    items:[
+      ["Real Madrid","Espanha",15],["Milan","Itália",7],["Bayern de Munique","Alemanha",6],["Liverpool","Inglaterra",6],
+      ["Barcelona","Espanha",5],["Ajax","Holanda",4],["Inter de Milão","Itália",3],["Manchester United","Inglaterra",3],
+      ["PSG","França",2],["Juventus","Itália",2],["Benfica","Portugal",2],["Chelsea","Inglaterra",2],
+      ["Porto","Portugal",2],["Nottingham Forest","Inglaterra",2],["Manchester City","Inglaterra",1],
+      ["Borussia Dortmund","Alemanha",1],["Olympique de Marseille","França",1],["Celtic","Escócia",1],
+      ["Aston Villa","Inglaterra",1],["Hamburgo","Alemanha",1],["Steaua Bucareste","Romênia",1],["Estrela Vermelha","Sérvia",1],["PSV","Holanda",1],["Feyenoord","Holanda",1],["Arsenal","Inglaterra",0],["Atlético de Madrid","Espanha",0],["Tottenham","Inglaterra",0]
+    ]},
+  liberta: { group:"titulos", label:"Títulos da Libertadores", q:"Quem tem mais títulos da Libertadores?", unit:["título","títulos"], kind:"Clube",
+    note:"Até a edição de 2025.",
+    items:[
+      ["Independiente","Argentina",7],["Boca Juniors","Argentina",6],["Peñarol","Uruguai",5],["Flamengo","Brasil",4],
+      ["River Plate","Argentina",4],["Estudiantes","Argentina",4],["Palmeiras","Brasil",3],["São Paulo","Brasil",3],
+      ["Santos","Brasil",3],["Grêmio","Brasil",3],["Nacional","Uruguai",3],["Olimpia","Paraguai",3],
+      ["Cruzeiro","Brasil",2],["Internacional","Brasil",2],["Corinthians","Brasil",1],["Vasco","Brasil",1],
+      ["Atlético Mineiro","Brasil",1],["Fluminense","Brasil",1],["Botafogo","Brasil",1],["Atlético Nacional","Colômbia",2],["Colo-Colo","Chile",1],["LDU","Equador",1],["Once Caldas","Colômbia",1],["Vélez Sarsfield","Argentina",1],["San Lorenzo","Argentina",1],["Racing","Argentina",1],["Argentinos Juniors","Argentina",1]
+    ]},
+  copas: { group:"titulos", label:"Copas do Mundo", q:"Qual seleção tem mais Copas do Mundo?", unit:["título","títulos"], kind:"Seleção",
+    note:"Até 2026, com o bi da Espanha.",
+    items:[
+      ["Brasil","América do Sul",5],["Alemanha","Europa",4],["Itália","Europa",4],["Argentina","América do Sul",3],
+      ["França","Europa",2],["Uruguai","América do Sul",2],["Espanha","Europa",2],["Inglaterra","Europa",1],
+      ["Holanda","Europa",0],["Portugal","Europa",0],["Croácia","Europa",0],["Bélgica","Europa",0],["México","América do Norte",0]
+    ]},
+  brasileirao: { group:"titulos", label:"Títulos brasileiros", q:"Quem tem mais títulos do Brasileirão?", unit:["título","títulos"], kind:"Clube",
+    note:"Contagem oficial da CBF, até 2025.",
+    exclude:[["Flamengo","Santos"]],
+    items:[
+      ["Palmeiras","SP",12],["Flamengo","RJ",8],["Santos","SP",8],["Corinthians","SP",7],["São Paulo","SP",6],
+      ["Cruzeiro","MG",4],["Fluminense","RJ",4],["Vasco","RJ",4],["Botafogo","RJ",3],["Atlético Mineiro","MG",3],
+      ["Internacional","RS",3],["Bahia","BA",2],["Grêmio","RS",2],["Athletico Paranaense","PR",1],["Coritiba","PR",1],
+      ["Guarani","SP",1],["Sport","PE",1]
+    ]},
+  selecao: { group:"gols", label:"Gols pela Seleção", q:"Quem fez mais gols pela Seleção Brasileira?", unit:["gol","gols"], kind:"Jogador",
+    note:"Jogos oficiais. Só jogadores que já deixaram a Seleção.",
+    items:[
+      ["Pelé","1957–1971",77],["Ronaldo Fenômeno","1994–2011",62],["Romário","1987–2005",55],["Zico","1976–1986",48],
+      ["Bebeto","1985–1998",39],["Rivaldo","1993–2003",35],["Ronaldinho","1999–2013",33],["Kaká","2002–2016",29],
+      ["Robinho","2003–2017",28],["Adriano","2000–2010",27],["Roberto Carlos","1992–2006",11],["Cafu","1990–2006",5]
+    ]},
+  golsucl: { group:"gols", label:"Gols na Champions", q:"Quem fez mais gols na Champions League?", unit:["gol","gols"], kind:"Jogador",
+    note:"Inclui a antiga Copa dos Campeões. Só jogadores que já saíram da Europa ou pararam.",
+    items:[
+      ["Cristiano Ronaldo","Portugal",140],["Lionel Messi","Argentina",129],["Karim Benzema","França",90],["Raúl","Espanha",71],
+      ["Ruud van Nistelrooy","Holanda",56],["Thierry Henry","França",50],["Alfredo Di Stéfano","Espanha",49],
+      ["Zlatan Ibrahimović","Suécia",48],["Andriy Shevchenko","Ucrânia",48],["Eusébio","Portugal",46],
+      ["Filippo Inzaghi","Itália",46],["Didier Drogba","Costa do Marfim",44],["Alessandro Del Piero","Itália",42],
+      ["Kaká","Brasil",30],["Wayne Rooney","Inglaterra",30]
+    ]},
+  uclplayer: { group:"titulos", label:"Champions como jogador", q:"Quem ganhou mais Champions League como jogador?", unit:["título","títulos"], kind:"Jogador",
+    note:"Títulos da Champions e da antiga Copa dos Campeões.",
+    items:[
+      ["Luka Modrić","Croácia",6],["Toni Kroos","Alemanha",6],["Dani Carvajal","Espanha",6],["Nacho","Espanha",6],
+      ["Paco Gento","Espanha",6],["Cristiano Ronaldo","Portugal",5],["Karim Benzema","França",5],["Marcelo","Brasil",5],
+      ["Paolo Maldini","Itália",5],["Alfredo Di Stéfano","Espanha",5],["Lionel Messi","Argentina",4],["Andrés Iniesta","Espanha",4],
+      ["Xavi","Espanha",4],["Clarence Seedorf","Holanda",4],["Sergio Busquets","Espanha",3],["Vinícius Júnior","Brasil",2],
+      ["Kaká","Brasil",1],["Ronaldinho","Brasil",1],["Ronaldo Fenômeno","Brasil",0],["Zlatan Ibrahimović","Suécia",0],["Gianluigi Buffon","Itália",0]
+    ]},
+  copaamerica: { group:"titulos", label:"Copa América", q:"Qual seleção tem mais Copas América?", unit:["título","títulos"], kind:"Seleção",
+    note:"Até a edição de 2024.",
+    items:[
+      ["Argentina","América do Sul",16],["Uruguai","América do Sul",15],["Brasil","América do Sul",9],["Paraguai","América do Sul",2],
+      ["Chile","América do Sul",2],["Peru","América do Sul",2],["Colômbia","América do Sul",1],["Bolívia","América do Sul",1],
+      ["Equador","América do Sul",0],["Venezuela","América do Sul",0]
+    ]},
+  euro: { group:"titulos", label:"Eurocopa", q:"Qual seleção tem mais Eurocopas?", unit:["título","títulos"], kind:"Seleção",
+    note:"Até a edição de 2024.",
+    items:[
+      ["Espanha","Europa",4],["Alemanha","Europa",3],["Itália","Europa",2],["França","Europa",2],["Portugal","Europa",1],
+      ["Holanda","Europa",1],["Dinamarca","Europa",1],["Grécia","Europa",1],["Tchecoslováquia","Europa",1],["União Soviética","Europa",1],
+      ["Inglaterra","Europa",0],["Bélgica","Europa",0],["Croácia","Europa",0]
+    ]},
+  copabrasil: { group:"titulos", label:"Copa do Brasil", q:"Quem tem mais títulos da Copa do Brasil?", unit:["título","títulos"], kind:"Clube",
+    note:"Até 2025, com o tetra do Corinthians.",
+    items:[
+      ["Cruzeiro","MG",6],["Grêmio","RS",5],["Flamengo","RJ",5],["Palmeiras","SP",4],["Corinthians","SP",4],
+      ["Atlético Mineiro","MG",2],["Fluminense","RJ",1],["Internacional","RS",1],["São Paulo","SP",1],["Santos","SP",1],
+      ["Vasco","RJ",1],["Sport","PE",1],["Athletico Paranaense","PR",1],["Juventude","RS",1],["Criciúma","SC",1],
+      ["Paulista","SP",1],["Santo André","SP",1],["Botafogo","RJ",0],["Bahia","BA",0]
+    ]},
+  premier: { group:"gols", label:"Gols na Premier League", q:"Quem fez mais gols na Premier League?", unit:["gol","gols"], kind:"Jogador",
+    note:"Desde 1992. Só jogadores que já saíram da liga.",
+    items:[
+      ["Alan Shearer","Inglaterra",260],["Harry Kane","Inglaterra",213],["Wayne Rooney","Inglaterra",208],["Andy Cole","Inglaterra",187],
+      ["Sergio Agüero","Argentina",184],["Frank Lampard","Inglaterra",177],["Thierry Henry","França",175],["Robbie Fowler","Inglaterra",163],
+      ["Jermain Defoe","Inglaterra",162],["Michael Owen","Inglaterra",150],["Robin van Persie","Holanda",144],["Didier Drogba","Costa do Marfim",104],
+      ["Cristiano Ronaldo","Portugal",103],["Fernando Torres","Espanha",85],["Roberto Firmino","Brasil",82]
+    ]},
+  valor: { group:"valor", label:"Valor de mercado", q:"Quem vale mais no mercado?", unit:["mi €","mi €"], kind:"Jogador",
+    note:"Transfermarkt, atualização pós-Copa (julho de 2026).",
+    items:[
+      ["Lamine Yamal","Barcelona",220],["Erling Haaland","Manchester City",220],["Kylian Mbappé","Real Madrid",200],
+      ["Michael Olise","Bayern de Munique",170],["Jude Bellingham","Real Madrid",160],["Pedri","Barcelona",150],
+      ["Vinícius Júnior","Real Madrid",140],["Elliot Anderson","Inglaterra",120],["Julián Álvarez","Atlético de Madrid",110],
+      ["Cole Palmer","Chelsea",105]
+    ]},
+  valorpre: { group:"valor", label:"Valor antes da Copa", q:"Quem valia mais antes da Copa de 2026?", unit:["mi €","mi €"], kind:"Jogador",
+    note:"Transfermarkt, junho de 2026, na abertura da Copa.",
+    items:[
+      ["Lamine Yamal","Espanha",200],["Pedri","Espanha",150],["Vinícius Júnior","Brasil",150],["Jude Bellingham","Inglaterra",140],
+      ["Vitinha","Portugal",140],["João Neves","Portugal",140],["Declan Rice","Inglaterra",120],["Bukayo Saka","Inglaterra",120],
+      ["Federico Valverde","Uruguai",120],["Désiré Doué","França",120],["Florian Wirtz","Alemanha",110],["Moisés Caicedo","Equador",110],
+      ["Jamal Musiala","Alemanha",100],["Alexander Isak","Suécia",100],["Ousmane Dembélé","França",100],
+      ["Aleksandar Pavlović","Alemanha",90],["Arda Güler","Turquia",90]
+    ]}
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const u = (n, cat) => n === 1 ? cat.unit[0] : cat.unit[1];
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch(e){} };
+const ON_SITE = /carludix\.com$|github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname) || location.protocol === "file:";
+const GAME_URL = ON_SITE ? location.origin + location.pathname : "https://claude.ai/artifact/5TBz17zs9FZQGSywhriXhX";
+// fora do Claude não há placar online: esconde a aba
+if (ON_SITE){ document.getElementById("m-online").hidden = true; document.querySelector(".modes").classList.add("three"); }
+
+/* ---------- sorteio ---------- */
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function seedOf(str){ let h=2166136261; for (const ch of str){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
+const ratioOf = (a,b) => { const hi = Math.max(a[2],b[2]), lo = Math.min(a[2],b[2]); return lo === 0 ? Infinity : hi/lo; };
+
+let rng = Math.random, filter = "all", recent = [];
+// level = acertos seguidos: começa com pares fáceis e fica mais parelho
+function fits(r, level){
+  if (level < 5)  return r >= 2;
+  if (level < 10) return r >= 1.3 && r <= 3;
+  return r <= 1.6;
+}
+function pickRound(level){
+  const keys = Object.keys(CATS).filter(k => filter==="all" || CATS[k].group===filter);
+  for (let tries=0; tries<1500; tries++){
+    const relax = tries > 900;              // se não achar par no nível, aceita qualquer um
+    const k = keys[Math.floor(rng()*keys.length)];
+    const list = CATS[k].items;
+    const a = list[Math.floor(rng()*list.length)];
+    const b = list[Math.floor(rng()*list.length)];
+    if (a===b || a[2]===b[2]) continue;
+    if ((CATS[k].exclude||[]).some(([x,y]) => (a[0]===x&&b[0]===y)||(a[0]===y&&b[0]===x))) continue;
+    const key = [a[0],b[0]].sort().join("|")+k;
+    if (recent.includes(key)) continue;
+    if (!relax && !fits(ratioOf(a,b), level)) continue;
+    recent.push(key); if (recent.length > 30) recent.shift();
+    return { cat:CATS[k], a, b };
+  }
+  recent = []; return pickRound(level);
+}
+
+/* ---------- um duelo ---------- */
+let current = null, locked = true, onAnswer = null, autoTimer = null;
+function clearAuto(){ if (autoTimer){ clearTimeout(autoTimer); autoTimer = null; } }
+function cardHTML(item, cat){
+  return `<span class="kind">${cat.kind} · ${esc(item[1])}</span>
+    <span class="name">${esc(item[0])}</span>
+    <span class="val hidden">?</span>`;
+}
+function showDuel(handler, level, opts){
+  clearAuto();
+  current = pickRound(level || 0); locked = !!(opts && opts.lockCards); onAnswer = handler;
+  const {cat,a,b} = current;
+  $("cat").textContent = cat.label;
+  $("question").textContent = cat.q;
+  $("note").textContent = cat.note;
+  for (const [id,item] of [["cardA",a],["cardB",b]]){
+    const el = $(id);
+    el.className = "card"; el.disabled = locked;
+    el.innerHTML = cardHTML(item, cat);
+    el.setAttribute("aria-label", `${item[0]}, ${item[1]}`);
+  }
+  $("actions").innerHTML = (opts && opts.hint) || `<span class="hint">Toque em quem tem mais.</span>`;
+  $("play").scrollIntoView({block:"nearest", behavior: reduceMotion() ? "auto" : "smooth"});
+}
+function countUp(el, to, cat){
+  const valEl = el.querySelector(".val");
+  valEl.classList.remove("hidden");
+  const unit = u(to, cat);
+  if (reduceMotion() || to===0){ valEl.innerHTML = `${to}<small>${unit}</small>`; return; }
+  const t0 = performance.now(), dur = 550;
+  (function step(t){
+    const p = Math.min(1,(t-t0)/dur);
+    valEl.innerHTML = `${Math.round(to*(1-Math.pow(1-p,3)))}<small>${unit}</small>`;
+    if (p<1) requestAnimationFrame(step);
+  })(t0);
+}
+function choose(side, byRobot){
+  if (!current || $("play").hidden) return;
+  if (locked && !byRobot) return;
+  locked = true;
+  const {cat,a,b} = current;
+  const picked = side==="A" ? a : b, other = side==="A" ? b : a;
+  const right = picked[2] > other[2];
+  const elA = $("cardA"), elB = $("cardB");
+  elA.disabled = elB.disabled = true;
+  countUp(elA, a[2], cat); countUp(elB, b[2], cat);
+  const winEl = a[2] > b[2] ? elA : elB, loseEl = winEl===elA ? elB : elA;
+  winEl.classList.add("win"); loseEl.classList.add("lose");
+  const pickedEl = side==="A" ? elA : elB;
+  if (right) pickedEl.insertAdjacentHTML("beforeend",`<span class="tag ok">Acertou</span>`);
+  else {
+    pickedEl.classList.add("picked-wrong","shake"); pickedEl.classList.remove("lose");
+    pickedEl.insertAdjacentHTML("beforeend",`<span class="tag bad">Errou</span>`);
+  }
+  elA.setAttribute("aria-label", `${a[0]}, ${a[2]} ${u(a[2],cat)}${a[2]>b[2]?", tem mais":""}`);
+  elB.setAttribute("aria-label", `${b[0]}, ${b[2]} ${u(b[2],cat)}${b[2]>a[2]?", tem mais":""}`);
+  if (!byRobot) buzz(right ? 25 : [60,40,60]);
+  const fact = right
+    ? `${picked[0]} tem ${picked[2]} ${u(picked[2],cat)} contra ${other[2]}.`
+    : `${other[0]} tem ${other[2]} ${u(other[2],cat)}, ${picked[0]} tem ${picked[2]}.`;
+  onAnswer && onAnswer(right, fact, pickedEl);
+}
+function plusBadge(el, text){ if (el) el.insertAdjacentHTML("beforeend", `<span class="plus" aria-hidden="true">${esc(text)}</span>`); }
+function actions(html, focusId){
+  $("actions").innerHTML = html;
+  const f = focusId && $(focusId);
+  if (f){ f.focus({preventScroll:true}); f.scrollIntoView({block:"nearest"}); }
+}
+function nextButton(label, fn, auto){
+  // botão de avançar com barra de tempo; avança sozinho depois de "auto" ms
+  const ms = auto ? (reduceMotion() ? 1800 : 1200) : 0;
+  const html = `<button class="btn next" id="next">${esc(label)}${ms ? `<span class="bar" style="animation-duration:${ms}ms"></span>` : ""}</button>`;
+  return { html, wire(){
+    $("next").onclick = () => { clearAuto(); fn(); };
+    if (ms) autoTimer = setTimeout(() => { autoTimer = null; fn(); }, ms);
+  }};
+}
+function bump(el){ if (!el) return; el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+function rank(n){
+  if (n>=20) return "Nível Bola de Ouro.";
+  if (n>=12) return "Craque da resenha.";
+  if (n>=7)  return "Titular absoluto.";
+  if (n>=3)  return "Entrou bem no segundo tempo.";
+  return "Ficou no banco hoje.";
+}
+
+/* ---------- compartilhar ---------- */
+function shareBlock(text){
+  const wa = "https://wa.me/?text=" + encodeURIComponent(text + "\n" + GAME_URL);
+  return `<div class="row">
+      <a class="btn wa sm" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
+      <button class="btn ghost sm" id="copyShare">Copiar resultado</button>
+    </div>
+    <span class="copied" id="copiedMsg"></span>
+    <textarea id="shareText" class="sr" aria-hidden="true" tabindex="-1">${esc(text + "\n" + GAME_URL)}</textarea>`;
+}
+function wireShare(){
+  const b = $("copyShare"); if (!b) return;
+  b.onclick = async () => {
+    const t = $("shareText").value;
+    try { await navigator.clipboard.writeText(t); $("copiedMsg").textContent = "Copiado. É só colar no grupo."; }
+    catch(e){ const ta = $("shareText"); ta.classList.remove("sr"); ta.removeAttribute("aria-hidden"); ta.style.width="100%"; ta.rows=3; ta.select(); $("copiedMsg").textContent = "Selecionei o texto: copie e cole no grupo."; }
+  };
+}
+
+/* ---------- modo sozinho ---------- */
+let streak = 0, best = 0, bestAtStart = 0;
+try { best = +localStorage.getItem("mais-ou-menos:recorde") || 0; } catch(e){}
+function soloBoard(){
+  $("board").innerHTML = `
+    <div class="stat left"><span class="lbl">Sequência</span><span class="digits" id="streak">${streak}</span></div>
+    <div class="stat right"><span class="lbl">Recorde</span><span class="digits dim" id="best">${best}</span></div>`;
+}
+function soloStart(){ rng = Math.random; streak = 0; bestAtStart = best; soloBoard(); soloNext(); }
+function soloNext(){ showDuel(soloAnswer, streak); }
+function soloAnswer(right, fact, pickedEl){
+  if (right){
+    streak++; $("streak").textContent = streak; bump($("streak"));
+    plusBadge(pickedEl, `+1 · sequência ${streak}`);
+    if (streak > best){ best = streak; $("best").textContent = best; bump($("best")); try{localStorage.setItem("mais-ou-menos:recorde",best)}catch(e){} }
+    const nb = nextButton("Próximo duelo", soloNext, true);
+    actions(`<span class="msg ok">Isso! ${esc(fact)}</span>${nb.html}`, "next"); nb.wire();
+  } else {
+    const final = streak, isRecord = final > bestAtStart && final > 0;
+    streak = 0; $("streak").textContent = 0;
+    const text = `Mais ou Menos ⚽ Fiz ${final} em sequência (${rank(final).replace(/\.$/,"")}). Duvido você passar!`;
+    actions(`<div class="over"><span class="lbl">Fim de jogo · sequência final</span>
+      ${isRecord ? `<span class="record">Novo recorde!</span>` : ""}
+      <span class="big">${final}</span>
+      <span class="rank">${rank(final)}</span><span class="msg bad small">${esc(fact)}</span>
+      <div class="row"><button class="btn" id="again">Jogar de novo</button></div>
+      ${shareBlock(text)}</div>`, "again");
+    $("again").onclick = soloStart; wireShare();
+  }
+}
+
+/* ---------- pênaltis (2 pessoas ou contra o robô) ---------- */
+let pen = null;
+const ROBO = { facil:{label:"Fácil", base:.58}, medio:{label:"Médio", base:.74}, dificil:{label:"Difícil", base:.88} };
+function penSetup(vsRobot){
+  $("setup").hidden = false; $("play").hidden = true;
+  let n1 = "", n2 = "", lvl = "medio";
+  try { n1 = localStorage.getItem("mais-ou-menos:jogador1") || ""; n2 = localStorage.getItem("mais-ou-menos:jogador2") || ""; lvl = localStorage.getItem("mais-ou-menos:nivel-robo") || "medio"; } catch(e){}
+  $("board").innerHTML = vsRobot
+    ? `<div class="brand wide">Você <span>×</span> Robô</div>`
+    : `<div class="brand wide">Disputa de <span>pênaltis</span></div>`;
+  const catSel = `<label for="pcat">Categorias da disputa</label>
+      <select id="pcat"><option value="all">Tudo</option><option value="gols">Gols</option><option value="titulos">Títulos</option><option value="valor">Valor de mercado</option></select>`;
+  $("setup").innerHTML = vsRobot ? `
+    <p class="lead">Disputa de pênaltis contra o robô. Você bate, ele bate. Acertou, é gol. São 5 cobranças para cada lado e, se empatar, alternadas até alguém errar. Quanto mais parelho o duelo, mais o robô erra.</p>
+    <form id="penForm" class="form">
+      <label for="p1">Seu nome</label><input id="p1" maxlength="18" value="${esc(n1)}" placeholder="Você" autocomplete="off">
+      <label for="lvl">Nível do robô</label>
+      <select id="lvl">${Object.entries(ROBO).map(([k,v]) => `<option value="${k}" ${k===lvl?"selected":""}>${v.label}</option>`).join("")}</select>
+      ${catSel}
+      <button class="btn" type="submit">Começar contra o robô</button>
+    </form>` : `
+    <p class="lead">Cada um responde um duelo por vez, passando o celular. Acertou, é gol. Depois de 5 cobranças para cada lado, se empatar, vai para as alternadas até alguém errar.</p>
+    <form id="penForm" class="form">
+      <label for="p1">Primeiro a bater</label><input id="p1" maxlength="18" value="${esc(n1)}" placeholder="Jogador 1" autocomplete="off">
+      <label for="p2">Segundo a bater</label><input id="p2" maxlength="18" value="${esc(n2)}" placeholder="Jogador 2" autocomplete="off">
+      ${catSel}
+      <button class="btn" type="submit">Começar a disputa</button>
+    </form>`;
+  document.querySelectorAll("#penForm input").forEach(i => i.addEventListener("focus", () => i.select()));
+  $("penForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const a = $("p1").value.trim() || (vsRobot ? "Você" : "Jogador 1");
+    const b = vsRobot ? "Robô" : ($("p2").value.trim() || "Jogador 2");
+    filter = $("pcat").value;
+    const level = vsRobot ? $("lvl").value : null;
+    try { localStorage.setItem("mais-ou-menos:jogador1", $("p1").value.trim()); if (!vsRobot) localStorage.setItem("mais-ou-menos:jogador2", $("p2").value.trim()); if (level) localStorage.setItem("mais-ou-menos:nivel-robo", level); } catch(e){}
+    rng = Math.random;
+    pen = { names:[a,b], kicks:[[],[]], turn:0, done:false, robot: vsRobot ? 1 : -1, level };
+    $("setup").hidden = true; $("play").hidden = false;
+    penBoard(); penKick();
+  });
+}
+function goals(i){ return pen.kicks[i].filter(Boolean).length; }
+function penBoard(){
+  const row = i => {
+    const k = pen.kicks[i], total = Math.max(5, k.length + (pen.turn===i && !pen.done ? 1 : 0), pen.kicks[1-i].length);
+    let dots = "";
+    for (let j=0;j<total;j++) dots += `<span class="dot ${j<k.length ? (k[j]?"g":"m") : ""}" aria-hidden="true"></span>`;
+    return `<div class="pen-row ${pen.turn===i && !pen.done ? "on" : ""}">
+      <span class="pen-name">${esc(pen.names[i])}${i===pen.robot ? ` <small class="lbl">${ROBO[pen.level].label}</small>` : ""}</span>
+      <span class="dots">${dots}</span><span class="digits sm">${goals(i)}</span>
+      <span class="sr">${esc(pen.names[i])}: ${goals(i)} gols em ${k.length} cobranças.</span></div>`;
+  };
+  $("board").innerHTML = `<div class="pen">${row(0)}${row(1)}</div>`;
+}
+function penWinner(){
+  const [a,b] = pen.kicks, ga = goals(0), gb = goals(1);
+  if (a.length<=5 && b.length<=5){
+    const ra = 5-a.length, rb = 5-b.length;
+    if (ga > gb + rb) return 0;
+    if (gb > ga + ra) return 1;
+    if (a.length===5 && b.length===5 && ga!==gb) return ga>gb ? 0 : 1;
+    return -1;
+  }
+  if (a.length===b.length && ga!==gb) return ga>gb ? 0 : 1;
+  return -1;
+}
+function robotChance(){
+  const r = ratioOf(current.a, current.b), base = ROBO[pen.level].base;
+  const adj = r >= 3 ? .12 : r >= 2 ? .05 : r <= 1.3 ? -.15 : r <= 1.6 ? -.08 : 0;
+  return Math.min(.97, Math.max(.3, base + adj));
+}
+function penKick(){
+  const t = $("turn"); t.hidden = false;
+  const isRobot = pen.turn === pen.robot;
+  t.textContent = isRobot ? "Cobrança do robô" : `Cobrança de ${pen.names[pen.turn]}`;
+  const level = pen.kicks[pen.turn].length * 2; // as cobranças ficam mais difíceis
+  if (!isRobot){ showDuel(penAnswer, level); return; }
+  showDuel(penAnswer, level, { lockCards:true, hint:`<span class="hint">O robô está pensando…</span>` });
+  const think = reduceMotion() ? 500 : 1100 + Math.random()*700;
+  autoTimer = setTimeout(() => {
+    const correctSide = current.a[2] > current.b[2] ? "A" : "B";
+    const side = Math.random() < robotChance() ? correctSide : (correctSide === "A" ? "B" : "A");
+    autoTimer = null; choose(side, true);
+  }, think);
+}
+function penAnswer(right, fact, pickedEl){
+  const isRobot = pen.turn === pen.robot;
+  pen.kicks[pen.turn].push(right);
+  if (right) plusBadge(pickedEl, "Gol!");
+  const w = penWinner();
+  if (w >= 0) pen.done = true; else pen.turn = 1 - pen.turn;
+  penBoard();
+  const who = isRobot
+    ? (right ? `O robô marcou. ${esc(fact)}` : `O robô errou! ${esc(fact)}`)
+    : (right ? `Gol! ${esc(fact)}` : `Defendeu! ${esc(fact)}`);
+  if (w >= 0){
+    $("turn").hidden = true;
+    const robotWon = w === pen.robot, humanWon = pen.robot >= 0 && !robotWon;
+    const headline = pen.robot >= 0
+      ? (humanWon ? `Você venceu o robô no nível ${ROBO[pen.level].label.toLowerCase()}.` : "O robô venceu desta vez.")
+      : `${esc(pen.names[w])} venceu nos pênaltis.`;
+    const dots = i => pen.kicks[i].map(k => k ? "🟢" : "🔴").join("");
+    const text = `Mais ou Menos ⚽ ${pen.names[0]} ${goals(0)} × ${goals(1)} ${pen.names[1]} nos pênaltis\n${pen.names[0]}: ${dots(0)}\n${pen.names[1]}: ${dots(1)}`;
+    actions(`<div class="over ${robotWon ? "" : "win-panel"}"><span class="lbl">Fim da disputa</span>
+      ${humanWon && pen.level==="dificil" ? `<span class="record">Venceu no difícil!</span>` : ""}
+      <span class="big">${goals(0)} × ${goals(1)}</span>
+      <span class="rank">${headline}</span>
+      <span class="msg ${right?"ok":"bad"} small">${who}</span>
+      <div class="row"><button class="btn" id="rematch">Revanche</button><button class="btn ghost" id="newnames">${pen.robot>=0 ? "Mudar nível" : "Trocar jogadores"}</button></div>
+      ${shareBlock(text)}</div>`, "rematch");
+    wireShare();
+    $("rematch").onclick = () => {
+      if (pen.robot >= 0) pen = { ...pen, kicks:[[],[]], turn:0, done:false };
+      else pen = { ...pen, names:pen.names.slice().reverse(), kicks:[[],[]], turn:0, done:false };
+      penBoard(); penKick();
+    };
+    $("newnames").onclick = () => penSetup(pen.robot >= 0);
+  } else if (pen.turn === pen.robot){
+    const nb = nextButton("Vez do robô", penKick, true);
+    actions(`<span class="msg ${right?"ok":"bad"}">${who}</span>${nb.html}`, "next"); nb.wire();
+  } else if (pen.robot >= 0){
+    const nb = nextButton("Sua cobrança", penKick, false);
+    actions(`<span class="msg ${right?"bad":"ok"}">${who}</span>${nb.html}`, "next"); nb.wire();
+  } else {
+    const nb = nextButton(`Passa para ${pen.names[pen.turn]}`, penKick, false);
+    actions(`<span class="msg ${right?"ok":"bad"}">${who}</span>${nb.html}`, "next"); nb.wire();
+  }
+}
+
+/* ---------- desafio online (código) ---------- */
+let db = null, userCap = null, myId = null, dbState = "loading", allScores = {}, myLocal = {}, onl = null;
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function newCode(){ let c=""; for (let i=0;i<5;i++) c += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)]; return c; }
+
+(async function initOnline(){
+  try {
+    const cl = window.claude;
+    if (!cl || !cl.use){ dbState = "off"; return; }
+    [db, userCap] = await Promise.all([cl.use("db"), cl.use("user")]);
+    if (!db || !userCap){ dbState = "off"; refreshOnline(); return; }
+    myId = await userCap.id();
+    if (!myId){ dbState = "off"; refreshOnline(); return; }
+    const timer = setTimeout(() => { if (dbState==="loading"){ dbState="off"; refreshOnline(); } }, 10000);
+    db.collection("placar").onSnapshot(snap => {
+      clearTimeout(timer); dbState = "ok";
+      const next = {};
+      for (const d of snap.docs){ const v = d.data(); if (v && v.res) next[d.id] = v.res; }
+      allScores = next; refreshOnline();
+    }, () => { clearTimeout(timer); dbState = "off"; refreshOnline(); });
+  } catch(e){ dbState = "off"; refreshOnline(); }
+})();
+
+function refreshOnline(){
+  if (mode !== "online") return;
+  if (!onl || !onl.playing) onlineSetup();
+}
+function myResults(){ return Object.assign({}, (myId && allScores[myId]) || {}, myLocal); }
+function saveMine(code, entry){
+  myLocal[code] = entry;
+  return db.doc("placar/" + myId).set({ res: myResults() });
+}
+
+function onlineSetup(){
+  $("setup").hidden = false; $("play").hidden = true; $("turn").hidden = true;
+  $("board").innerHTML = `<div class="brand wide">Desafio <span>online</span></div>`;
+  if (dbState === "loading"){ $("setup").innerHTML = `<p class="lead">Conectando ao placar…</p>`; return; }
+  if (dbState === "off"){
+    $("setup").innerHTML = `<p class="lead">O desafio online só funciona abrindo o jogo pelo link do Claude, com a sua conta. Enquanto isso, jogue sozinho, contra o robô ou nos pênaltis.</p>`;
+    return;
+  }
+  if (onl && onl.code){ renderRanking(onl.code); return; }
+  $("setup").innerHTML = `
+    <p class="lead">Todo mundo que entra com o mesmo código recebe exatamente a mesma sequência de duelos. Vale só a primeira tentativa de cada um. Quem for mais longe ganha.</p>
+    <div class="online-grid">
+      <div class="box"><h2>Criar desafio</h2><p>Gera um código para mandar para os amigos.</p><button class="btn" id="create">Criar código</button></div>
+      <form class="box" id="joinForm"><h2>Entrar num desafio</h2><label for="code">Código recebido</label>
+        <input id="code" maxlength="5" autocomplete="off" placeholder="EX: K7QPA" style="text-transform:uppercase">
+        <button class="btn" type="submit">Entrar</button><span class="err" id="codeErr"></span></form>
+    </div>
+    ${myCodesHTML()}`;
+  $("create").onclick = () => openCode(newCode());
+  $("joinForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const c = $("code").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+    if (c.length !== 5){ $("codeErr").textContent = "O código tem 5 letras ou números."; return; }
+    openCode(c);
+  });
+  document.querySelectorAll("[data-code]").forEach(b => b.onclick = () => openCode(b.dataset.code));
+}
+function myCodesHTML(){
+  const mine = myResults(), codes = Object.keys(mine);
+  if (!codes.length) return "";
+  return `<div class="box"><h2>Seus desafios</h2><div class="row left">${codes.map(c => `<button class="chip" data-code="${esc(c)}">${esc(c)} · ${mine[c].n}</button>`).join("")}</div></div>`;
+}
+function openCode(code){ onl = { code, playing:false }; renderRanking(code); }
+
+async function renderRanking(code){
+  const merged = Object.assign({}, allScores); if (myId) merged[myId] = myResults();
+  const entries = Object.entries(merged).filter(([,r]) => r[code]).map(([id,r]) => ({id, n:r[code].n, at:r[code].at||0, live:!!r[code].live}))
+    .sort((x,y) => y.n - x.n || x.at - y.at);
+  const played = !!myResults()[code];
+  const invite = `Mais ou Menos ⚽ Te desafio! Abre o jogo, vai em Online e usa o código ${code}.`;
+  $("setup").innerHTML = `
+    <div class="code-row"><span class="lbl">Código do desafio</span><span class="code">${esc(code)}</span></div>
+    <p class="lead">Mande este código para quem vai jogar. A pessoa abre o jogo, vai em Online e digita o código.</p>
+    ${shareBlock(invite)}
+    ${played ? "" : `<p class="lead" style="color:var(--muted)">Ao começar, a tentativa já conta. Sair no meio vale como fim.</p><button class="btn" id="go">Jogar este desafio</button><span class="err" id="goErr"></span>`}
+    <div class="box"><h2>Classificação</h2><ol class="ranking" id="ranking">${entries.length ? entries.map(e => `<li data-id="${esc(e.id)}"><span class="who">…</span><span><span class="live">${e.live ? "jogando · " : ""}</span><span class="digits sm">${e.n}</span></span></li>`).join("") : `<li class="empty">Ninguém jogou ainda. Seja o primeiro.</li>`}</ol></div>
+    <button class="btn ghost" id="back">Voltar</button>`;
+  wireShare();
+  if ($("go")) $("go").onclick = () => onlinePlay(code);
+  $("back").onclick = () => { onl = null; onlineSetup(); };
+  if (entries.length && userCap){
+    try {
+      const ps = await userCap.profiles(entries.map(e => e.id));
+      document.querySelectorAll("#ranking li[data-id]").forEach((li,i) => {
+        const id = li.dataset.id, p = ps && ps[id];
+        li.querySelector(".who").textContent = `${i+1}º  ${(p && p.name) || "Alguém"}${id===myId ? " (você)" : ""}`;
+        if (id===myId) li.classList.add("me");
+      });
+    } catch(e){}
+  }
+}
+async function onlinePlay(code){
+  $("go").disabled = true;
+  try { await saveMine(code, { n:0, at:Date.now(), live:true }); }
+  catch(e){
+    delete myLocal[code]; $("go").disabled = false;
+    $("goErr").textContent = "Não deu para registrar sua tentativa. Peça a quem compartilhou o jogo para te dar permissão de usar a página.";
+    return;
+  }
+  onl = { code, playing:true, n:0 };
+  rng = mulberry32(seedOf(code)); recent = [];
+  $("setup").hidden = true; $("play").hidden = false;
+  $("board").innerHTML = `
+    <div class="stat left"><span class="lbl">Sequência</span><span class="digits" id="streak">0</span></div>
+    <div class="stat right"><span class="lbl">Desafio</span><span class="digits dim">${esc(code)}</span></div>`;
+  showDuel(onlineAnswer, 0);
+}
+function onlineAnswer(right, fact, pickedEl){
+  const code = onl.code;
+  if (right){
+    onl.n++; $("streak").textContent = onl.n; bump($("streak"));
+    plusBadge(pickedEl, `+1 · sequência ${onl.n}`);
+    saveMine(code, { n:onl.n, at:Date.now(), live:true }).catch(()=>{});
+    const nb = nextButton("Próximo duelo", () => showDuel(onlineAnswer, onl.n), true);
+    actions(`<span class="msg ok">Isso! ${esc(fact)}</span>${nb.html}`, "next"); nb.wire();
+  } else {
+    const n = onl.n;
+    onl.playing = false;
+    const text = `Mais ou Menos ⚽ Fiz ${n} no desafio ${code}. Usa o código e tenta me passar!`;
+    actions(`<div class="over"><span class="lbl">Fim · desafio ${esc(code)}</span><span class="big">${n}</span>
+      <span class="rank">${rank(n)}</span><span class="msg bad small">${esc(fact)}</span>
+      <span class="msg small" id="saveMsg">Salvando no placar…</span>
+      <div class="row"><button class="btn" id="seeRank">Ver classificação</button></div>
+      ${shareBlock(text)}</div>`, "seeRank");
+    wireShare();
+    $("seeRank").onclick = () => { onl = { code, playing:false }; onlineSetup(); };
+    saveMine(code, { n, at:Date.now() }).then(
+      () => { if ($("saveMsg")) $("saveMsg").textContent = "Resultado salvo."; },
+      () => { if ($("saveMsg")) $("saveMsg").textContent = "Não deu para salvar o resultado final."; }
+    );
+  }
+}
+
+/* ---------- troca de modo ---------- */
+let mode = "solo";
+function setMode(m){
+  clearAuto();
+  mode = m; current = null; locked = true;
+  document.querySelectorAll(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.m===m));
+  $("turn").hidden = true;
+  $("chips").hidden = m !== "solo";
+  if (m === "solo"){ const on = document.querySelector("#chips .chip[aria-pressed=\"true\"]"); filter = on ? on.dataset.f : "all"; $("setup").hidden = true; $("play").hidden = false; soloStart(); }
+  if (m === "penaltis") penSetup(false);
+  if (m === "robo") penSetup(true);
+  if (m === "online"){ filter = "all"; onl = null; onlineSetup(); }
+}
+document.querySelectorAll(".mode").forEach(b => b.onclick = () => setMode(b.dataset.m));
+
+$("cardA").onclick = () => choose("A");
+$("cardB").onclick = () => choose("B");
+document.querySelectorAll("#chips .chip").forEach(c => c.onclick = () => {
+  document.querySelectorAll("#chips .chip").forEach(x => x.setAttribute("aria-pressed", x===c));
+  filter = c.dataset.f;
+  if (mode === "solo") soloStart();
+});
+document.addEventListener("keydown", e => {
+  if (e.target.closest && e.target.closest("input,select,textarea")) return;
+  if (e.key==="ArrowLeft" || e.key==="1") choose("A");
+  if (e.key==="ArrowRight" || e.key==="2") choose("B");
+});
+setMode("solo");
+</script>
+</body>
+</html>
