@@ -129,14 +129,16 @@ button.av:hover{border-color:var(--gold2)}
 .log{font-size:13px;color:var(--muted);max-height:120px;overflow:auto;display:flex;flex-direction:column;gap:3px;padding:10px 14px}
 
 /* board */
-.boardbox{padding:12px;border-radius:18px;position:relative;
-  background:radial-gradient(160px 60px at 85% 6%,#fff3 0%,transparent 70%),radial-gradient(500px 140px at 20% 8%,#6f9a5d 0%,transparent 70%),radial-gradient(600px 160px at 75% 10%,#5b8a54 0%,transparent 70%),linear-gradient(180deg,#8fb3d9 0%,#b8d0e3 8%,#6e9b58 16%,#4f8044 55%,#3f6d39 100%);
+.boardbox{padding:0 16px 20px;border-radius:18px;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse at 30% 40%,#6fa35a 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,#5d9450 0%,transparent 50%),linear-gradient(180deg,#5f8f4c 0%,#4f8044 50%,#43733d 100%);
   box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #000a,0 0 0 5px var(--gold),0 10px 30px rgba(0,0,0,.45)}
-.board{display:grid;gap:12px;position:relative;margin-top:22px}
-@media (max-width:720px){.board{gap:7px;margin-top:16px}}
+.horizon{display:block;width:calc(100% + 32px);height:clamp(64px,9vw,96px);margin:0 -16px}
+@media (max-width:720px){.boardbox{padding:0 10px 14px}.horizon{width:calc(100% + 20px);margin:0 -10px}}
+.board{display:grid;gap:26px 12px;position:relative;margin-top:14px}
+@media (max-width:720px){.board{gap:18px 6px;margin-top:10px}}
 .trail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
 .tile{position:relative;z-index:1;aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;text-align:center;min-width:0;cursor:pointer;
-  background:linear-gradient(160deg,#f6ecd2,var(--parch) 50%,#dcc79a);box-shadow:inset 0 -3px 0 #b49c6a,inset 0 2px 0 #fff8,0 3px 0 #6d5a33,0 5px 8px rgba(0,0,0,.35)}
+  background:radial-gradient(circle at 30% 25%,#fffaf0 0%,transparent 45%),linear-gradient(160deg,#f6ecd2,var(--parch) 50%,#d6bf8e);border:2px solid #8d6d3c;box-shadow:inset 0 -4px 0 #b49c6a,inset 0 2px 0 #fff8,0 4px 0 #5e4521,0 7px 10px rgba(0,0,0,.4);border-radius:14px}
 .tile:hover{filter:brightness(1.05)}
 .tile .n{position:absolute;top:2px;left:5px;font-size:10px;color:#8b7650;font-family:var(--ui);font-weight:600}
 .badge{width:60%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:inset 0 2px 0 #fff6,inset 0 -2px 0 #0003,0 1px 2px #0005;flex:none}
@@ -206,6 +208,65 @@ button.av:hover{border-color:var(--gold2)}
 .turncard .av{width:84px;height:84px;font-size:40px;border-width:4px}
 .turncard h3{font-size:34px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* robô, online */
+.tabs{display:flex;gap:6px;padding:4px;border-radius:14px;background:var(--deep);box-shadow:0 0 0 2px var(--gold-dk)}
+.tabs button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:9px 10px;background:none;font-family:var(--ui);font-weight:700;font-size:18px;color:var(--muted)}
+.tabs button svg{width:20px;height:20px}
+.tabs button[aria-selected="true"]{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#3a2404}
+.sub .step{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#3a2404;font-size:15px;margin-right:6px}
+.plist{display:flex;flex-direction:column;gap:10px}
+.prow{flex-wrap:wrap}
+.prow input{min-width:120px}
+.seg{display:inline-flex;border-radius:10px;overflow:hidden;box-shadow:0 0 0 2px var(--gold-dk);flex:none}
+.seg button{border:0;background:var(--deep);padding:8px 10px;font-family:var(--ui);font-weight:600;font-size:15px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.seg button svg{width:15px;height:15px}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#3a2404}
+select{font-family:var(--ui);font-weight:600;font-size:15px;background:var(--deep);color:var(--ink);border:2px solid var(--gold-dk);border-radius:10px;padding:7px 8px}
+.xbtn{width:34px;height:34px;border-radius:50%;border:2px solid var(--gold-dk);background:var(--deep);font-size:20px;line-height:1;color:var(--muted);flex:none}
+.xbtn:hover{border-color:#ff8a7d;color:#ff8a7d}
+.obtn:disabled{opacity:.45;cursor:default}
+.obtn svg{width:16px;height:16px}
+.avi{display:grid;place-items:center;width:62%;height:62%}.avi svg{width:100%;height:100%}
+.errmsg{margin:0;color:#ff9d92;font-weight:600}
+.online{display:flex;flex-direction:column;gap:12px}
+.fld{display:flex;flex-direction:column;gap:4px;font-family:var(--ui);font-weight:600;color:var(--muted)}
+.fld input,.joinrow input,.linkrow input{padding:10px 14px;border-radius:12px;border:2px solid var(--gold-dk);background:var(--deep);color:var(--ink);font-family:var(--ui);font-weight:600;font-size:19px;min-width:0}
+.ogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.ocard{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:14px;background:var(--deep);box-shadow:0 0 0 2px var(--gold-dk);align-items:flex-start}
+.ocard b{font-family:var(--ui);font-size:20px}
+.ocard small{color:var(--muted);font-size:13px;flex:1}
+.joinrow{display:flex;gap:8px;width:100%}
+.joinrow input{flex:1;text-transform:uppercase;letter-spacing:.3em;text-align:center;font-size:22px}
+.codebox{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px;border-radius:14px;background:var(--deep);box-shadow:0 0 0 2px var(--gold)}
+.codebox small{color:var(--muted)}
+.codebox b{font-family:var(--display);font-size:52px;letter-spacing:.18em;color:var(--gold2);line-height:1}
+.linkrow{display:flex;gap:8px;width:100%}
+.linkrow input{flex:1;font-size:14px}
+.prow.lobby{padding:6px 10px 6px 6px;border-radius:999px;background:var(--deep);box-shadow:0 0 0 2px var(--gold-dk);flex-wrap:nowrap}
+.prow.lobby.empty{opacity:.45;box-shadow:0 0 0 2px #33415f}
+.pname{flex:1;min-width:0;font-family:var(--ui);font-weight:700;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip.you{background:var(--gold);color:#3a2404}
+.conn{display:inline-flex;align-items:center;gap:6px;font-family:var(--ui);font-weight:600;font-size:14px;color:var(--muted);padding:4px 10px;border-radius:999px;background:var(--deep)}
+.conn i{width:10px;height:10px;border-radius:50%;background:#e2a33b}
+.conn.on i{background:#4cd07d}.conn.erro i,.conn.off i{background:#e2564a}
+@media (max-width:520px){.conn span{display:none}}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid #ffffff22;border-top-color:var(--gold);animation:sp 1s linear infinite;flex:none}
+.spin.sm{width:18px;height:18px;border-width:3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.waitbig{display:flex;flex-direction:column;align-items:center;gap:12px;padding:30px 10px;text-align:center}
+.waitline{display:flex;align-items:center;gap:10px;color:var(--muted);font-family:var(--ui);font-weight:600;font-size:17px}
+.waitline svg{width:22px;height:22px;color:var(--gold2);flex:none}
+.waitbtn{display:flex;align-items:center;gap:8px;max-width:180px;padding:10px 14px;border-radius:14px;background:var(--deep);box-shadow:0 0 0 2px var(--gold-dk);font-family:var(--ui);font-weight:600;font-size:16px;color:var(--muted)}
+.waitbtn svg{width:22px;height:22px;color:var(--gold2);flex:none}
+.ptag{color:#fff;padding:0 8px;border-radius:6px;text-shadow:0 1px 2px #0006}
+.qh{flex-wrap:wrap}
+.cat{align-self:flex-start;font-size:12px;font-family:var(--ui);font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:1px 8px;border-radius:999px;border:1px solid #a8730f88}
+.overlay.info{z-index:30}
+.chip svg{width:13px;height:13px}
+
+.tokens{inset:auto -4px auto auto;top:-14px;right:-4px;padding:0;align-items:flex-end;justify-content:flex-end;gap:0;z-index:3}
+.tokens .pawn+.pawn{margin-left:-6px}
 </style>
 </head>
 <body>
@@ -284,40 +345,6 @@ const ROUTES={
    ["O que aconteceu com a imagem em 1978?",["Foi quebrada e depois restaurada","Foi levada a Roma","Foi roubada por dez anos","Foi coroada pelo papa"],0,"Ela se partiu em muitos pedaços e foi cuidadosamente restaurada."]]
  }
 };
-const GERAIS=[
- ["Quantos evangelhos há no Novo Testamento?",["4","3","5","12"],0,"Mateus, Marcos, Lucas e João."],
- ["Quem negou Jesus três vezes?",["Pedro","Judas","Tomé","João"],0,"Antes de o galo cantar."],
- ["Em que cidade Jesus nasceu?",["Belém","Nazaré","Jerusalém","Cafarnaum"],0,"Belém da Judeia."],
- ["Qual foi o primeiro milagre de Jesus, segundo João?",["Água em vinho em Caná","Multiplicação dos pães","Cura de um cego","Ressurreição de Lázaro"],0,"Nas bodas de Caná, a pedido de Maria."],
- ["Quem batizou Jesus?",["João Batista","Pedro","André","Zacarias"],0,"No rio Jordão."],
- ["Quantos livros tem a Bíblia católica?",["73","66","72","80"],0,"46 no Antigo e 27 no Novo Testamento."],
- ["Qual é o primeiro livro da Bíblia?",["Gênesis","Êxodo","Mateus","Salmos"],0,"Começa com a criação do mundo."],
- ["Quantas Ave-Marias se rezam em uma dezena do terço?",["10","7","12","5"],0,"Precedidas de um Pai-Nosso e seguidas do Glória."],
- ["Quem construiu a arca?",["Noé","Moisés","Abraão","Jonas"],0,"Gênesis, capítulos 6 a 9."],
- ["Quantos dias Jesus jejuou no deserto?",["40","7","30","3"],0,"Por isso a Quaresma tem quarenta dias."],
- ["Quem era a mãe de João Batista?",["Isabel","Ana","Marta","Maria Madalena"],0,"Prima de Maria."],
- ["Qual apóstolo duvidou da ressurreição?",["Tomé","Filipe","Mateus","Bartolomeu"],0,"Ele quis tocar nas chagas."],
- ["Que tempo litúrgico prepara o Natal?",["Advento","Quaresma","Tempo Comum","Páscoa"],0,"São quatro domingos."],
- ["Qual a cor litúrgica da Quaresma?",["Roxo","Verde","Branco","Vermelho"],0,"Cor de penitência e conversão."],
- ["Quantos são os sacramentos?",["7","5","10","3"],0,"Batismo, Crisma, Eucaristia, Penitência, Unção, Ordem e Matrimônio."],
- ["O que se celebra em Pentecostes?",["A vinda do Espírito Santo","O nascimento de Jesus","A Ascensão","A Anunciação"],0,"Cinquenta dias depois da Páscoa."],
- ["Quem escreveu a maior parte das cartas do Novo Testamento?",["Paulo","Pedro","Tiago","João"],0,"O apóstolo dos gentios."],
- ["Quem recebeu os Dez Mandamentos?",["Moisés","Elias","Davi","Arão"],0,"No monte Sinai."],
- ["Que oração Jesus ensinou aos discípulos?",["Pai-Nosso","Ave-Maria","Salve-Rainha","Credo"],0,"Mateus 6 e Lucas 11."],
- ["Quem foi o primeiro papa?",["Pedro","Paulo","Lino","Clemente"],0,"Tu és Pedro, e sobre esta pedra..."],
- ["Qual é o último livro da Bíblia?",["Apocalipse","Atos","Judas","Malaquias"],0,"Atribuído a João."],
- ["Qual anjo anunciou a Maria que ela seria mãe de Jesus?",["Gabriel","Miguel","Rafael","Uriel"],0,"Lucas, capítulo 1."],
- ["Na multiplicação, quantos pães e peixes havia?",["5 pães e 2 peixes","7 pães e 3 peixes","2 pães e 5 peixes","12 pães e 1 peixe"],0,"E sobraram doze cestos."],
- ["Quem venceu o gigante Golias?",["Davi","Sansão","Saul","Josué"],0,"Com uma funda e uma pedra."],
- ["Qual foi o primeiro santo nascido no Brasil?",["Frei Galvão","Padre Anchieta","Irmã Dulce","Madre Paulina"],0,"Canonizado em 2007 por Bento XVI."],
- ["Como ficou conhecida Santa Dulce dos Pobres?",["Anjo Bom da Bahia","Mãe dos Aflitos","Santa das Rosas","Apóstola do Recife"],0,"Canonizada em 2019."],
- ["Em que cidade Jesus cresceu?",["Nazaré","Belém","Betânia","Jericó"],0,"Por isso era chamado de Nazareno."],
- ["Os discípulos de Emaús reconheceram Jesus quando ele...",["partiu o pão","mostrou as chagas","chamou seus nomes","acalmou o mar"],0,"Lucas, capítulo 24."],
- ["Quem viu primeiro Jesus ressuscitado, segundo João?",["Maria Madalena","Pedro","João","Maria, sua mãe"],0,"Ela o confundiu com o jardineiro."],
- ["Quem fundou a ordem dos franciscanos?",["São Francisco de Assis","Santo Domingos","São Bento","Santo Inácio"],0,"No começo do século XIII."],
- ["Qual livro da Bíblia tem 150 orações cantadas?",["Salmos","Provérbios","Cântico dos Cânticos","Lamentações"],0,"Muitos atribuídos ao rei Davi."],
- ["Que dia inicia a Quaresma?",["Quarta-feira de Cinzas","Domingo de Ramos","Sexta-feira Santa","Primeiro domingo do Advento"],0,"Lembra-te que és pó..."]
-];
 const CASAS={
  oracao:{ic:"pray",nome:"Oração em grupo",curto:"Rezemos juntos!",grupo:"esp",cards:[
   "Parem tudo e rezem juntos um Pai-Nosso pelo peregrino da vez.",
@@ -351,39 +378,221 @@ const CASAS={
   "Um morador indica uma trilha boa e bem sinalizada."],efeito:"Avance 2 casas.",bt:"Avançar"}
 };
 
-const KEY="rumo-ao-ceu:partida", KEY_SOM="rumo-ao-ceu:som";
+/* Banco de perguntas: [pergunta, [certa, erradas...], 0, explicação] por tema */
+const TEMAS={
+"Antigo Testamento":[
+ ["Qual é o primeiro livro da Bíblia?",["Gênesis","Êxodo","Levítico","Salmos"],0,"Começa com a criação do mundo."],
+ ["Quem construiu a arca?",["Noé","Moisés","Abraão","Jonas"],0,"Gênesis, capítulos 6 a 9."],
+ ["Quem recebeu os Dez Mandamentos?",["Moisés","Elias","Davi","Arão"],0,"No monte Sinai."],
+ ["Quem venceu o gigante Golias?",["Davi","Sansão","Saul","Josué"],0,"Com uma funda e uma pedra."],
+ ["Qual livro da Bíblia reúne 150 orações cantadas?",["Salmos","Provérbios","Cântico dos Cânticos","Lamentações"],0,"Muitos são atribuídos ao rei Davi."],
+ ["Quem foi engolido por um grande peixe?",["Jonas","Elias","Jeremias","Tobias"],0,"Ficou três dias no ventre do peixe."],
+ ["Que filho de Jacó foi vendido pelos irmãos e virou governador no Egito?",["José","Benjamim","Rúben","Judá"],0,"Gênesis, capítulos 37 a 50."],
+ ["Quem conduziu o povo à Terra Prometida depois de Moisés?",["Josué","Arão","Gedeão","Samuel"],0,"Foi ele quem atravessou o Jordão com o povo."],
+ ["Que rei construiu o primeiro Templo de Jerusalém?",["Salomão","Davi","Saul","Ezequias"],0,"Filho de Davi, famoso pela sabedoria."],
+ ["Que profeta foi levado ao céu num carro de fogo?",["Elias","Eliseu","Isaías","Amós"],0,"Segundo Livro dos Reis, capítulo 2."],
+ ["Daniel foi jogado numa cova de quê?",["Leões","Serpentes","Lobos","Ursos"],0,"E Deus o protegeu."],
+ ["Segundo o Gênesis, quem matou Abel?",["Caim","Set","Lameque","Esaú"],0,"Seu próprio irmão."],
+ ["Quantas foram as pragas do Egito?",["10","7","12","3"],0,"Êxodo, capítulos 7 a 12."],
+ ["Sansão perdeu a força quando cortaram o quê?",["O cabelo","A barba","As unhas","A túnica"],0,"Ele era nazireu, consagrado a Deus."],
+ ["Que profeta anunciou que uma virgem daria à luz o Emanuel?",["Isaías","Ezequiel","Oseias","Malaquias"],0,"Isaías 7,14."],
+ ["Quem era a esposa de Abraão?",["Sara","Rebeca","Raquel","Lia"],0,"Mãe de Isaac, mesmo já idosa."],
+ ["Jacó também ficou conhecido por qual nome?",["Israel","Judá","Efraim","Levi"],0,"Recebeu esse nome depois de lutar com o anjo."],
+ ["Quantas eram as tribos de Israel?",["12","10","7","40"],0,"Uma para cada filho de Jacó (com José dividido em duas)."],
+ ["Que mulher moabita é bisavó do rei Davi?",["Rute","Ester","Judite","Débora"],0,"Sua história tem um livro próprio."]],
+"Novo Testamento":[
+ ["Quantos evangelhos há no Novo Testamento?",["4","3","5","12"],0,"Mateus, Marcos, Lucas e João."],
+ ["Em que cidade Jesus nasceu?",["Belém","Nazaré","Jerusalém","Cafarnaum"],0,"Belém da Judeia."],
+ ["Em que cidade Jesus cresceu?",["Nazaré","Belém","Betânia","Jericó"],0,"Por isso era chamado de Nazareno."],
+ ["Qual foi o primeiro milagre de Jesus, segundo João?",["Água em vinho em Caná","Multiplicação dos pães","Cura de um cego","Ressurreição de Lázaro"],0,"Nas bodas de Caná, a pedido de Maria."],
+ ["Quem batizou Jesus?",["João Batista","Pedro","André","Zacarias"],0,"No rio Jordão."],
+ ["Quem negou Jesus três vezes?",["Pedro","Judas","Tomé","João"],0,"Antes de o galo cantar."],
+ ["Qual apóstolo duvidou da ressurreição?",["Tomé","Filipe","Mateus","Bartolomeu"],0,"Ele quis tocar nas chagas."],
+ ["Quantos dias Jesus jejuou no deserto?",["40","7","30","3"],0,"Por isso a Quaresma tem quarenta dias."],
+ ["Na multiplicação, quantos pães e peixes havia?",["5 pães e 2 peixes","7 pães e 3 peixes","2 pães e 5 peixes","12 pães e 1 peixe"],0,"E sobraram doze cestos."],
+ ["Os discípulos de Emaús reconheceram Jesus quando ele...",["partiu o pão","mostrou as chagas","chamou seus nomes","acalmou o mar"],0,"Lucas, capítulo 24."],
+ ["Quem viu primeiro Jesus ressuscitado, segundo João?",["Maria Madalena","Pedro","João","Maria, sua mãe"],0,"Ela o confundiu com o jardineiro."],
+ ["Qual anjo anunciou a Maria que ela seria mãe de Jesus?",["Gabriel","Miguel","Rafael","Uriel"],0,"Lucas, capítulo 1."],
+ ["Quem era a mãe de João Batista?",["Isabel","Ana","Marta","Salomé"],0,"Parente de Maria."],
+ ["Que cobrador de impostos subiu numa árvore para ver Jesus?",["Zaqueu","Mateus","Nicodemos","Bartimeu"],0,"Em Jericó, num sicômoro."],
+ ["Quem Jesus ressuscitou depois de quatro dias no túmulo?",["Lázaro","O filho da viúva de Naim","A filha de Jairo","Tabita"],0,"Irmão de Marta e Maria, em Betânia."],
+ ["Como é conhecida a parábola do filho que gastou a herança e voltou para casa?",["Filho pródigo","Bom samaritano","Semeador","Talentos"],0,"Lucas, capítulo 15."],
+ ["Quem ajudou Jesus a carregar a cruz?",["Simão de Cirene","José de Arimateia","Nicodemos","Barrabás"],0,"Os soldados o obrigaram a ajudar."],
+ ["Que governador romano condenou Jesus?",["Pôncio Pilatos","Herodes","César Augusto","Caifás"],0,"Ele lavou as mãos diante do povo."],
+ ["Por quantas moedas de prata Judas traiu Jesus?",["30","10","40","100"],0,"Mateus, capítulo 26."],
+ ["Quem foi o primeiro mártir cristão?",["Santo Estêvão","São Pedro","São Tiago","São Paulo"],0,"Foi apedrejado; Atos, capítulo 7."],
+ ["Paulo se converteu a caminho de qual cidade?",["Damasco","Roma","Antioquia","Corinto"],0,"Uma luz do céu o derrubou."],
+ ["Qual evangelho começa com \"No princípio era o Verbo\"?",["João","Mateus","Marcos","Lucas"],0,"O evangelho da águia."],
+ ["Quem escreveu a maior parte das cartas do Novo Testamento?",["Paulo","Pedro","Tiago","João"],0,"O apóstolo dos gentios."],
+ ["Que apóstolo foi escolhido para o lugar de Judas?",["Matias","Barnabé","Timóteo","Silas"],0,"Atos dos Apóstolos, capítulo 1."],
+ ["Quem escreveu os Atos dos Apóstolos?",["Lucas","Paulo","Marcos","Pedro"],0,"É a continuação do seu evangelho."],
+ ["Qual era o irmão de Pedro que também foi apóstolo?",["André","Tiago","Filipe","João"],0,"Também era pescador."],
+ ["Qual é o último livro da Bíblia?",["Apocalipse","Atos","Judas","Malaquias"],0,"Atribuído a João."]],
+"Sacramentos e fé":[
+ ["Quantos livros tem a Bíblia católica?",["73","66","72","80"],0,"46 no Antigo e 27 no Novo Testamento."],
+ ["Quantos são os sacramentos?",["7","5","10","3"],0,"Batismo, Crisma, Eucaristia, Penitência, Unção, Ordem e Matrimônio."],
+ ["Quais são os sacramentos da iniciação cristã?",["Batismo, Crisma e Eucaristia","Batismo, Confissão e Matrimônio","Eucaristia, Ordem e Unção","Crisma, Ordem e Matrimônio"],0,"São a porta de entrada da vida cristã."],
+ ["Que sacramento perdoa os pecados cometidos depois do Batismo?",["Confissão (Reconciliação)","Crisma","Unção dos Enfermos","Ordem"],0,"Também chamado de Penitência."],
+ ["Qual destes sacramentos se recebe uma única vez?",["Batismo","Eucaristia","Confissão","Unção dos Enfermos"],0,"Batismo, Crisma e Ordem marcam a alma para sempre."],
+ ["Em caso de necessidade, quem pode batizar?",["Qualquer pessoa, com a intenção da Igreja","Somente o papa","Somente o bispo","Ninguém além do padre"],0,"Basta derramar água e dizer as palavras do Batismo."],
+ ["Quais são as virtudes teologais?",["Fé, esperança e caridade","Prudência, justiça e fortaleza","Paciência, bondade e mansidão","Humildade, pureza e obediência"],0,"Elas têm Deus como origem e fim."],
+ ["Quantas são as virtudes cardeais?",["4","3","7","10"],0,"Prudência, justiça, fortaleza e temperança."],
+ ["Quantos são os pecados capitais?",["7","10","5","12"],0,"Eles dão origem a outros pecados."],
+ ["Quantos são os dons do Espírito Santo?",["7","9","3","12"],0,"Sabedoria, entendimento, conselho, fortaleza, ciência, piedade e temor de Deus."],
+ ["Quantas são as obras de misericórdia corporais?",["7","5","10","14"],0,"E outras sete espirituais."],
+ ["Quantos são os mandamentos da Igreja?",["5","10","7","3"],0,"Como participar da Missa aos domingos e confessar ao menos uma vez por ano."],
+ ["Com que pão e vinho se celebra a Eucaristia?",["Pão de trigo e vinho de uva","Qualquer pão e suco","Pão de milho e água","Bolo e vinho"],0,"São a matéria do sacramento."],
+ ["O que significa transubstanciação?",["O pão e o vinho se tornam o Corpo e o Sangue de Cristo","A água vira vinho","A alma vai ao céu","O batismo apaga o pecado"],0,"Acontece na consagração da Missa."],
+ ["Que sacramento é dado aos doentes graves e idosos?",["Unção dos Enfermos","Crisma","Ordem","Penitência"],0,"Traz conforto, força e perdão."],
+ ["Quantas pessoas há na Santíssima Trindade?",["3","1","2","4"],0,"Pai, Filho e Espírito Santo, um só Deus."]],
+"Liturgia e orações":[
+ ["Que tempo litúrgico prepara o Natal?",["Advento","Quaresma","Tempo Comum","Páscoa"],0,"São quatro domingos."],
+ ["Que dia inicia a Quaresma?",["Quarta-feira de Cinzas","Domingo de Ramos","Sexta-feira Santa","Primeiro domingo do Advento"],0,"Lembra-te que és pó..."],
+ ["O que se celebra em Pentecostes?",["A vinda do Espírito Santo","O nascimento de Jesus","A Ascensão","A Anunciação"],0,"Cinquenta dias depois da Páscoa."],
+ ["Qual a cor litúrgica da Quaresma?",["Roxo","Verde","Branco","Vermelho"],0,"Cor de penitência e conversão."],
+ ["Qual a cor litúrgica do Tempo Comum?",["Verde","Roxo","Branco","Rosa"],0,"Cor da esperança."],
+ ["Que cor se usa em Pentecostes e nas festas dos mártires?",["Vermelho","Branco","Verde","Roxo"],0,"Lembra o fogo do Espírito e o sangue dos mártires."],
+ ["Em que domingos se pode usar a cor rosa?",["3º do Advento e 4º da Quaresma","Páscoa e Natal","Ramos e Pentecostes","Todos os domingos de maio"],0,"Domingos Gaudete e Laetare, de alegria."],
+ ["O que a Igreja celebra na Quinta-feira Santa à noite?",["A Última Ceia","A Ressurreição","A Ascensão","O batismo de Jesus"],0,"Instituição da Eucaristia e do sacerdócio."],
+ ["Como se chama a grande vela acesa na Vigília Pascal?",["Círio Pascal","Vela do Advento","Lâmpada do sacrário","Candelabro"],0,"Representa Cristo ressuscitado, luz do mundo."],
+ ["Onde se guardam as hóstias consagradas na igreja?",["No sacrário","No batistério","No ambão","Na sacristia"],0,"Também chamado tabernáculo."],
+ ["A festa da Epifania lembra a visita de quem a Jesus?",["Os Reis Magos","Os pastores","Simeão e Ana","Os apóstolos"],0,"Ouro, incenso e mirra."],
+ ["Quando começa o ano litúrgico?",["No primeiro domingo do Advento","Em 1º de janeiro","Na Páscoa","Em Pentecostes"],0,"Por isso o Advento abre o calendário da Igreja."],
+ ["O que significa \"Aleluia\"?",["Louvai o Senhor","Assim seja","Deus conosco","Paz e bem"],0,"É uma palavra hebraica de louvor."],
+ ["O que significa \"Amém\"?",["Assim seja","Louvado seja","Graças a Deus","Senhor, piedade"],0,"Uma palavra de adesão e confiança."],
+ ["Que oração se reza ao meio-dia lembrando a Encarnação?",["Ângelus","Salve-Rainha","Credo","Magnificat"],0,"O anjo do Senhor anunciou a Maria..."],
+ ["Que oração Jesus ensinou aos discípulos?",["Pai-Nosso","Ave-Maria","Salve-Rainha","Credo"],0,"Mateus 6 e Lucas 11."],
+ ["Como se chama a oração em que professamos a fé?",["Credo","Glória","Ato de contrição","Ângelus"],0,"Creio em Deus Pai todo-poderoso..."],
+ ["Que festa celebra o Corpo e o Sangue de Cristo?",["Corpus Christi","Cristo Rei","Epifania","Ascensão"],0,"Muitas cidades fazem tapetes nas ruas."],
+ ["Quantos dias há entre a Páscoa e Pentecostes?",["50","40","30","7"],0,"Pentecostes quer dizer quinquagésimo dia."]],
+"Nossa Senhora":[
+ ["Quantas Ave-Marias se rezam em uma dezena do terço?",["10","7","12","5"],0,"Precedidas de um Pai-Nosso e seguidas do Glória."],
+ ["Que dogma afirma que Maria foi concebida sem pecado?",["Imaculada Conceição","Assunção","Maternidade divina","Virgindade perpétua"],0,"Proclamado em 1854; festa em 8 de dezembro."],
+ ["Que dogma afirma que Maria foi levada ao céu de corpo e alma?",["Assunção","Imaculada Conceição","Anunciação","Visitação"],0,"Proclamado por Pio XII em 1950."],
+ ["Em que ano Nossa Senhora apareceu em Fátima?",["1917","1858","1531","1950"],0,"Aos três pastorinhos."],
+ ["A quantos pastorinhos Nossa Senhora apareceu em Fátima?",["3","2","4","1"],0,"Lúcia, Francisco e Jacinta."],
+ ["A quem Nossa Senhora apareceu em Lourdes?",["Bernadete Soubirous","Lúcia dos Santos","Catarina Labouré","Juan Diego"],0,"Na França, em 1858."],
+ ["Nossa Senhora de Guadalupe apareceu a quem?",["São Juan Diego","São Francisco","Santo Antônio","São Martinho"],0,"No México, em 1531; ela é padroeira da América."],
+ ["Que papa criou os Mistérios Luminosos do terço?",["João Paulo II","Pio XII","Bento XVI","Francisco"],0,"Em 2002."],
+ ["Qual é o primeiro mistério gozoso?",["A Anunciação","O nascimento de Jesus","A Visitação","A apresentação no Templo"],0,"O anjo Gabriel visita Maria."],
+ ["Que mês é tradicionalmente dedicado a Maria?",["Maio","Janeiro","Agosto","Novembro"],0,"Outubro é o mês do Rosário."],
+ ["Qual oração saúda Maria como \"Mãe de misericórdia\"?",["Salve-Rainha","Ave-Maria","Magnificat","Ângelus"],0,"Costuma encerrar o terço."],
+ ["Quem são os pais de Maria, segundo a tradição?",["Joaquim e Ana","Zacarias e Isabel","José e Ana","Abraão e Sara"],0,"Festa em 26 de julho."],
+ ["Quem é o esposo de Maria e pai adotivo de Jesus?",["São José","São Joaquim","São João","São Zacarias"],0,"Padroeiro da Igreja universal."]],
+"Santos":[
+ ["Qual foi o primeiro santo nascido no Brasil?",["Frei Galvão","Padre Anchieta","Irmã Dulce","Madre Paulina"],0,"Canonizado em 2007 por Bento XVI."],
+ ["Como ficou conhecida Santa Dulce dos Pobres?",["Anjo Bom da Bahia","Mãe dos Aflitos","Santa das Rosas","Apóstola do Recife"],0,"Canonizada em 2019."],
+ ["Quem foi a primeira santa canonizada que viveu no Brasil, em 2002?",["Madre Paulina","Irmã Dulce","Santa Rita","Madre Teresa"],0,"Nasceu na Itália e fundou uma congregação em Santa Catarina."],
+ ["Qual santo é chamado de Apóstolo do Brasil?",["São José de Anchieta","São Francisco Xavier","Frei Galvão","São Bento"],0,"Jesuíta, ajudou a fundar São Paulo; canonizado em 2014."],
+ ["Quem fundou a ordem dos franciscanos?",["São Francisco de Assis","São Domingos","São Bento","Santo Inácio"],0,"No começo do século XIII."],
+ ["Quem fundou os jesuítas?",["Santo Inácio de Loyola","São Francisco Xavier","São Domingos","São Bento"],0,"A Companhia de Jesus, em 1540."],
+ ["Em que cidade nasceu Santo Antônio?",["Lisboa","Pádua","Roma","Assis"],0,"Ficou conhecido como Santo Antônio de Pádua, onde morreu."],
+ ["Santa Rita é invocada como a santa das...",["Causas impossíveis","Causas urgentes","Viagens","Colheitas"],0,"Santa Rita de Cássia."],
+ ["Santo Expedito é invocado nas causas...",["Urgentes","Impossíveis","Perdidas","De família"],0,"Ele é o santo das causas urgentes."],
+ ["Qual santo é representado a cavalo vencendo um dragão?",["São Jorge","São Miguel","São Sebastião","São Cristóvão"],0,"Soldado romano e mártir."],
+ ["Qual santo é o padroeiro dos motoristas?",["São Cristóvão","São Jorge","São Bento","São José"],0,"Segundo a tradição, carregou o Menino Jesus nos ombros."],
+ ["Que frade italiano do século XX ficou famoso pelos estigmas?",["Padre Pio","Frei Damião","São Maximiliano Kolbe","Dom Bosco"],0,"São Pio de Pietrelcina."],
+ ["São João Paulo II nasceu em que país?",["Polônia","Itália","Alemanha","Hungria"],0,"Karol Wojtyła, papa de 1978 a 2005."],
+ ["Quem escreveu o livro Confissões?",["Santo Agostinho","São Tomás de Aquino","São Jerônimo","Santo Ambrósio"],0,"Conta a sua conversão."],
+ ["Qual santo é o padroeiro dos párocos?",["São João Maria Vianney","São Francisco de Sales","São Vicente de Paulo","São Bento"],0,"O Cura d'Ars."],
+ ["Quem foram as primeiras mulheres declaradas Doutoras da Igreja, em 1970?",["Teresa d'Ávila e Catarina de Sena","Teresinha e Clara","Mônica e Rita","Faustina e Dulce"],0,"Proclamadas por Paulo VI."],
+ ["Quem recebeu as revelações da Divina Misericórdia?",["Santa Faustina","Santa Teresinha","Santa Clara","Santa Gertrudes"],0,"Na Polônia, nos anos 1930."],
+ ["Que jovem italiano, apaixonado pela Eucaristia e por informática, foi canonizado em 2025?",["Carlo Acutis","Pier Giorgio Frassati","Domingos Sávio","Chiara Badano"],0,"Ele montou um site sobre milagres eucarísticos."],
+ ["Que santa é conhecida pela \"pequena via\" do amor nas coisas simples?",["Santa Teresinha do Menino Jesus","Santa Teresa d'Ávila","Santa Clara","Santa Mônica"],0,"Doutora da Igreja, morreu aos 24 anos."],
+ ["São Bento ficou conhecido pelo lema...",["Ora et labora (reza e trabalha)","Paz e bem","Tudo por Jesus","Totus tuus"],0,"Pai do monaquismo no Ocidente."]],
+"Igreja e papas":[
+ ["Quem foi o primeiro papa?",["Pedro","Paulo","Lino","Clemente"],0,"Tu és Pedro, e sobre esta pedra..."],
+ ["Que papa foi eleito em maio de 2025?",["Leão XIV","Francisco","Bento XVI","João XXIV"],0,"Robert Francis Prevost, o primeiro papa nascido nos Estados Unidos."],
+ ["O papa Francisco nasceu em que país?",["Argentina","Brasil","Itália","Chile"],0,"Jorge Mario Bergoglio, de Buenos Aires."],
+ ["Como se chama a reunião dos cardeais que elege o papa?",["Conclave","Concílio","Sínodo","Consistório"],0,"Do latim cum clave, com chave."],
+ ["O que anuncia a fumaça branca na Capela Sistina?",["Um novo papa foi eleito","A votação continua","Um santo foi canonizado","O papa está doente"],0,"A fumaça preta significa que ainda não há eleito."],
+ ["Qual foi o último concílio ecumênico?",["Vaticano II","Trento","Vaticano I","Niceia"],0,"Realizado entre 1962 e 1965."],
+ ["Em que concílio, no ano 325, foi formulado o Credo?",["Niceia","Trento","Éfeso","Latrão"],0,"O Credo niceno-constantinopolitano."],
+ ["Quem faz a guarda pessoal do papa?",["A Guarda Suíça","Os Carabinieri","A Guarda Vaticana Real","Os Templários"],0,"Com uniformes coloridos, desde 1506."],
+ ["Quem celebrou a primeira missa no Brasil, em 1500?",["Frei Henrique de Coimbra","Padre Anchieta","Padre Manuel da Nóbrega","Frei Galvão"],0,"Em 26 de abril de 1500."],
+ ["Em que cidade fica o Cristo Redentor?",["Rio de Janeiro","São Paulo","Salvador","Aparecida"],0,"Inaugurado em 1931."],
+ ["Qual é a grande festa religiosa de Belém do Pará?",["Círio de Nazaré","Festa do Divino","Romaria de Juazeiro","Festa de Iemanjá"],0,"Reúne milhões de pessoas em outubro."],
+ ["Em que ano o Rio de Janeiro recebeu a Jornada Mundial da Juventude?",["2013","2007","2016","2000"],0,"Com o papa Francisco."],
+ ["O que significa a sigla CNBB?",["Conferência Nacional dos Bispos do Brasil","Comissão Nacional de Bíblia Brasileira","Congresso Nacional das Basílicas","Centro Nacional de Batismo"],0,"Fundada em 1952."],
+ ["Onde fica o túmulo de São Pedro?",["Sob a Basílica de São Pedro, no Vaticano","Em Jerusalém","Em Santiago de Compostela","Em Assis"],0,"O altar papal fica sobre ele."]]
+};
+const GERAIS=[];
+Object.entries(TEMAS).forEach(([t,arr])=>arr.forEach(q=>GERAIS.push([q[0],q[1],q[2],q[3],t])));
+Object.values(ROUTES).forEach(r=>r.perguntas.forEach(q=>{q[4]=q[4]||"Caminho"}));
+
+/* ===== Rumo ao Céu — motor (máquina de estados) + local, robô e online ===== */
+const KEY="rumo-ao-ceu:partida", KEY_SOM="rumo-ao-ceu:som", KEY_ID="rumo-ao-ceu:id", KEY_NOME="rumo-ao-ceu:nome";
 const PALETA=["#2d5bd1","#d23a3a","#27a04f","#e0a41c","#8e44c9","#e0682a"];
+const ROBOS=["Robô Tiago","Robô Clara","Robô Bento","Robô Rita"];
+const NIVEIS={facil:{nome:"Fácil",p:.5},medio:{nome:"Médio",p:.72},dificil:{nome:"Difícil",p:.9}};
 const COR={oracao:"var(--t-oracao)",acao:"var(--t-acao)",reflexao:"var(--t-reflexao)",companheiro:"var(--t-companheiro)",descanso:"var(--t-descanso)",bolha:"var(--t-bolha)",atalho:"var(--t-atalho)"};
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
 const CURTO={"Saint-Jean-Pied-de-Port":"St-Jean","Roncesvalles":"Roncesv.","Cruz de Ferro":"Cruz Ferro","O Cebreiro":"Cebreiro","Águas da Prata":"Á. Prata","Inconfidentes":"Inconfid.","Borda da Mata":"Borda Mata","Paraisópolis":"Paraisóp.","Pindamonhangaba":"Pinda","Consolação":"Consolaç."};
+const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const MQTT_LIB="https://cdn.jsdelivr.net/npm/mqtt@5.10.3/dist/mqtt.min.js";
 const L=36;
+SVG.robot='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="7" width="16" height="12" rx="3"/><circle cx="9" cy="13" r="1.8" fill="#0b1733"/><circle cx="15" cy="13" r="1.8" fill="#0b1733"/><rect x="11" y="2.5" width="2" height="4.5"/><circle cx="12" cy="2.5" r="1.6"/><rect x="1.5" y="11" width="2" height="5" rx="1"/><rect x="20.5" y="11" width="2" height="5" rx="1"/></svg>';
+SVG.wifi='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.3" r="1.3" fill="currentColor"/></svg>';
+SVG.phone='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>';
+
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const lsSet=(k,v)=>{try{v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+const rid=n=>Array.from({length:n},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join("");
 
-let S={route:"santiago",players:[{n:"Jogador 1",c:PALETA[0]},{n:"Jogador 2",c:PALETA[1]}],screen:"setup"};
-let SOM=lsGet(KEY_SOM)==="1", moving=-1, fresh=null;
+/* estado do jogo (compartilhado online) e estado da interface (só deste aparelho) */
+let S={stage:"setup",route:"santiago",players:[]};
+const UI={screen:"setup",mode:"local",tab:"local",myId:lsGet(KEY_ID)||rid(10),code:"",conn:"off",overSeen:false,lastEv:0,joinT:null,
+ local:[{n:"Jogador 1",c:PALETA[0],kind:"humano"},{n:"Robô Tiago",c:PALETA[1],kind:"robo",nivel:"medio"}],
+ nome:lsGet(KEY_NOME)||"",joinCode:"",err:""};
+lsSet(KEY_ID,UI.myId);
+let SOM=lsGet(KEY_SOM)==="1", botT=null;
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function el(h){const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstChild}
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function badge(k,bg){return `<span class="badge" style="background:radial-gradient(circle at 35% 30%,#fff5,transparent 55%),${bg}">${SVG[k]}</span>`}
 function pawn(c,cls){return `<svg class="pawn ${cls||""}" viewBox="0 0 20 28"><ellipse cx="10" cy="25" rx="9" ry="3" fill="${c}"/><path d="M4 25c0-6 3-9 3-12h6c0 3 3 6 3 12z" fill="${c}"/><circle cx="10" cy="7" r="5" fill="${c}"/><circle cx="8.3" cy="5.4" r="1.6" fill="#fff8"/><path d="M7 13h6" stroke="#0003" stroke-width="2"/></svg>`}
-function dieHTML(n){const on=PIPS[n]||[];return `<div class="die ${n?"":"idle"}" id="die" aria-label="Dado: ${n||"ainda não lançado"}">${Array.from({length:9},(_,i)=>`<i style="${on.includes(i)?"visibility:visible":""}"></i>`).join("")}${n?"":'<span class="qm">?</span>'}</div>`}
+function dieHTML(n,roll){const on=PIPS[n]||[];return `<div class="die ${n?"":"idle"} ${roll?"roll":""}" id="die" aria-label="Dado: ${n||"ainda não lançado"}">${Array.from({length:9},(_,i)=>`<i style="${on.includes(i)?"visibility:visible":""}"></i>`).join("")}${n?"":'<span class="qm">?</span>'}</div>`}
 const shellGold=()=>SVG.shell.replace('fill="currentColor"','fill="#f2b632"');
+function avatar(p,i,big){return `<span class="av" style="--pc:${p.c}">${p.kind==="robo"?`<span class="avi">${SVG.robot}</span>`:i+1}</span>`}
+function kindChip(p){return p.kind==="robo"?`<span class="chip">${SVG.robot} robô · ${NIVEIS[p.nivel||"medio"].nome}</span>`:p.kind==="online"?(p.id===UI.myId?'<span class="chip you">você</span>':`<span class="chip">${SVG.wifi} online</span>`):""}
 
-/* som */
+/* ---------- som ---------- */
 let actx=null;
 function beep(f,d,type,vol){if(!SOM)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type||"sine";o.frequency.value=f;g.gain.setValueAtTime(vol||.08,actx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+d);o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
-const sStep=()=>beep(520,.08,"triangle",.06);
-const sBell=()=>{beep(880,.9,"sine",.09);setTimeout(()=>beep(1320,.7,"sine",.05),90)};
-const sOk=()=>{beep(660,.15);setTimeout(()=>beep(880,.25),120)};
-const sNo=()=>beep(220,.3,"sawtooth",.04);
-const sWin=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.5,"sine",.08),i*160));
+const SONS={step:()=>beep(520,.08,"triangle",.06),bell:()=>{beep(880,.9,"sine",.09);setTimeout(()=>beep(1320,.7,"sine",.05),90)},ok:()=>{beep(660,.15);setTimeout(()=>beep(880,.25),120)},no:()=>beep(220,.3,"sawtooth",.04),roll:()=>beep(300,.3,"square",.03),win:()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.5,"sine",.08),i*160))};
+function ev(k){S.ev={n:((S.ev&&S.ev.n)||0)+1,k}}
 
-/* salvar */
-function save(){if(S.screen!=="game")return;if(S.over){lsSet(KEY,null);return}lsSet(KEY,JSON.stringify({route:S.route,players:S.players,board:S.board,deck:S.deck,cur:S.cur,die:S.die,q:S.q,log:S.log}))}
-function loadSave(){const raw=lsGet(KEY);if(!raw)return null;try{const d=JSON.parse(raw);return d&&d.players&&d.board?d:null}catch(e){return null}}
+/* ---------- rede (MQTT, dois brokers em paralelo) ---------- */
+const net={cl:[],seen:new Set(),base:"",onMsg:null,onUp:null};
+function loadMqtt(){return new Promise((res,rej)=>{if(window.mqtt)return res();const s=document.createElement("script");s.src=MQTT_LIB;s.onload=res;s.onerror=()=>rej(new Error("lib"));document.head.appendChild(s)})}
+async function netStart(code,subs,onMsg,onUp){
+ netStop();net.base="carludix/rumo-ao-ceu/"+code+"/";net.onMsg=onMsg;net.onUp=onUp;UI.conn="connecting";
+ try{await loadMqtt()}catch(e){UI.conn="erro";render();return}
+ BROKERS.forEach(url=>{let c;try{c=mqtt.connect(url,{clientId:"rac_"+rid(10),clean:true,connectTimeout:8000,reconnectPeriod:3000,keepalive:30})}catch(e){return}
+  net.cl.push(c);
+  c.on("connect",()=>{c.subscribe(subs.map(s=>net.base+s));connUpd();net.onUp&&net.onUp()});
+  c.on("close",connUpd);c.on("offline",connUpd);c.on("error",connUpd);
+  c.on("message",(t,buf)=>{let m;try{m=JSON.parse(buf.toString())}catch(e){return}if(!m||!m.mid||net.seen.has(m.mid))return;net.seen.add(m.mid);net.onMsg&&net.onMsg(t.slice(net.base.length),m)});
+ });
+ setTimeout(()=>{if(UI.conn==="connecting"){UI.conn="erro";render()}},12000);
+}
+function connUpd(){const up=net.cl.some(c=>c.connected);const was=UI.conn;UI.conn=up?"on":(net.cl.length?(was==="on"?"reconnecting":"connecting"):"off");if(was!==UI.conn)renderConn()}
+function netStop(){net.cl.forEach(c=>{try{c.end(true)}catch(e){}});net.cl=[];UI.conn="off"}
+function pub(sub,obj,retain){obj.mid=rid(12);const s=JSON.stringify(obj);net.cl.forEach(c=>{if(c.connected)try{c.publish(net.base+sub,s,{qos:0,retain:!!retain})}catch(e){}})}
+function renderConn(){const d=document.getElementById("conn");if(d){d.className="conn "+UI.conn;d.title=connTxt();d.querySelector("span").textContent=connTxt()}}
+function connTxt(){return {on:"Conectado",connecting:"Conectando…",reconnecting:"Reconectando…",erro:"Sem conexão",off:"Offline"}[UI.conn]}
+function shareLink(){return location.origin+location.pathname+"?sala="+UI.code}
 
+/* ---------- salvar ---------- */
+function save(){
+ if(UI.mode==="guest")return;
+ if(S.stage!=="game"||S.over){lsSet(KEY,null);return}
+ lsSet(KEY,JSON.stringify({S,mode:UI.mode,code:UI.code}));
+}
+function loadSave(){const raw=lsGet(KEY);if(!raw)return null;try{const d=JSON.parse(raw);return d&&d.S&&d.S.players&&d.S.board?d:null}catch(e){return null}}
+
+/* ---------- motor ---------- */
 function buildBoard(rk){
  const r=ROUTES[rk],b=new Array(L).fill(null),n=r.cidades.length;
  r.cidades.forEach((c,i)=>{b[Math.round(i*(L-1)/(n-1))]={t:"cidade",i,nome:c[0],fact:c[1]}});
@@ -391,83 +600,328 @@ function buildBoard(rk){
  for(let i=0;i<L;i++) if(!b[i]) b[i]={t:pool.pop()||"caminho"};
  return b;
 }
-
-function render(){
- const app=document.getElementById("app");app.innerHTML="";
- if(S.screen==="setup") renderSetup(app); else renderGame(app);
- save();
+function newGame(players){
+ const r=ROUTES[S.route];
+ S.stage="game";
+ S.players=players.map((p,i)=>({id:p.id,kind:p.kind,nivel:p.nivel,n:(p.n||"").trim()||(p.kind==="robo"?ROBOS[i]:"Jogador "+(i+1)),c:p.c,pos:0,skip:false,gracas:0,stamps:[0]}));
+ S.board=buildBoard(S.route);S.deck=shuffle(GERAIS.concat(r.perguntas,r.perguntas));
+ S.cur=0;S.die=0;S.q=null;S.card=null;S.over=false;S.winner=-1;S.moving=-1;S.fresh=null;S.rolling=false;
+ S.log=[`A peregrinação começa em ${r.cidades[0][0]}.`];
+ UI.overSeen=false;
+ beginTurn(true);
 }
+function humansLocal(){return S.players.filter(p=>p.kind==="humano").length}
+function beginTurn(first){
+ const p=S.players[S.cur];S.q=null;S.card=null;S.die=0;
+ if(p.skip){S.phase="rest"}
+ else if(UI.mode==="local"&&p.kind==="humano"&&humansLocal()>1){S.phase="handoff";S.first=!!first}
+ else S.phase="turn";
+ commit();
+}
+function act(a,v){ /* chamado pela interface deste aparelho */
+ if(UI.mode==="guest"){pub("host",{t:"act",id:UI.myId,a,v});return}
+ if(!canAct())return;engine(a,v);
+}
+function engine(a,v){
+ if(S.stage!=="game"||S.over)return;
+ const p=S.players[S.cur];
+ if(a==="draw"&&(S.phase==="turn"||S.phase==="handoff")){
+  if(!S.deck.length)S.deck=shuffle(GERAIS.concat(ROUTES[S.route].perguntas));
+  S.q={q:S.deck.pop(),order:shuffle([0,1,2,3]),done:false};S.phase="question";commit();
+ } else if(a==="answer"&&S.phase==="question"){
+  const q=S.q;q.done=true;q.pick=v;q.ok=v===q.q[2];S.phase="answered";ev(q.ok?"ok":"no");commit();
+ } else if(a==="go"&&S.phase==="answered"){
+  const q=S.q;S.q=null;
+  if(q.ok){const d=1+Math.floor(Math.random()*6);S.die=d;S.rolling=true;S.phase="moving";S.log.push(`${p.n} acertou e tirou ${d}.`);ev("roll");commit();setTimeout(()=>{S.rolling=false;move(S.cur,d,land)},650)}
+  else{S.die=1;S.phase="moving";S.log.push(`${p.n} errou e deu um passo de fé.`);commit();move(S.cur,1,land)}
+ } else if(a==="ack"){
+  if(S.phase==="city"){S.log.push(`${p.n} chegou a ${S.board[p.pos].nome}.`);endTurn()}
+  else if(S.phase==="card"){const k=S.card.k;S.card=null;applyEffect(S.cur,k)}
+  else if(S.phase==="rest"){p.skip=false;S.log.push(`${p.n} descansou no albergue.`);endTurn()}
+  else if(S.phase==="handoff"){engine("draw")}
+ }
+}
+function move(pi,steps,cb){
+ const p=S.players[pi];S.phase="moving";const dir=steps<0?-1:1;let left=Math.abs(steps);
+ const tick=()=>{if(left===0||(dir>0&&p.pos>=L-1)||(dir<0&&p.pos<=0)){S.moving=-1;cb&&cb();return}
+  p.pos+=dir;left--;S.moving=pi;ev("step");commit();setTimeout(tick,280)};
+ tick();
+}
+function stampCity(p){const t=S.board[p.pos];if(t.t==="cidade"&&!p.stamps.includes(t.i)){p.stamps.push(t.i);S.fresh={p:S.players.indexOf(p),c:t.i};return true}return false}
+function land(){
+ const p=S.players[S.cur],t=S.board[p.pos];
+ if(p.pos>=L-1){stampCity(p);return finish(S.cur)}
+ if(t.t==="cidade"){const novo=stampCity(p);S.card={city:t.i,novo};S.phase="city";if(novo)ev("bell");commit();return}
+ const c=CASAS[t.t];
+ if(!c)return endTurn();
+ S.card={k:t.t,txt:c.cards[Math.floor(Math.random()*c.cards.length)]};S.phase="card";commit();
+}
+function applyEffect(pi,k){
+ const p=S.players[pi];
+ const after=()=>{const w=S.players.findIndex(x=>x.pos>=L-1);if(w>=0){stampCity(S.players[w]);return finish(w)}if(stampCity(p))ev("bell");endTurn()};
+ if(k==="oracao"){S.log.push(`${p.n} rezou e avançou 1.`);move(pi,1,after)}
+ else if(k==="acao"||k==="reflexao"){p.gracas++;S.log.push(`${p.n} ganhou 1 graça.`);endTurn()}
+ else if(k==="descanso"){p.skip=true;S.log.push(`${p.n} vai descansar no albergue.`);endTurn()}
+ else if(k==="bolha"){S.log.push(`${p.n} voltou 2 casas.`);move(pi,-2,after)}
+ else if(k==="atalho"){S.log.push(`${p.n} avançou 2 casas.`);move(pi,2,after)}
+ else if(k==="companheiro"){S.players.forEach(o=>{if(o!==p&&o.pos<L-1){o.pos++;stampCity(o)}});S.log.push(`${p.n} partilhou: os outros avançaram 1.`);after()}
+ else endTurn();
+}
+function endTurn(){if(S.over)return;S.cur=(S.cur+1)%S.players.length;S.fresh=null;beginTurn(false)}
+function finish(w){S.over=true;S.winner=w;S.phase="over";S.moving=-1;S.log.push(`${S.players[w].n} chegou a ${ROUTES[S.route].meta}!`);ev("win");commit()}
+
+/* robô */
+function scheduleBot(){
+ clearTimeout(botT);
+ if(UI.mode==="guest"||S.stage!=="game"||S.over)return;
+ const p=S.players[S.cur];if(!p||p.kind!=="robo")return;
+ const ph=S.phase,d={turn:900,question:1800,answered:1000,card:2600,city:2600,rest:2000}[ph];
+ if(d==null)return;
+ botT=setTimeout(()=>{
+  if(S.players[S.cur]!==p||S.phase!==ph)return;
+  if(ph==="turn")engine("draw");
+  else if(ph==="question"){const ok=Math.random()<NIVEIS[p.nivel||"medio"].p;const wrong=[0,1,2,3].filter(i=>i!==S.q.q[2]);engine("answer",ok?S.q.q[2]:wrong[Math.floor(Math.random()*3)])}
+  else if(ph==="answered")engine("go");
+  else engine("ack");
+ },d);
+}
+
+/* quem pode agir neste aparelho */
+function canAct(){
+ if(S.stage!=="game"||S.over)return false;
+ const p=S.players[S.cur];if(!p)return false;
+ if(UI.mode==="local")return p.kind==="humano";
+ return p.id===UI.myId;
+}
+
+/* aplica mudança: desenha, salva, transmite, agenda robô */
+function commit(){
+ if(UI.mode==="guest")return;
+ if(UI.mode==="host")pub("state",{t:"state",s:view()},true);
+ render();save();scheduleBot();
+}
+function view(){const v=Object.assign({},S);delete v.deck;return v}
+
+/* ---------- online: anfitrião ---------- */
+async function hostRoom(code,resumeS){
+ UI.mode="host";UI.code=code||rid(4);UI.screen=resumeS?"game":"lobby";
+ if(resumeS)S=resumeS;
+ else{const nome=(UI.nome||"").trim()||"Anfitrião";S={stage:"lobby",route:S.route||"santiago",code:UI.code,players:[{id:UI.myId,kind:"online",n:nome,c:PALETA[0]}]}}
+ S.code=UI.code;
+ history.replaceState(null,"",location.pathname+"?sala="+UI.code);
+ render();
+ await netStart(UI.code,["host"],onHostMsg,()=>{pub("state",{t:"state",s:view()},true)});
+ render();scheduleBot();
+}
+function onHostMsg(sub,m){
+ if(sub!=="host")return;
+ if(m.t==="join"){
+  let p=S.players.find(x=>x.id===m.id);
+  if(!p&&S.stage==="lobby"&&S.players.length<4){const used=S.players.map(x=>x.c);S.players.push({id:m.id,kind:"online",n:(m.n||"Peregrino").slice(0,16),c:PALETA.find(c=>!used.includes(c))});}
+  else if(p&&m.n&&S.stage==="lobby")p.n=m.n.slice(0,16);
+  if(!p&&S.stage!=="lobby")pub("to/"+m.id,{t:"full",why:"started"});
+  else if(!p&&S.players.length>=4)pub("to/"+m.id,{t:"full",why:"cheia"});
+  commit();
+ } else if(m.t==="act"){
+  if(S.stage!=="game")return;
+  const seat=S.players.findIndex(x=>x.id===m.id);
+  if(seat===S.cur)engine(m.a,m.v);
+ } else if(m.t==="leave"&&S.stage==="lobby"){S.players=S.players.filter(x=>x.id!==m.id);commit()}
+}
+function lobbyStart(){
+ if(S.players.length<2)return;
+ newGame(S.players);
+}
+
+/* ---------- online: convidado ---------- */
+async function joinRoom(code){
+ code=(code||"").toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,4);
+ if(code.length!==4){UI.err="O código da sala tem 4 letras.";return render()}
+ const nome=(UI.nome||"").trim();if(!nome){UI.err="Escreva seu nome para entrar.";return render()}
+ lsSet(KEY_NOME,nome);
+ UI.mode="guest";UI.code=code;UI.screen="lobby";UI.err="";S={stage:"connecting",route:S.route,players:[]};
+ history.replaceState(null,"",location.pathname+"?sala="+code);
+ render();
+ await netStart(code,["state","to/"+UI.myId],onGuestMsg,sendJoin);
+ clearInterval(UI.joinT);UI.joinT=setInterval(()=>{if(!S.players.some(p=>p.id===UI.myId))sendJoin();else clearInterval(UI.joinT)},2500);
+}
+function sendJoin(){pub("host",{t:"join",id:UI.myId,n:UI.nome})}
+function onGuestMsg(sub,m){
+ if(sub==="state"&&m.t==="state"&&m.s&&m.s.code===UI.code){
+  const prev=S;S=m.s;
+  UI.screen=S.stage==="game"?"game":"lobby";
+  if(S.stage==="game"&&prev.stage!=="game")UI.overSeen=false;
+  render();
+ } else if(sub==="to/"+UI.myId&&m.t==="full"){
+  if(!S.players.some(p=>p.id===UI.myId)){UI.err=m.why==="started"?"Essa partida já começou.":"A sala está cheia (máximo 4).";leaveRoom(true)}
+ }
+}
+function leaveRoom(keepErr){
+ if(UI.mode==="guest")pub("host",{t:"leave",id:UI.myId});
+ clearInterval(UI.joinT);clearTimeout(botT);netStop();
+ const err=keepErr?UI.err:"";
+ if(UI.mode==="host")lsSet(KEY,null);
+ UI.mode="local";UI.code="";UI.screen="setup";UI.tab="online";UI.err=err;
+ S={stage:"setup",route:S.route||"santiago",players:[]};
+ history.replaceState(null,"",location.pathname);render();
+}
+
+/* ================= interface ================= */
+function render(){
+ if(UI.mode!=="local"&&UI.screen!=="setup")UI.screen=S.stage==="game"?"game":"lobby";
+ const app=document.getElementById("app");
+ const keepInfo=document.getElementById("ovi");
+ app.innerHTML="";
+ if(UI.screen==="setup")renderSetup(app);
+ else if(UI.screen==="lobby")renderLobby(app);
+ else renderGame(app);
+ syncStateModal();
+ if(UI.lastScreen!==UI.screen){UI.lastScreen=UI.screen;window.scrollTo(0,0)}
+ playEv();
+ if(keepInfo&&!document.body.contains(keepInfo))document.body.appendChild(keepInfo);
+}
+function playEv(){if(S.ev&&S.ev.n>UI.lastEv){UI.lastEv=S.ev.n;(SONS[S.ev.k]||(()=>{}))()}}
 
 function legendHTML(){
  const esp=Object.entries(CASAS).filter(([k,c])=>c.grupo==="esp"),imp=Object.entries(CASAS).filter(([k,c])=>c.grupo==="imp");
  const li=([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`;
  return `<div class="ttl">Casas especiais</div><div class="sec">${esp.map(li).join("")}</div><div class="ttl mid">Imprevistos</div><div class="sec">${imp.map(li).join("")}</div>`;
 }
+function routeCards(onPick,disabled){
+ const wrap=el(`<div class="routes"></div>`);
+ for(const k of Object.keys(ROUTES)){const x=ROUTES[k];
+  const b=el(`<button class="rcard" aria-pressed="${S.route===k}" ${disabled?"disabled":""}><span class="h"><span style="width:42px;height:42px">${SVG[x.ic]}</span><span><b>${x.l1}<br><span>${x.l2}</span></b><small>${x.sub}</small></span><span class="chk">${S.route===k?"✓":""}</span></span><span class="stops">${x.cidades.map(c=>`<span>${esc(c[0])}</span>`).join("")}</span></button>`);
+  b.onclick=()=>onPick(k);wrap.appendChild(b)}
+ return wrap;
+}
+function howBox(){return el(`<div class="frame box"><div class="ttl">Como se joga</div><div class="in how">
+  <div class="li">${badge("book","var(--city)")}<span><b>Responda a pergunta</b><small>Acertou, joga o dado. Errou, dá um passo de fé (1 casa).</small></span></div>
+  <div class="li">${badge("pin","var(--city)")}<span><b>Cidades</b><small>Carimbam a credencial e contam uma história do caminho.</small></span></div>
+  <div class="how2">${Object.entries(CASAS).map(([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`).join("")}</div>
+  <p class="hint">Jogue no mesmo aparelho, contra robôs ou online com quem estiver longe. Toque em qualquer casa do tabuleiro para ver o que ela faz.</p>
+ </div></div>`)}
 
 /* ---------- tela inicial ---------- */
 function renderSetup(app){
- const r=ROUTES[S.route],sv=loadSave();
+ const sv=loadSave();
  app.appendChild(el(`<div><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a></div>`));
- app.appendChild(el(`<header class="hero"><img class="logo" src="${LOGO}" alt="Rumo ao Céu, o jogo da peregrinação" width="200" height="200"><div class="txt"><h1>Responda, caminhe e reze até o santuário</h1><p>Um tabuleiro de peregrinação para jogar em família ou na catequese, de 1 a 4 jogadores no mesmo aparelho.</p></div></header>`));
+ app.appendChild(el(`<header class="hero"><img class="logo" src="${LOGO}" alt="Rumo ao Céu, o jogo da peregrinação" width="200" height="200"><div class="txt"><h1>Responda, caminhe e reze até o santuário</h1><p>Um tabuleiro de peregrinação para jogar em família, na catequese, contra robôs ou online com amigos.</p></div></header>`));
  if(sv){
-  const rv=ROUTES[sv.route],lead=sv.players.slice().sort((a,b)=>b.pos-a.pos)[0];
-  const box=el(`<div class="resume"><span>Há uma peregrinação em andamento: <b style="color:var(--gold2)">${esc(rv.nome)}</b>, ${sv.players.length} jogador${sv.players.length>1?"es":""}. ${esc(lead.n)} está na casa ${lead.pos}.</span><button class="obtn" id="discard">Descartar</button><button class="gbtn sm" id="resume">Continuar peregrinação <span class="tri"></span></button></div>`);
-  box.querySelector("#resume").onclick=()=>{Object.assign(S,sv,{screen:"game",busy:false,over:false});render();if(!S.q)handoff(true)};
+  const rv=ROUTES[sv.S.route],lead=sv.S.players.slice().sort((a,b)=>b.pos-a.pos)[0];
+  const box=el(`<div class="resume"><span>Há uma peregrinação ${sv.mode==="host"?"online (sala "+esc(sv.code)+")":""} em andamento: <b style="color:var(--gold2)">${esc(rv.nome)}</b>. ${esc(lead.n)} está na casa ${lead.pos}.</span><button class="obtn" id="discard">Descartar</button><button class="gbtn sm" id="resume">Continuar <span class="tri"></span></button></div>`);
+  box.querySelector("#resume").onclick=()=>{if(sv.mode==="host"){hostRoom(sv.code,sv.S)}else{UI.mode="local";S=sv.S;UI.screen="game";UI.overSeen=false;commit()}};
   box.querySelector("#discard").onclick=()=>{lsSet(KEY,null);render()};
   app.appendChild(box);
  }
  const s=el(`<section class="setup"></section>`);
- const left=el(`<div class="frame box"><div class="ttl"><span class="step">1</span>Escolha a rota</div><div class="in"><div class="routes"></div>
-  <p class="sub">Peregrinos</p><div id="plist" style="display:flex;flex-direction:column;gap:10px"></div><p class="hint">Toque no círculo para trocar a cor do peão.</p>
-  <div class="rowbtns"><div style="display:flex;gap:8px"><button class="obtn" id="add">+ Jogador</button><button class="obtn" id="rem">− Jogador</button></div><button class="gbtn" id="start">Começar a peregrinação <span class="tri"></span></button></div></div></div>`);
- const rs=left.querySelector(".routes");
- for(const k of Object.keys(ROUTES)){const x=ROUTES[k];
-  const b=el(`<button class="rcard" aria-pressed="${S.route===k}"><span class="h"><span style="width:42px;height:42px">${SVG[x.ic]}</span><span><b>${x.l1}<br><span>${x.l2}</span></b><small>${x.sub}</small></span><span class="chk">${S.route===k?"✓":""}</span></span><span class="stops">${x.cidades.map(c=>`<span>${esc(c[0])}</span>`).join("")}</span></button>`);
-  b.onclick=()=>{S.route=k;render()};rs.appendChild(b)}
- const list=left.querySelector("#plist");
- S.players.forEach((pl,i)=>{
-  const row=el(`<div class="prow"><button class="av" style="--pc:${pl.c}" aria-label="Trocar cor do jogador ${i+1}">${i+1}</button><input id="pn${i}" aria-label="Nome do jogador ${i+1}" value="${esc(pl.n)}" maxlength="16"></div>`);
-  row.querySelector("input").oninput=e=>pl.n=e.target.value;
-  row.querySelector(".av").onclick=()=>{const used=S.players.map(p=>p.c);let j=PALETA.indexOf(pl.c);for(let t=0;t<PALETA.length;t++){j=(j+1)%PALETA.length;if(!used.includes(PALETA[j]))break}pl.c=PALETA[j];render();document.querySelector(`#pn${i}`)?.previousElementSibling?.focus()};
-  list.appendChild(row)});
- left.querySelector("#add").onclick=()=>{if(S.players.length<4){const used=S.players.map(p=>p.c);S.players.push({n:"Jogador "+(S.players.length+1),c:PALETA.find(c=>!used.includes(c))});render()}};
- left.querySelector("#rem").onclick=()=>{if(S.players.length>1){S.players.pop();render()}};
- left.querySelector("#start").onclick=()=>{if(sv){confirmBox("Começar outra peregrinação?","A partida em andamento será descartada.","Começar nova",startGame)}else startGame()};
- s.appendChild(left);
- s.appendChild(el(`<div class="frame box"><div class="ttl">Como se joga</div><div class="in how">
-  <div class="li">${badge("book","var(--city)")}<span><b>Responda a pergunta</b><small>Acertou, joga o dado. Errou, dá um passo de fé (1 casa).</small></span></div>
-  <div class="li">${badge("pin","var(--city)")}<span><b>Cidades</b><small>Carimbam a credencial e contam uma história do caminho.</small></span></div>
-  <div class="how2">${Object.entries(CASAS).map(([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`).join("")}</div>
-  <p class="hint">Toque em qualquer casa do tabuleiro para ver o que ela faz. A partida fica salva neste aparelho.</p>
- </div></div>`));
+ const left=el(`<div class="frame box"><div class="ttl"><span class="step">1</span>Escolha a rota</div><div class="in"></div></div>`);
+ const inn=left.querySelector(".in");
+ inn.appendChild(routeCards(k=>{S.route=k;render()}));
+ const tabs=el(`<div class="tabs" role="tablist"><button role="tab" aria-selected="${UI.tab==="local"}" data-t="local">${SVG.phone} Neste aparelho</button><button role="tab" aria-selected="${UI.tab==="online"}" data-t="online">${SVG.wifi} Online</button></div>`);
+ tabs.querySelectorAll("button").forEach(b=>b.onclick=()=>{UI.tab=b.dataset.t;UI.err="";render()});
+ inn.appendChild(el(`<p class="sub"><span class="step">2</span>Quem vai jogar</p>`));
+ inn.appendChild(tabs);
+ if(UI.tab==="local")setupLocal(inn,sv);else setupOnline(inn);
+ s.appendChild(left);s.appendChild(howBox());
  app.appendChild(s);
 }
+function setupLocal(inn,sv){
+ const list=el(`<div class="plist"></div>`);
+ UI.local.forEach((pl,i)=>{
+  const row=el(`<div class="prow">${`<button class="av" style="--pc:${pl.c}" aria-label="Trocar cor">${pl.kind==="robo"?`<span class="avi">${SVG.robot}</span>`:i+1}</button>`}
+   <input id="pn${i}" aria-label="Nome do jogador ${i+1}" value="${esc(pl.n)}" maxlength="16">
+   <span class="seg"><button data-k="humano" aria-pressed="${pl.kind==="humano"}">Pessoa</button><button data-k="robo" aria-pressed="${pl.kind==="robo"}">${SVG.robot}Robô</button></span>
+   ${pl.kind==="robo"?`<select id="nv${i}" aria-label="Nível do robô">${Object.entries(NIVEIS).map(([k,v])=>`<option value="${k}" ${pl.nivel===k?"selected":""}>${v.nome}</option>`).join("")}</select>`:""}
+   ${UI.local.length>1?`<button class="xbtn" aria-label="Remover jogador">×</button>`:""}</div>`);
+  row.querySelector("input").oninput=e=>pl.n=e.target.value;
+  row.querySelector(".av").onclick=()=>{const used=UI.local.map(p=>p.c);let j=PALETA.indexOf(pl.c);for(let t=0;t<PALETA.length;t++){j=(j+1)%PALETA.length;if(!used.includes(PALETA[j]))break}pl.c=PALETA[j];render()};
+  row.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(k===pl.kind)return;pl.kind=k;if(k==="robo"){pl.nivel=pl.nivel||"medio";if(/^Jogador \d/.test(pl.n)||!pl.n)pl.n=ROBOS.find(r=>!UI.local.some(o=>o.n===r))||"Robô"}else if(/^Robô/.test(pl.n))pl.n="Jogador "+(i+1);render()});
+  const sel=row.querySelector("select");if(sel)sel.onchange=e=>pl.nivel=e.target.value;
+  const x=row.querySelector(".xbtn");if(x)x.onclick=()=>{UI.local.splice(i,1);render()};
+  list.appendChild(row)});
+ inn.appendChild(list);
+ const used=()=>UI.local.map(p=>p.c);
+ const rb=el(`<div class="rowbtns"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="obtn" id="addp" ${UI.local.length>=4?"disabled":""}>+ Pessoa</button><button class="obtn" id="addr" ${UI.local.length>=4?"disabled":""}>+ ${SVG.robot} Robô</button></div><button class="gbtn" id="start">Começar <span class="tri"></span></button></div>`);
+ rb.querySelector("#addp").onclick=()=>{if(UI.local.length<4){UI.local.push({n:"Jogador "+(UI.local.length+1),c:PALETA.find(c=>!used().includes(c)),kind:"humano"});render()}};
+ rb.querySelector("#addr").onclick=()=>{if(UI.local.length<4){UI.local.push({n:ROBOS.find(r=>!UI.local.some(o=>o.n===r))||"Robô",c:PALETA.find(c=>!used().includes(c)),kind:"robo",nivel:"medio"});render()}};
+ rb.querySelector("#start").onclick=()=>{
+  if(!UI.local.some(p=>p.kind==="humano")){UI.err="Inclua pelo menos uma pessoa.";return render()}
+  const go=()=>{lsSet(KEY,null);UI.mode="local";UI.screen="game";newGame(UI.local)};
+  if(sv)confirmBox("Começar outra peregrinação?","A partida em andamento será descartada.","Começar nova",go);else go()};
+ inn.appendChild(el(`<p class="hint">Toque no círculo para trocar a cor. Robôs respondem sozinhos: no Fácil acertam metade, no Difícil quase todas.</p>`));
+ if(UI.err)inn.appendChild(el(`<p class="errmsg">${esc(UI.err)}</p>`));
+ inn.appendChild(rb);
+}
+function setupOnline(inn){
+ const qs=new URLSearchParams(location.search).get("sala");
+ if(qs&&!UI.joinCode)UI.joinCode=qs.toUpperCase();
+ const box=el(`<div class="online">
+  <label class="fld"><span>Seu nome</span><input id="nome" maxlength="16" value="${esc(UI.nome)}" placeholder="Como os outros vão te ver" autocomplete="nickname"></label>
+  <div class="ogrid">
+   <div class="ocard"><b>Criar uma sala</b><small>Você escolhe a rota, recebe um código e envia o link para os amigos. Dá para completar com robôs.</small><button class="gbtn sm" id="criar">Criar sala <span class="tri"></span></button></div>
+   <div class="ocard"><b>Entrar numa sala</b><small>Digite o código de 4 letras que recebeu.</small><div class="joinrow"><input id="codigo" maxlength="4" value="${esc(UI.joinCode)}" placeholder="ABCD" aria-label="Código da sala" autocapitalize="characters"><button class="gbtn sm" id="entrar">Entrar</button></div></div>
+  </div>
+  ${UI.err?`<p class="errmsg">${esc(UI.err)}</p>`:""}
+  <p class="hint">Cada pessoa joga no próprio aparelho. Mantenha a página aberta durante a partida; quem cria a sala é o anfitrião.</p></div>`);
+ box.querySelector("#nome").oninput=e=>{UI.nome=e.target.value;lsSet(KEY_NOME,UI.nome)};
+ box.querySelector("#codigo").oninput=e=>{e.target.value=e.target.value.toUpperCase();UI.joinCode=e.target.value};
+ box.querySelector("#codigo").onkeydown=e=>{if(e.key==="Enter")joinRoom(UI.joinCode)};
+ box.querySelector("#criar").onclick=()=>{if(!UI.nome.trim()){UI.err="Escreva seu nome para criar a sala.";return render()}UI.err="";hostRoom()};
+ box.querySelector("#entrar").onclick=()=>joinRoom(UI.joinCode);
+ inn.appendChild(box);
+}
 
-function startGame(){
- const r=ROUTES[S.route];
- S.players=S.players.map((p,i)=>({n:(p.n||"").trim()||"Jogador "+(i+1),c:p.c,pos:0,skip:false,gracas:0,stamps:[0]}));
- S.board=buildBoard(S.route);
- S.deck=shuffle(GERAIS.concat(r.perguntas,r.perguntas));
- S.cur=0;S.die=0;S.q=null;S.log=[`A peregrinação começa em ${r.cidades[0][0]}.`];S.busy=false;S.over=false;
- S.screen="game";render();handoff(true);
+/* ---------- sala de espera ---------- */
+function renderLobby(app){
+ const isHost=UI.mode==="host";
+ app.appendChild(el(`<div class="gtop"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><img class="logo" src="${LOGO}" alt="Rumo ao Céu" width="58" height="58"><span class="sp"></span><span class="conn ${UI.conn}" id="conn" title="${connTxt()}"><i></i><span>${connTxt()}</span></span><button class="obtn" id="sair">Sair da sala</button></div>`));
+ app.querySelector("#sair").onclick=()=>leaveRoom();
+ const s=el(`<section class="setup"></section>`);
+ const left=el(`<div class="frame box"><div class="ttl">Sala ${esc(UI.code)}</div><div class="in"></div></div>`);
+ const inn=left.querySelector(".in");
+ if(S.stage==="connecting"){
+  inn.appendChild(el(`<div class="waitbig"><div class="spin"></div><p>${UI.conn==="erro"?"Não foi possível conectar. Confira a internet e tente de novo.":"Entrando na sala "+esc(UI.code)+"…"}</p></div>`));
+  if(UI.conn==="erro"){const b=el(`<div class="actions" style="justify-content:center"><button class="gbtn sm">Tentar de novo</button></div>`);b.querySelector("button").onclick=()=>joinRoom(UI.code);inn.appendChild(b)}
+ } else {
+  inn.appendChild(el(`<div class="codebox"><small>Código da sala</small><b>${esc(UI.code)}</b><div class="linkrow"><input id="link" readonly value="${esc(shareLink())}" aria-label="Link da sala"><button class="obtn" id="copiar">Copiar link</button></div><small class="hint">Envie o link ou o código para quem vai jogar.</small></div>`));
+  inn.querySelector("#copiar").onclick=e=>{const inp=inn.querySelector("#link");const done=()=>{e.target.textContent="Copiado!";setTimeout(()=>{e.target.textContent="Copiar link"},1600)};try{navigator.clipboard.writeText(inp.value).then(done,()=>{inp.select();done()})}catch(err){inp.select();done()}};
+  inn.appendChild(el(`<p class="sub">Rota</p>`));
+  inn.appendChild(routeCards(k=>{if(!isHost)return;S.route=k;commit()},!isHost));
+  inn.appendChild(el(`<p class="sub">Peregrinos (${S.players.length}/4)</p>`));
+  const list=el(`<div class="plist"></div>`);
+  S.players.forEach((p,i)=>{
+   const row=el(`<div class="prow lobby">${avatar(p,i)}<span class="pname">${esc(p.n)}</span>${kindChip(p)}${isHost&&p.id!==UI.myId?`<button class="xbtn" aria-label="Remover ${esc(p.n)}">×</button>`:""}</div>`);
+   const x=row.querySelector(".xbtn");if(x)x.onclick=()=>{S.players.splice(i,1);commit()};
+   list.appendChild(row)});
+  for(let i=S.players.length;i<4;i++)list.appendChild(el(`<div class="prow lobby empty"><span class="av" style="--pc:#33415f">?</span><span class="pname">Lugar livre</span></div>`));
+  inn.appendChild(list);
+  if(isHost){
+   const rb=el(`<div class="rowbtns"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="obtn" id="addr" ${S.players.length>=4?"disabled":""}>+ ${SVG.robot} Robô</button><select id="nivel" aria-label="Nível do robô">${Object.entries(NIVEIS).map(([k,v])=>`<option value="${k}" ${k==="medio"?"selected":""}>${v.nome}</option>`).join("")}</select></div><button class="gbtn" id="start" ${S.players.length<2?"disabled":""}>Começar <span class="tri"></span></button></div>`);
+   rb.querySelector("#addr").onclick=()=>{if(S.players.length>=4)return;const used=S.players.map(p=>p.c);S.players.push({id:"bot_"+rid(5),kind:"robo",nivel:rb.querySelector("#nivel").value,n:ROBOS.find(r=>!S.players.some(o=>o.n===r))||"Robô",c:PALETA.find(c=>!used.includes(c))});commit()};
+   rb.querySelector("#start").onclick=lobbyStart;
+   inn.appendChild(rb);
+   inn.appendChild(el(`<p class="hint">${S.players.length<2?"Aguardando pelo menos mais um peregrino (pessoa ou robô).":"Tudo pronto? Toque em Começar."}</p>`));
+  } else inn.appendChild(el(`<div class="waitline"><div class="spin sm"></div><span>Aguardando o anfitrião começar a peregrinação…</span></div>`));
+ }
+ s.appendChild(left);s.appendChild(howBox());app.appendChild(s);
 }
 
 /* ---------- jogo ---------- */
 function cols(){const w=window.innerWidth;return w<520?6:w<720?7:w<1080?8:9}
-
 function renderGame(app){
- const r=ROUTES[S.route],p=S.players[S.cur];
+ const r=ROUTES[S.route],p=S.players[S.cur],online=UI.mode!=="local",mine=canAct();
  const top=el(`<header class="gtop"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><img class="logo" src="${LOGO}" alt="Rumo ao Céu" width="58" height="58"><span class="rtag">${SVG[r.ic]}<span>${r.nome} <small>· rumo a ${esc(r.meta)}</small></span></span><span class="sp"></span>
-  <span class="tools"><button class="ibtn" id="help" aria-label="Como jogar">?</button><button class="ibtn" id="som" aria-label="${SOM?"Desligar som":"Ligar som"}" title="${SOM?"Som ligado":"Som desligado"}">${SOM?'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none"/></svg>':'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2"/></svg>'}</button><button class="obtn" id="novo">Nova peregrinação</button></span></header>`);
+  <span class="tools">${online?`<span class="conn ${UI.conn}" id="conn" title="${connTxt()}"><i></i><span>${connTxt()}</span></span>`:""}<button class="ibtn" id="help" aria-label="Como jogar">?</button><button class="ibtn" id="som" aria-label="${SOM?"Desligar som":"Ligar som"}" title="${SOM?"Som ligado":"Som desligado"}">${SOM?'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none"/></svg>':'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2"/></svg>'}</button>${UI.mode==="guest"?'<button class="obtn" id="sair">Sair</button>':'<button class="obtn" id="novo">Nova peregrinação</button>'}</span></header>`);
  app.appendChild(top);
- top.querySelector("#help").onclick=()=>modal(`<div class="ttl">Como jogar</div><div class="leg">${legendHTML()}</div><div class="in"><p class="hint" style="margin:0">Responda certo para jogar o dado. Errou, anda 1 casa. Cidades carimbam a credencial.</p><div class="actions"><button class="gbtn sm" data-close>Entendi</button></div></div>`);
- top.querySelector("#som").onclick=()=>{SOM=!SOM;lsSet(KEY_SOM,SOM?"1":"0");if(SOM)sOk();render()};
- top.querySelector("#novo").onclick=()=>confirmBox("Recomeçar a peregrinação?","O progresso desta partida será perdido.","Recomeçar",()=>{lsSet(KEY,null);S.players=S.players.map(x=>({n:x.n,c:x.c}));S.screen="setup";render()});
+ top.querySelector("#help").onclick=()=>infoModal(`<div class="ttl">Como jogar</div><div class="leg">${legendHTML()}</div><div class="in"><p class="hint" style="margin:0">Responda certo para jogar o dado. Errou, anda 1 casa. Cidades carimbam a credencial.</p><div class="actions"><button class="gbtn sm" data-close>Entendi</button></div></div>`);
+ top.querySelector("#som").onclick=()=>{SOM=!SOM;lsSet(KEY_SOM,SOM?"1":"0");if(SOM)SONS.ok();render()};
+ const nv=top.querySelector("#novo");if(nv)nv.onclick=()=>confirmBox(online?"Encerrar esta partida?":"Recomeçar a peregrinação?",online?"Todos voltam para a sala de espera.":"O progresso desta partida será perdido.",online?"Encerrar":"Recomeçar",()=>{if(online){clearTimeout(botT);S.stage="lobby";S.over=false;UI.screen="lobby";lsSet(KEY,null);S.players=S.players.map(x=>({id:x.id,kind:x.kind,nivel:x.nivel,n:x.n,c:x.c}));commit()}else{clearTimeout(botT);lsSet(KEY,null);UI.screen="setup";S={stage:"setup",route:S.route,players:[]};render()}});
+ const sa=top.querySelector("#sair");if(sa)sa.onclick=()=>confirmBox("Sair da partida?","Você pode voltar pelo mesmo link enquanto a partida durar.","Sair",()=>leaveRoom());
 
- const g=el(`<section class="game"><div class="c-pl"></div><div class="c-board"><div class="boardbox"><div class="board" id="board"><svg class="trail" id="trail" aria-hidden="true"></svg></div></div></div><aside class="c-leg frame leg">${legendHTML()}</aside><div class="c-bar frame"><div class="bar"></div></div></section>`);
+ const g=el(`<section class="game"><div class="c-pl"></div><div class="c-board"><div class="boardbox"><svg class="horizon" id="horizon" aria-hidden="true" preserveAspectRatio="none"></svg><div class="board" id="board"><svg class="trail" id="trail" aria-hidden="true"></svg></div></div></div><aside class="c-leg frame leg">${legendHTML()}</aside><div class="c-bar frame"><div class="bar"></div></div></section>`);
  const pl=g.querySelector(".c-pl");
- S.players.forEach((x,i)=>pl.appendChild(el(`<div class="pcard ${i===S.cur&&!S.over?"on":""}" style="--pc:${x.c}"><span class="av">${i+1}</span><span class="info"><span class="nm">${esc(x.n)}</span><span class="chips"><span class="chip">${shellGold()} casa ${x.pos}</span><span class="chip">✦ ${x.gracas} graça${x.gracas===1?"":"s"}</span>${x.skip?'<span class="chip warn">descansando</span>':""}</span></span></div>`)));
- const cred=el(`<div class="cred"><h3>${shellGold()}Credencial do Peregrino</h3><div class="pages">${S.players.map((x,pi)=>`<div class="row"><b style="color:${x.c}">${esc(x.n)} · ${x.stamps.length}/${r.cidades.length} carimbos</b><div class="stamps" style="color:${x.c}">${r.cidades.map((c,ci)=>{const on=x.stamps.includes(ci),nw=fresh&&fresh.p===pi&&fresh.c===ci;return `<button class="stamp ${on?"on":""} ${nw?"new":""}" data-c="${ci}" aria-label="${esc(c[0])}${on?" (carimbado)":""}" title="${esc(c[0])}">${on?SVG.shell:ci+1}</button>`}).join("")}</div></div>`).join("")}<p class="tip">Toque num carimbo para ver a cidade.</p></div></div>`);
+ S.players.forEach((x,i)=>pl.appendChild(el(`<div class="pcard ${i===S.cur&&!S.over?"on":""}" style="--pc:${x.c}">${avatar(x,i)}<span class="info"><span class="nm">${esc(x.n)}</span><span class="chips"><span class="chip">${shellGold()} casa ${x.pos}</span><span class="chip">✦ ${x.gracas}</span>${kindChip(x)}${x.skip?'<span class="chip warn">descansando</span>':""}</span></span></div>`)));
+ const cred=el(`<div class="cred"><h3>${shellGold()}Credencial do Peregrino</h3><div class="pages">${S.players.map((x,pi)=>`<div class="row"><b style="color:${x.c}">${esc(x.n)} · ${x.stamps.length}/${r.cidades.length}</b><div class="stamps" style="color:${x.c}">${r.cidades.map((c,ci)=>{const on=x.stamps.includes(ci),nw=S.fresh&&S.fresh.p===pi&&S.fresh.c===ci;return `<button class="stamp ${on?"on":""} ${nw?"new":""}" data-c="${ci}" aria-label="${esc(c[0])}${on?" (carimbado)":""}" title="${esc(c[0])}">${on?SVG.shell:ci+1}</button>`}).join("")}</div></div>`).join("")}<p class="tip">Toque num carimbo para ver a cidade.</p></div></div>`);
  cred.querySelectorAll(".stamp").forEach(b=>b.onclick=()=>cityInfo(+b.dataset.c));
  pl.appendChild(cred);
  pl.appendChild(el(`<div class="frame"><div class="ttl" style="font-size:17px">Diário do caminho</div><div class="log">${S.log.slice(-25).reverse().map(l=>`<div>${esc(l)}</div>`).join("")}</div></div>`));
@@ -476,159 +930,164 @@ function renderGame(app){
  board.style.gridTemplateColumns=`repeat(${C},minmax(0,1fr))`;
  const curPos=S.over?-1:p.pos;
  S.board.forEach((t,i)=>{
-  const row=Math.floor(i/C),col=row%2?C-1-i%C:i%C, c=CASAS[t.t], isEnd=i===L-1, isStart=i===0;
-  let inner,cls=t.t,small=C<8;
-  if(t.t==="cidade"){cls+=isEnd?" fim":"";inner=badge(isEnd?"cross":"pin",isEnd?"#b21f1f":"var(--city)")+`<span class="lbl">${esc(small?(CURTO[t.nome]||t.nome):t.nome)}</span>`}
-  else if(c) inner=badge(c.ic,COR[t.t]);
-  else inner=`<span class="badge">${SVG.dot}</span>`;
+  const row=Math.floor(i/C),col=row%2?C-1-i%C:i%C,c=CASAS[t.t],isEnd=i===L-1,isStart=i===0;
+  let inner,cls=t.t;
+  if(t.t==="cidade"){cls+=isEnd?" fim":"";inner=badge(isEnd?"cross":"pin",isEnd?"#b21f1f":"var(--city)")+`<span class="lbl">${esc(C<8?(CURTO[t.nome]||t.nome):t.nome)}</span>`}
+  else if(c)inner=badge(c.ic,COR[t.t]);else inner=`<span class="badge">${SVG.dot}</span>`;
   const rib=isStart?'<span class="ribbon">INÍCIO</span>':isEnd?'<span class="ribbon">CHEGADA</span>':"";
   const tile=el(`<div class="tile ${cls} ${i===curPos?"cur":""}" style="grid-row:${row+1};grid-column:${col+1};--pc:${p.c}" data-i="${i}" role="button" tabindex="0" aria-label="Casa ${i}: ${esc(t.t==="cidade"?t.nome:(c?c.nome:"caminho"))}">${rib}<span class="n">${i}</span>${inner}<div class="tokens"></div></div>`);
-  S.players.forEach((x,pi)=>{if(x.pos===i)tile.querySelector(".tokens").appendChild(el(pawn(x.c,(pi===S.cur?"cur":"")+(pi===moving?" hop":""))))});
-  tile.onclick=()=>tileInfo(i);
-  tile.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tileInfo(i)}};
+  S.players.forEach((x,pi)=>{if(x.pos===i)tile.querySelector(".tokens").appendChild(el(pawn(x.c,(pi===S.cur?"cur":"")+(pi===S.moving?" hop":""))))});
+  tile.onclick=()=>tileInfo(i);tile.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tileInfo(i)}};
   board.appendChild(tile);
  });
 
- const bar=g.querySelector(".bar"),q=S.q;
- let qhtml,ohtml,btn="";
- if(S.over){const w=S.players.find(x=>x.pos>=L-1);qhtml=`<div class="qh">${SVG.cross} Peregrinação concluída</div><p>${esc(w?w.n:"")} chegou a ${esc(r.meta)}!</p>`;ohtml=`<div class="opts" style="align-items:flex-start"><button class="gbtn sm" id="again">Nova peregrinação <span class="tri"></span></button></div>`}
- else if(S.busy&&!q){qhtml=`<div class="qh">${SVG.book} ${esc(p.n)} está caminhando</div><p>${S.die>1?"Tirou "+S.die+" no dado.":"Um passo de cada vez."} Acompanhe o peão no tabuleiro.</p>`;ohtml=`<div class="opts empty" aria-hidden="true">${["A","B","C","D"].map(k=>`<div class="opt"><span class="k">${k}</span><span class="tx">&nbsp;</span></div>`).join("")}</div>`;btn=`<button class="gbtn" disabled>Caminhando…</button>`}
- else if(!q){qhtml=`<div class="qh">${SVG.book} Vez de <span style="color:#fff;background:${p.c};padding:0 8px;border-radius:6px">${esc(p.n)}</span></div><p>Tire uma pergunta para caminhar.</p>`;
-  ohtml=`<div class="opts empty" aria-hidden="true">${["A","B","C","D"].map(k=>`<div class="opt"><span class="k">${k}</span><span class="tx">&nbsp;</span></div>`).join("")}</div>`;
-  btn=`<button class="gbtn" id="act" ${S.busy?"disabled":""}>Tirar<br>pergunta <span class="tri"></span></button>`}
- else{qhtml=`<div class="qh">${SVG.book} Pergunta para ${esc(p.n)}</div><p>${esc(q.q[0])}</p>${q.done?`<div class="verdict ${q.ok?"ok":"no"}">${q.ok?"Isso mesmo!":"Não foi dessa vez."}</div><div class="expl">${esc(q.q[3])}</div>`:""}`;
-  ohtml=`<div class="opts">${q.order.map((oi,j)=>{let c="";if(q.done){if(oi===q.q[2])c="right";else if(oi===q.pick)c="wrong"}return `<button class="opt ${c}" data-i="${oi}" ${q.done?"disabled":""}><span class="k">${"ABCD"[j]}</span><span class="tx">${esc(q.q[1][oi])}</span>${c==="right"?"<b>✓</b>":""}</button>`}).join("")}</div>`;
-  btn=q.done?`<button class="gbtn" id="act" ${S.busy?"disabled":""}>${q.ok?"Jogar<br>o dado":"Passo<br>de fé"} <span class="tri"></span></button>`:`<button class="gbtn" disabled>Escolha<br>a resposta</button>`}
+ /* barra da pergunta */
+ const bar=g.querySelector(".bar"),q=S.q,who=esc(p.n),isBot=p.kind==="robo";
+ const empty=`<div class="opts empty" aria-hidden="true">${["A","B","C","D"].map(k=>`<div class="opt"><span class="k">${k}</span><span class="tx">&nbsp;</span></div>`).join("")}</div>`;
+ const tag=`<span class="ptag" style="background:${p.c}">${who}</span>`;
+ const wait=t=>`<div class="waitbtn">${isBot?SVG.robot:'<div class="spin sm"></div>'}<span>${t}</span></div>`;
+ let qhtml,ohtml=empty,btn="";
+ if(S.over){const w=S.players[S.winner];qhtml=`<div class="qh">${SVG.cross} Peregrinação concluída</div><p>${esc(w?w.n:"")} chegou a ${esc(r.meta)}!</p>`;
+  ohtml=UI.mode==="guest"?`<div class="waitline"><span>Aguardando o anfitrião decidir a próxima partida.</span></div>`:`<div class="opts" style="align-items:flex-start"><button class="gbtn sm" id="again">Nova peregrinação <span class="tri"></span></button></div>`}
+ else if(S.phase==="moving"){qhtml=`<div class="qh">${SVG.book} ${tag} está caminhando</div><p>${S.die>1?"Tirou "+S.die+" no dado.":"Um passo de cada vez."} Acompanhe o peão no tabuleiro.</p>`;btn=`<button class="gbtn" disabled>Caminhando…</button>`}
+ else if(!q){qhtml=`<div class="qh">${SVG.book} Vez de ${tag}</div><p>${mine?"Tire uma pergunta para caminhar.":isBot?"O robô está se preparando…":"Aguardando "+who+" tirar a pergunta."}</p>`;
+  btn=mine&&S.phase==="turn"?`<button class="gbtn" id="act">Tirar<br>pergunta <span class="tri"></span></button>`:mine?"":wait(isBot?"Robô pensando…":"Vez de "+who)}
+ else{qhtml=`${q.q[4]?`<span class="cat">${esc(q.q[4])}</span>`:""}<div class="qh">${SVG.book} Pergunta para ${tag}</div><p>${esc(q.q[0])}</p>${q.done?`<div class="verdict ${q.ok?"ok":"no"}">${q.ok?"Isso mesmo!":"Não foi dessa vez."}</div><div class="expl">${esc(q.q[3])}</div>`:""}`;
+  ohtml=`<div class="opts">${q.order.map((oi,j)=>{let c="";if(q.done){if(oi===q.q[2])c="right";else if(oi===q.pick)c="wrong"}return `<button class="opt ${c}" data-i="${oi}" ${q.done||!mine?"disabled":""}><span class="k">${"ABCD"[j]}</span><span class="tx">${esc(q.q[1][oi])}</span>${c==="right"?"<b>✓</b>":""}</button>`}).join("")}</div>`;
+  btn=mine?(q.done?`<button class="gbtn" id="act">${q.ok?"Jogar<br>o dado":"Passo<br>de fé"} <span class="tri"></span></button>`:`<button class="gbtn" disabled>Escolha<br>a resposta</button>`):wait(isBot?(q.done?"Robô seguindo…":"Robô pensando…"):(q.done?"Aguardando "+who:who+" está respondendo"))}
  bar.appendChild(el(`<div class="qbox">${qhtml}</div>`));
  bar.appendChild(el(ohtml));
- bar.appendChild(el(`<div class="diebox"><div class="diewrap">${dieHTML(S.die)}</div>${btn}</div>`));
+ bar.appendChild(el(`<div class="diebox"><div class="diewrap">${dieHTML(S.die,S.rolling)}</div>${btn}</div>`));
  app.appendChild(g);
-
- g.querySelectorAll(".opt[data-i]").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
- const act=document.getElementById("act"); if(act) act.onclick=action;
- const ag=document.getElementById("again"); if(ag) ag.onclick=newAfterEnd;
+ g.querySelectorAll(".opt[data-i]:not([disabled])").forEach(b=>b.onclick=()=>act("answer",+b.dataset.i));
+ const ab=document.getElementById("act");if(ab)ab.onclick=()=>act(S.phase==="turn"?"draw":"go");
+ const ag=document.getElementById("again");if(ag)ag.onclick=againAfterEnd;
  requestAnimationFrame(drawTrail);
+ if(mine&&S.phase==="question"&&mobile()&&UI.lastQ!==q){UI.lastQ=q;setTimeout(()=>document.querySelector(".c-bar")?.scrollIntoView({behavior:"smooth",block:"start"}),50)}
 }
+function againAfterEnd(){closeStateModal();
+ if(UI.mode==="host"){S.stage="lobby";S.over=false;UI.screen="lobby";S.players=S.players.map(x=>({id:x.id,kind:x.kind,nivel:x.nivel,n:x.n,c:x.c}));commit()}
+ else{lsSet(KEY,null);UI.screen="setup";S={stage:"setup",route:S.route,players:[]};render()}}
 
+function rnd(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>(s=s*16807%2147483647)/2147483647}
+function tree(x,y,s,r){const k=r();if(k<.45)return `<g transform="translate(${x},${y}) scale(${s})"><rect x="-1.6" y="2" width="3.2" height="7" rx="1" fill="#6b4423"/><circle cy="-1" r="7.5" fill="#2f6b34"/><circle cx="-3.5" cy="1" r="5" fill="#3d8540"/><circle cx="3" cy="-3.5" r="4.5" fill="#4f9a4c"/><circle cx="-2" cy="-4" r="2.2" fill="#7cc06d" opacity=".7"/></g>`;
+ if(k<.7)return `<g transform="translate(${x},${y}) scale(${s})"><rect x="-1.3" y="3" width="2.6" height="6" fill="#6b4423"/><path d="M0,-12 L7,3 L-7,3Z" fill="#245a33"/><path d="M0,-16 L5.5,-3 L-5.5,-3Z" fill="#2f7040"/></g>`;
+ if(k<.85)return `<g transform="translate(${x},${y}) scale(${s})"><ellipse cx="0" cy="4" rx="8" ry="4.5" fill="#3d8540"/><ellipse cx="-3" cy="2" rx="4.5" ry="3.5" fill="#55a34f"/>${[[-5,1,"#f6d55c"],[0,0,"#fff"],[4,2,"#ef7b9c"]].map(([a,b,c])=>`<circle cx="${a}" cy="${b}" r="1.5" fill="${c}"/>`).join("")}</g>`;
+ return `<g transform="translate(${x},${y}) scale(${s})"><ellipse cx="0" cy="6" rx="7" ry="2" fill="#0003"/><path d="M-6,6 L-6,-2 L0,-7 L6,-2 L6,6Z" fill="#f2e6cc"/><path d="M-7.5,-1.5 L0,-8.5 L7.5,-1.5" fill="none" stroke="#b5532e" stroke-width="2.6" stroke-linejoin="round"/><rect x="-1.5" y="1" width="3" height="5" fill="#6b4423"/></g>`}
 function drawTrail(){
  const board=document.getElementById("board"),svg=document.getElementById("trail");if(!board||!svg)return;
- const br=board.getBoundingClientRect(),pts=[];
- board.querySelectorAll(".tile").forEach(t=>{const r=t.getBoundingClientRect();pts[+t.dataset.i]=[r.left-br.left+r.width/2,r.top-br.top+r.height/2]});
+ const br=board.getBoundingClientRect(),pts=[];let tw=0;
+ board.querySelectorAll(".tile").forEach(t=>{const r=t.getBoundingClientRect();tw=r.width;pts[+t.dataset.i]=[r.left-br.left+r.width/2,r.top-br.top+r.height/2]});
  if(pts.length<2)return;
  svg.setAttribute("viewBox",`0 0 ${br.width} ${br.height}`);
- const d="M"+pts.map(p=>p.join(",")).join("L");
+ const d="M"+pts.map(p=>p.map(v=>v.toFixed(1)).join(",")).join("L");
+ /* decoração entre as fileiras */
+ const C=cols(),rows=Math.ceil(L/C),R=rnd(7+S.route.length*31),gapY=[],deco=[];
+ for(let r=0;r<rows-1;r++){const a=pts[r*C],b=pts[(r+1)*C];if(!a||!b)continue;gapY.push((a[1]+b[1])/2);}
+ const turnRight=r=>r%2===0; /* fileira par vira pela direita */
+ gapY.forEach((y,r)=>{const n=Math.max(3,Math.round(br.width/70));for(let k=0;k<n;k++){const x=(k+.5+(R()-.5)*.7)*br.width/n;const turnX=turnRight(r)?br.width-tw*.9:tw*.9;if(Math.abs(x-turnX)<tw*.75)continue;deco.push(tree(x,y+(R()-.5)*4,Math.max(.7,Math.min(1.6,tw/62))*(.8+R()*.4),R))}});
  let arrows="";
  for(let i=0;i<pts.length-1;i++){const [x1,y1]=pts[i],[x2,y2]=pts[i+1],mx=(x1+x2)/2,my=(y1+y2)/2,a=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
-  arrows+=`<path d="M-5,-6 L5,0 L-5,6" transform="translate(${mx},${my}) rotate(${a})" fill="none" stroke="#3a2404" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M-5,-6 L5,0 L-5,6" transform="translate(${mx},${my}) rotate(${a})" fill="none" stroke="#ffd970" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`}
- svg.innerHTML=`<path d="${d}" fill="none" stroke="#5b3a0a" stroke-width="10" stroke-linejoin="round" stroke-linecap="round" opacity=".55"/><path d="${d}" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round" stroke-linejoin="round"/>${arrows}`;
+  arrows+=`<path d="M-4,-5 L4,0 L-4,5" transform="translate(${mx.toFixed(1)},${my.toFixed(1)}) rotate(${a.toFixed(0)})" fill="none" stroke="#f2b632" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`}
+ const rw=tw*.58;
+ svg.innerHTML=`<defs><pattern id="cob" width="14" height="10" patternUnits="userSpaceOnUse"><rect width="14" height="10" fill="#cfae74"/><path d="M0,5H14M7,0V5M0,5V10M14,5V10" stroke="#a9874f" stroke-width="1.2"/></pattern></defs>
+  ${deco.join("")}
+  <path d="${d}" fill="none" stroke="#00000040" stroke-width="${rw+8}" stroke-linejoin="round" stroke-linecap="round" transform="translate(0,3)"/>
+  <path d="${d}" fill="none" stroke="#7a5a2a" stroke-width="${rw+5}" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="${d}" fill="none" stroke="url(#cob)" stroke-width="${rw}" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="${d}" fill="none" stroke="#fff3d6" stroke-width="2" stroke-dasharray="1 10" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>${arrows}`;
+ drawHorizon();
+}
+function drawHorizon(){
+ const h=document.getElementById("horizon");if(!h)return;
+ const w=Math.max(300,h.getBoundingClientRect().width||600),H=90;h.setAttribute("viewBox",`0 0 ${w} ${H}`);
+ const sant=S.route==="santiago",cx=w*.82;
+ const church=sant
+  ?`<g transform="translate(${cx},${H-26})" fill="#6c4a6e"><rect x="-26" y="-22" width="52" height="30"/><rect x="-24" y="-50" width="12" height="40"/><rect x="12" y="-50" width="12" height="40"/><path d="M-24,-50 L-18,-64 L-12,-50Z M12,-50 L18,-64 L24,-50Z"/><rect x="-19" y="-70" width="2" height="8"/><rect x="17" y="-70" width="2" height="8"/><path d="M-12,-22 L0,-36 L12,-22Z"/><circle cx="0" cy="-12" r="4" fill="#ffd970" opacity=".85"/></g>`
+  :`<g transform="translate(${cx},${H-26})" fill="#5b4a78"><rect x="-40" y="-14" width="80" height="22"/><path d="M-18,-14 A18,18 0 0 1 18,-14Z"/><rect x="-3" y="-44" width="6" height="12"/><rect x="-1" y="-52" width="2" height="9"/><rect x="-8" y="-49" width="16" height="2"/><rect x="34" y="-42" width="9" height="50"/><path d="M34,-42 L38.5,-54 L43,-42Z"/><circle cx="0" cy="-4" r="4" fill="#ffd970" opacity=".85"/></g>`;
+ h.innerHTML=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffcf7a"/><stop offset=".55" stop-color="#ffe9b8"/><stop offset="1" stop-color="#cfe3c8"/></linearGradient><radialGradient id="sun"><stop offset="0" stop-color="#fff7d6"/><stop offset=".4" stop-color="#ffe08a" stop-opacity=".9"/><stop offset="1" stop-color="#ffcf7a" stop-opacity="0"/></radialGradient></defs>
+  <rect width="${w}" height="${H}" fill="url(#sky)"/>
+  <circle cx="${cx}" cy="${H*.38}" r="48" fill="url(#sun)"/>
+  <g fill="#fff" opacity=".85"><ellipse cx="${w*.18}" cy="20" rx="26" ry="7"/><ellipse cx="${w*.24}" cy="16" rx="16" ry="7"/><ellipse cx="${w*.52}" cy="26" rx="22" ry="5"/></g>
+  <path d="M0,${H-30} C${w*.12},${H-62} ${w*.22},${H-58} ${w*.32},${H-40} S${w*.5},${H-70} ${w*.64},${H-44} S${w*.86},${H-62} ${w},${H-38} V${H} H0Z" fill="#9db7c9"/>
+  ${church}
+  <path d="M0,${H-18} C${w*.15},${H-36} ${w*.3},${H-30} ${w*.45},${H-20} S${w*.75},${H-34} ${w},${H-16} V${H} H0Z" fill="#7aa463"/>
+  <path d="M0,${H-6} C${w*.2},${H-16} ${w*.5},${H-4} ${w*.7},${H-12} S${w*.9},${H-8} ${w},${H-10} V${H} H0Z" fill="#5f8f4c"/>`;
 }
 
+/* ---------- janela do estado (carta, cidade, albergue, vez, fim) ---------- */
+function stateModalKey(){
+ if(UI.screen!=="game")return "";
+ const ph=S.phase;
+ if(ph==="over")return UI.overSeen?"":"over";
+ if(["card","city","rest","handoff"].includes(ph))return ph+"|"+S.cur+"|"+(S.card?JSON.stringify(S.card):"")+"|"+canAct();
+ return "";
+}
+function syncStateModal(){
+ const key=stateModalKey(),cur=document.getElementById("ovs");
+ if(cur&&cur.dataset.key===key)return;
+ if(cur)cur.remove();
+ if(!key)return;
+ const p=S.players[S.cur],mine=canAct(),isBot=p.kind==="robo",who=esc(p.n);
+ const waitTxt=isBot?`<div class="waitline">${SVG.robot}<span>${who} vai seguir sozinho…</span></div>`:`<div class="waitline"><div class="spin sm"></div><span>Aguardando ${who}…</span></div>`;
+ const btn=(t,big)=>mine?`<button class="gbtn ${big?"":"sm"}" id="sok">${t} <span class="tri"></span></button>`:waitTxt;
+ let html;
+ if(S.phase==="handoff"){
+  html=`<div class="ttl">${S.first?"A peregrinação começa":"Próximo peregrino"}</div><div class="in turncard">${avatar(p,S.cur)}<h3>Vez de ${who}</h3><p style="margin:0;color:var(--muted)">Passe o aparelho para ${who}. Peão na casa ${p.pos}.</p><div class="actions" style="justify-content:center">${btn("Estou pronto",true)}</div></div>`;
+ } else if(S.phase==="rest"){
+  html=`<div class="ttl">Albergue</div><div class="in turncard">${avatar(p,S.cur)}<h3>${who} está descansando</h3><p class="fact">Passou a noite no albergue e volta a caminhar na próxima rodada.</p><div class="actions" style="justify-content:center">${btn("Seguir")}</div></div>`;
+ } else if(S.phase==="city"){
+  const t=S.board[p.pos];
+  html=`<div class="ttl">${S.card.novo?"Carimbo na credencial":"Cidade já carimbada"}</div><div class="in"><div class="kind">${badge("pin","var(--city)")}<div><small>${who} chegou a</small><h3>${esc(t.nome)}</h3></div></div><p class="fact">${esc(t.fact)}</p><div class="actions">${btn("Seguir caminho")}</div></div>`;
+ } else if(S.phase==="card"){
+  const c=CASAS[S.card.k];
+  html=`<div class="ttl">${c.grupo==="esp"?"Casa especial":"Imprevisto"}</div><div class="in"><div class="kind">${badge(c.ic,COR[S.card.k])}<div><small>${who} caiu em</small><h3>${c.nome}</h3></div></div><p class="fact">${esc(S.card.txt)}</p><p class="eff">${c.efeito}</p><div class="actions">${btn(c.bt)}</div></div>`;
+ } else if(S.phase==="over"){
+  const r=ROUTES[S.route],w=S.players[S.winner],rank=S.players.slice().sort((a,b)=>b.pos-a.pos||b.gracas-a.gracas);
+  html=`<div class="ttl">Chegada</div><div class="in"><div class="kind">${badge("cross","#b21f1f")}<div><small>Peregrinação concluída</small><h3>${esc(w.n)} chegou a ${esc(r.meta)}!</h3></div></div><p class="fact">${S.route==="santiago"?"Abraço no apóstolo e Compostela na mão. Buen Camino!":"Aos pés da Mãe Aparecida, o romeiro agradece cada passo."}</p>
+   <div class="rank">${rank.map((x,i)=>`<div class="pcard" style="--pc:${x.c}"><span class="av">${i+1}</span><span class="info"><span class="nm">${esc(x.n)}</span><span class="chips"><span class="chip">${x.stamps.length} carimbos</span><span class="chip">${x.gracas} graças</span></span></span></div>`).join("")}</div>
+   <p style="margin:0;color:var(--muted)">Na peregrinação ninguém perde: esperem juntos os últimos chegarem e rezem uma Salve-Rainha em ação de graças.</p>
+   <div class="actions"><button class="obtn" id="ver">Ver tabuleiro</button>${UI.mode==="guest"?"":'<button class="gbtn sm" id="again2">Nova peregrinação</button>'}</div></div>`;
+ }
+ const o=el(`<div class="overlay" id="ovs"><div class="card frame" role="dialog" aria-modal="true">${html}</div></div>`);o.dataset.key=key;
+ document.body.appendChild(o);
+ const ok=o.querySelector("#sok");if(ok){ok.onclick=()=>{ok.disabled=true;act("ack")};ok.focus()}
+ const ver=o.querySelector("#ver");if(ver)ver.onclick=()=>{UI.overSeen=true;closeStateModal()};
+ const a2=o.querySelector("#again2");if(a2)a2.onclick=()=>{UI.overSeen=true;againAfterEnd()};
+}
+function closeStateModal(){const o=document.getElementById("ovs");if(o)o.remove()}
+
+/* ---------- janelas de informação (só deste aparelho) ---------- */
+function infoModal(html){closeInfo();const o=el(`<div class="overlay info" id="ovi"><div class="card frame" role="dialog" aria-modal="true">${html}</div></div>`);document.body.appendChild(o);
+ o.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeInfo);
+ o.addEventListener("click",e=>{if(e.target===o)closeInfo()});
+ const f=o.querySelector(".gbtn")||o.querySelector("button");if(f)f.focus();return o}
+function closeInfo(){const o=document.getElementById("ovi");if(o)o.remove()}
+function confirmBox(t,txt,ok,fn){infoModal(`<div class="ttl">Confirmar</div><div class="in"><h3>${esc(t)}</h3><p style="margin:0;color:var(--muted)">${esc(txt)}</p><div class="actions"><button class="obtn" data-close>Cancelar</button><button class="gbtn sm" id="cok">${esc(ok)}</button></div></div>`);document.getElementById("cok").onclick=()=>{closeInfo();fn()}}
 function tileInfo(i){
- if(document.getElementById("ov"))return;
  const t=S.board[i];
- if(t.t==="cidade") return cityInfo(t.i,i);
+ if(t.t==="cidade")return cityInfo(t.i,i);
  const c=CASAS[t.t];
- if(!c) return modal(`<div class="ttl">Casa ${i}</div><div class="in"><p class="fact">Um trecho tranquilo do caminho. Nada acontece aqui.</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
- modal(`<div class="ttl">Casa ${i}</div><div class="in"><div class="kind">${badge(c.ic,COR[t.t])}<div><small>${c.grupo==="esp"?"Casa especial":"Imprevisto"}</small><h3>${c.nome}</h3></div></div><p class="eff">${c.efeito}</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
+ if(!c)return infoModal(`<div class="ttl">Casa ${i}</div><div class="in"><p class="fact">Um trecho tranquilo do caminho. Nada acontece aqui.</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
+ infoModal(`<div class="ttl">Casa ${i}</div><div class="in"><div class="kind">${badge(c.ic,COR[t.t])}<div><small>${c.grupo==="esp"?"Casa especial":"Imprevisto"}</small><h3>${c.nome}</h3></div></div><p class="eff">${c.efeito}</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
 }
 function cityInfo(ci,i){
  const r=ROUTES[S.route],c=r.cidades[ci];
- if(i===undefined) i=S.board.findIndex(t=>t.t==="cidade"&&t.i===ci);
+ if(i===undefined)i=S.board.findIndex(t=>t.t==="cidade"&&t.i===ci);
  const quem=S.players.filter(x=>x.stamps.includes(ci)).map(x=>x.n);
- modal(`<div class="ttl">Casa ${i} · parada ${ci+1} de ${r.cidades.length}</div><div class="in"><div class="kind">${badge(i===L-1?"cross":"pin",i===L-1?"#b21f1f":"var(--city)")}<div><small>Cidade do caminho</small><h3>${esc(c[0])}</h3></div></div><p class="fact">${esc(c[1])}</p><p class="hint" style="margin:0">${quem.length?"Carimbada por: "+esc(quem.join(", ")):"Ninguém carimbou ainda."}</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
+ infoModal(`<div class="ttl">Casa ${i} · parada ${ci+1} de ${r.cidades.length}</div><div class="in"><div class="kind">${badge(i===L-1?"cross":"pin",i===L-1?"#b21f1f":"var(--city)")}<div><small>Cidade do caminho</small><h3>${esc(c[0])}</h3></div></div><p class="fact">${esc(c[1])}</p><p class="hint" style="margin:0">${quem.length?"Carimbada por: "+esc(quem.join(", ")):"Ninguém carimbou ainda."}</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
 }
-
-function modal(html){closeModal();const o=el(`<div class="overlay" id="ov"><div class="card frame" role="dialog" aria-modal="true">${html}</div></div>`);document.body.appendChild(o);
- o.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
- o.addEventListener("click",e=>{if(e.target===o&&o.dataset.lock!=="1")closeModal()});
- const f=o.querySelector(".gbtn")||o.querySelector("button");if(f)f.focus();return o}
-function closeModal(){const o=document.getElementById("ov");if(o)o.remove()}
-function confirmBox(t,txt,ok,fn){modal(`<div class="ttl">Confirmar</div><div class="in"><h3>${esc(t)}</h3><p style="margin:0;color:var(--muted)">${esc(txt)}</p><div class="actions"><button class="obtn" data-close>Cancelar</button><button class="gbtn sm" id="cok">${esc(ok)}</button></div></div>`);document.getElementById("cok").onclick=()=>{closeModal();fn()}}
-
-function log(t){S.log.push(t)}
 function mobile(){return window.innerWidth<=720}
-function focusBar(){if(mobile()){const b=document.querySelector(".c-bar");if(b)b.scrollIntoView({behavior:"smooth",block:"start"})}}
 
-function action(){
- const p=S.players[S.cur],q=S.q;
- if(!q){
-  if(!S.deck.length) S.deck=shuffle(GERAIS.concat(ROUTES[S.route].perguntas));
-  S.q={q:S.deck.pop(),order:shuffle([0,1,2,3]),done:false};render();focusBar();
-  document.querySelector(".opt[data-i]")?.focus({preventScroll:true});return;
- }
- if(q.done){
-  S.q=null;
-  if(q.ok){const d=1+Math.floor(Math.random()*6);S.die=d;log(`${p.n} acertou e tirou ${d}.`);S.busy=true;render();document.getElementById("die")?.classList.add("roll");beep(300,.3,"square",.03);setTimeout(()=>move(p,d,land),580)}
-  else{S.die=1;log(`${p.n} errou e deu um passo de fé.`);move(p,1,land)}
- }
-}
-function answer(i){const q=S.q;if(!q||q.done)return;q.done=true;q.pick=i;q.ok=i===q.q[2];q.ok?sOk():sNo();render();document.getElementById("act")?.focus({preventScroll:true})}
-
-function move(p,steps,cb){
- S.busy=true;const dir=steps<0?-1:1;let left=Math.abs(steps);const pi=S.players.indexOf(p);
- const tick=()=>{if(left===0||(dir>0&&p.pos>=L-1)||(dir<0&&p.pos<=0)){moving=-1;S.busy=false;render();cb&&cb();return}
-  p.pos+=dir;left--;moving=pi;sStep();render();setTimeout(tick,260)};
- tick();
-}
-function stampCity(p){const t=S.board[p.pos];if(t.t==="cidade"&&!p.stamps.includes(t.i)){p.stamps.push(t.i);fresh={p:S.players.indexOf(p),c:t.i};return true}return false}
-
-function land(){
- const p=S.players[S.cur],t=S.board[p.pos];
- if(p.pos>=L-1){stampCity(p);return finish(p)}
- if(t.t==="cidade"){
-  const novo=stampCity(p);if(novo)sBell();render();
-  modal(`<div class="ttl">${novo?"Carimbo na credencial":"Cidade já carimbada"}</div><div class="in"><div class="kind">${badge("pin","var(--city)")}<div><small>${esc(p.n)} chegou a</small><h3>${esc(t.nome)}</h3></div></div><p class="fact">${esc(t.fact)}</p><div class="actions"><button class="gbtn sm" id="ok">Seguir caminho <span class="tri"></span></button></div></div>`).dataset.lock="1";
-  document.getElementById("ok").onclick=()=>{closeModal();log(`${p.n} chegou a ${t.nome}.`);nextPlayer()};return;
- }
- const c=CASAS[t.t];
- if(!c) return nextPlayer();
- const txt=c.cards[Math.floor(Math.random()*c.cards.length)];
- modal(`<div class="ttl">${c.grupo==="esp"?"Casa especial":"Imprevisto"}</div><div class="in"><div class="kind">${badge(c.ic,COR[t.t])}<div><small>${esc(p.n)} caiu em</small><h3>${c.nome}</h3></div></div><p class="fact">${esc(txt)}</p><p class="eff">${c.efeito}</p><div class="actions"><button class="gbtn sm" id="ok">${c.bt} <span class="tri"></span></button></div></div>`).dataset.lock="1";
- document.getElementById("ok").onclick=()=>{closeModal();applyEffect(p,t.t)};
-}
-
-function applyEffect(p,k){
- const after=()=>{const w=S.players.find(x=>x.pos>=L-1);if(w){stampCity(w);return finish(w)}if(stampCity(p))sBell();nextPlayer()};
- if(k==="oracao"){log(`${p.n} rezou e avançou 1.`);move(p,1,after)}
- else if(k==="acao"||k==="reflexao"){p.gracas++;log(`${p.n} ganhou 1 graça.`);nextPlayer()}
- else if(k==="descanso"){p.skip=true;log(`${p.n} vai descansar no albergue.`);nextPlayer()}
- else if(k==="bolha"){log(`${p.n} voltou 2 casas.`);move(p,-2,after)}
- else if(k==="atalho"){log(`${p.n} avançou 2 casas.`);move(p,2,after)}
- else if(k==="companheiro"){S.players.forEach(o=>{if(o!==p&&o.pos<L-1){o.pos++;stampCity(o)}});log(`${p.n} partilhou: os outros avançaram 1.`);after()}
- else nextPlayer();
-}
-
-function nextPlayer(){
- if(S.over)return;
- S.cur=(S.cur+1)%S.players.length;S.q=null;S.die=0;
- render();fresh=null;handoff(false);
-}
-function handoff(first){
- const p=S.players[S.cur];
- if(p.skip){
-  modal(`<div class="ttl">Albergue</div><div class="in turncard"><span class="av" style="--pc:${p.c}">${S.cur+1}</span><h3>${esc(p.n)} está descansando</h3><p class="fact">Passou a noite no albergue e volta a caminhar na próxima rodada.</p><div class="actions" style="justify-content:center"><button class="gbtn sm" id="ok">Seguir <span class="tri"></span></button></div></div>`).dataset.lock="1";
-  document.getElementById("ok").onclick=()=>{closeModal();p.skip=false;log(`${p.n} descansou no albergue.`);nextPlayer()};return;
- }
- if(S.players.length<2&&!first)return;
- if(S.players.length<2)return;
- modal(`<div class="ttl">${first?"A peregrinação começa":"Próximo peregrino"}</div><div class="in turncard"><span class="av" style="--pc:${p.c}">${S.cur+1}</span><h3>Vez de ${esc(p.n)}</h3><p style="margin:0;color:var(--muted)">Passe o aparelho para ${esc(p.n)}. Peão na casa ${p.pos}.</p><div class="actions" style="justify-content:center"><button class="gbtn" id="ok">Estou pronto <span class="tri"></span></button></div></div>`).dataset.lock="1";
- document.getElementById("ok").onclick=()=>{closeModal();action()};
-}
-
-function newAfterEnd(){closeModal();lsSet(KEY,null);S.players=S.players.map(x=>({n:x.n,c:x.c}));S.screen="setup";render()}
-function finish(w){
- S.over=true;S.cur=S.players.indexOf(w);moving=-1;const r=ROUTES[S.route];
- log(`${w.n} chegou a ${r.meta}!`);render();lsSet(KEY,null);sWin();
- const rank=S.players.slice().sort((a,b)=>b.pos-a.pos||b.gracas-a.gracas);
- modal(`<div class="ttl">Chegada</div><div class="in"><div class="kind">${badge("cross","#b21f1f")}<div><small>Peregrinação concluída</small><h3>${esc(w.n)} chegou a ${esc(r.meta)}!</h3></div></div><p class="fact">${S.route==="santiago"?"Abraço no apóstolo e Compostela na mão. Buen Camino!":"Aos pés da Mãe Aparecida, o romeiro agradece cada passo."}</p>
-  <div class="rank">${rank.map((x,i)=>`<div class="pcard" style="--pc:${x.c}"><span class="av">${i+1}</span><span class="info"><span class="nm">${esc(x.n)}</span><span class="chips"><span class="chip">${x.stamps.length} carimbos</span><span class="chip">${x.gracas} graças</span></span></span></div>`).join("")}</div>
-  <p style="margin:0;color:var(--muted)">Na peregrinação ninguém perde: esperem juntos os últimos chegarem e rezem uma Salve-Rainha em ação de graças.</p>
-  <div class="actions"><button class="obtn" data-close>Ver tabuleiro</button><button class="gbtn sm" id="again2">Nova peregrinação</button></div></div>`);
- document.getElementById("again2").onclick=newAfterEnd;
-}
-
-let rz,lastC=cols();window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(S.screen!=="game")return;if(cols()!==lastC){lastC=cols();render()}else drawTrail()},120)});
-render();
+/* ---------- início ---------- */
+(function boot(){
+ const qs=new URLSearchParams(location.search).get("sala");
+ const sv=loadSave();
+ if(qs&&!(sv&&sv.mode==="host"&&sv.code===qs.toUpperCase())){UI.tab="online";UI.joinCode=qs.toUpperCase();if(UI.nome)return joinRoom(UI.joinCode)}
+ render();
+})();
+let rz,lastC=cols();window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(UI.screen!=="game")return;if(cols()!==lastC){lastC=cols();render()}else drawTrail()},120)});
+window.addEventListener("beforeunload",()=>{if(UI.mode==="guest"&&S.stage==="lobby")pub("host",{t:"leave",id:UI.myId})});
 
 </script>
 </body>
