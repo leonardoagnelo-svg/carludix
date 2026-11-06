@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Grade dos Santos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Complete a grade 3x3 com os santos certos em cada cruzamento: mártires, doutores da Igreja, fundadores, papas, santos do Brasil. Desafio diário e jogo da velha contra o robô.">
+<meta name="description" content="Complete a grade 3x3 com os santos certos em cada cruzamento: mártires, doutores da Igreja, fundadores, papas, santos do Brasil. Desafio diário, jogo da velha contra o robô e salas online com amigos.">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta property="og:title" content="Grade dos Santos">
@@ -117,7 +117,7 @@ a{color:var(--gold-hi)}
 .turnbar{border-radius:14px;padding:10px 14px;text-align:center;font-family:var(--display);font-weight:800;font-size:1.3rem;line-height:1.1;border:2px solid transparent}
 .turnbar.mine{background:linear-gradient(180deg,var(--gold-hi),var(--gold));color:var(--ink);border-color:#fff0b0}
 .turnbar.other{background:linear-gradient(180deg,#ffb3c6,var(--rival));color:#2a0612;border-color:var(--rival-hi)}
-.turnbar.wait{background:var(--navy);color:var(--muted);border-color:#3c4580}
+.turnbar.idle{background:var(--navy);color:var(--muted);border-color:#3c4580}
 /* grade */
 .frame{padding:12px;border-radius:24px;background:linear-gradient(180deg,#141c48,#0b0f2a);border:3px solid var(--gold);box-shadow:0 0 0 2px #6b4a0d,0 0 46px rgba(240,189,62,.22),inset 0 0 0 1px rgba(255,255,255,.06)}
 .board{display:grid;grid-template-columns:minmax(0,.9fr) repeat(3,minmax(0,1fr));gap:8px}
@@ -205,6 +205,24 @@ a{color:var(--gold-hi)}
 .joinrow input{font-family:var(--mono);font-size:1.05rem;letter-spacing:.2em;text-transform:uppercase;width:9ch;padding:8px 10px;min-height:44px;border-radius:10px;border:1.5px solid #3c4580;background:#0b0f2a;color:var(--text)}
 .joinrow input:focus{outline:none;border-color:var(--gold)}
 .wait{grid-column:1/-1;padding:70px 16px;text-align:center;color:var(--muted);font-size:1.05rem}
+/* salas online */
+.salas{grid-column:1/-1;padding:18px 10px;display:flex;flex-direction:column;gap:16px}
+.salas h3{margin:0;font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--gold);text-align:center}
+.salas .lead{margin:0;text-align:center;color:var(--muted);line-height:1.45}
+.field{display:flex;flex-direction:column;gap:6px;font-weight:700}
+.field input{font:inherit;font-size:1.1rem;padding:10px 14px;min-height:50px;border-radius:12px;border:1.5px solid #3c4580;background:#0b0f2a;color:var(--text);width:100%}
+.field input:focus{outline:none;border-color:var(--gold)}
+.field input.code{font-family:var(--mono);letter-spacing:.3em;text-transform:uppercase;text-align:center}
+.card2{border:1.5px solid rgba(240,189,62,.45);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px;background:rgba(17,24,64,.6)}
+.card2 h4{margin:0;font-family:var(--display);font-weight:800;font-size:1.25rem;color:var(--gold-hi)}
+.roomlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.roomlist li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 8px 14px;border-radius:12px;background:var(--navy);border:1px solid #3c4580}
+.roomlist b{font-family:var(--mono);color:var(--gold-hi);letter-spacing:.15em}
+.roomlist small{display:block;color:var(--muted)}
+.bigcode{font-family:var(--mono);font-size:2.4rem;letter-spacing:.3em;color:var(--gold-hi);text-align:center;margin:0}
+.err{color:var(--bad);margin:0;font-weight:600;text-align:center}
+.okmsg{color:var(--gold-hi);margin:0;font-weight:600;text-align:center}
+.netwarn{margin:0;padding:8px 12px;border-radius:10px;background:rgba(255,154,140,.12);border:1px solid rgba(255,154,140,.5);color:var(--bad);text-align:center;font-weight:600}
 /* fim de jogo */
 .end{padding:18px;display:flex;flex-direction:column;gap:12px}
 .end h3{font-family:var(--display);font-weight:800;font-size:1.9rem;margin:0;line-height:1.05;color:var(--gold)}
@@ -283,7 +301,8 @@ a{color:var(--gold-hi)}
 
   <main class="boardcol">
     <p class="howto" id="howto">Toque numa casa e escolha um santo que combine com a <b>linha</b> e a <b>coluna</b>.</p>
-    <div class="turnbar wait" id="turnbar" aria-live="polite" hidden></div>
+    <div class="turnbar idle" id="turnbar" aria-live="polite" hidden></div>
+    <div class="card2" id="invitebox" hidden></div>
     <div class="frame"><div class="board" id="board" role="group" aria-label="Grade 3 por 3"></div></div>
     <div id="endbox"></div>
   </main>
@@ -510,7 +529,6 @@ const todayNum=Math.floor((Date.UTC(now.getFullYear(),now.getMonth(),now.getDate
 let mode="daily",seed,grid,state,flashI=null,lastLost=null;
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const GAMEURL=location.origin+location.pathname;
-const MATCHES="carludix/grade-dos-santos/matches/";
 const P="grade-dos-santos:";
 const SKEY=P+"dia-",STKEY=P+"progresso",RKEY=P+"erros",BKEY=P+"robo",EKEY=P+"facil",VKEY=P+"visto";
 const fresh=()=>({cells:Array(9).fill(null),pts:Array(9).fill(0),hintTxt:Array(9).fill(null).map(()=>[]),hintFor:Array(9).fill(null),hist:[],left:9,over:false,counted:false,streaked:false,easy:false});
@@ -531,15 +549,15 @@ function setMode(m){
   $("duelCtl").hidden=!isDuel();$("onlineBox").hidden=m!=="online";$("newBot").hidden=m!=="bot";
 }
 function start(m){
-  if(online.unsub&&m!=="online"){online.unsub();online.unsub=null;online.code=null}
+  if(m!=="online"&&NET.code)leaveRoom(true);
   setMode(m);
-  const labels={daily:["Desafio do Dia","Grade #"+todayNum],practice:["Grade de Treino","grade aleatória"],bot:["Contra o Robô","jogo da velha"],online:["Jogar Online","jogo da velha"]};
+  const labels={daily:["Desafio do Dia","Grade #"+todayNum],practice:["Grade de Treino","grade aleatória"],bot:["Contra o Robô","jogo da velha"],online:["Jogar Online","salas com amigos"]};
   $("gmode").textContent=labels[m][0];$("gnum").textContent=labels[m][1];$("bnum").textContent=m==="daily"?"Grade #"+todayNum+" de hoje":labels[m][0];
   flashI=null;
   if(m==="daily"){seed=todayNum*7919+29;state=normState(store.get(SKEY+todayNum))}
   else if(m==="practice"){seed=Math.floor(Math.random()*1e9);state=fresh()}
   else if(m==="bot"){seed=Math.floor(Math.random()*1e9);state=freshDuel();state.setup=true;me="A"}
-  else if(m==="online"){renderOnlineLobby();if(!online.code){grid=null;state=freshDuel();board.innerHTML=`<div class="wait">Crie uma partida ou entre com o código do seu amigo, no painel Modos de jogo.</div>`;$("endbox").innerHTML="";renderChrome();return}}
+  else if(m==="online"){if(!NET.code){grid=null;state=freshDuel();renderSalas();return}seed=state.seed}
   grid=makeGrid(seed);
   render();
 }
@@ -560,21 +578,25 @@ function renderChrome(){
   const tl=$("tlives"),tb=$("turnbar"),acts=$("acts");
   if(isDuel()){
     const a=state.cells.filter(x=>x&&x.by==="A").length,b=state.cells.filter(x=>x&&x.by==="B").length;
-    tl.innerHTML=grid&&!state.setup?`<span class="duelscore"><span class="ca">${sideName("A")} ${a}</span>×<span class="cb">${b} ${sideName("B")}</span></span><span class="lvtxt">casas</span>`:`<span class="lvtxt">Jogo da velha</span>`;
+    tl.innerHTML=grid&&!state.setup?`<span class="duelscore"><span class="ca">${esc(sideName("A"))} ${a}</span>×<span class="cb">${b} ${esc(sideName("B"))}</span></span><span class="lvtxt">casas${NET.code?" · sala "+NET.code:""}</span>`:`<span class="lvtxt">${mode==="online"?"Salas online":"Jogo da velha"}</span>`;
     document.querySelector(".t-pts").hidden=true;
     $("howto").hidden=true;
-    let txt="",cls="wait";
+    let txt="",cls="idle";
     if(grid&&!state.setup&&!state.over){
-      if(mode==="online"&&!state.players?.B){txt="Esperando o amigo entrar com o código…"}
+      if(mode==="online"&&!state.players?.B){txt=`Esperando alguém entrar na sala ${NET.code}…`}
+      else if(mode==="online"&&NET.pending){txt="Enviando sua jogada…";cls="idle"}
       else if(botBusy){txt="Robô pensando…";cls="other"}
       else if(state.turn===me){txt="Sua vez: toque numa casa";cls="mine"}
       else{txt=`Vez de ${sideName(state.turn)}…`;cls="other"}
     }
+    if(mode==="online"&&NET.code&&peerAway()&&!state.over&&state.players?.B){txt="Seu amigo parece desconectado. Esperando ele voltar…";cls="idle"}
     tb.hidden=!txt;tb.textContent=txt;tb.className="turnbar "+cls;
+    renderInvite();
     $("undoBtn").hidden=true;$("finishBtn").hidden=true;$("passBtn").hidden=false;
-    acts.hidden=!grid||state.setup||state.over;
-    $("passBtn").disabled=state.over||state.turn!==me||botBusy||(mode==="online"&&!state.players?.B);
+    acts.hidden=!grid||state.setup||state.over||(mode==="online"&&!state.players?.B);
+    $("passBtn").disabled=state.over||state.turn!==me||botBusy||(mode==="online"&&(!state.players?.B||NET.pending));
   }else{
+    $("invitebox").hidden=true;
     const out=lastLost;lastLost=null;
     tl.innerHTML=`${livesHTML(state.left,out)}<span class="lvtxt">${state.left} vela${state.left===1?"":"s"}</span>`;
     tl.setAttribute("aria-label",`${state.left} velas, ou tentativas, restantes`);
@@ -602,7 +624,7 @@ function render(){
   corner.innerHTML=CROSS+`<span class="n">${isDuel()?"":sc+"/9"}</span>`;
   board.appendChild(corner);
   grid.cols.forEach(c=>board.appendChild(critEl(c)));
-  const myTurn=!isDuel()||(state.turn===me&&!state.over&&!botBusy&&(mode!=="online"||(online.ready&&state.players&&state.players.B)));
+  const myTurn=!isDuel()||(state.turn===me&&!state.over&&!botBusy&&(mode!=="online"||(NET.code&&state.players&&state.players.B&&!NET.pending)));
   const lastI=isDuel()&&state.log&&state.log[0]&&state.log[0].i>=0?state.log[0].i:null;
   grid.rows.forEach((r,ri)=>{
     board.appendChild(critEl(r));
@@ -618,7 +640,7 @@ function render(){
         b.setAttribute("aria-label",isDuel()?`Casa ${i+1}, ${p.name}, de ${sideName(x.by)}`:`Casa ${i+1}, ${p.name}, ${state.pts[i]} pontos${hasHint(i)?", com dica":""}`);
         if(flashI===i){b.classList.add("flash");b.dataset.gain="+"+state.pts[i]}
         b.onclick=()=>toast(`${p.name}: ${ri2.l} e ${ci2.l}.`)}
-      else if(state.over){b.classList.add("miss");b.setAttribute("aria-disabled","true");const ex=answers(r,c)[0];b.innerHTML=SIL+`<span class="ex">ex.: ${ex?ex.name:"—"}</span>`;b.setAttribute("aria-label",`Casa ${i+1} vazia. Exemplo de resposta: ${ex?ex.name:"nenhum"}`)}
+      else if(state.over){b.classList.add("miss");b.setAttribute("aria-disabled","true");const usedIds=new Set(isDuel()?(state.used||[]):state.cells.filter(x=>x!==null));const ex=answers(r,c).find(s2=>!usedIds.has(s2.id))||answers(r,c)[0];b.innerHTML=SIL+`<span class="ex">ex.: ${ex?ex.name:"—"}</span>`;b.setAttribute("aria-label",`Casa ${i+1} vazia. Exemplo de resposta: ${ex?ex.name:"nenhum"}`)}
       else{
         if(lastI===i)b.classList.add("last");
         const worth=isDuel()?"":`<span class="rar">até ${cellPts(answers(r,c).length,false)} pts</span>`;
@@ -777,9 +799,9 @@ const MAXTURNS=18;
 function freshDuel(){return{cells:Array(9).fill(null),turn:"A",used:[],log:[],over:false,winner:null,line:null,turns:0}}
 function sideName(s){
   if(mode==="bot")return s==="A"?"Você":"Robô";
-  const id=state&&state.players&&state.players[s];
   if(s===me)return "Você";
-  return (id&&online.names[id])||(s==="A"?"Jogador 1":"Jogador 2");
+  const pl=state&&state.players&&state.players[s];
+  return (pl&&typeof pl.name==="string"&&pl.name.slice(0,20))||(s==="A"?"Jogador 1":"Jogador 2");
 }
 function applyMove(st,i,pid,by,ok,guessName){
   const s=JSON.parse(JSON.stringify(st));
@@ -799,6 +821,7 @@ function applyMove(st,i,pid,by,ok,guessName){
 function countBot(){if(mode!=="bot"||!state.over||state.counted)return;state.counted=true;const b=store.get(BKEY)||{w:0,l:0,d:0};if(state.winner==="A")b.w++;else if(state.winner==="B")b.l++;else b.d++;store.set(BKEY,b)}
 function passTurn(){
   if(!isDuel()||state.over||state.turn!==me)return;
+  if(mode==="online"&&!NET.host){NET.pending=true;sendCmd({t:"pass"});render();return}
   commit(applyMove(state,-1,null,me,false,null));
 }
 function duelGuess(p){
@@ -807,15 +830,12 @@ function duelGuess(p){
   closePick();
   if(ok)toast(`${p.name}! A casa ${i+1} é sua.`);
   else toast(`${p.name} não ${!fits(p,r)?critInfo(r).l:critInfo(c).l}. Passou a vez.`);
+  if(mode==="online"&&!NET.host){NET.pending=true;sendCmd({t:"move",i,pid:p.id});render();return}
   commit(applyMove(state,i,p.id,me,ok,p.name));
 }
 async function commit(next){
   if(mode==="bot"){state=next;countBot();render();if(!state.over&&state.turn==="B")botTurn();return}
-  if(mode==="online"){
-    const prev=state;state=next;render();
-    try{await online.ref.update(slim(next))}
-    catch(e){state=prev;render();toast("A jogada não foi salva: "+errText(e))}
-  }
+  if(mode==="online"&&NET.host){state=next;pubState();render()}
 }
 // --- Robô ---
 const LEVELS={facil:{acc:.5,smart:.4,top:40},medio:{acc:.72,smart:.8,top:20},dificil:{acc:.9,smart:1,top:8}};
@@ -850,7 +870,7 @@ function renderDuelBar(){
   if(!isDuel())return;
   const log=$("duelLog");
   $("legA").textContent=sideName("A");$("legB").textContent=sideName("B");
-  log.innerHTML=(state.log||[]).map(e=>`<li><i class="dot ${e.by==="A"?"da":"db"}"></i>${sideName(e.by)}: ${e.i<0?"passou a vez":(e.ok?`<b>${e.n}</b> na casa ${e.i+1}`:`errou com ${e.n} na casa ${e.i+1}`)}</li>`).join("");
+  log.innerHTML=(state.log||[]).map(e=>`<li><i class="dot ${e.by==="A"?"da":"db"}"></i>${esc(sideName(e.by))}: ${e.i<0?"passou a vez":(e.ok?`<b>${esc(e.n)}</b> na casa ${e.i+1}`:`errou com ${esc(e.n)} na casa ${e.i+1}`)}</li>`).join("");
 }
 $("newBot").onclick=()=>{if(mode==="bot"&&!state.setup&&!state.over&&state.turns>0)askConfirm("Começar uma nova partida? A atual será perdida.","Nova partida","Continuar esta",()=>start("bot"));else start("bot")};
 // ===== Fim de jogo =====
@@ -859,10 +879,11 @@ function nextGridIn(){const n=new Date(),t=new Date(n.getFullYear(),n.getMonth()
 function renderEnd(){
   const box=$("endbox");clearInterval(cdTimer);box.innerHTML="";if(!state||!state.over)return;
   if(isDuel()){
-    const w=state.winner,h=w==="empate"?"Empate":w===me?"Você venceu!":`${sideName(w)} venceu`;
+    const w=state.winner,h=w==="empate"?"Empate":w===me?"Você venceu!":`${esc(sideName(w))} venceu`;
     const a=state.cells.filter(x=>x&&x.by==="A").length,b=state.cells.filter(x=>x&&x.by==="B").length;
-    box.innerHTML=`<div class="end pill"><h3>${h}</h3><p class="sum">${state.line?"Fechou 3 em linha.":"Placar de casas"}: ${sideName("A")} <b>${a}</b> × <b>${b}</b> ${sideName("B")}</p><div class="row"><button class="btn solid big" id="again">${mode==="bot"?"Jogar de novo":"Nova partida"}</button></div></div>`;
-    $("again").onclick=()=>mode==="bot"?start("bot"):createMatch();
+    box.innerHTML=`<div class="end pill"><h3>${h}</h3><p class="sum">${state.line?"Fechou 3 em linha. ":""}Placar de casas: ${esc(sideName("A"))} <b>${a}</b> × <b>${b}</b> ${esc(sideName("B"))}</p>${mode==="online"&&state.again&&state.again!==me?`<p class="okmsg">${esc(sideName(state.again))} quer jogar de novo!</p>`:""}<div class="row"><button class="btn solid big" id="again">${mode==="bot"?"Jogar de novo":(state.again===me?"Esperando o amigo…":"Jogar de novo")}</button>${mode==="online"?`<button class="btn big" id="leaveEnd">Sair da sala</button>`:""}</div></div>`;
+    $("again").onclick=()=>mode==="bot"?start("bot"):askRematch();
+    if($("leaveEnd"))$("leaveEnd").onclick=()=>{leaveRoom();renderSalas()};
     return;
   }
   const sc=state.cells.filter(x=>x!==null).length,bonus=bonusOf(state);
@@ -882,73 +903,219 @@ function shareText(){
 }
 function copyShare(){navigator.clipboard.writeText(shareText()).then(()=>toast("Resultado copiado")).catch(()=>{const p=document.querySelector(".end pre");if(!p)return;const s=getSelection(),r=document.createRange();r.selectNodeContents(p);s.removeAllRanges();s.addRange(r);toast("Selecionado. Use copiar do seu aparelho.")})}
 
-// ===== Online =====
-const online={db:null,user:null,myId:null,code:null,ref:null,unsub:null,names:{},ready:false,loaded:false,timer:null};
-const slim=s=>({cells:s.cells,turn:s.turn,used:s.used,log:s.log,over:s.over,winner:s.winner,line:s.line,turns:s.turns});
-function errText(e){const c=e&&e.code;return c==="permission_denied"||c==="not_granted"?"você não tem permissão para jogar nesta página. Peça para o dono compartilhar com acesso de interação.":c==="unavailable"?"sem conexão agora, tente de novo.":(e&&e.message)||"erro desconhecido."}
-async function initOnline(){
-  if(online.loaded)return online.db;
-  online.loaded=true;
-  try{online.db=await window.claude?.use("db");online.user=await window.claude?.use("user")}catch(e){online.db=null}
-  if(online.user){try{const m=await online.user.me();online.myId=m.id}catch(e){}}
-  return online.db;
+// ===== Salas online (servidor público MQTT; quem cria a sala guarda o estado da partida) =====
+const esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const BROKERS=window.GDS_BROKERS||["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
+const ROOT="carludix/grade-dos-santos/v1/";
+const RT=code=>ROOT+"salas/"+code,LOBBY=ROOT+"abertas";
+const NET={c:null,code:null,host:false,pending:false,lobby:{},lobbyOn:false,msg:"",err:"",busy:false,joinCode:"",open:true,seen:{},since:0,pingT:null,lobbyT:null,netDown:false};
+const myId=(()=>{let id=store.get(P+"pid");if(!id){id="p"+Math.random().toString(36).slice(2,12);store.set(P+"pid",id)}return id})();
+const myName=()=>(store.get(P+"nome")||"").toString().slice(0,20);
+function loadMqtt(){return new Promise(res=>{if(window.mqtt)return res(true);const urls=["https://cdn.jsdelivr.net/npm/mqtt@5.10.3/dist/mqtt.min.js","https://cdnjs.cloudflare.com/ajax/libs/mqtt/5.10.3/mqtt.min.js","https://unpkg.com/mqtt@5.10.3/dist/mqtt.min.js"];
+  const next=()=>{if(!urls.length)return res(false);const sc=document.createElement("script");sc.src=urls.shift();sc.onload=()=>res(!!window.mqtt);sc.onerror=next;document.head.appendChild(sc)};next()})}
+async function connect(){
+  if(NET.c&&NET.c.connected)return NET.c;
+  if(!await loadMqtt())throw new Error("lib");
+  for(const pv of [5,4])for(const url of BROKERS){
+    const c=await new Promise(res=>{let done=false;const cl=mqtt.connect(url,{clientId:"gds_"+Math.random().toString(36).slice(2,10),clean:true,connectTimeout:8000,reconnectPeriod:2000,keepalive:30,protocolVersion:pv});
+      const t=setTimeout(()=>{if(done)return;done=true;try{cl.end(true)}catch(e){}res(null)},9000);
+      cl.once("connect",()=>{if(done)return;done=true;clearTimeout(t);res(cl)});
+      cl.once("error",()=>{if(done)return;done=true;clearTimeout(t);try{cl.end(true)}catch(e){}res(null)})});
+    if(c){NET.c=c;c.on("message",onMsg);
+      c.on("offline",()=>{NET.netDown=true;if(mode==="online")renderNetWarn()});
+      c.on("connect",()=>{NET.netDown=false;if(NET.code){c.subscribe([RT(NET.code)+"/state",RT(NET.code)+"/cmd",RT(NET.code)+"/ping/+"],{qos:1});if(NET.host)pubState()}if(NET.lobbyOn)c.subscribe(LOBBY+"/+",{qos:1});if(mode==="online")renderNetWarn()});
+      return c}
+  }
+  throw new Error("net");
 }
-function genCode(){const a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
-async function renderOnlineLobby(){
-  const box=$("onlineBox");
-  box.innerHTML=`<p class="small">Conectando…</p>`;
-  const db=await initOnline();
-  if(mode!=="online")return;
-  if(!db||!online.myId){box.innerHTML=`<p class="small">O modo online precisa que você e o amigo estejam conectados na conta Claude, com esta página compartilhada com acesso para interagir. Enquanto isso, dá para jogar contra o robô.</p>`;return}
-  if(online.code){box.innerHTML=`<div class="codebox"><span class="small">Código</span><b id="codeTxt">${online.code}</b><button class="btn" id="copyCode">Copiar</button></div><p class="small">Mande o código para o amigo. Ele abre esta mesma página, toca em Jogar Online e entra com o código.</p><div><button class="btn" id="leave">Sair da partida</button></div>`;
-    $("copyCode").onclick=()=>navigator.clipboard.writeText(online.code).then(()=>toast("Código copiado")).catch(()=>{const s=getSelection(),r=document.createRange();r.selectNodeContents($("codeTxt"));s.removeAllRanges();s.addRange(r)});
-    $("leave").onclick=()=>{online.unsub&&online.unsub();online.unsub=null;online.code=null;start("online")};
+const v5=()=>NET.c&&NET.c.options&&NET.c.options.protocolVersion===5;
+function pubRetained(topic,obj,ttl){const o={qos:1,retain:true};if(v5()&&ttl)o.properties={messageExpiryInterval:ttl};NET.c.publish(topic,obj===null?"":JSON.stringify(obj),o)}
+function readOnce(topic,ms){return new Promise(res=>{let got=null;const h=(t,buf)=>{if(t!==topic)return;try{const m=JSON.parse(buf.toString());if(m&&m.d){got=m.d;fin()}}catch(e){}};
+  const fin=()=>{clearTimeout(tm);NET.c.removeListener("message",h);res(got)};NET.c.on("message",h);NET.c.subscribe(topic,{qos:1});const tm=setTimeout(fin,ms)})}
+function onMsg(t,buf){
+  if(t.startsWith(LOBBY+"/")){const code=t.slice(LOBBY.length+1);if(!buf.length){delete NET.lobby[code]}else{try{const m=JSON.parse(buf.toString());if(m&&/^[A-Z]{4}$/.test(m.code)&&typeof m.name==="string")NET.lobby[m.code]={code:m.code,name:m.name.slice(0,20),at:+m.at||0}}catch(e){}}
+    if(mode==="online"&&!NET.code){clearTimeout(onMsg.t);onMsg.t=setTimeout(renderRoomList,150)}return}
+  if(!NET.code)return;const T=RT(NET.code);
+  if(t.startsWith(T+"/ping/")){NET.seen[t.slice(-1)]=Date.now();return}
+  if(t===T+"/state"&&!NET.host){let m;try{m=JSON.parse(buf.toString())}catch(e){return}if(!m||!m.d)return;applyRemote(m.d);return}
+  if(t===T+"/cmd"&&NET.host){let m;try{m=JSON.parse(buf.toString())}catch(e){return}handleCmd(m)}
+}
+function validState(d){return d&&Array.isArray(d.cells)&&d.cells.length===9&&d.players&&d.players.A&&Number.isFinite(d.seed)}
+function applyRemote(d){
+  if(!validState(d))return;
+  if(d.closed){const n=sideName("A");leaveRoom(true);renderSalas();NET.err="";NET.msg=`${n} fechou a sala.`;renderSalas();return}
+  if(d.players.B&&d.players.B.id!==myId&&!(d.players.A.id===myId)){leaveRoom(true);NET.err="A sala ficou cheia.";renderSalas();return}
+  const was=state&&state.log&&state.log[0];
+  if(seed!==d.seed||!grid){seed=d.seed;grid=makeGrid(seed)}
+  state=d;NET.pending=false;
+  const now=d.log&&d.log[0];
+  if(now&&(!was||JSON.stringify(was)!==JSON.stringify(now))&&now.by!==me&&d.turns>0)toast(now.i<0?`${sideName(now.by)} passou a vez`:now.ok?`${sideName(now.by)}: ${now.n} na casa ${now.i+1}`:`${sideName(now.by)} errou com ${now.n} na casa ${now.i+1}`);
+  render();
+}
+function pubState(){if(!NET.c||!NET.code)return;state.at=Date.now();pubRetained(RT(NET.code)+"/state",{d:state},7200)}
+function sendCmd(o){if(!NET.c||!NET.code)return;NET.c.publish(RT(NET.code)+"/cmd",JSON.stringify({...o,id:myId}),{qos:1});clearTimeout(sendCmd.t);sendCmd.t=setTimeout(()=>{if(NET.pending){NET.pending=false;toast("O dono da sala não respondeu. Tente de novo.");render()}},9000)}
+function lobbyAnnounce(){if(!NET.host||!NET.code||!state.open)return;if(state.players.B)pubRetained(LOBBY+"/"+NET.code,null);else pubRetained(LOBBY+"/"+NET.code,{code:NET.code,name:state.players.A.name,at:Date.now()},900)}
+function handleCmd(m){
+  if(!m||typeof m.id!=="string")return;
+  const B=state.players.B;
+  if(m.t==="join"){
+    const name=(typeof m.name==="string"?m.name:"").trim().slice(0,20)||"Jogador 2";
+    if(!B){state.players.B={id:m.id,name};state.turns=state.turns||0;lobbyAnnounce();pubState();render();toast(`${name} entrou na sala!`)}
+    else if(B.id===m.id)pubState();
     return}
-  box.innerHTML=`<div><button class="btn solid" id="newMatch">Criar partida</button></div><div class="joinrow"><input id="joinCode" maxlength="5" placeholder="CÓDIGO" aria-label="Código da partida" autocomplete="off"><button class="btn" id="joinBtn">Entrar</button></div><p class="small" id="onlineMsg" aria-live="polite"></p>`;
-  $("newMatch").onclick=createMatch;
-  $("joinBtn").onclick=()=>joinMatch($("joinCode").value);
-  $("joinCode").addEventListener("keydown",e=>{if(e.key==="Enter")joinMatch($("joinCode").value)});
+  if(!B||B.id!==m.id)return;
+  if(m.t==="leave"){toast(`${B.name} saiu da sala`);state.players.B=null;newRound(true);lobbyAnnounce();return}
+  if(m.t==="again"){if(state.over){if(state.again==="A")newRound();else{state.again="B";pubState();render()}}return}
+  if(state.over||state.turn!=="B")return pubState();
+  if(m.t==="pass"){state=applyMove(state,-1,null,"B",false,null);pubState();render();return}
+  if(m.t==="move"){
+    const i=m.i,pid=m.pid;
+    if(!Number.isInteger(i)||i<0||i>8||state.cells[i]||!Number.isInteger(pid)||!SAINTS[pid]||state.used.includes(pid))return pubState();
+    const sp=SAINTS[pid],ok=fits(sp,rowOf(i))&&fits(sp,colOf(i));
+    state=applyMove(state,i,pid,"B",ok,sp.name);pubState();render();
+    toast(ok?`${B.name}: ${sp.name} na casa ${i+1}`:`${B.name} errou com ${sp.name} na casa ${i+1}`);
+  }
 }
-async function createMatch(){
-  const db=await initOnline();if(!db||!online.myId)return start("online");
-  const code=genCode(),s=Math.floor(Math.random()*1e9);
-  const doc={seed:s,players:{A:online.myId,B:null},...freshDuel(),createdAt:new Date().toISOString()};
-  try{await db.doc(MATCHES+code).set(doc)}catch(e){toast("Não deu para criar a partida: "+errText(e));return}
-  watchMatch(code,"A");
+function newRound(keepWaiting){
+  const starter=state.starter==="A"?"B":"A";
+  const keep={code:state.code,open:state.open,players:state.players,hostId:state.hostId};
+  state={...freshDuel(),...keep,seed:Math.floor(Math.random()*1e9),starter:keepWaiting?"A":starter,turn:keepWaiting?"A":starter};
+  seed=state.seed;grid=makeGrid(seed);pubState();render();
 }
-async function joinMatch(raw){
-  const code=(raw||"").trim().toUpperCase();const m=$("onlineMsg");
-  if(code.length!==5){m.textContent="O código tem 5 letras ou números.";return}
-  const db=await initOnline();const ref=db.doc(MATCHES+code);
+function askRematch(){
+  if(mode!=="online"||!state.over)return;
+  if(NET.host){if(state.again==="B"||!state.players.B)newRound();else{state.again="A";pubState();render()}}
+  else{state.again="B";sendCmd({t:"again"});NET.pending=false;render()}
+}
+const peerAway=()=>{const other=me==="A"?"B":"A";if(!state.players||!state.players[other])return false;const last=Math.max(NET.seen[other]||0,NET.since||Date.now());return Date.now()-last>30000};
+function startPings(){clearInterval(NET.pingT);const ping=()=>{if(NET.c&&NET.code)NET.c.publish(RT(NET.code)+"/ping/"+me,"1",{qos:0});if(mode==="online")renderChrome()};ping();NET.pingT=setInterval(ping,8000);
+  clearInterval(NET.lobbyT);NET.lobbyT=setInterval(lobbyAnnounce,120000)}
+function enterRoom(code,side,d){
+  NET.code=code;NET.host=side==="A";me=side;NET.since=Date.now();NET.seen={};NET.pending=false;NET.err="";NET.msg="";
+  state=d;seed=d.seed;grid=makeGrid(seed);
+  NET.c.subscribe([RT(code)+"/state",RT(code)+"/cmd",RT(code)+"/ping/+"],{qos:1});
+  if(NET.lobbyOn){NET.c.unsubscribe(LOBBY+"/+");NET.lobbyOn=false}
+  store.set(P+"sala",{code,at:Date.now()});
+  if(location.search)history.replaceState(null,"",location.pathname+location.hash);
+  startPings();$("gnum").textContent="sala "+code;render();renderSide();window.scrollTo({top:0,behavior:"smooth"});
+}
+function newCode(){const L="ABCDEFGHJKLMNPQRSTUVWXYZ";let c="";for(let i=0;i<4;i++)c+=L[Math.floor(Math.random()*L.length)];return c}
+async function createRoom(){
+  const name=readName();if(!name)return;
+  NET.busy=true;NET.err="";NET.msg="Criando a sala…";renderSalas();
+  try{await connect()}catch(e){NET.busy=false;NET.msg="";NET.err="Não consegui conectar ao servidor do jogo. Verifique a internet e tente de novo.";return renderSalas()}
+  let code=null;for(let k=0;k<4&&!code;k++){const c=newCode();const old=await readOnce(RT(c)+"/state",1200);if(!old||old.closed)code=c}
+  if(!code){NET.busy=false;NET.msg="";NET.err="Não consegui criar a sala agora. Tente de novo.";return renderSalas()}
+  const s0=Math.floor(Math.random()*1e9);
+  const d={...freshDuel(),code,seed:s0,open:NET.open,hostId:myId,players:{A:{id:myId,name},B:null},starter:"A"};
+  NET.busy=false;enterRoom(code,"A",d);pubState();lobbyAnnounce();
+}
+async function joinRoom(raw){
+  const code=(raw||"").toUpperCase().replace(/[^A-Z]/g,"");
+  const name=readName();if(!name)return;
+  if(code.length!==4){NET.err="O código da sala tem 4 letras.";return renderSalas()}
+  NET.busy=true;NET.err="";NET.msg=`Procurando a sala ${code}…`;renderSalas();
+  try{await connect()}catch(e){NET.busy=false;NET.msg="";NET.err="Não consegui conectar ao servidor do jogo. Verifique a internet e tente de novo.";return renderSalas()}
+  const d=await readOnce(RT(code)+"/state",6000);
+  const fail=t=>{NET.busy=false;NET.msg="";NET.err=t;renderSalas()};
+  if(!validState(d)||d.closed){delete NET.lobby[code];return fail(`Não encontrei a sala ${code}. Confira o código com quem criou.`)}
+  if(d.players.A.id===myId){NET.busy=false;return enterRoom(code,"A",d)}
+  if(d.players.B&&d.players.B.id!==myId){delete NET.lobby[code];return fail(`A sala ${code} já tem dois jogadores.`)}
+  NET.code=code;NET.host=false;me="B";NET.since=Date.now();
+  NET.c.subscribe([RT(code)+"/state",RT(code)+"/ping/+"],{qos:1});
+  if(!d.players.B||d.players.B.id!==myId){
+    NET.msg="Entrando na sala…";renderSalas();
+    const ok=await new Promise(res=>{const h=(t,buf)=>{if(t!==RT(code)+"/state")return;try{const m=JSON.parse(buf.toString());if(m&&m.d&&m.d.players&&m.d.players.B&&m.d.players.B.id===myId){fin(true)}}catch(e){}};
+      const fin=v=>{clearTimeout(tm);clearInterval(iv);NET.c.removeListener("message",h);res(v)};NET.c.on("message",h);
+      const send=()=>NET.c.publish(RT(code)+"/cmd",JSON.stringify({t:"join",id:myId,name}),{qos:1});send();const iv=setInterval(send,2500);const tm=setTimeout(()=>fin(false),9000)});
+    if(!ok){NET.code=null;NET.c.unsubscribe([RT(code)+"/state",RT(code)+"/ping/+"]);return fail("Quem criou a sala não respondeu. Ele precisa estar com o jogo aberto na tela.")}
+  }
+  NET.busy=false;
+  const fresh2=await readOnce(RT(code)+"/state",3000)||d;
+  enterRoom(code,"B",fresh2);
+}
+function leaveRoom(silent){
+  if(!NET.code)return;
+  const code=NET.code;
   try{
-    const lease=await ref.acquire({holder:online.myId,ttlMs:5000});
-    const snap=await ref.get();
-    if(!snap.exists){m.textContent="Não achei essa partida. Confira o código.";return}
-    const d=snap.data();
-    if(d.players.A===online.myId){watchMatch(code,"A");return}
-    if(d.players.B&&d.players.B!==online.myId){m.textContent="Essa partida já tem dois jogadores.";return}
-    if(!lease.acquired){m.textContent="Alguém está entrando nessa partida agora. Tente de novo em alguns segundos.";return}
-    if(!d.players.B)await ref.update({players:{A:d.players.A,B:online.myId}});
-    watchMatch(code,"B");
-  }catch(e){m.textContent="Não deu para entrar: "+errText(e)}
+    if(NET.host){state.closed=true;pubState();if(state.open)pubRetained(LOBBY+"/"+code,null)}
+    else sendCmd({t:"leave"});
+    NET.c.unsubscribe([RT(code)+"/state",RT(code)+"/cmd",RT(code)+"/ping/+"]);
+  }catch(e){}
+  clearInterval(NET.pingT);clearInterval(NET.lobbyT);
+  NET.code=null;NET.host=false;NET.pending=false;store.set(P+"sala",null);
+  state=freshDuel();grid=null;me="A";
+  if(!silent)toast(`Você saiu da sala ${code}`);
 }
-function watchMatch(code,side){
-  online.unsub&&online.unsub();
-  online.code=code;online.ref=online.db.doc(MATCHES+code);me=side;online.ready=false;
-  clearTimeout(online.timer);online.timer=setTimeout(()=>{if(!online.ready)toast("A partida ainda não carregou. Pode ser a conexão.")},10000);
-  renderOnlineLobby();
-  online.unsub=online.ref.onSnapshot(async snap=>{
-    if(!snap.exists)return;
-    const d=snap.data();
-    if(!snap.metadata.fromCache){online.ready=true;clearTimeout(online.timer)}
-    if(seed!==d.seed||!grid){seed=d.seed;grid=makeGrid(seed)}
-    state=JSON.parse(JSON.stringify(d));
-    const ids=[d.players.A,d.players.B].filter(Boolean);
-    try{const ps=await online.user.profiles(ids);ids.forEach(id=>online.names[id]=ps[id]&&ps[id].name||"")}catch(e){}
-    $("gnum").textContent="partida "+code;
-    render();
-  },err=>{online.ready=false;toast("Conexão com a partida perdida: "+errText(err))});
+function readName(){
+  const inp=$("nameIn");const n=((inp?inp.value:myName())||"").trim().slice(0,20);
+  if(!n){NET.err="Escreva seu nome para os outros saberem quem é você.";renderSalas();setTimeout(()=>$("nameIn")&&$("nameIn").focus(),30);return null}
+  store.set(P+"nome",n);return n;
 }
+async function watchLobby(){
+  try{await connect()}catch(e){NET.err="Não consegui conectar ao servidor do jogo. Verifique a internet.";return renderSalas()}
+  if(!NET.lobbyOn){NET.c.subscribe(LOBBY+"/+",{qos:1});NET.lobbyOn=true}
+  setTimeout(()=>{NET.lobbyLoaded=true;renderRoomList()},1800);
+}
+function renderNetWarn(){const w=$("netwarn");if(w)w.hidden=!NET.netDown;renderChrome()}
+function roomListHTML(){
+  const list=Object.values(NET.lobby).filter(r=>Date.now()-r.at<5*60000&&r.code!==NET.code).sort((a,b)=>b.at-a.at).slice(0,12);
+  if(!NET.lobbyLoaded&&!list.length)return `<p class="small">Procurando salas abertas…</p>`;
+  if(!list.length)return `<p class="small">Nenhuma sala aberta agora. Crie uma e marque "Sala aberta" para aparecer aqui.</p>`;
+  return `<ul class="roomlist">${list.map(r=>`<li><span><b>${r.code}</b><small>criada por ${esc(r.name)} · há ${Math.max(1,Math.round((Date.now()-r.at)/60000))} min</small></span><button class="btn" data-join="${r.code}">Entrar</button></li>`).join("")}</ul>`;
+}
+function renderRoomList(){const el=$("roomList");if(!el)return;el.innerHTML=roomListHTML();el.querySelectorAll("[data-join]").forEach(b=>b.onclick=()=>joinRoom(b.dataset.join))}
+function renderSalas(){
+  if(mode!=="online"||NET.code)return;
+  const last=store.get(P+"sala");
+  board.innerHTML=`<div class="salas">
+    <h3>Salas online</h3>
+    <p class="lead">Jogo da velha com santos contra um amigo, cada um no seu celular. Crie uma sala e mande o link, ou entre com o código.</p>
+    <p class="netwarn" id="netwarn" ${NET.netDown?"":"hidden"}>Sem conexão com o servidor. Tentando reconectar…</p>
+    ${NET.err?`<p class="err" role="alert">${esc(NET.err)}</p>`:""}${NET.msg?`<p class="okmsg" aria-live="polite">${esc(NET.msg)}</p>`:""}
+    <label class="field">Seu nome<input id="nameIn" maxlength="20" autocomplete="nickname" placeholder="Como os outros vão te ver" value="${esc(myName())}"></label>
+    <div class="card2"><h4>Criar uma sala</h4>
+      <label class="toggle"><input type="checkbox" id="openIn" ${NET.open?"checked":""}><span><b>Sala aberta</b><br><span class="small">Aparece na lista abaixo para qualquer pessoa entrar. Desmarque para jogar só com quem tiver o código.</span></span></label>
+      <button class="btn solid big" id="createBtn" ${NET.busy?"disabled":""}>Criar sala</button></div>
+    <div class="card2"><h4>Entrar com código</h4>
+      <div class="row"><input class="code" id="codeIn" maxlength="4" aria-label="Código da sala" placeholder="ABCD" value="${esc(NET.joinCode)}" style="flex:1;min-width:0;font:inherit;font-family:var(--mono);font-size:1.3rem;letter-spacing:.3em;text-transform:uppercase;text-align:center;min-height:50px;border-radius:12px;border:1.5px solid #3c4580;background:#0b0f2a;color:var(--text)"><button class="btn big" id="joinBtn" ${NET.busy?"disabled":""}>Entrar</button></div>
+      ${last&&last.code&&Date.now()-last.at<7200000?`<button class="linkbtn" id="backBtn">Voltar para a sala ${esc(last.code)}</button>`:""}</div>
+    <div class="card2"><h4>Salas abertas agora</h4><div id="roomList">${roomListHTML()}</div></div>
+  </div>`;
+  $("endbox").innerHTML="";
+  $("openIn").onchange=e=>{NET.open=e.target.checked};
+  $("createBtn").onclick=createRoom;
+  $("joinBtn").onclick=()=>{NET.joinCode=$("codeIn").value;joinRoom(NET.joinCode)};
+  $("codeIn").addEventListener("keydown",e=>{if(e.key==="Enter"){NET.joinCode=$("codeIn").value;joinRoom(NET.joinCode)}});
+  $("codeIn").addEventListener("input",e=>{NET.joinCode=e.target.value});
+  if($("backBtn"))$("backBtn").onclick=()=>joinRoom(last.code);
+  renderRoomList();renderChrome();renderSide();
+  if(!NET.lobbyOn)watchLobby();
+}
+const inviteURL=()=>GAMEURL+"?sala="+NET.code;
+const inviteMsg=()=>`Bora jogar a Grade dos Santos comigo? Entra na minha sala ${NET.code}: ${inviteURL()}`;
+function renderInvite(){
+  const box=$("invitebox");const show=mode==="online"&&NET.code&&state&&state.players&&!state.players.B&&!state.over;
+  box.hidden=!show;if(!show){box.innerHTML="";return}
+  if(box.dataset.code===NET.code&&box.innerHTML)return;box.dataset.code=NET.code;
+  box.innerHTML=`<h4 style="text-align:center">Chame alguém para a sua sala</h4><p class="bigcode" aria-label="Código da sala">${NET.code}</p>
+    <a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(inviteMsg())}" target="_blank" rel="noopener">${WAICON}Convidar no WhatsApp</a>
+    <div class="row" style="justify-content:center"><button class="btn" id="copyInv2">Copiar link</button></div>
+    <p class="small" style="text-align:center">Quem receber o link abre, escreve o nome e já entra. ${state.open?"A sala também aparece na lista de salas abertas.":"A sala é fechada: só entra quem tiver o código."}</p>`;
+  $("copyInv2").onclick=()=>navigator.clipboard.writeText(inviteURL()).then(()=>toast("Link copiado. Cole no grupo!")).catch(()=>toast("Copie o link: "+inviteURL()));
+}
+function renderSide(){
+  const box=$("onlineBox");if(mode!=="online"){box.innerHTML="";return}
+  if(!NET.code){box.innerHTML=`<p class="small">Crie ou entre numa sala na tela da grade.</p>`;return}
+  const msg=inviteMsg();
+  box.innerHTML=`<div class="codebox"><span class="small">Sala</span><b id="codeTxt">${NET.code}</b></div>
+    <a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">${WAICON}Convidar no WhatsApp</a>
+    <div class="row"><button class="btn" id="copyInv">Copiar link</button><button class="btn" id="leaveRoom">Sair da sala</button></div>
+    <p class="small" id="invTxt" style="overflow-wrap:anywhere">${esc(inviteURL())}</p>`;
+  $("copyInv").onclick=()=>navigator.clipboard.writeText(inviteURL()).then(()=>toast("Link copiado. Cole no grupo!")).catch(()=>{const s=getSelection(),r=document.createRange();r.selectNodeContents($("invTxt"));s.removeAllRanges();s.addRange(r);toast("Link selecionado. Copie pelo seu aparelho.")});
+  $("leaveRoom").onclick=()=>askConfirm(`Sair da sala ${NET.code}?${NET.host?" Como você criou a sala, ela será fechada.":""}`,"Sair","Ficar",()=>{leaveRoom();renderSalas()});
+}
+window.addEventListener("pagehide",()=>{if(NET.code&&NET.host&&state&&state.open&&!state.players.B){try{pubRetained(LOBBY+"/"+NET.code,null)}catch(e){}}});
 
 // ===== Erros na base e configurações =====
 const getReports=()=>store.get(RKEY)||[];
@@ -978,11 +1145,13 @@ $("passBtn").onclick=passTurn;
 document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{
   const m=b.dataset.m;if(m===mode&&m!=="practice")return;
   const busy=mode==="bot"&&state&&!state.setup&&!state.over&&state.turns>0;
-  if(busy)askConfirm("Sair da partida contra o robô? Ela será perdida.","Sair","Continuar jogando",()=>start(m));else start(m);
+  if(busy)askConfirm("Sair da partida contra o robô? Ela será perdida.","Sair","Continuar jogando",()=>start(m));
+  else if(mode==="online"&&NET.code)askConfirm(`Sair da sala ${NET.code}?${NET.host?" Como você criou a sala, ela será fechada.":""}`,"Sair","Ficar na sala",()=>start(m));
+  else start(m);
 });
-if(!window.claude){const ob=document.querySelector('.mode[data-m="online"]');if(ob)ob.hidden=true}
-start("daily");
-if(!store.get(VKEY)){showIntro(0);openModal("introModal");setTimeout(()=>$("introNext").focus(),60)}
+{const sala=(new URLSearchParams(location.search).get("sala")||"").toUpperCase().replace(/[^A-Z]/g,"").slice(0,4);
+ if(sala.length===4){NET.joinCode=sala;start("online");if(myName())joinRoom(sala)}else start("daily")}
+if(!store.get(VKEY)&&mode==="daily"){showIntro(0);openModal("introModal");setTimeout(()=>$("introNext").focus(),60)}
 </script>
 
 </body>
