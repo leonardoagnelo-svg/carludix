@@ -325,12 +325,14 @@ function iniciar(m){
   $("msg").textContent="";$("palpite").value="";fecharSug();desenhar(null);
 }
 
+function romano(r){const v={I:1,V:5,X:10,L:50,C:100};let n=0;for(let i=0;i<r.length;i++){const a=v[r[i]],c=v[r[i+1]]||0;n+=a<c?-a:a}return n}
+function seculo(st){const p=st.split("–").map(x=>x.trim());const ini=romano(p[0]),fim=romano(p[p.length-1]);const anos=fim>=21?`de ${(ini-1)*100+1} até hoje`:`anos ${(ini-1)*100+1} a ${fim*100}`;return p.length>1?`Entre os séculos ${p[0]} e ${p[1]} (${anos})`:`Século ${p[0]} (${anos})`}
 function desenhar(anim){
   const s=SANTOS[alvo], abertas=fim?MAX:palpites.length+1;
   $("window").innerHTML=DICAS.slice(0,abertas).map((d,i)=>`<div class="pane on ${anim&&i===abertas-1?"fresh":""}" data-c="${i}" id="dica${i}">
       <div class="glass">${vitral(PAL[i],stxt(ICO[i]),true)}</div>
       <div class="txt"><span class="lab">Dica ${i+1} de ${MAX} · ${d[0]}</span>
-      <span class="val">${s[d[1]]}</span></div></div>`).join("");
+      <span class="val">${d[1]==="st"?seculo(s.st):s[d[1]]}</span></div></div>`).join("");
   $("prox").innerHTML=(!fim&&abertas<MAX)?`🔒 Próxima dica: <b>${DICAS[abertas][0]}</b>, se errar este palpite`:"";
   $("arcos").innerHTML=Array.from({length:MAX},(_,i)=>{
     const st=i<palpites.length?(palpites[i]===alvo?"ok":"err"):(!fim&&i===palpites.length?"lit":"");
