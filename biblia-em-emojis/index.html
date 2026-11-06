@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" type="image/png" href="logo.png">
+<meta property="og:title" content="Bíblia em Emojis">
+<meta property="og:description" content="Adivinhe a passagem bíblica contada em emojis. Um desafio novo por dia.">
+<meta property="og:image" content="https://carludix.com/biblia-em-emojis/logo.png">
+<title>Bíblia em Emojis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500;700;800&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: uma coluna; topo com o logo, o enigma numa moldura de vitral sobre pergaminho, tudo em azul-noite e dourado */
+:root{
+  --night:#070C22; --night2:#0B1433; --panel:#0F1A3F; --panel2:#132250;
+  --gold:#F2C14E; --gold-deep:#C68E26; --ink:#F5EEDB; --muted:#A8B2D8; --line:#2B3A73;
+  --parch:#F2E4C4; --parch-ink:#3A2A10;
+  --right:#45D282; --wrong:#FF6F86;
+  --j1:#2F5FD0; --j2:#C8322F; --j3:#E3A21A; --j4:#2A9D6A; --j5:#7A3FB8;
+  --display:"Alegreya",Georgia,"Times New Roman",serif;
+  --body:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--night);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:radial-gradient(ellipse at 50% -10%,#1B2C6B 0%,var(--night2) 45%,var(--night) 100%) fixed;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;min-height:100%}
+.wrap{max-width:640px;margin:0 auto;padding-block:14px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:16px}
+.voltar{align-self:flex-start;color:var(--gold);font:700 14px var(--body);letter-spacing:.06em;text-decoration:none;border:1.5px solid var(--gold-deep);border-radius:999px;padding:5px 14px;background:var(--panel)}
+.voltar:hover,.voltar:focus-visible{background:var(--panel2);outline:none;box-shadow:0 0 0 2px var(--gold)}
+header{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+header img{width:min(240px,62vw);height:auto;filter:drop-shadow(0 6px 22px rgba(242,193,78,.28))}
+h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pergunta{font-family:var(--display);font-style:italic;font-weight:700;font-size:clamp(19px,4.6vw,23px);margin:0;line-height:1.2;text-wrap:balance}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.tabs button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1.5px solid var(--line);background:var(--panel);color:var(--muted);font:500 14px var(--body);padding:10px 14px;border-radius:14px;cursor:pointer}
+.tabs button strong{font:700 17px var(--body);color:var(--ink)}
+.tabs button[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(180deg,#2A2A3A,var(--panel));box-shadow:0 0 0 1px var(--gold-deep),0 0 18px rgba(242,193,78,.22)}
+.tabs button[aria-pressed="true"] strong{color:var(--gold)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:15px;font-variant-numeric:tabular-nums}
+.pill{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 14px;color:var(--ink)}
+.pill.gold{border-color:var(--gold-deep);color:var(--gold);font-weight:700}
+.levels{display:flex;gap:6px;flex-wrap:wrap}
+.levels button{border:1.5px solid var(--line);background:var(--panel);color:var(--muted);font:600 14px var(--body);padding:5px 13px;border-radius:999px;cursor:pointer}
+.levels button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+
+.moldura{padding:9px;border-radius:20px;border:2px solid var(--gold);
+  background:conic-gradient(from 20deg,var(--j1),var(--j2),var(--j3),var(--j4),var(--j5),var(--j1),var(--j3),var(--j2),var(--j1));
+  box-shadow:0 0 26px rgba(242,193,78,.25),inset 0 0 0 3px #111}
+.vitral{background:radial-gradient(ellipse at center,#FFF6DE 0%,var(--parch) 70%,#E2CC9C 100%);border:3px solid #141414;border-radius:12px;padding:12px 8px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.vitral span{flex:0 0 auto;width:clamp(42px,11.5vw,56px);aspect-ratio:1;max-width:100%;display:grid;place-items:center;font-size:clamp(26px,7vw,36px);filter:drop-shadow(0 2px 2px rgba(58,42,16,.35));animation:luz .45s both}
+.vitral span.multi{width:auto;padding:0 6px;font-size:clamp(18px,4.6vw,24px)}
+@keyframes luz{from{transform:scale(.8)}to{transform:none}}
+
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1.5px solid var(--gold-deep);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.card h3{margin:0;font:700 15px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.hints{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hints li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;min-width:0;border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;background:rgba(0,0,0,.18)}
+.hints li i{font-style:normal;font-size:18px;text-align:center}
+.hints li div{min-width:0}
+.hints b{display:block;font-size:13px;letter-spacing:.04em;color:var(--gold)}
+.hints li.open{border-color:var(--gold-deep)}
+.hints li.locked span{color:var(--muted);font-style:italic}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1 1 220px;min-width:0;font:500 17px var(--body);color:var(--ink);background:#0A1230;border:1.5px solid var(--line);border-radius:999px;padding:11px 16px}
+input::placeholder{color:var(--muted)}
+input:focus{outline:none;border-color:var(--gold)}
+.btn{font:800 16px var(--body);border-radius:999px;padding:11px 22px;cursor:pointer;border:0;background:linear-gradient(180deg,#FFD873,var(--gold) 55%,var(--gold-deep));color:#1A1405;box-shadow:0 4px 14px rgba(242,193,78,.3)}
+.btn.ghost{background:transparent;color:var(--gold);border:1.5px solid var(--gold-deep);box-shadow:none;font-weight:700}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible,.tabs button:focus-visible,.levels button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.tent{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+.dots{display:flex;gap:7px}.dots i{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;color:#0A1230}
+.dots i.x{background:var(--wrong);border-color:var(--wrong)}.dots i.x::after{content:"✕"}
+.dots i.ok{background:var(--right);border-color:var(--right)}.dots i.ok::after{content:"✓"}
+.tried{display:flex;gap:6px;flex-wrap:wrap;margin:0;padding:0;list-style:none}
+.tried li{font-size:14px;color:var(--wrong);border:1px solid var(--wrong);border-radius:999px;padding:2px 10px;text-decoration:line-through}
+.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.result{display:flex;flex-direction:column;gap:6px}
+.result h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0;line-height:1.15;text-wrap:balance;color:var(--gold)}
+.result .tag{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:800}
+.result.won .tag{color:var(--right)}.result.lost .tag{color:var(--wrong)}
+.ref{color:var(--ink);font-weight:700}
+.result p{margin:0;max-width:62ch}
+.muted{color:var(--muted);font-size:15px;margin:0}
+footer{color:var(--muted);font-size:14px;text-align:center;text-wrap:balance}
+footer strong{color:var(--gold);letter-spacing:.08em}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="voltar" href="https://carludix.com/catolicos/">← CARLUDIX</a>
+  <header>
+    <img src="logo.png" alt="Bíblia em Emojis" width="240" height="240">
+    <h1>Bíblia em Emojis</h1>
+    <p class="pergunta">Qual passagem bíblica está representada pelos emojis?</p>
+    <div class="tabs" role="group" aria-label="Modo de jogo">
+      <button id="tab-dia" aria-pressed="true"><strong>📅 Desafio do Dia</strong>Um enigma por dia, igual para todos</button>
+      <button id="tab-treino" aria-pressed="false"><strong>🎯 Treino</strong>12 enigmas por nível</button>
+    </div>
+  </header>
+
+  <div class="bar" id="bar"></div>
+  <div class="moldura"><div class="vitral" id="vitral" aria-label="Sequência de emojis"></div></div>
+  <section class="card" id="play"></section>
+  <footer>4 tentativas por enigma. Cada erro revela uma dica, e o acerto vale de 4 a 1 ponto.<br><strong>CARLUDIX PLAY</strong> · 36 passagens bíblicas</footer>
+</div>
+
+<script>
+const T_AT="Antigo Testamento", T_NT="Novo Testamento";
+const P=[
+// ---------- FÁCIL ----------
+{l:1,e:['🌧️','🌊','🛶','🐘','🐘','🦒','🦒','🕊️','🌿','🌈'],a:'Arca de Noé',al:['arca de noe','arca','noe','diluvio','arca do noe'],ref:'Gênesis 6–9',t:T_AT,b:'Livro do Gênesis',d:'Depois de quarenta dias de chuva, uma pomba volta com um ramo no bico.',c:'O arco-íris aparece no fim como sinal da aliança de Deus com toda a criação: a terra não seria mais destruída por um dilúvio.'},
+{l:1,e:['🌳','🐍','🍎','👫','😳','🍃','🚪'],a:'Adão e Eva',al:['adao e eva','adao','eva','queda','pecado original','fruto proibido','serpente','jardim do eden','eden','paraiso'],ref:'Gênesis 3',t:T_AT,b:'Livro do Gênesis',d:'Uma serpente, uma árvore e um fruto que não devia ser comido.',c:'A Bíblia não diz que o fruto era uma maçã. A ideia vem do latim, em que “malum” pode significar tanto “mal” quanto “maçã”.'},
+{l:1,e:['⭐','🐫','👑','🐑','🐂','🫏','👶','🌾'],a:'Nascimento de Jesus',al:['nascimento de jesus','natal','presepio','natividade','nascimento do menino jesus','jesus nasce','belem'],ref:'Lucas 2; Mateus 2',t:T_NT,b:'Evangelhos de Lucas e Mateus',d:'Não havia lugar para eles na hospedaria.',c:'O costume de montar o presépio com figuras e animais começou com São Francisco de Assis, em Greccio, no Natal de 1223.'},
+{l:1,e:['👦','🐑','🪨','🎯','🧔‍♂️','🛡️','💥','😵'],a:'Davi e Golias',al:['davi e golias','davi','golias','davi contra golias'],ref:'1 Samuel 17',t:T_AT,b:'Primeiro Livro de Samuel',d:'Um jovem pastor recusa a armadura do rei e escolhe cinco pedras lisas.',c:'Davi pegou cinco pedras no riacho, mas bastou uma. Anos depois, aquele pastor se tornaria rei de Israel.'},
+{l:1,e:['🍞','🍞','🍞','🍞','🍞','🐟','🐟','🙏','👥','👥','👥','🧺'],a:'Multiplicação dos pães',al:['multiplicacao dos paes','multiplicacao dos paes e peixes','multiplicacao dos paes e dos peixes','paes e peixes','multiplicacao'],ref:'João 6; Mateus 14',t:T_NT,b:'Os quatro Evangelhos',d:'Cinco mil homens, sem contar mulheres e crianças, comeram até ficar satisfeitos.',c:'É o único milagre de Jesus, além da ressurreição, contado nos quatro Evangelhos. Sobraram doze cestos cheios.'},
+{l:1,e:['🌊','⛵','🌬️','😨','🚶‍♂️','🌊','🙋‍♂️','📉','🤝'],a:'Jesus anda sobre as águas',al:['jesus anda sobre as aguas','andar sobre as aguas','jesus caminha sobre as aguas','jesus andando sobre as aguas','pedro anda sobre as aguas','andando sobre as aguas','caminhar sobre as aguas'],ref:'Mateus 14',t:T_NT,b:'Evangelho de Mateus',d:'Pedro sai do barco, mas começa a afundar quando sente medo do vento.',c:'Quando Pedro afunda, Jesus estende a mão e pergunta por que ele duvidou.'},
+{l:1,e:['💒','🍷','❌','😟','👩','🏺','🏺','💧','➡️','🍷'],a:'Bodas de Caná',al:['bodas de cana','casamento de cana','agua em vinho','transformacao da agua em vinho','agua virando vinho','cana'],ref:'João 2',t:T_NT,b:'Evangelho de João',d:'Maria diz aos servos que façam tudo o que Jesus mandar.',c:'Foi o primeiro sinal de Jesus, segundo o Evangelho de João, e aconteceu por intercessão de Maria.'},
+{l:1,e:['🌑','💡','🌊','🌱','☀️','🌙','🐟','🐦','🐄','👫','😴'],a:'Criação do mundo',al:['criacao do mundo','criacao','sete dias','sete dias da criacao','seis dias da criacao','genesis'],ref:'Gênesis 1–2',t:T_AT,b:'Livro do Gênesis',d:'E Deus viu que era bom. No sétimo dia, descansou.',c:'O relato organiza a criação em seis dias de trabalho e um de descanso, origem da ideia de um dia santificado na semana.'},
+{l:1,e:['🧱','🧱','🧱','🏗️','☁️','😤','🗣️','❓','💬','🌍'],a:'Torre de Babel',al:['torre de babel','babel'],ref:'Gênesis 11',t:T_AT,b:'Livro do Gênesis',d:'Os homens querem construir algo que chegue ao céu e acabam sem se entender.',c:'O nome Babel lembra um verbo hebraico que significa “confundir”. Por isso o lugar ficou associado à confusão das línguas.'},
+{l:1,e:['✝️','🪨','🌅','👩','👩','😮','🕳️','👼'],a:'Ressurreição de Jesus',al:['ressurreicao de jesus','ressurreicao','pascoa','sepulcro vazio','tumulo vazio','jesus ressuscita','ressurreicao de cristo'],ref:'Mateus 28; João 20',t:T_NT,b:'Os quatro Evangelhos',d:'No primeiro dia da semana, as mulheres encontram a pedra removida.',c:'Maria Madalena foi a primeira testemunha do Ressuscitado. Por isso a tradição a chama de “apóstola dos apóstolos”.'},
+{l:1,e:['👴','🦯','🌊','↔️','🌊','🚶','🚶','🚶','🐎','💦'],a:'Travessia do Mar Vermelho',al:['travessia do mar vermelho','mar vermelho','abertura do mar vermelho','moises abre o mar','moises abre o mar vermelho','abertura do mar','moises','passagem do mar vermelho'],ref:'Êxodo 14',t:T_AT,b:'Livro do Êxodo',d:'Um povo foge do faraó e atravessa a pé enxuto.',c:'Essa leitura é proclamada todos os anos na Vigília Pascal, como figura do Batismo.'},
+{l:1,e:['🧔','👥','👥','👥','👥','👥','👥','🍞','🍷','💧','🦶'],a:'Última Ceia',al:['ultima ceia','santa ceia','ceia do senhor','instituicao da eucaristia','eucaristia','lava pes','lavapes','quinta feira santa'],ref:'Mateus 26; João 13',t:T_NT,b:'Os Evangelhos',d:'Na véspera da Paixão, Jesus lava os pés dos discípulos.',c:'A Igreja recorda esse momento na Missa da Ceia do Senhor, na Quinta-feira Santa, com o rito do lava-pés.'},
+// ---------- MÉDIO ----------
+{l:2,e:['📜','🙅‍♂️','⛵','🌪️','🌊','🐋','3️⃣','🌅','🏙️','🙏'],a:'Jonas',al:['jonas','jonas e a baleia','jonas e o grande peixe','jonas e o peixe'],ref:'Jonas 1–3',t:T_AT,b:'Livro de Jonas',d:'Um profeta foge da missão, é jogado ao mar e passa três dias num lugar escuro.',c:'O texto fala em “grande peixe”, não em baleia. Jesus cita os três dias de Jonas como sinal da própria ressurreição.'},
+{l:2,e:['👦','💰','➡️','🌍','🎉','💸','🐖','😢','🏃‍♂️','🏠','👨‍🦳','🤗','🐄'],a:'Filho pródigo',al:['filho prodigo','parabola do filho prodigo','pai misericordioso','parabola do pai misericordioso'],ref:'Lucas 15',t:T_NT,b:'Evangelho de Lucas',d:'O irmão mais velho fica com raiva da festa.',c:'Muitos preferem chamá-la de parábola do Pai misericordioso, porque o centro da história é o pai que corre ao encontro do filho.'},
+{l:2,e:['🚶‍♂️','🛣️','🦹','🤕','🙈','🙈','🫏','🧑','🩹','🏨','💰'],a:'Bom Samaritano',al:['bom samaritano','parabola do bom samaritano','samaritano'],ref:'Lucas 10',t:T_NT,b:'Evangelho de Lucas',d:'Um sacerdote e um levita passam pelo outro lado da estrada.',c:'Jesus conta essa parábola para responder à pergunta “quem é o meu próximo?”.'},
+{l:2,e:['🙏','🪟','👑','📜','⛔','🦁','🦁','🦁','🧔','👼','🔒'],a:'Daniel na cova dos leões',al:['daniel na cova dos leoes','cova dos leoes','daniel','daniel e os leoes'],ref:'Daniel 6',t:T_AT,b:'Livro de Daniel',d:'Um decreto real proíbe rezar a qualquer deus por trinta dias.',c:'Daniel continuou rezando três vezes ao dia, com a janela aberta voltada para Jerusalém.'},
+{l:2,e:['🧑','📏','💰','🌳','🧗','👀','🙋‍♂️','🏠','🍽️','💸'],a:'Zaqueu',al:['zaqueu','zaqueu na arvore','conversao de zaqueu','zaqueu e jesus'],ref:'Lucas 19',t:T_NT,b:'Evangelho de Lucas',d:'Um chefe dos cobradores de impostos, de baixa estatura, sobe numa árvore em Jericó.',c:'Zaqueu promete dar metade dos bens aos pobres e devolver quatro vezes o que tinha cobrado a mais.'},
+{l:2,e:['👦','🧥','🌈','😠','👥','🕳️','💰','🐫','👑','💭','🌾','🐄'],a:'José do Egito',al:['jose do egito','jose e seus irmaos','jose','tunica colorida','jose e os irmaos','jose no egito'],ref:'Gênesis 37–41',t:T_AT,b:'Livro do Gênesis',d:'Vendido pelos irmãos, acaba interpretando os sonhos do faraó.',c:'As sete vacas gordas e as sete magras do sonho do faraó anunciavam sete anos de fartura e sete de fome.'},
+{l:2,e:['🐑','🐑','🐑','🐑','🐑','➕','❓','🧑‍🌾','⛰️','🔍','🐑','🎉'],a:'Ovelha perdida',al:['ovelha perdida','parabola da ovelha perdida'],ref:'Lucas 15; Mateus 18',t:T_NT,b:'Evangelhos de Lucas e Mateus',d:'O pastor deixa noventa e nove para trás.',c:'Jesus conclui que há mais alegria no céu por um pecador que se converte do que por noventa e nove justos.'},
+{l:2,e:['🏰','🧱','🚶','🚶','🔄','7️⃣','📯','📯','🗣️','💥','🧱'],a:'Muralhas de Jericó',al:['muralhas de jerico','jerico','queda de jerico','batalha de jerico','queda das muralhas de jerico','tomada de jerico','muralha de jerico'],ref:'Josué 6',t:T_AT,b:'Livro de Josué',d:'Sete dias de voltas ao redor da cidade e, no sétimo, sete voltas.',c:'Ninguém derrubou os muros na força: o povo deu as voltas, os sacerdotes tocaram as trombetas e todos gritaram.'},
+{l:2,e:['🧔‍♂️','💪','🦁','💇‍♀️','✂️','😴','⛓️','🏛️','💥'],a:'Sansão e Dalila',al:['sansao e dalila','sansao','dalila'],ref:'Juízes 13–16',t:T_AT,b:'Livro dos Juízes',d:'O segredo da força estava num cabelo que nunca foi cortado.',c:'Sansão era nazireu desde o nascimento, e o cabelo não cortado era sinal dessa consagração a Deus.'},
+{l:2,e:['🧔','🤒','🪦','4️⃣','📅','😭','🧔','🗣️','🚶‍♂️','🧻'],a:'Ressurreição de Lázaro',al:['ressurreicao de lazaro','lazaro','lazaro ressuscita','lazaro sai do tumulo'],ref:'João 11',t:T_NT,b:'Evangelho de João',d:'O amigo de Jesus já estava no túmulo havia quatro dias.',c:'É nesse episódio que está o versículo mais curto da Bíblia: “Jesus chorou”.'},
+{l:2,e:['👥','🏠','💨','🔥','🔥','🔥','🗣️','🌍','👂'],a:'Pentecostes',al:['pentecostes','pentecoste','vinda do espirito santo','descida do espirito santo','espirito santo'],ref:'Atos 2',t:T_NT,b:'Atos dos Apóstolos',d:'Línguas como de fogo pousam sobre cada um.',c:'Cinquenta dias depois da Páscoa, os apóstolos falaram e foram entendidos por gente de muitas línguas. A data é celebrada como o nascimento da Igreja.'},
+{l:2,e:['👼','➡️','👩','🏡','😮','🕊️','👶','🙏','✅'],a:'Anunciação',al:['anunciacao','anunciacao a maria','anjo gabriel','anjo gabriel e maria','anunciacao do senhor','anunciacao do anjo'],ref:'Lucas 1',t:T_NT,b:'Evangelho de Lucas',d:'O anjo Gabriel visita uma jovem em Nazaré.',c:'A Igreja celebra a Anunciação em 25 de março, exatamente nove meses antes do Natal.'},
+// ---------- DIFÍCIL ----------
+{l:3,e:['🧔','⛰️','🐂','🐂','🪵','💧','💧','💧','🙏','🔥','⬇️'],a:'Elias e os profetas de Baal',al:['elias e os profetas de baal','elias no monte carmelo','monte carmelo','elias','profetas de baal','elias e baal','sacrificio no carmelo'],ref:'1 Reis 18',t:T_AT,b:'Primeiro Livro dos Reis',d:'Dois altares, dois novilhos, e só um Deus responde com fogo, mesmo com a lenha encharcada.',c:'Os profetas de Baal gritaram o dia inteiro sem resposta. Elias mandou jogar água sobre o altar três vezes antes de rezar.'},
+{l:3,e:['🧔','🐑','🧶','💧','🌵','👥','➡️','3️⃣0️⃣0️⃣','🏺','🔦','📯'],a:'Gideão',al:['gideao','gideao e o velo','gideao e os 300','gideao e os trezentos','velo de gideao'],ref:'Juízes 6–7',t:T_AT,b:'Livro dos Juízes',d:'Ele pede um sinal com a lã de um carneiro e depois vence com jarros e tochas.',c:'Deus reduziu o exército de Gideão de 32 mil para 300 homens, para que ninguém atribuísse a vitória à força humana.'},
+{l:3,e:['👵','👩','🚶‍♀️','🚶‍♀️','🌾','🧺','🧔','💍','👶'],a:'Rute e Noemi',al:['rute','rute e noemi','rute e boaz','livro de rute','historia de rute'],ref:'Rute 1–4',t:T_AT,b:'Livro de Rute',d:'Uma estrangeira viúva se recusa a abandonar a sogra.',c:'Rute, que era moabita, foi bisavó do rei Davi e aparece na genealogia de Jesus no Evangelho de Mateus.'},
+{l:3,e:['😴','🪨','🪜','👼','⬆️','⬇️','✨'],a:'Escada de Jacó',al:['escada de jaco','sonho de jaco','jaco','escada para o ceu','betel'],ref:'Gênesis 28',t:T_AT,b:'Livro do Gênesis',d:'Um homem dorme com uma pedra como travesseiro, a caminho de Harã.',c:'Ao acordar, Jacó chamou o lugar de Betel, que quer dizer “casa de Deus”.'},
+{l:3,e:['🧔','🫏','👼','🗡️','🫏','🛑','🗣️','😲'],a:'Balaão e a jumenta',al:['balaao','balaao e a jumenta','jumenta de balaao','jumenta que fala','jumenta falante'],ref:'Números 22',t:T_AT,b:'Livro dos Números',d:'Um animal vê o anjo antes do dono e acaba falando.',c:'Balaão tinha sido contratado para amaldiçoar Israel, mas acabou abençoando o povo.'},
+{l:3,e:['🐑','👴','⛰️','🌿','🔥','🤔','👟','❌','🗣️'],a:'Sarça ardente',al:['sarca ardente','moises e a sarca ardente','sarca','arbusto em chamas','sarca que ardia'],ref:'Êxodo 3',t:T_AT,b:'Livro do Êxodo',d:'Um arbusto queima sem se consumir no monte Horeb.',c:'Ali Deus revela seu nome a Moisés e pede que ele tire as sandálias, porque o chão era santo.'},
+{l:3,e:['👸','👑','📜','😈','⚠️','🙏','🍽️','🍽️','😱','⚖️'],a:'Rainha Ester',al:['ester','rainha ester','livro de ester','ester e mardoqueu','ester e hama'],ref:'Ester 4–7',t:T_AT,b:'Livro de Ester',d:'Uma rainha arrisca a vida ao entrar sem ser chamada diante do rei, para salvar seu povo.',c:'A festa judaica de Purim celebra até hoje a salvação contada nesse livro.'},
+{l:3,e:['🧔','🐎','🛣️','⚡','💡','😵','🙈','3️⃣','🙏','👁️','✨'],a:'Conversão de São Paulo',al:['conversao de sao paulo','conversao de paulo','conversao de saulo','caminho de damasco','estrada de damasco','saulo','paulo','sao paulo'],ref:'Atos 9',t:T_NT,b:'Atos dos Apóstolos',d:'Uma luz do céu derruba um perseguidor na estrada de Damasco.',c:'O texto não menciona cavalo. A queda do cavalo vem da tradição e das pinturas, como a de Caravaggio.'},
+{l:3,e:['🎖️','🧔','🩹','✉️','👑','🧔','7️⃣','🌊','🛁','✨','👶'],a:'Cura de Naamã',al:['naama','cura de naama','naama o sirio','naaman','eliseu e naama','eliseu'],ref:'2 Reis 5',t:T_AT,b:'Segundo Livro dos Reis',d:'Um general estrangeiro mergulha sete vezes no rio Jordão.',c:'Naamã se ofendeu com a instrução simples do profeta Eliseu, mas obedeceu, e sua pele ficou como a de uma criança.'},
+{l:3,e:['⛓️','🧔','💂','💂','😴','👼','💡','⛓️','💥','🚪','🚶','🚪','👧','😲'],a:'Pedro libertado da prisão',al:['pedro libertado da prisao','libertacao de pedro','pedro na prisao','pedro e o anjo','pedro sai da prisao','pedro libertado'],ref:'Atos 12',t:T_NT,b:'Atos dos Apóstolos',d:'Uma empregada chamada Rode fica tão feliz que esquece de abrir o portão.',c:'Enquanto Pedro estava preso, a comunidade rezava por ele sem parar. Quando ele bateu à porta, ninguém acreditou.'},
+{l:3,e:['🚶','🚶','🛣️','😔','🧔','💬','📜','🏠','🍞','✋','👀','💡'],a:'Discípulos de Emaús',al:['discipulos de emaus','emaus','caminho de emaus','estrada de emaus'],ref:'Lucas 24',t:T_NT,b:'Evangelho de Lucas',d:'Dois discípulos só reconhecem o companheiro de viagem quando ele parte o pão.',c:'O Evangelho guarda o nome de um dos dois: Cléofas.'},
+{l:3,e:['👩','👩','👶','😠','👑','⚖️','🗡️','😱','💔','✅'],a:'Julgamento de Salomão',al:['julgamento de salomao','salomao','sabedoria de salomao','salomao e as duas mulheres','salomao e as duas maes','juizo de salomao'],ref:'1 Reis 3',t:T_AT,b:'Primeiro Livro dos Reis',d:'Duas mulheres disputam um bebê, e o rei pede uma espada.',c:'Pouco antes, Salomão tinha pedido a Deus sabedoria, em vez de riqueza ou vida longa.'}
+];
+const LEVELS={1:'Fácil',2:'Médio',3:'Difícil'};
+const MAX=4;
+
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().replace(/^(a|o|os|as) /,'');
+function lev(a,b){const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function matches(guess,p){const g=norm(guess);if(!g)return false;
+  return [p.a,...p.al].map(norm).some(x=>{if(x===g)return true;const tol=x.length>=10?2:x.length>=6?1:0;return tol&&Math.abs(x.length-g.length)<=tol&&lev(x,g)<=tol})}
+
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+// dia
+const EPOCH=Date.UTC(2026,10,1);
+function today(){const d=new Date();return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-EPOCH)/864e5)}
+const dayNum=today(), dayIdx=((dayNum*7)%P.length+P.length)%P.length;
+
+// estado
+let mode='dia', level=1, deck=[], pos=0, total=0, cur=null;
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function newRound(p,saved){cur={p,wrong:saved?saved.wrong:0,hints:saved?saved.hints:0,tried:saved?saved.tried:[],done:saved?saved.done:false,won:saved?saved.won:false}}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startTreino(){deck=shuffle(P.filter(p=>p.l===level));pos=0;total=0;newRound(deck[0]);render()}
+function startDia(){const s=store.get('biblia-em-emojis:dia:'+dayNum);newRound(P[dayIdx],s);render()}
+
+// dicas reveladas = max(erros, dicas pedidas)
+function revealed(){return Math.min(3,Math.max(cur.wrong,cur.hints))}
+function score(){return cur.won?MAX-Math.max(cur.wrong,cur.hints):0}
+
+function renderBar(){
+  if(mode==='dia'){$('bar').innerHTML=`<span class="pill">📖 Desafio nº ${dayNum+1} · ${LEVELS[cur.p.l]}</span><span class="pill gold">⭐ 4 pts (máx.)</span>`}
+  else{$('bar').innerHTML=`<div class="levels" role="group" aria-label="Nível">${[1,2,3].map(n=>`<button data-l="${n}" aria-pressed="${n===level}">${LEVELS[n]}</button>`).join('')}</div><span class="pill">📖 Enigma ${pos+1} de ${deck.length}</span><span class="pill gold">⭐ ${total} pts</span>`;
+    $('bar').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{level=+b.dataset.l;startTreino()})}
+}
+function renderVitral(){$('vitral').innerHTML=cur.p.e.map((x,i)=>`<span class="${x.split('⃣').length>2?'multi':''}" style="animation-delay:${i*45}ms">${x}</span>`).join('')}
+
+function dots(){let h='';const w=Math.max(cur.wrong,cur.hints);for(let i=0;i<MAX;i++){h+=`<i class="${i<w?'x':(cur.won&&i===w?'ok':'')}"></i>`}return `<div class="tent">Tentativas <div class="dots" aria-label="Tentativas">${h}</div></div>`}
+
+function render(){
+  renderBar();renderVitral();
+  const p=cur.p, r=revealed();
+  const hl=[['Testamento',p.t,'📜'],['Livro',p.b,'📖'],['Pista',p.d,'🔍']].map((h,i)=>{const o=i<r||cur.done;return `<li class="${o?'open':'locked'}"><i>${o?h[2]:'🔒'}</i><div><b>${h[0]}</b><span>${o?esc(h[1]):(i===2?'A ser revelada…':'A ser revelado…')}</span></div></li>`}).join('');
+  let html=`<h3>💡 Dicas do Enigma</h3><ul class="hints">${hl}</ul>`;
+  if(cur.tried.length)html+=`<ul class="tried" aria-label="Palpites errados">${cur.tried.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+  if(!cur.done){
+    html+=`<form id="f" autocomplete="off"><label for="g" hidden>Seu palpite</label><input id="g" placeholder="Digite a passagem ou a história…" maxlength="80"><button class="btn">▶ Responder</button></form>
+    <div class="row">${dots()}<button class="btn ghost" id="dica" ${r>=3?'disabled':''}>Ver próxima dica</button></div>`;
+  }else{
+    const pts=score();
+    html+=`<div class="result ${cur.won?'won':'lost'}"><span class="tag">${cur.won?`Acertou · ${pts} ${pts===1?'ponto':'pontos'}`:'Não foi dessa vez'}</span>
+      <h2>${esc(p.a)}</h2><p class="ref">${esc(p.ref)}</p><p>${esc(p.c)}</p></div>`;
+    if(mode==='dia'){html+=`<div class="row">${dots()}<button class="btn" id="share">Copiar resultado</button></div><p class="muted" id="cd"></p><p class="muted" id="copied" hidden></p>`}
+    else{const last=pos>=deck.length-1;html+=`<div class="row">${dots()}<button class="btn" id="next">${last?'Ver placar':'Próximo enigma'}</button></div>`}
+  }
+  $('play').innerHTML=html;
+  if(!cur.done){const f=$('f'),g=$('g');f.onsubmit=e=>{e.preventDefault();guess(g.value)};$('dica').onclick=()=>{cur.hints=Math.min(3,Math.max(cur.hints,cur.wrong)+1);if(cur.hints>=MAX)lose();save();render()};
+    if(matchMedia('(pointer:fine)').matches)g.focus()}
+  else if(mode==='dia'){$('share').onclick=share;countdown()}
+  else $('next').onclick=next;
+}
+
+function guess(v){if(!v.trim())return;
+  if(matches(v,cur.p)){cur.won=true;cur.done=true;if(mode==='treino')total+=score()}
+  else{cur.tried.push(v.trim());cur.wrong=Math.max(cur.wrong,cur.hints)+1;
+    if(cur.wrong>=MAX)lose();else{save();render();const g=$('g');g.classList.add('shake');return}}
+  save();render()}
+function lose(){cur.done=true;cur.won=false}
+function save(){if(mode==='dia')store.set('biblia-em-emojis:dia:'+dayNum,{wrong:cur.wrong,hints:cur.hints,tried:cur.tried,done:cur.done,won:cur.won})}
+
+function next(){if(pos<deck.length-1){pos++;newRound(deck[pos]);render();return}
+  $('vitral').innerHTML=['🏆','📖','✨'].map(x=>`<span>${x}</span>`).join('');
+  
+  $('play').innerHTML=`<div class="result won"><span class="tag">Placar final</span><h2>${total} de ${deck.length*MAX} pontos</h2><p>${total>=deck.length*3?'Você conhece bem essas histórias.':total>=deck.length*2?'Bom resultado. Mais uma rodada e você fecha o nível.':'Vale ler essas passagens de novo e tentar outra vez.'}</p></div>
+  <div class="row"><span></span><button class="btn" id="again">Jogar de novo</button></div>`;
+  $('again').onclick=startTreino}
+
+function share(){
+  const w=Math.max(cur.wrong,cur.hints);let m='';for(let i=0;i<MAX;i++)m+=i<w?'🟥':(cur.won&&i===w?'🟩':'⬜');
+  const txt=`Bíblia em Emojis nº ${dayNum+1}\n${cur.p.e.join('')}\n${m} ${cur.won?score()+'/4':'X/4'}\n${location.origin+location.pathname}`;
+  const ok=()=>{const c=$('copied');c.hidden=false;c.textContent='Resultado copiado. É só colar no WhatsApp.'};
+  const fail=()=>{const c=$('copied');c.hidden=false;c.textContent=txt};
+  try{navigator.clipboard.writeText(txt).then(ok,fail)}catch(e){fail()}
+}
+let cdTimer;function countdown(){clearInterval(cdTimer);const tick=()=>{const el=$('cd');if(!el)return clearInterval(cdTimer);const d=new Date(),m=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)-d;const h=Math.floor(m/36e5),mi=Math.floor(m%36e5/6e4);el.textContent=`Próximo desafio em ${h}h ${String(mi).padStart(2,'0')}min.`};tick();cdTimer=setInterval(tick,30000)}
+
+function setMode(m){mode=m;$('tab-dia').setAttribute('aria-pressed',m==='dia');$('tab-treino').setAttribute('aria-pressed',m==='treino');m==='dia'?startDia():startTreino()}
+$('tab-dia').onclick=()=>setMode('dia');$('tab-treino').onclick=()=>setMode('treino');
+startDia();
+</script>
+
+</body>
+</html>
