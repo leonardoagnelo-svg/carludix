@@ -6,6 +6,12 @@
 <title>Rumo ao Céu</title>
 <meta name="description" content="Rumo ao Céu: tabuleiro de peregrinação a Santiago ou Aparecida. Avance respondendo perguntas, rezando e partilhando.">
 <link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rumo ao Céu">
+<meta name="theme-color" content="#09152F">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,700;0,800;1,700&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -406,6 +412,61 @@ button.sealb:hover{background:#0000000d}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* tabuleiro 3D */
+.b3wrap{padding:8px}
+.b3box{position:relative;width:100%;aspect-ratio:16/10;max-height:calc(100vh - 300px);min-height:300px;border-radius:14px;overflow:hidden;background:#a9d0ec}
+.b3root{position:absolute;inset:0}
+.b3root canvas{display:block;width:100%!important;height:100%!important;cursor:grab}
+.b3root canvas:active{cursor:grabbing}
+.b3labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.b3lab{position:absolute;left:0;top:0;white-space:nowrap;font-family:var(--ui);font-weight:700;letter-spacing:.02em;color:#fff9ec;background:linear-gradient(180deg,#1d3f8a,#0f2350);padding:1px 8px;border-radius:7px;border:1.5px solid var(--gold);box-shadow:0 3px 6px #0007}
+.b3flag{position:absolute;left:0;top:0;white-space:nowrap;font-family:var(--display);font-weight:800;font-size:16px;color:#fff9ec;padding:2px 14px;border-radius:6px;background:linear-gradient(180deg,#c43344,var(--ruby) 60%,#7a1522);box-shadow:0 0 0 2px var(--gold),0 4px 8px #0008}
+.b3hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-family:var(--ui);font-weight:600;font-size:13px;color:#fff9ec;background:#09152fb0;padding:3px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;animation:fadeout 1s 6s forwards}
+@keyframes fadeout{to{opacity:0}}
+.zoom .vtog{font-size:15px;letter-spacing:.04em}
+@media (max-width:760px){.b3box{aspect-ratio:auto;height:calc(100vh - 430px);height:calc(100svh - 430px);max-height:none;min-height:260px}.b3hint{font-size:11px}}
+
+/* partilhas */
+.share{display:flex;flex-direction:column;gap:6px}
+.share>span{font-family:var(--ui);font-weight:700;font-size:16px;color:var(--gold2)}
+.share>span small{font-weight:600;color:var(--muted);font-size:13px}
+.share textarea{width:100%;resize:vertical;min-height:72px;padding:10px 12px;border-radius:12px;border:1.5px solid #c99a3a;background:var(--warm);color:var(--parch-ink);font-family:var(--body);font-size:16px;line-height:1.35}
+.share textarea:focus{outline:3px solid var(--gold2);outline-offset:1px}
+.share .cnt{align-self:flex-end;color:var(--muted);font-size:12px}
+.sbubble{position:fixed;z-index:25;right:max(16px,env(safe-area-inset-right,0px));top:calc(84px + env(safe-area-inset-top,0px));width:min(360px,calc(100vw - 32px));padding:12px 14px 14px;border-radius:16px;background:linear-gradient(180deg,#fff9ec,var(--parch));color:var(--parch-ink);border:2px solid var(--gold);box-shadow:0 0 0 4px var(--pc),0 16px 40px #000b;animation:bubin .45s cubic-bezier(.2,.9,.3,1.3)}
+.sbubble::after{content:"";position:absolute;left:28px;bottom:-12px;width:20px;height:20px;background:var(--parch);border-right:2px solid var(--gold);border-bottom:2px solid var(--gold);transform:rotate(45deg)}
+.sbh{display:flex;align-items:center;gap:8px;font-family:var(--ui);font-size:15px;color:#6a4a1c}
+.sbh .badge{width:30px}.sbh b{color:#2a1a08}
+.sbh button{margin-left:auto;border:0;background:none;font-size:22px;line-height:1;color:#8a6a36;padding:0 4px}
+.sbubble p{margin:6px 0 0;font-family:var(--display);font-style:italic;font-size:19px;line-height:1.3}
+.sbubble.out{opacity:0;transform:translateY(-10px);transition:all .45s}
+@keyframes bubin{from{opacity:0;transform:translateY(-16px) scale(.92)}}
+@media (max-width:760px){.sbubble{top:auto;bottom:calc(170px + env(safe-area-inset-bottom,0px));left:16px;right:16px;width:auto}}
+.mural{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.mpost{padding:10px 12px;border-radius:4px;background:linear-gradient(180deg,#fff9ec,var(--parch));color:var(--parch-ink);border-top:5px solid var(--pc);box-shadow:0 6px 14px #0007;transform:rotate(-1deg)}
+.mpost:nth-child(even){transform:rotate(1.2deg)}
+.mpost .mk{font-family:var(--ui);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8a5a1c}
+.mpost p{margin:4px 0;font-family:var(--display);font-style:italic;font-size:17px;line-height:1.3}
+.mpost small{font-family:var(--ui);font-weight:700;color:#5a3a12}
+/* tela cheia */
+.setbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+html.isfs body{padding-block:8px 12px}
+html.isfs .b3box{max-height:calc(100vh - 250px)}
+html.isfs .bscroll{max-height:calc(100vh - 260px)}
+
+@media (max-width:760px){.c-bar:not(.open) .dicebox{flex-direction:column;gap:4px}.c-bar:not(.open) .diewrap{width:52px;height:52px}.c-bar:not(.open) .die{width:40px;height:40px;padding:6px}.c-bar:not(.open) .die i{width:6px;height:6px}.c-bar:not(.open) .die .qm{font-size:22px}.c-bar:not(.open) .gbtn{font-size:17px;padding:8px 14px}}
+
+/* escolha de nível */
+.nivelpick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.nivelpick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.nivelpick button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border-radius:14px;border:1.5px solid #c99a3a88;background:linear-gradient(180deg,#14295a,var(--deep));min-width:0}
+.nivelpick button b{font-family:var(--ui);font-size:19px;line-height:1}
+.nivelpick button small{font-size:12px;color:var(--muted);line-height:1.2}
+.nivelpick .nq{font-family:var(--ui);font-weight:600;font-size:13px;color:var(--gold2);margin-top:2px}
+.nivelpick button[aria-checked="true"]{background:linear-gradient(180deg,var(--gold2),var(--gold));border-color:var(--gold2);color:#3a2404}
+.nivelpick button[aria-checked="true"] small,.nivelpick button[aria-checked="true"] .nq{color:#5a3a0a}
+.nivelpick button:disabled{cursor:default}
 </style>
 </head>
 <body>
@@ -517,147 +578,411 @@ const CASAS={
   "Um morador indica uma trilha boa e bem sinalizada."],efeito:"Avance 2 casas.",bt:"Avançar"}
 };
 
-/* Banco de perguntas: [pergunta, [certa, erradas...], 0, explicação] por tema */
+/* Banco de perguntas: [pergunta, [certa, erradas...], 0, explicação, nível 1=fácil 2=médio 3=difícil] */
 const TEMAS={
 "Antigo Testamento":[
- ["Qual é o primeiro livro da Bíblia?",["Gênesis","Êxodo","Levítico","Salmos"],0,"Começa com a criação do mundo."],
- ["Quem construiu a arca?",["Noé","Moisés","Abraão","Jonas"],0,"Gênesis, capítulos 6 a 9."],
- ["Quem recebeu os Dez Mandamentos?",["Moisés","Elias","Davi","Arão"],0,"No monte Sinai."],
- ["Quem venceu o gigante Golias?",["Davi","Sansão","Saul","Josué"],0,"Com uma funda e uma pedra."],
- ["Qual livro da Bíblia reúne 150 orações cantadas?",["Salmos","Provérbios","Cântico dos Cânticos","Lamentações"],0,"Muitos são atribuídos ao rei Davi."],
- ["Quem foi engolido por um grande peixe?",["Jonas","Elias","Jeremias","Tobias"],0,"Ficou três dias no ventre do peixe."],
- ["Que filho de Jacó foi vendido pelos irmãos e virou governador no Egito?",["José","Benjamim","Rúben","Judá"],0,"Gênesis, capítulos 37 a 50."],
- ["Quem conduziu o povo à Terra Prometida depois de Moisés?",["Josué","Arão","Gedeão","Samuel"],0,"Foi ele quem atravessou o Jordão com o povo."],
- ["Que rei construiu o primeiro Templo de Jerusalém?",["Salomão","Davi","Saul","Ezequias"],0,"Filho de Davi, famoso pela sabedoria."],
- ["Que profeta foi levado ao céu num carro de fogo?",["Elias","Eliseu","Isaías","Amós"],0,"Segundo Livro dos Reis, capítulo 2."],
- ["Daniel foi jogado numa cova de quê?",["Leões","Serpentes","Lobos","Ursos"],0,"E Deus o protegeu."],
- ["Segundo o Gênesis, quem matou Abel?",["Caim","Set","Lameque","Esaú"],0,"Seu próprio irmão."],
- ["Quantas foram as pragas do Egito?",["10","7","12","3"],0,"Êxodo, capítulos 7 a 12."],
- ["Sansão perdeu a força quando cortaram o quê?",["O cabelo","A barba","As unhas","A túnica"],0,"Ele era nazireu, consagrado a Deus."],
- ["Que profeta anunciou que uma virgem daria à luz o Emanuel?",["Isaías","Ezequiel","Oseias","Malaquias"],0,"Isaías 7,14."],
- ["Quem era a esposa de Abraão?",["Sara","Rebeca","Raquel","Lia"],0,"Mãe de Isaac, mesmo já idosa."],
- ["Jacó também ficou conhecido por qual nome?",["Israel","Judá","Efraim","Levi"],0,"Recebeu esse nome depois de lutar com o anjo."],
- ["Quantas eram as tribos de Israel?",["12","10","7","40"],0,"Uma para cada filho de Jacó (com José dividido em duas)."],
- ["Que mulher moabita é bisavó do rei Davi?",["Rute","Ester","Judite","Débora"],0,"Sua história tem um livro próprio."]],
+ ["Qual é o primeiro livro da Bíblia?",["Gênesis","Êxodo","Levítico","Salmos"],0,"Começa com a criação do mundo.",1],
+ ["Quem construiu a arca?",["Noé","Moisés","Abraão","Jonas"],0,"Gênesis, capítulos 6 a 9.",1],
+ ["Quem recebeu os Dez Mandamentos?",["Moisés","Elias","Davi","Arão"],0,"No monte Sinai.",1],
+ ["Quem venceu o gigante Golias?",["Davi","Sansão","Saul","Josué"],0,"Com uma funda e uma pedra.",1],
+ ["Qual livro da Bíblia reúne 150 orações cantadas?",["Salmos","Provérbios","Cântico dos Cânticos","Lamentações"],0,"Muitos são atribuídos ao rei Davi.",1],
+ ["Quem foi engolido por um grande peixe?",["Jonas","Elias","Jeremias","Tobias"],0,"Ficou três dias no ventre do peixe.",1],
+ ["Que filho de Jacó foi vendido pelos irmãos e virou governador no Egito?",["José","Benjamim","Rúben","Judá"],0,"Gênesis, capítulos 37 a 50.",2],
+ ["Quem conduziu o povo à Terra Prometida depois de Moisés?",["Josué","Arão","Gedeão","Samuel"],0,"Foi ele quem atravessou o Jordão com o povo.",2],
+ ["Que rei construiu o primeiro Templo de Jerusalém?",["Salomão","Davi","Saul","Ezequias"],0,"Filho de Davi, famoso pela sabedoria.",2],
+ ["Que profeta foi levado ao céu num carro de fogo?",["Elias","Eliseu","Isaías","Amós"],0,"Segundo Livro dos Reis, capítulo 2.",2],
+ ["Daniel foi jogado numa cova de quê?",["Leões","Serpentes","Lobos","Ursos"],0,"E Deus o protegeu.",1],
+ ["Segundo o Gênesis, quem matou Abel?",["Caim","Set","Lameque","Esaú"],0,"Seu próprio irmão.",1],
+ ["Quantas foram as pragas do Egito?",["10","7","12","3"],0,"Êxodo, capítulos 7 a 12.",2],
+ ["Sansão perdeu a força quando cortaram o quê?",["O cabelo","A barba","As unhas","A túnica"],0,"Ele era nazireu, consagrado a Deus.",1],
+ ["Que profeta anunciou que uma virgem daria à luz o Emanuel?",["Isaías","Ezequiel","Oseias","Malaquias"],0,"Isaías 7,14.",3],
+ ["Quem era a esposa de Abraão?",["Sara","Rebeca","Raquel","Lia"],0,"Mãe de Isaac, mesmo já idosa.",2],
+ ["Jacó também ficou conhecido por qual nome?",["Israel","Judá","Efraim","Levi"],0,"Recebeu esse nome depois de lutar com o anjo.",2],
+ ["Quantas eram as tribos de Israel?",["12","10","7","40"],0,"Descendentes dos filhos de Jacó.",2],
+ ["Que mulher moabita é bisavó do rei Davi?",["Rute","Ester","Judite","Débora"],0,"Sua história tem um livro próprio.",3],
+ ["Em quantos dias Deus criou o mundo, segundo o Gênesis?",["Seis, e descansou no sétimo","Três","Dez","Quarenta"],0,"Gênesis, capítulos 1 e 2.",1],
+ ["Quem foram o primeiro homem e a primeira mulher, segundo a Bíblia?",["Adão e Eva","Abraão e Sara","Caim e Abel","Isaac e Rebeca"],0,"Gênesis, capítulo 2.",1],
+ ["Que animal enganou Eva no jardim do Éden?",["A serpente","O lobo","O leão","O corvo"],0,"Gênesis, capítulo 3.",1],
+ ["Que sinal Deus pôs no céu depois do dilúvio?",["O arco-íris","Uma estrela","A lua cheia","Um cometa"],0,"Sinal da aliança com Noé.",1],
+ ["Que ave voltou para a arca com um ramo de oliveira?",["Pomba","Corvo","Águia","Pardal"],0,"Sinal de que as águas tinham baixado.",1],
+ ["Quem é chamado de pai da fé e saiu de Ur rumo à terra prometida?",["Abraão","Moisés","Noé","Davi"],0,"Gênesis, capítulo 12.",1],
+ ["Qual filho Abraão quase ofereceu em sacrifício?",["Isaac","Ismael","Jacó","José"],0,"Deus deteve a sua mão.",2],
+ ["Quem eram os gêmeos filhos de Isaac e Rebeca?",["Esaú e Jacó","Caim e Abel","Moisés e Arão","Efraim e Manassés"],0,"Gênesis, capítulo 25.",2],
+ ["Por que Esaú vendeu seu direito de primogenitura?",["Por um prato de lentilhas","Por um camelo","Por 30 moedas","Por uma túnica"],0,"Ele voltou do campo com fome.",2],
+ ["O que Jacó viu em sonho em Betel?",["Uma escada até o céu com anjos","Sete vacas gordas","Uma sarça ardente","Um carro de fogo"],0,"A escada de Jacó, Gênesis 28.",2],
+ ["Que presente Jacó deu a José e despertou ciúme nos irmãos?",["Uma túnica colorida","Um anel de ouro","Um cajado","Um camelo"],0,"Gênesis, capítulo 37.",1],
+ ["Quem interpretou os sonhos do faraó sobre vacas gordas e magras?",["José","Daniel","Moisés","Elias"],0,"Eram sete anos de fartura e sete de fome.",2],
+ ["Onde Moisés foi encontrado ainda bebê?",["Num cesto no rio Nilo","Numa manjedoura","Numa caverna","No templo"],0,"A filha do faraó o encontrou.",1],
+ ["Como Deus falou com Moisés no monte Horeb?",["Numa sarça ardente","Numa nuvem escura","Por um anjo em sonho","Num redemoinho"],0,"A sarça ardia e não se consumia.",2],
+ ["Quem era o irmão de Moisés que falava por ele?",["Arão","Josué","Calebe","Levi"],0,"Arão foi o primeiro sumo sacerdote.",2],
+ ["Que mar se abriu para o povo de Israel passar?",["Mar Vermelho","Mar Morto","Mar da Galileia","Mar Mediterrâneo"],0,"Êxodo, capítulo 14.",1],
+ ["Que alimento caía do céu para o povo no deserto?",["Maná","Trigo","Peixes","Uvas"],0,"Êxodo, capítulo 16.",1],
+ ["Quantos anos o povo de Israel andou pelo deserto?",["40","7","12","100"],0,"Até chegar à Terra Prometida.",2],
+ ["Que ídolo o povo fez enquanto Moisés estava no monte?",["Um bezerro de ouro","Uma serpente de bronze","Uma estátua de leão","Um carneiro de prata"],0,"Êxodo, capítulo 32.",2],
+ ["Que cidade teve as muralhas derrubadas ao som das trombetas?",["Jericó","Jerusalém","Babilônia","Nínive"],0,"Depois de sete voltas ao redor dela.",1],
+ ["Que juiz de Israel venceu os madianitas com apenas 300 homens?",["Gedeão","Sansão","Samuel","Saul"],0,"Juízes, capítulo 7.",3],
+ ["Que profetisa foi juíza de Israel?",["Débora","Ana","Miriam","Hulda"],0,"Juízes, capítulo 4.",3],
+ ["Quem foi o primeiro rei de Israel?",["Saul","Davi","Salomão","Samuel"],0,"Ungido pelo profeta Samuel.",2],
+ ["Que profeta ungiu Davi como rei quando ele ainda era pastor?",["Samuel","Natã","Elias","Isaías"],0,"Primeiro Livro de Samuel, capítulo 16.",2],
+ ["Qual era o ofício de Davi quando jovem?",["Pastor de ovelhas","Pescador","Carpinteiro","Soldado"],0,"Era o caçula de Jessé, de Belém.",1],
+ ["Que instrumento Davi tocava para acalmar o rei Saul?",["Harpa (cítara)","Trombeta","Flauta","Tambor"],0,"Primeiro Livro de Samuel, capítulo 16.",2],
+ ["Quem era o grande amigo de Davi, filho do rei Saul?",["Jônatas","Absalão","Natã","Joabe"],0,"Uma das grandes amizades da Bíblia.",3],
+ ["Que rainha visitou Salomão para conhecer sua sabedoria?",["A rainha de Sabá","A rainha Ester","A rainha Jezabel","A rainha Cleópatra"],0,"Primeiro Livro dos Reis, capítulo 10.",2],
+ ["Que rainha judia salvou seu povo na Pérsia?",["Ester","Rute","Judite","Débora"],0,"O livro de Ester conta a história.",2],
+ ["Para qual cidade Deus mandou Jonas pregar?",["Nínive","Babilônia","Sodoma","Tiro"],0,"E a cidade se converteu.",2],
+ ["Que profeta sucedeu Elias e recebeu o seu manto?",["Eliseu","Isaías","Jeremias","Amós"],0,"Segundo Livro dos Reis, capítulo 2.",3],
+ ["Quem foram os três jovens jogados na fornalha que saíram ilesos?",["Sidrac, Misac e Abdênago","Pedro, Tiago e João","Abraão, Isaac e Jacó","Gaspar, Melquior e Baltasar"],0,"Daniel, capítulo 3.",3],
+ ["Que livro narra a paciência de um homem que perdeu tudo?",["Jó","Eclesiastes","Tobias","Lamentações"],0,"O Senhor deu, o Senhor tirou.",2],
+ ["Que anjo acompanhou Tobias em sua viagem?",["Rafael","Gabriel","Miguel","Uriel"],0,"Rafael quer dizer Deus cura.",3],
+ ["Como se chamam, juntos, os cinco primeiros livros da Bíblia?",["Pentateuco","Evangelhos","Livros sapienciais","Profetas menores"],0,"Gênesis, Êxodo, Levítico, Números e Deuteronômio.",3],
+ ["Em que língua foi escrita a maior parte do Antigo Testamento?",["Hebraico","Latim","Grego","Árabe"],0,"Alguns trechos estão em aramaico e grego.",3],
+ ["Que torre os homens tentaram construir até o céu?",["Torre de Babel","Torre de Davi","Torre de Siloé","Torre de Jericó"],0,"Gênesis, capítulo 11.",1],
+ ["Que cidade foi destruída junto com Gomorra?",["Sodoma","Nínive","Jericó","Babel"],0,"Gênesis, capítulo 19.",2],
+ ["Em que se transformou a mulher de Ló ao olhar para trás?",["Numa estátua de sal","Numa pedra","Numa árvore","Numa pomba"],0,"Gênesis, capítulo 19.",2]],
 "Novo Testamento":[
- ["Quantos evangelhos há no Novo Testamento?",["4","3","5","12"],0,"Mateus, Marcos, Lucas e João."],
- ["Em que cidade Jesus nasceu?",["Belém","Nazaré","Jerusalém","Cafarnaum"],0,"Belém da Judeia."],
- ["Em que cidade Jesus cresceu?",["Nazaré","Belém","Betânia","Jericó"],0,"Por isso era chamado de Nazareno."],
- ["Qual foi o primeiro milagre de Jesus, segundo João?",["Água em vinho em Caná","Multiplicação dos pães","Cura de um cego","Ressurreição de Lázaro"],0,"Nas bodas de Caná, a pedido de Maria."],
- ["Quem batizou Jesus?",["João Batista","Pedro","André","Zacarias"],0,"No rio Jordão."],
- ["Quem negou Jesus três vezes?",["Pedro","Judas","Tomé","João"],0,"Antes de o galo cantar."],
- ["Qual apóstolo duvidou da ressurreição?",["Tomé","Filipe","Mateus","Bartolomeu"],0,"Ele quis tocar nas chagas."],
- ["Quantos dias Jesus jejuou no deserto?",["40","7","30","3"],0,"Por isso a Quaresma tem quarenta dias."],
- ["Na multiplicação, quantos pães e peixes havia?",["5 pães e 2 peixes","7 pães e 3 peixes","2 pães e 5 peixes","12 pães e 1 peixe"],0,"E sobraram doze cestos."],
- ["Os discípulos de Emaús reconheceram Jesus quando ele...",["partiu o pão","mostrou as chagas","chamou seus nomes","acalmou o mar"],0,"Lucas, capítulo 24."],
- ["Quem viu primeiro Jesus ressuscitado, segundo João?",["Maria Madalena","Pedro","João","Maria, sua mãe"],0,"Ela o confundiu com o jardineiro."],
- ["Qual anjo anunciou a Maria que ela seria mãe de Jesus?",["Gabriel","Miguel","Rafael","Uriel"],0,"Lucas, capítulo 1."],
- ["Quem era a mãe de João Batista?",["Isabel","Ana","Marta","Salomé"],0,"Parente de Maria."],
- ["Que cobrador de impostos subiu numa árvore para ver Jesus?",["Zaqueu","Mateus","Nicodemos","Bartimeu"],0,"Em Jericó, num sicômoro."],
- ["Quem Jesus ressuscitou depois de quatro dias no túmulo?",["Lázaro","O filho da viúva de Naim","A filha de Jairo","Tabita"],0,"Irmão de Marta e Maria, em Betânia."],
- ["Como é conhecida a parábola do filho que gastou a herança e voltou para casa?",["Filho pródigo","Bom samaritano","Semeador","Talentos"],0,"Lucas, capítulo 15."],
- ["Quem ajudou Jesus a carregar a cruz?",["Simão de Cirene","José de Arimateia","Nicodemos","Barrabás"],0,"Os soldados o obrigaram a ajudar."],
- ["Que governador romano condenou Jesus?",["Pôncio Pilatos","Herodes","César Augusto","Caifás"],0,"Ele lavou as mãos diante do povo."],
- ["Por quantas moedas de prata Judas traiu Jesus?",["30","10","40","100"],0,"Mateus, capítulo 26."],
- ["Quem foi o primeiro mártir cristão?",["Santo Estêvão","São Pedro","São Tiago","São Paulo"],0,"Foi apedrejado; Atos, capítulo 7."],
- ["Paulo se converteu a caminho de qual cidade?",["Damasco","Roma","Antioquia","Corinto"],0,"Uma luz do céu o derrubou."],
- ["Qual evangelho começa com \"No princípio era o Verbo\"?",["João","Mateus","Marcos","Lucas"],0,"O evangelho da águia."],
- ["Quem escreveu a maior parte das cartas do Novo Testamento?",["Paulo","Pedro","Tiago","João"],0,"O apóstolo dos gentios."],
- ["Que apóstolo foi escolhido para o lugar de Judas?",["Matias","Barnabé","Timóteo","Silas"],0,"Atos dos Apóstolos, capítulo 1."],
- ["Quem escreveu os Atos dos Apóstolos?",["Lucas","Paulo","Marcos","Pedro"],0,"É a continuação do seu evangelho."],
- ["Qual era o irmão de Pedro que também foi apóstolo?",["André","Tiago","Filipe","João"],0,"Também era pescador."],
- ["Qual é o último livro da Bíblia?",["Apocalipse","Atos","Judas","Malaquias"],0,"Atribuído a João."]],
+ ["Quantos evangelhos há no Novo Testamento?",["4","3","5","12"],0,"Mateus, Marcos, Lucas e João.",1],
+ ["Em que cidade Jesus nasceu?",["Belém","Nazaré","Jerusalém","Cafarnaum"],0,"Belém da Judeia.",1],
+ ["Em que cidade Jesus cresceu?",["Nazaré","Belém","Betânia","Jericó"],0,"Por isso era chamado de Nazareno.",1],
+ ["Qual foi o primeiro milagre de Jesus, segundo João?",["Água em vinho em Caná","Multiplicação dos pães","Cura de um cego","Ressurreição de Lázaro"],0,"Nas bodas de Caná, a pedido de Maria.",2],
+ ["Quem batizou Jesus?",["João Batista","Pedro","André","Zacarias"],0,"No rio Jordão.",1],
+ ["Quem negou Jesus três vezes?",["Pedro","Judas","Tomé","João"],0,"Antes de o galo cantar.",1],
+ ["Qual apóstolo duvidou da ressurreição?",["Tomé","Filipe","Mateus","Bartolomeu"],0,"Ele quis tocar nas chagas.",1],
+ ["Quantos dias Jesus jejuou no deserto?",["40","7","30","3"],0,"Por isso a Quaresma tem quarenta dias.",1],
+ ["Na multiplicação, quantos pães e peixes havia?",["5 pães e 2 peixes","7 pães e 3 peixes","2 pães e 5 peixes","12 pães e 1 peixe"],0,"E sobraram doze cestos.",1],
+ ["Os discípulos de Emaús reconheceram Jesus quando ele...",["partiu o pão","mostrou as chagas","chamou seus nomes","acalmou o mar"],0,"Lucas, capítulo 24.",2],
+ ["Quem viu primeiro Jesus ressuscitado, segundo João?",["Maria Madalena","Pedro","João","Maria, sua mãe"],0,"Ela o confundiu com o jardineiro.",2],
+ ["Qual anjo anunciou a Maria que ela seria mãe de Jesus?",["Gabriel","Miguel","Rafael","Uriel"],0,"Lucas, capítulo 1.",1],
+ ["Quem era a mãe de João Batista?",["Isabel","Ana","Marta","Salomé"],0,"Parente de Maria.",2],
+ ["Que cobrador de impostos subiu numa árvore para ver Jesus?",["Zaqueu","Mateus","Nicodemos","Bartimeu"],0,"Em Jericó, num sicômoro.",2],
+ ["Quem Jesus ressuscitou depois de quatro dias no túmulo?",["Lázaro","O filho da viúva de Naim","A filha de Jairo","Tabita"],0,"Irmão de Marta e Maria, em Betânia.",1],
+ ["Como é conhecida a parábola do filho que gastou a herança e voltou para casa?",["Filho pródigo","Bom samaritano","Semeador","Talentos"],0,"Lucas, capítulo 15.",1],
+ ["Quem ajudou Jesus a carregar a cruz?",["Simão de Cirene","José de Arimateia","Nicodemos","Barrabás"],0,"Os soldados o obrigaram a ajudar.",2],
+ ["Que governador romano condenou Jesus?",["Pôncio Pilatos","Herodes","César Augusto","Caifás"],0,"Ele lavou as mãos diante do povo.",2],
+ ["Por quantas moedas de prata Judas traiu Jesus?",["30","10","40","100"],0,"Mateus, capítulo 26.",2],
+ ["Quem foi o primeiro mártir cristão?",["Santo Estêvão","São Pedro","São Tiago","São Paulo"],0,"Foi apedrejado; Atos, capítulo 7.",2],
+ ["Paulo se converteu a caminho de qual cidade?",["Damasco","Roma","Antioquia","Corinto"],0,"Uma luz do céu o derrubou.",2],
+ ["Qual evangelho começa com \"No princípio era o Verbo\"?",["João","Mateus","Marcos","Lucas"],0,"O evangelho da águia.",3],
+ ["Quem escreveu a maior parte das cartas do Novo Testamento?",["Paulo","Pedro","Tiago","João"],0,"O apóstolo dos gentios.",2],
+ ["Que apóstolo foi escolhido para o lugar de Judas?",["Matias","Barnabé","Timóteo","Silas"],0,"Atos dos Apóstolos, capítulo 1.",3],
+ ["Quem escreveu os Atos dos Apóstolos?",["Lucas","Paulo","Marcos","Pedro"],0,"É a continuação do seu evangelho.",3],
+ ["Qual era o irmão de Pedro que também foi apóstolo?",["André","Tiago","Filipe","João"],0,"Também era pescador.",2],
+ ["Qual é o último livro da Bíblia?",["Apocalipse","Atos","Judas","Malaquias"],0,"Atribuído a João.",1],
+ ["Quantos apóstolos Jesus escolheu?",["12","7","10","70"],0,"Como as doze tribos de Israel.",1],
+ ["Onde Jesus foi colocado logo que nasceu?",["Numa manjedoura","Num berço de ouro","No templo","Numa cesta"],0,"Não havia lugar na hospedaria.",1],
+ ["Quem anunciou o nascimento de Jesus aos pastores?",["Os anjos","Os magos","Herodes","João Batista"],0,"Glória a Deus nas alturas!",1],
+ ["Que presentes os magos levaram a Jesus?",["Ouro, incenso e mirra","Pão, vinho e azeite","Prata, linho e mel","Ouro, prata e bronze"],0,"Mateus, capítulo 2.",1],
+ ["Para qual país José e Maria fugiram com o Menino Jesus?",["Egito","Grécia","Babilônia","Síria"],0,"Para escapar de Herodes.",2],
+ ["Com quantos anos Jesus foi encontrado no Templo entre os doutores?",["12","7","30","18"],0,"Lucas, capítulo 2.",2],
+ ["Qual era o ofício de José, esposo de Maria?",["Carpinteiro","Pescador","Pastor","Cobrador de impostos"],0,"Jesus aprendeu o ofício com ele.",1],
+ ["Qual era o ofício de Pedro antes de seguir Jesus?",["Pescador","Carpinteiro","Soldado","Médico"],0,"Jesus o fez pescador de homens.",1],
+ ["Qual apóstolo era cobrador de impostos?",["Mateus","Pedro","Tomé","Judas"],0,"Também chamado Levi.",2],
+ ["Qual evangelista era médico, segundo a tradição?",["Lucas","Marcos","João","Mateus"],0,"Paulo o chama de caro médico.",2],
+ ["Como se chama o sermão em que Jesus proclamou as bem-aventuranças?",["Sermão da Montanha","Sermão do Lago","Sermão do Templo","Sermão de Jericó"],0,"Mateus, capítulos 5 a 7.",2],
+ ["Bem-aventurados os pobres em espírito, porque deles é...",["o Reino dos Céus","a terra","a misericórdia","a consolação"],0,"Mateus 5,3.",2],
+ ["Na parábola do bom samaritano, quem ajudou o homem ferido?",["Um samaritano","Um sacerdote","Um levita","Um soldado romano"],0,"Vai e faze o mesmo.",1],
+ ["Sobre o que Jesus caminhou para encontrar os discípulos no barco?",["Sobre as águas","Sobre as nuvens","Sobre as pedras","Sobre a areia"],0,"Pedro também andou, até ter medo.",1],
+ ["Em que monte Jesus se transfigurou, segundo a tradição?",["Tabor","Sinai","Carmelo","Calvário"],0,"Na Galileia.",3],
+ ["Quem apareceu ao lado de Jesus na Transfiguração?",["Moisés e Elias","Abraão e Davi","Isaías e Jeremias","Noé e Jonas"],0,"A Lei e os Profetas.",2],
+ ["Em que dia Jesus entrou em Jerusalém montado num jumentinho?",["Domingo de Ramos","Quinta-feira Santa","Pentecostes","Sábado Santo"],0,"O povo agitava ramos: Hosana!",1],
+ ["Quem lavou os pés dos apóstolos na Última Ceia?",["Jesus","Pedro","João","Maria"],0,"João, capítulo 13.",1],
+ ["Em que jardim Jesus rezou antes de ser preso?",["Getsêmani","Éden","Betânia","Siloé"],0,"No Monte das Oliveiras.",2],
+ ["Que apóstolo cortou a orelha de um servo quando Jesus foi preso?",["Pedro","João","Judas","Tiago"],0,"O servo se chamava Malco.",2],
+ ["Que preso o povo pediu para soltar no lugar de Jesus?",["Barrabás","Dimas","Zaqueu","Malco"],0,"Mateus, capítulo 27.",2],
+ ["Em que monte Jesus foi crucificado?",["Calvário (Gólgota)","Tabor","Sião","Sinai"],0,"Gólgota quer dizer lugar da caveira.",1],
+ ["O que significa a inscrição INRI na cruz?",["Jesus Nazareno, Rei dos Judeus","Jesus, Filho de Deus","Eis o Cordeiro de Deus","Rei dos Reis"],0,"Iesus Nazarenus Rex Iudaeorum, em latim.",2],
+ ["Em que dia Jesus ressuscitou?",["No terceiro dia","No sétimo dia","No quadragésimo dia","No mesmo dia"],0,"No domingo de Páscoa.",1],
+ ["Quantos dias depois da Páscoa Jesus subiu aos céus?",["40","50","3","7"],0,"É a Ascensão do Senhor.",2],
+ ["Como se chamavam as irmãs de Lázaro?",["Marta e Maria","Isabel e Ana","Rute e Noemi","Maria e Salomé"],0,"Moravam em Betânia.",2],
+ ["Qual foi o primeiro apóstolo a morrer como mártir?",["Tiago Maior","Pedro","André","Paulo"],0,"Atos dos Apóstolos, capítulo 12.",3],
+ ["Como Paulo se chamava antes de se converter?",["Saulo","Simão","Silas","Samuel"],0,"Saulo de Tarso.",1],
+ ["Em que cidade os seguidores de Jesus foram chamados de cristãos pela primeira vez?",["Antioquia","Roma","Jerusalém","Éfeso"],0,"Atos dos Apóstolos, capítulo 11.",3],
+ ["Que cego Jesus curou na saída de Jericó?",["Bartimeu","Lázaro","Malco","Jairo"],0,"Marcos, capítulo 10.",3],
+ ["Qual chefe da sinagoga teve a filha ressuscitada por Jesus?",["Jairo","Nicodemos","Zaqueu","Gamaliel"],0,"Talitá cum: menina, levanta-te!",3],
+ ["Que fariseu foi conversar com Jesus de noite?",["Nicodemos","Caifás","Gamaliel","Simão"],0,"João, capítulo 3.",3],
+ ["Em que língua foi escrito o Novo Testamento?",["Grego","Hebraico","Latim","Português"],0,"O grego comum da época.",3],
+ ["Qual é o mais curto dos quatro evangelhos?",["Marcos","Mateus","Lucas","João"],0,"Tem 16 capítulos.",3]],
 "Sacramentos e fé":[
- ["Quantos livros tem a Bíblia católica?",["73","66","72","80"],0,"46 no Antigo e 27 no Novo Testamento."],
- ["Quantos são os sacramentos?",["7","5","10","3"],0,"Batismo, Crisma, Eucaristia, Penitência, Unção, Ordem e Matrimônio."],
- ["Quais são os sacramentos da iniciação cristã?",["Batismo, Crisma e Eucaristia","Batismo, Confissão e Matrimônio","Eucaristia, Ordem e Unção","Crisma, Ordem e Matrimônio"],0,"São a porta de entrada da vida cristã."],
- ["Que sacramento perdoa os pecados cometidos depois do Batismo?",["Confissão (Reconciliação)","Crisma","Unção dos Enfermos","Ordem"],0,"Também chamado de Penitência."],
- ["Qual destes sacramentos se recebe uma única vez?",["Batismo","Eucaristia","Confissão","Unção dos Enfermos"],0,"Batismo, Crisma e Ordem marcam a alma para sempre."],
- ["Em caso de necessidade, quem pode batizar?",["Qualquer pessoa, com a intenção da Igreja","Somente o papa","Somente o bispo","Ninguém além do padre"],0,"Basta derramar água e dizer as palavras do Batismo."],
- ["Quais são as virtudes teologais?",["Fé, esperança e caridade","Prudência, justiça e fortaleza","Paciência, bondade e mansidão","Humildade, pureza e obediência"],0,"Elas têm Deus como origem e fim."],
- ["Quantas são as virtudes cardeais?",["4","3","7","10"],0,"Prudência, justiça, fortaleza e temperança."],
- ["Quantos são os pecados capitais?",["7","10","5","12"],0,"Eles dão origem a outros pecados."],
- ["Quantos são os dons do Espírito Santo?",["7","9","3","12"],0,"Sabedoria, entendimento, conselho, fortaleza, ciência, piedade e temor de Deus."],
- ["Quantas são as obras de misericórdia corporais?",["7","5","10","14"],0,"E outras sete espirituais."],
- ["Quantos são os mandamentos da Igreja?",["5","10","7","3"],0,"Como participar da Missa aos domingos e confessar ao menos uma vez por ano."],
- ["Com que pão e vinho se celebra a Eucaristia?",["Pão de trigo e vinho de uva","Qualquer pão e suco","Pão de milho e água","Bolo e vinho"],0,"São a matéria do sacramento."],
- ["O que significa transubstanciação?",["O pão e o vinho se tornam o Corpo e o Sangue de Cristo","A água vira vinho","A alma vai ao céu","O batismo apaga o pecado"],0,"Acontece na consagração da Missa."],
- ["Que sacramento é dado aos doentes graves e idosos?",["Unção dos Enfermos","Crisma","Ordem","Penitência"],0,"Traz conforto, força e perdão."],
- ["Quantas pessoas há na Santíssima Trindade?",["3","1","2","4"],0,"Pai, Filho e Espírito Santo, um só Deus."]],
+ ["Quantos livros tem a Bíblia católica?",["73","66","72","80"],0,"46 no Antigo e 27 no Novo Testamento.",2],
+ ["Quantos são os sacramentos?",["7","5","10","3"],0,"Batismo, Crisma, Eucaristia, Penitência, Unção, Ordem e Matrimônio.",1],
+ ["Quais são os sacramentos da iniciação cristã?",["Batismo, Crisma e Eucaristia","Batismo, Confissão e Matrimônio","Eucaristia, Ordem e Unção","Crisma, Ordem e Matrimônio"],0,"São a porta de entrada da vida cristã.",2],
+ ["Que sacramento perdoa os pecados cometidos depois do Batismo?",["Confissão (Reconciliação)","Crisma","Unção dos Enfermos","Ordem"],0,"Também chamado de Penitência.",1],
+ ["Qual destes sacramentos se recebe uma única vez?",["Batismo","Eucaristia","Confissão","Unção dos Enfermos"],0,"Batismo, Crisma e Ordem marcam a alma para sempre.",2],
+ ["Em caso de necessidade, quem pode batizar?",["Qualquer pessoa, com a intenção da Igreja","Somente o papa","Somente o bispo","Ninguém além do padre"],0,"Basta derramar água e dizer as palavras do Batismo.",3],
+ ["Quais são as virtudes teologais?",["Fé, esperança e caridade","Prudência, justiça e fortaleza","Paciência, bondade e mansidão","Humildade, pureza e obediência"],0,"Elas têm Deus como origem e fim.",2],
+ ["Quantas são as virtudes cardeais?",["4","3","7","10"],0,"Prudência, justiça, fortaleza e temperança.",3],
+ ["Quantos são os pecados capitais?",["7","10","5","12"],0,"Eles dão origem a outros pecados.",2],
+ ["Quantos são os dons do Espírito Santo?",["7","9","3","12"],0,"Sabedoria, entendimento, conselho, fortaleza, ciência, piedade e temor de Deus.",2],
+ ["Quantas são as obras de misericórdia corporais?",["7","5","10","14"],0,"E outras sete espirituais.",3],
+ ["Quantos são os mandamentos da Igreja?",["5","10","7","3"],0,"Como participar da Missa aos domingos e confessar ao menos uma vez por ano.",3],
+ ["Com que pão e vinho se celebra a Eucaristia?",["Pão de trigo e vinho de uva","Qualquer pão e suco","Pão de milho e água","Bolo e vinho"],0,"São a matéria do sacramento.",3],
+ ["O que significa transubstanciação?",["O pão e o vinho se tornam o Corpo e o Sangue de Cristo","A água vira vinho","A alma vai ao céu","O batismo apaga o pecado"],0,"Acontece na consagração da Missa.",3],
+ ["Que sacramento é dado aos doentes graves e idosos?",["Unção dos Enfermos","Crisma","Ordem","Penitência"],0,"Traz conforto, força e perdão.",2],
+ ["Quantas pessoas há na Santíssima Trindade?",["3","1","2","4"],0,"Pai, Filho e Espírito Santo, um só Deus.",1],
+ ["Qual é o primeiro sacramento que recebemos?",["Batismo","Eucaristia","Crisma","Confissão"],0,"É a porta dos outros sacramentos.",1],
+ ["O que se usa para batizar?",["Água","Óleo","Sal","Fogo"],0,"Em nome do Pai, do Filho e do Espírito Santo.",1],
+ ["Como se chama a primeira vez que alguém recebe a Eucaristia?",["Primeira Comunhão","Crisma","Batismo","Profissão de fé"],0,"Um dia de festa para a família.",1],
+ ["Na Crisma, recebemos de modo especial...",["o Espírito Santo","os Dez Mandamentos","uma nova família","o nome de um santo"],0,"É o sacramento da confirmação.",1],
+ ["Quem normalmente celebra a Crisma?",["O bispo","O diácono","O catequista","O padrinho"],0,"Ele pode delegar a um padre.",2],
+ ["Que óleo é usado na Crisma?",["Santo Crisma","Óleo dos catecúmenos","Azeite comum","Óleo dos enfermos"],0,"Óleo perfumado consagrado pelo bispo.",3],
+ ["Em que missa o bispo consagra os santos óleos?",["Missa do Crisma, na Semana Santa","Missa do Galo","Vigília Pascal","Missa de Pentecostes"],0,"Celebrada com todos os padres da diocese.",3],
+ ["Qual sacramento torna um homem diácono, padre ou bispo?",["Ordem","Crisma","Matrimônio","Unção"],0,"É o sacramento do serviço.",2],
+ ["Quais são os três graus do sacramento da Ordem?",["Diácono, presbítero e bispo","Leitor, acólito e padre","Padre, cônego e cardeal","Bispo, arcebispo e papa"],0,"Cardeal e papa não são graus da Ordem.",3],
+ ["Qual sacramento une um homem e uma mulher?",["Matrimônio","Ordem","Crisma","Batismo"],0,"O que Deus uniu, o homem não separe.",1],
+ ["Quem são os ministros do Matrimônio no rito latino?",["Os próprios noivos","O padre","O bispo","Os padrinhos"],0,"O padre é a testemunha qualificada da Igreja.",3],
+ ["Quantos são os Mandamentos da Lei de Deus?",["10","7","12","5"],0,"Escritos em duas tábuas de pedra.",1],
+ ["Qual é o primeiro mandamento?",["Amar a Deus sobre todas as coisas","Não matar","Honrar pai e mãe","Guardar domingos e festas"],0,"É o maior mandamento.",1],
+ ["Qual mandamento fala dos pais?",["Honrar pai e mãe","Não furtar","Não matar","Não levantar falso testemunho"],0,"É o quarto mandamento.",1],
+ ["Jesus resumiu os mandamentos em amar a Deus e...",["ao próximo como a si mesmo","aos reis","aos anjos","à lei de Moisés"],0,"Mateus 22,37-39.",1],
+ ["O que é o Credo?",["A profissão de fé da Igreja","Uma oração a Maria","Um sacramento","Um livro da Bíblia"],0,"Creio em Deus Pai...",1],
+ ["Qual pecado capital é o oposto da humildade?",["Soberba (orgulho)","Gula","Preguiça","Avareza"],0,"A soberba é considerada a raiz dos outros.",2],
+ ["Qual virtude se opõe à preguiça?",["Diligência","Castidade","Temperança","Humildade"],0,"Fazer bem e com zelo o que se deve.",3],
+ ["Qual é a maior das virtudes, segundo São Paulo?",["Caridade (amor)","Fé","Esperança","Prudência"],0,"Primeira Carta aos Coríntios, capítulo 13.",2],
+ ["Dar de comer a quem tem fome é uma obra de misericórdia...",["corporal","espiritual","litúrgica","sacramental"],0,"Ajuda as necessidades do corpo.",1],
+ ["Perdoar as ofensas é uma obra de misericórdia...",["espiritual","corporal","sacramental","litúrgica"],0,"Ajuda as necessidades da alma.",2],
+ ["Como se chama o arrependimento por amor a Deus, e não por medo do castigo?",["Contrição perfeita","Atrição","Penitência","Absolvição"],0,"A atrição é o arrependimento imperfeito.",3],
+ ["Que oração se reza na confissão para mostrar arrependimento?",["Ato de contrição","Credo","Ângelus","Magnificat"],0,"Meu Deus, eu me arrependo...",2],
+ ["Quem pode dar a absolvição na confissão?",["O sacerdote","O diácono","O catequista","Qualquer pessoa"],0,"Em nome de Cristo.",2],
+ ["O padre pode contar o que ouviu na confissão?",["Nunca: é o sigilo sacramental","Só aos pais","Só ao bispo","Só se for grave"],0,"O sigilo é absoluto.",2],
+ ["Quanto tempo de jejum a Igreja pede antes de comungar?",["Uma hora","Doze horas","Três dias","Nenhum"],0,"Água e remédios não quebram o jejum.",3],
+ ["O que significa a palavra Eucaristia?",["Ação de graças","Partilha do pão","Corpo de Cristo","Comunhão"],0,"Vem do grego.",3],
+ ["Qual livro reúne de forma oficial a doutrina católica?",["Catecismo da Igreja Católica","Código Civil","Missal Romano","Liturgia das Horas"],0,"Publicado em 1992.",2],
+ ["Como o Credo descreve a Igreja?",["Una, santa, católica e apostólica","Santa, romana, antiga e fiel","Una, pura, forte e livre","Católica, cristã, santa e eterna"],0,"São as quatro notas da Igreja.",3],
+ ["Na oração pelos falecidos se diz: Dai-lhes, Senhor, o...",["descanso eterno","pão nosso","Reino dos céus","perdão eterno"],0,"E a luz perpétua os ilumine.",2],
+ ["Quais são os Novíssimos, as realidades últimas?",["Morte, juízo, inferno e paraíso","Fé, esperança e caridade","Os sete sacramentos","Céu e terra"],0,"São quatro.",3],
+ ["O que significa a palavra católica?",["Universal","Romana","Antiga","Santa"],0,"Vem do grego katholikós.",2],
+ ["Batizamos em nome do Pai, do Filho e do...",["Espírito Santo","Santo Anjo","Senhor Jesus","Povo de Deus"],0,"Mateus 28,19.",1]],
 "Liturgia e orações":[
- ["Que tempo litúrgico prepara o Natal?",["Advento","Quaresma","Tempo Comum","Páscoa"],0,"São quatro domingos."],
- ["Que dia inicia a Quaresma?",["Quarta-feira de Cinzas","Domingo de Ramos","Sexta-feira Santa","Primeiro domingo do Advento"],0,"Lembra-te que és pó..."],
- ["O que se celebra em Pentecostes?",["A vinda do Espírito Santo","O nascimento de Jesus","A Ascensão","A Anunciação"],0,"Cinquenta dias depois da Páscoa."],
- ["Qual a cor litúrgica da Quaresma?",["Roxo","Verde","Branco","Vermelho"],0,"Cor de penitência e conversão."],
- ["Qual a cor litúrgica do Tempo Comum?",["Verde","Roxo","Branco","Rosa"],0,"Cor da esperança."],
- ["Que cor se usa em Pentecostes e nas festas dos mártires?",["Vermelho","Branco","Verde","Roxo"],0,"Lembra o fogo do Espírito e o sangue dos mártires."],
- ["Em que domingos se pode usar a cor rosa?",["3º do Advento e 4º da Quaresma","Páscoa e Natal","Ramos e Pentecostes","Todos os domingos de maio"],0,"Domingos Gaudete e Laetare, de alegria."],
- ["O que a Igreja celebra na Quinta-feira Santa à noite?",["A Última Ceia","A Ressurreição","A Ascensão","O batismo de Jesus"],0,"Instituição da Eucaristia e do sacerdócio."],
- ["Como se chama a grande vela acesa na Vigília Pascal?",["Círio Pascal","Vela do Advento","Lâmpada do sacrário","Candelabro"],0,"Representa Cristo ressuscitado, luz do mundo."],
- ["Onde se guardam as hóstias consagradas na igreja?",["No sacrário","No batistério","No ambão","Na sacristia"],0,"Também chamado tabernáculo."],
- ["A festa da Epifania lembra a visita de quem a Jesus?",["Os Reis Magos","Os pastores","Simeão e Ana","Os apóstolos"],0,"Ouro, incenso e mirra."],
- ["Quando começa o ano litúrgico?",["No primeiro domingo do Advento","Em 1º de janeiro","Na Páscoa","Em Pentecostes"],0,"Por isso o Advento abre o calendário da Igreja."],
- ["O que significa \"Aleluia\"?",["Louvai o Senhor","Assim seja","Deus conosco","Paz e bem"],0,"É uma palavra hebraica de louvor."],
- ["O que significa \"Amém\"?",["Assim seja","Louvado seja","Graças a Deus","Senhor, piedade"],0,"Uma palavra de adesão e confiança."],
- ["Que oração se reza ao meio-dia lembrando a Encarnação?",["Ângelus","Salve-Rainha","Credo","Magnificat"],0,"O anjo do Senhor anunciou a Maria..."],
- ["Que oração Jesus ensinou aos discípulos?",["Pai-Nosso","Ave-Maria","Salve-Rainha","Credo"],0,"Mateus 6 e Lucas 11."],
- ["Como se chama a oração em que professamos a fé?",["Credo","Glória","Ato de contrição","Ângelus"],0,"Creio em Deus Pai todo-poderoso..."],
- ["Que festa celebra o Corpo e o Sangue de Cristo?",["Corpus Christi","Cristo Rei","Epifania","Ascensão"],0,"Muitas cidades fazem tapetes nas ruas."],
- ["Quantos dias há entre a Páscoa e Pentecostes?",["50","40","30","7"],0,"Pentecostes quer dizer quinquagésimo dia."]],
+ ["Que tempo litúrgico prepara o Natal?",["Advento","Quaresma","Tempo Comum","Páscoa"],0,"São quatro domingos.",1],
+ ["Que dia inicia a Quaresma?",["Quarta-feira de Cinzas","Domingo de Ramos","Sexta-feira Santa","Primeiro domingo do Advento"],0,"Lembra-te que és pó...",1],
+ ["O que se celebra em Pentecostes?",["A vinda do Espírito Santo","O nascimento de Jesus","A Ascensão","A Anunciação"],0,"Cinquenta dias depois da Páscoa.",1],
+ ["Qual a cor litúrgica da Quaresma?",["Roxo","Verde","Branco","Vermelho"],0,"Cor de penitência e conversão.",2],
+ ["Qual a cor litúrgica do Tempo Comum?",["Verde","Roxo","Branco","Rosa"],0,"Cor da esperança.",2],
+ ["Que cor se usa em Pentecostes e nas festas dos mártires?",["Vermelho","Branco","Verde","Roxo"],0,"Lembra o fogo do Espírito e o sangue dos mártires.",2],
+ ["Em que domingos se pode usar a cor rosa?",["3º do Advento e 4º da Quaresma","Páscoa e Natal","Ramos e Pentecostes","Todos os domingos de maio"],0,"Domingos Gaudete e Laetare, de alegria.",3],
+ ["O que a Igreja celebra na Quinta-feira Santa à noite?",["A Última Ceia","A Ressurreição","A Ascensão","O batismo de Jesus"],0,"Instituição da Eucaristia e do sacerdócio.",2],
+ ["Como se chama a grande vela acesa na Vigília Pascal?",["Círio Pascal","Vela do Advento","Lâmpada do sacrário","Candelabro"],0,"Representa Cristo ressuscitado, luz do mundo.",2],
+ ["Onde se guardam as hóstias consagradas na igreja?",["No sacrário","No batistério","No ambão","Na sacristia"],0,"Também chamado tabernáculo.",2],
+ ["A festa da Epifania lembra a visita de quem a Jesus?",["Os Reis Magos","Os pastores","Simeão e Ana","Os apóstolos"],0,"Ouro, incenso e mirra.",2],
+ ["Quando começa o ano litúrgico?",["No primeiro domingo do Advento","Em 1º de janeiro","Na Páscoa","Em Pentecostes"],0,"Por isso o Advento abre o calendário da Igreja.",3],
+ ["O que significa Aleluia?",["Louvai o Senhor","Assim seja","Deus conosco","Paz e bem"],0,"É uma palavra hebraica de louvor.",2],
+ ["O que significa Amém?",["Assim seja","Louvado seja","Graças a Deus","Senhor, piedade"],0,"Uma palavra de adesão e confiança.",1],
+ ["Que oração se reza ao meio-dia lembrando a Encarnação?",["Ângelus","Salve-Rainha","Credo","Magnificat"],0,"O anjo do Senhor anunciou a Maria...",2],
+ ["Que oração Jesus ensinou aos discípulos?",["Pai-Nosso","Ave-Maria","Salve-Rainha","Credo"],0,"Mateus 6 e Lucas 11.",1],
+ ["Como se chama a oração em que professamos a fé?",["Credo","Glória","Ato de contrição","Ângelus"],0,"Creio em Deus Pai todo-poderoso...",1],
+ ["Que festa celebra o Corpo e o Sangue de Cristo?",["Corpus Christi","Cristo Rei","Epifania","Ascensão"],0,"Muitas cidades fazem tapetes nas ruas.",2],
+ ["Quantos dias há entre a Páscoa e Pentecostes?",["50","40","30","7"],0,"Pentecostes quer dizer quinquagésimo dia.",2],
+ ["Qual é a maior festa do ano para os cristãos?",["Páscoa","Natal","Pentecostes","Corpus Christi"],0,"A Ressurreição do Senhor.",1],
+ ["Em que dia se celebra o Natal?",["25 de dezembro","1º de janeiro","6 de janeiro","24 de junho"],0,"O nascimento de Jesus.",1],
+ ["Que cor o padre usa no Natal e na Páscoa?",["Branco","Roxo","Verde","Preto"],0,"Cor da alegria e da festa.",1],
+ ["Quantas velas tem a coroa do Advento?",["4","3","7","12"],0,"Uma para cada domingo do Advento.",1],
+ ["Como se chama a missa da noite de Natal?",["Missa do Galo","Missa do Crisma","Vigília Pascal","Missa de Ramos"],0,"Celebrada à meia-noite ou na noite de 24.",2],
+ ["Em que dia a Igreja não celebra missa, apenas a Celebração da Paixão?",["Sexta-feira Santa","Quinta-feira Santa","Domingo de Ramos","Quarta-feira de Cinzas"],0,"O altar fica despojado.",2],
+ ["Que gesto especial se faz na Sexta-feira Santa?",["A adoração da cruz","O lava-pés","A bênção dos ramos","A aspersão com água"],0,"Os fiéis se aproximam para venerar a cruz.",2],
+ ["Como se chamam os três dias centrais da Semana Santa?",["Tríduo Pascal","Novena","Oitava","Quaresma"],0,"Da Quinta-feira Santa à Vigília Pascal.",2],
+ ["Quanto tempo dura o Tempo Pascal?",["50 dias","40 dias","7 dias","30 dias"],0,"Da Páscoa até Pentecostes.",2],
+ ["Quantos dias dura uma novena?",["9","7","12","40"],0,"Lembra os nove dias de oração antes de Pentecostes.",1],
+ ["Quantos mistérios tem o Rosário completo?",["20","15","10","4"],0,"Gozosos, luminosos, dolorosos e gloriosos.",2],
+ ["Quais são os quatro conjuntos de mistérios do Rosário?",["Gozosos, luminosos, dolorosos e gloriosos","Alegres, tristes, santos e divinos","Gozosos, sagrados, dolorosos e celestes","Luminosos, eternos, dolorosos e marianos"],0,"Cinco mistérios em cada um.",2],
+ ["Qual é o primeiro mistério doloroso?",["A agonia de Jesus no Horto","A coroação de espinhos","A crucifixão","A flagelação"],0,"No jardim das Oliveiras.",2],
+ ["Qual é o primeiro mistério glorioso?",["A ressurreição de Jesus","A ascensão","A vinda do Espírito Santo","A assunção de Maria"],0,"Ele ressuscitou!",2],
+ ["Qual é o primeiro mistério luminoso?",["O batismo de Jesus no Jordão","As bodas de Caná","A transfiguração","A instituição da Eucaristia"],0,"Este é o meu Filho amado.",3],
+ ["Como se chama a parte da missa com as leituras?",["Liturgia da Palavra","Liturgia Eucarística","Ritos finais","Ofertório"],0,"Deus fala ao seu povo.",2],
+ ["Qual leitura é proclamada por último na Liturgia da Palavra?",["O Evangelho","O Salmo","A primeira leitura","A segunda leitura"],0,"Todos ficam de pé para ouvi-lo.",1],
+ ["Antes do Evangelho, normalmente se canta...",["Aleluia","Glória","Santo","Cordeiro de Deus"],0,"Na Quaresma ele é substituído por outra aclamação.",2],
+ ["Qual destes cantos não se canta na Quaresma?",["Aleluia","Santo","Cordeiro de Deus","Pai-Nosso"],0,"Ele volta com alegria na Vigília Pascal.",3],
+ ["Onde o leitor proclama as leituras na missa?",["No ambão","No altar","No sacrário","Na sacristia"],0,"A mesa da Palavra.",2],
+ ["Qual veste o padre usa por cima de todas na missa?",["Casula","Estola","Alva","Mitra"],0,"Tem a cor do tempo litúrgico.",3],
+ ["Como se chama o chapéu alto e pontudo do bispo?",["Mitra","Solidéu","Barrete","Coroa"],0,"Usado nas celebrações solenes.",2],
+ ["Como se chama o bastão do bispo, como o de um pastor?",["Báculo","Turíbulo","Cálice","Ostensório"],0,"Lembra que ele é pastor do rebanho.",2],
+ ["Em que objeto a hóstia é exposta para adoração?",["Ostensório","Cálice","Âmbula","Turíbulo"],0,"Muitas vezes tem a forma de um sol.",2],
+ ["Em que vaso sagrado o vinho é consagrado?",["Cálice","Patena","Galheta","Âmbula"],0,"A patena é o pratinho da hóstia.",2],
+ ["Que cântico de Maria começa com: A minha alma engrandece o Senhor?",["Magnificat","Benedictus","Ave-Maria","Salve-Rainha"],0,"Lucas 1,46-55.",2],
+ ["Que oração se reza às 15h lembrando a morte de Jesus?",["Terço da Misericórdia","Ângelus","Salve-Rainha","Novena de Natal"],0,"A hora da misericórdia.",2],
+ ["No Tempo Pascal, o Ângelus é substituído por qual oração?",["Rainha do Céu (Regina Coeli)","Salve-Rainha","Magnificat","Te Deum"],0,"Rainha do céu, alegrai-vos, aleluia!",3],
+ ["Como se chama a oração oficial da Igreja rezada em várias horas do dia?",["Liturgia das Horas","Rosário","Via-Sacra","Novena"],0,"Também chamada Ofício Divino.",3],
+ ["Quantas estações tem a Via-Sacra tradicional?",["14","12","7","10"],0,"Da condenação ao sepultamento de Jesus.",2],
+ ["Em que dia se celebra Todos os Santos?",["1º de novembro","2 de novembro","8 de dezembro","15 de agosto"],0,"Inclusive os santos anônimos.",2],
+ ["O dia 2 de novembro é dedicado a quem?",["Aos fiéis defuntos (Finados)","A todos os santos","A Nossa Senhora","A Cristo Rei"],0,"Rezamos pelos que já partiram.",1],
+ ["Qual solenidade encerra o ano litúrgico?",["Cristo Rei","Pentecostes","Natal","Epifania"],0,"No último domingo do Tempo Comum.",3],
+ ["Em que dia se celebra São Pedro e São Paulo?",["29 de junho","24 de junho","13 de junho","25 de julho"],0,"As duas colunas da Igreja.",3],
+ ["Em que dia se celebra o nascimento de São João Batista?",["24 de junho","13 de junho","29 de junho","8 de setembro"],0,"Uma das festas juninas.",2],
+ ["Em que dia se celebra Santo Antônio?",["13 de junho","24 de junho","4 de outubro","19 de março"],0,"Também é festa junina.",2]],
 "Nossa Senhora":[
- ["Quantas Ave-Marias se rezam em uma dezena do terço?",["10","7","12","5"],0,"Precedidas de um Pai-Nosso e seguidas do Glória."],
- ["Que dogma afirma que Maria foi concebida sem pecado?",["Imaculada Conceição","Assunção","Maternidade divina","Virgindade perpétua"],0,"Proclamado em 1854; festa em 8 de dezembro."],
- ["Que dogma afirma que Maria foi levada ao céu de corpo e alma?",["Assunção","Imaculada Conceição","Anunciação","Visitação"],0,"Proclamado por Pio XII em 1950."],
- ["Em que ano Nossa Senhora apareceu em Fátima?",["1917","1858","1531","1950"],0,"Aos três pastorinhos."],
- ["A quantos pastorinhos Nossa Senhora apareceu em Fátima?",["3","2","4","1"],0,"Lúcia, Francisco e Jacinta."],
- ["A quem Nossa Senhora apareceu em Lourdes?",["Bernadete Soubirous","Lúcia dos Santos","Catarina Labouré","Juan Diego"],0,"Na França, em 1858."],
- ["Nossa Senhora de Guadalupe apareceu a quem?",["São Juan Diego","São Francisco","Santo Antônio","São Martinho"],0,"No México, em 1531; ela é padroeira da América."],
- ["Que papa criou os Mistérios Luminosos do terço?",["João Paulo II","Pio XII","Bento XVI","Francisco"],0,"Em 2002."],
- ["Qual é o primeiro mistério gozoso?",["A Anunciação","O nascimento de Jesus","A Visitação","A apresentação no Templo"],0,"O anjo Gabriel visita Maria."],
- ["Que mês é tradicionalmente dedicado a Maria?",["Maio","Janeiro","Agosto","Novembro"],0,"Outubro é o mês do Rosário."],
- ["Qual oração saúda Maria como \"Mãe de misericórdia\"?",["Salve-Rainha","Ave-Maria","Magnificat","Ângelus"],0,"Costuma encerrar o terço."],
- ["Quem são os pais de Maria, segundo a tradição?",["Joaquim e Ana","Zacarias e Isabel","José e Ana","Abraão e Sara"],0,"Festa em 26 de julho."],
- ["Quem é o esposo de Maria e pai adotivo de Jesus?",["São José","São Joaquim","São João","São Zacarias"],0,"Padroeiro da Igreja universal."]],
+ ["Quantas Ave-Marias se rezam em uma dezena do terço?",["10","7","12","5"],0,"Precedidas de um Pai-Nosso e seguidas do Glória.",1],
+ ["Que dogma afirma que Maria foi concebida sem pecado?",["Imaculada Conceição","Assunção","Maternidade divina","Virgindade perpétua"],0,"Proclamado em 1854; festa em 8 de dezembro.",3],
+ ["Que dogma afirma que Maria foi levada ao céu de corpo e alma?",["Assunção","Imaculada Conceição","Anunciação","Visitação"],0,"Proclamado por Pio XII em 1950.",2],
+ ["Em que ano Nossa Senhora apareceu em Fátima?",["1917","1858","1531","1950"],0,"Aos três pastorinhos.",2],
+ ["A quantos pastorinhos Nossa Senhora apareceu em Fátima?",["3","2","4","1"],0,"Lúcia, Francisco e Jacinta.",1],
+ ["A quem Nossa Senhora apareceu em Lourdes?",["Bernadete Soubirous","Lúcia dos Santos","Catarina Labouré","Juan Diego"],0,"Na França, em 1858.",2],
+ ["Nossa Senhora de Guadalupe apareceu a quem?",["São Juan Diego","São Francisco","Santo Antônio","São Martinho"],0,"No México, em 1531.",2],
+ ["Que papa criou os Mistérios Luminosos do terço?",["João Paulo II","Pio XII","Bento XVI","Francisco"],0,"Em 2002.",3],
+ ["Qual é o primeiro mistério gozoso?",["A Anunciação","O nascimento de Jesus","A Visitação","A apresentação no Templo"],0,"O anjo Gabriel visita Maria.",2],
+ ["Que mês é tradicionalmente dedicado a Maria?",["Maio","Janeiro","Agosto","Novembro"],0,"Outubro é o mês do Rosário.",1],
+ ["Qual oração saúda Maria como Mãe de misericórdia?",["Salve-Rainha","Ave-Maria","Magnificat","Ângelus"],0,"Costuma encerrar o terço.",2],
+ ["Quem são os pais de Maria, segundo a tradição?",["Joaquim e Ana","Zacarias e Isabel","José e Ana","Abraão e Sara"],0,"Festa em 26 de julho.",2],
+ ["Quem é o esposo de Maria e pai adotivo de Jesus?",["São José","São Joaquim","São João","São Zacarias"],0,"Padroeiro da Igreja universal.",1],
+ ["Como se chama a mãe de Jesus?",["Maria","Isabel","Ana","Marta"],0,"A Virgem Maria.",1],
+ ["Em que cidade Maria morava quando o anjo a visitou?",["Nazaré","Belém","Jerusalém","Caná"],0,"Na Galileia.",2],
+ ["O que Maria respondeu ao anjo Gabriel?",["Eis a serva do Senhor","Por que eu?","Não sou digna","Vou pensar"],0,"Faça-se em mim segundo a tua palavra.",1],
+ ["Que parente Maria foi visitar logo depois da Anunciação?",["Isabel","Ana","Marta","Salomé"],0,"Isabel esperava João Batista.",1],
+ ["Como se chama a visita de Maria a Isabel?",["Visitação","Anunciação","Apresentação","Assunção"],0,"Lucas 1,39-56.",2],
+ ["Qual é o dia de Nossa Senhora de Fátima?",["13 de maio","12 de outubro","8 de dezembro","15 de agosto"],0,"Data da primeira aparição, em 1917.",2],
+ ["Qual é o dia da Imaculada Conceição?",["8 de dezembro","13 de maio","2 de fevereiro","15 de agosto"],0,"Feriado em muitas cidades.",2],
+ ["Em que dia se celebra Santa Maria, Mãe de Deus?",["1º de janeiro","25 de março","8 de setembro","31 de maio"],0,"Abre o ano civil.",2],
+ ["Em que dia se celebra a Anunciação do Senhor?",["25 de março","25 de dezembro","8 de setembro","15 de agosto"],0,"Nove meses antes do Natal.",3],
+ ["Em que dia se celebra o nascimento de Maria?",["8 de setembro","8 de dezembro","15 de agosto","2 de fevereiro"],0,"Natividade de Nossa Senhora.",3],
+ ["Em que país fica o santuário de Lourdes?",["França","Espanha","Itália","Portugal"],0,"No sul da França, perto dos Pireneus.",1],
+ ["Em que país fica Fátima?",["Portugal","Espanha","Brasil","França"],0,"Na Cova da Iria.",1],
+ ["Como Nossa Senhora se apresentou em Lourdes?",["Eu sou a Imaculada Conceição","Eu sou a Senhora do Rosário","Eu sou a Mãe de Deus","Eu sou a Rainha da Paz"],0,"Quatro anos depois do dogma.",3],
+ ["Como Nossa Senhora se apresentou em Fátima?",["Senhora do Rosário","Imaculada Conceição","Rainha dos Anjos","Senhora da Paz"],0,"Na aparição de outubro de 1917.",3],
+ ["Que fenômeno milhares de pessoas viram em Fátima em 13 de outubro de 1917?",["O milagre do sol","Uma chuva de rosas","Uma estrela cadente","Um arco-íris duplo"],0,"Testemunhado por cerca de 70 mil pessoas.",2],
+ ["Quais pastorinhos de Fátima foram canonizados em 2017?",["Francisco e Jacinta","Lúcia e Francisco","Lúcia e Jacinta","Os três"],0,"Pelo papa Francisco, no centenário.",3],
+ ["Quem recebeu a revelação da Medalha Milagrosa?",["Santa Catarina Labouré","Santa Bernadete","Santa Teresinha","Santa Clara"],0,"Em Paris, em 1830.",3],
+ ["Que título de Maria foi proclamado no Concílio de Éfeso, em 431?",["Mãe de Deus","Imaculada Conceição","Rainha do Céu","Virgem das Dores"],0,"Theotókos, em grego.",3],
+ ["Na Ladainha de Nossa Senhora, que título pede ajuda para os doentes?",["Saúde dos enfermos","Estrela da manhã","Torre de Davi","Arca da aliança"],0,"Ladainha Lauretana.",3],
+ ["Quantos mistérios se rezam em um terço?",["5","10","20","15"],0,"O Rosário completo tem 20.",1],
+ ["Que oração começa com Ave, Maria, cheia de graça?",["Ave-Maria","Salve-Rainha","Magnificat","Ângelus"],0,"Palavras do anjo Gabriel e de Isabel.",1],
+ ["Que mês é dedicado ao Rosário?",["Outubro","Maio","Dezembro","Agosto"],0,"Por causa da festa de Nossa Senhora do Rosário, em 7 de outubro.",2],
+ ["Qual é a padroeira da América Latina?",["Nossa Senhora de Guadalupe","Nossa Senhora Aparecida","Nossa Senhora de Fátima","Nossa Senhora de Lourdes"],0,"A Virgem morena do México.",2],
+ ["Qual é a cor do manto de Nossa Senhora Aparecida?",["Azul","Vermelho","Branco","Verde"],0,"Manto azul bordado.",1],
+ ["Quem profetizou a Maria que uma espada lhe atravessaria a alma?",["Simeão","Zacarias","Isaías","João Batista"],0,"Na apresentação de Jesus no Templo.",3],
+ ["Quantas são as dores de Nossa Senhora na devoção tradicional?",["7","5","3","12"],0,"Nossa Senhora das Dores, 15 de setembro.",3],
+ ["Na cruz, Jesus entregou Maria aos cuidados de quem?",["João","Pedro","José de Arimateia","Nicodemos"],0,"Eis aí tua mãe.",2]],
 "Santos":[
- ["Qual foi o primeiro santo nascido no Brasil?",["Frei Galvão","Padre Anchieta","Irmã Dulce","Madre Paulina"],0,"Canonizado em 2007 por Bento XVI."],
- ["Como ficou conhecida Santa Dulce dos Pobres?",["Anjo Bom da Bahia","Mãe dos Aflitos","Santa das Rosas","Apóstola do Recife"],0,"Canonizada em 2019."],
- ["Quem foi a primeira santa canonizada que viveu no Brasil, em 2002?",["Madre Paulina","Irmã Dulce","Santa Rita","Madre Teresa"],0,"Nasceu na Itália e fundou uma congregação em Santa Catarina."],
- ["Qual santo é chamado de Apóstolo do Brasil?",["São José de Anchieta","São Francisco Xavier","Frei Galvão","São Bento"],0,"Jesuíta, ajudou a fundar São Paulo; canonizado em 2014."],
- ["Quem fundou a ordem dos franciscanos?",["São Francisco de Assis","São Domingos","São Bento","Santo Inácio"],0,"No começo do século XIII."],
- ["Quem fundou os jesuítas?",["Santo Inácio de Loyola","São Francisco Xavier","São Domingos","São Bento"],0,"A Companhia de Jesus, em 1540."],
- ["Em que cidade nasceu Santo Antônio?",["Lisboa","Pádua","Roma","Assis"],0,"Ficou conhecido como Santo Antônio de Pádua, onde morreu."],
- ["Santa Rita é invocada como a santa das...",["Causas impossíveis","Causas urgentes","Viagens","Colheitas"],0,"Santa Rita de Cássia."],
- ["Santo Expedito é invocado nas causas...",["Urgentes","Impossíveis","Perdidas","De família"],0,"Ele é o santo das causas urgentes."],
- ["Qual santo é representado a cavalo vencendo um dragão?",["São Jorge","São Miguel","São Sebastião","São Cristóvão"],0,"Soldado romano e mártir."],
- ["Qual santo é o padroeiro dos motoristas?",["São Cristóvão","São Jorge","São Bento","São José"],0,"Segundo a tradição, carregou o Menino Jesus nos ombros."],
- ["Que frade italiano do século XX ficou famoso pelos estigmas?",["Padre Pio","Frei Damião","São Maximiliano Kolbe","Dom Bosco"],0,"São Pio de Pietrelcina."],
- ["São João Paulo II nasceu em que país?",["Polônia","Itália","Alemanha","Hungria"],0,"Karol Wojtyła, papa de 1978 a 2005."],
- ["Quem escreveu o livro Confissões?",["Santo Agostinho","São Tomás de Aquino","São Jerônimo","Santo Ambrósio"],0,"Conta a sua conversão."],
- ["Qual santo é o padroeiro dos párocos?",["São João Maria Vianney","São Francisco de Sales","São Vicente de Paulo","São Bento"],0,"O Cura d'Ars."],
- ["Quem foram as primeiras mulheres declaradas Doutoras da Igreja, em 1970?",["Teresa d'Ávila e Catarina de Sena","Teresinha e Clara","Mônica e Rita","Faustina e Dulce"],0,"Proclamadas por Paulo VI."],
- ["Quem recebeu as revelações da Divina Misericórdia?",["Santa Faustina","Santa Teresinha","Santa Clara","Santa Gertrudes"],0,"Na Polônia, nos anos 1930."],
- ["Que jovem italiano, apaixonado pela Eucaristia e por informática, foi canonizado em 2025?",["Carlo Acutis","Pier Giorgio Frassati","Domingos Sávio","Chiara Badano"],0,"Ele montou um site sobre milagres eucarísticos."],
- ["Que santa é conhecida pela \"pequena via\" do amor nas coisas simples?",["Santa Teresinha do Menino Jesus","Santa Teresa d'Ávila","Santa Clara","Santa Mônica"],0,"Doutora da Igreja, morreu aos 24 anos."],
- ["São Bento ficou conhecido pelo lema...",["Ora et labora (reza e trabalha)","Paz e bem","Tudo por Jesus","Totus tuus"],0,"Pai do monaquismo no Ocidente."]],
+ ["Qual foi o primeiro santo nascido no Brasil?",["Frei Galvão","Padre Anchieta","Irmã Dulce","Madre Paulina"],0,"Canonizado em 2007 por Bento XVI.",2],
+ ["Como ficou conhecida Santa Dulce dos Pobres?",["Anjo Bom da Bahia","Mãe dos Aflitos","Santa das Rosas","Apóstola do Recife"],0,"Canonizada em 2019.",2],
+ ["Qual foi a primeira santa canonizada que viveu no Brasil, em 2002?",["Madre Paulina","Irmã Dulce","Santa Rita","Madre Teresa"],0,"Nasceu na Itália e fundou uma congregação em Santa Catarina.",3],
+ ["Qual santo é chamado de Apóstolo do Brasil?",["São José de Anchieta","São Francisco Xavier","Frei Galvão","São Bento"],0,"Jesuíta, ajudou a fundar São Paulo; canonizado em 2014.",2],
+ ["Quem fundou a ordem dos franciscanos?",["São Francisco de Assis","São Domingos","São Bento","Santo Inácio"],0,"No começo do século XIII.",1],
+ ["Quem fundou os jesuítas?",["Santo Inácio de Loyola","São Francisco Xavier","São Domingos","São Bento"],0,"A Companhia de Jesus, em 1540.",2],
+ ["Em que cidade nasceu Santo Antônio?",["Lisboa","Pádua","Roma","Assis"],0,"Ficou conhecido como de Pádua, onde morreu.",2],
+ ["Santa Rita é invocada como a santa das...",["causas impossíveis","causas urgentes","viagens","colheitas"],0,"Santa Rita de Cássia.",2],
+ ["Santo Expedito é invocado nas causas...",["urgentes","impossíveis","perdidas","de família"],0,"Ele é o santo das causas urgentes.",2],
+ ["Qual santo é representado a cavalo vencendo um dragão?",["São Jorge","São Miguel","São Sebastião","São Cristóvão"],0,"Soldado romano e mártir.",1],
+ ["Qual santo é o padroeiro dos motoristas?",["São Cristóvão","São Jorge","São Bento","São José"],0,"Segundo a tradição, carregou o Menino Jesus nos ombros.",2],
+ ["Que frade italiano do século XX ficou famoso pelos estigmas?",["Padre Pio","Frei Damião","São Maximiliano Kolbe","Dom Bosco"],0,"São Pio de Pietrelcina.",2],
+ ["São João Paulo II nasceu em que país?",["Polônia","Itália","Alemanha","Hungria"],0,"Karol Wojtyła, papa de 1978 a 2005.",1],
+ ["Quem escreveu o livro Confissões?",["Santo Agostinho","São Tomás de Aquino","São Jerônimo","Santo Ambrósio"],0,"Conta a sua conversão.",3],
+ ["Qual santo é o padroeiro dos párocos?",["São João Maria Vianney","São Francisco de Sales","São Vicente de Paulo","São Bento"],0,"O Cura d'Ars.",3],
+ ["Quem foram as primeiras mulheres declaradas Doutoras da Igreja, em 1970?",["Teresa d'Ávila e Catarina de Sena","Teresinha e Clara","Mônica e Rita","Faustina e Dulce"],0,"Proclamadas por Paulo VI.",3],
+ ["Quem recebeu as revelações da Divina Misericórdia?",["Santa Faustina","Santa Teresinha","Santa Clara","Santa Gertrudes"],0,"Na Polônia, nos anos 1930.",2],
+ ["Que jovem italiano, apaixonado pela Eucaristia e por informática, foi canonizado em 2025?",["Carlo Acutis","Pier Giorgio Frassati","Domingos Sávio","Chiara Badano"],0,"Ele montou um site sobre milagres eucarísticos.",2],
+ ["Que santa é conhecida pela pequena via do amor nas coisas simples?",["Santa Teresinha do Menino Jesus","Santa Teresa d'Ávila","Santa Clara","Santa Mônica"],0,"Doutora da Igreja, morreu aos 24 anos.",2],
+ ["São Bento ficou conhecido pelo lema...",["Ora et labora (reza e trabalha)","Paz e bem","Tudo por Jesus","Totus tuus"],0,"Pai do monaquismo no Ocidente.",2],
+ ["Qual santo é conhecido por amar os animais e a natureza?",["São Francisco de Assis","São Bento","Santo Agostinho","São Jorge"],0,"Autor do Cântico das Criaturas.",1],
+ ["Em que dia se celebra São Francisco de Assis?",["4 de outubro","13 de junho","19 de março","1º de novembro"],0,"Também é o dia dos animais.",2],
+ ["Santo Antônio é conhecido popularmente como santo...",["casamenteiro","das causas urgentes","dos animais","dos estudantes"],0,"E também ajuda a achar coisas perdidas.",1],
+ ["Qual santo é celebrado como padroeiro dos trabalhadores em 1º de maio?",["São José Operário","São Bento","São Pedro","São Paulo"],0,"Festa instituída por Pio XII em 1955.",2],
+ ["Na tradição popular, que santo guarda as chaves do céu?",["São Pedro","São Paulo","São Miguel","São João"],0,"Darei a ti as chaves do Reino dos Céus.",1],
+ ["Que arcanjo é representado vencendo o dragão?",["São Miguel","São Gabriel","São Rafael","São Jorge"],0,"Quem como Deus?",1],
+ ["Como se chama o anjo que protege cada pessoa?",["Anjo da guarda","Arcanjo Miguel","Querubim","Serafim"],0,"Santo anjo do Senhor, meu zeloso guardador...",1],
+ ["Que santa fundou as clarissas, com a ajuda de São Francisco?",["Santa Clara","Santa Catarina","Santa Rita","Santa Inês"],0,"Clara de Assis.",2],
+ ["Que soldado romano, morto a flechadas, é padroeiro do Rio de Janeiro?",["São Sebastião","São Jorge","São Expedito","São Lourenço"],0,"A cidade se chama São Sebastião do Rio de Janeiro.",2],
+ ["São Lourenço, diácono e mártir, morreu...",["numa grelha","crucificado","a flechadas","num naufrágio"],0,"É padroeiro dos cozinheiros.",3],
+ ["Que santo escreveu a Suma Teológica e é padroeiro dos estudantes?",["São Tomás de Aquino","Santo Agostinho","São Jerônimo","Santo Anselmo"],0,"O Doutor Angélico.",3],
+ ["Quem traduziu a Bíblia para o latim (a Vulgata)?",["São Jerônimo","Santo Agostinho","São Gregório","São Bento"],0,"Padroeiro dos estudiosos da Bíblia.",3],
+ ["Quem era a mãe de Santo Agostinho, que rezou anos pela sua conversão?",["Santa Mônica","Santa Ana","Santa Rita","Santa Helena"],0,"Padroeira das mães.",2],
+ ["Que santa encontrou a cruz de Jesus em Jerusalém, segundo a tradição?",["Santa Helena","Santa Mônica","Santa Clara","Santa Isabel"],0,"Mãe do imperador Constantino.",3],
+ ["Santa Teresa de Calcutá dedicou a vida principalmente a quem?",["Aos mais pobres e doentes","Aos estudantes","Aos marinheiros","Aos reis"],0,"Fundou as Missionárias da Caridade.",1],
+ ["Em que país Santa Teresa de Calcutá fez sua missão?",["Índia","Brasil","Albânia","Itália"],0,"Nasceu em Skopje, mas serviu em Calcutá.",1],
+ ["Qual santo, fundador dos salesianos, é padroeiro da juventude?",["São João Bosco (Dom Bosco)","São Domingos Sávio","São Francisco Xavier","São Luís Gonzaga"],0,"Educou os meninos de rua de Turim.",2],
+ ["Qual missionário jesuíta evangelizou a Índia e o Japão?",["São Francisco Xavier","São José de Anchieta","Santo Inácio","São Pedro Claver"],0,"Companheiro de Santo Inácio.",3],
+ ["Quem fundou a Ordem dos Pregadores (dominicanos)?",["São Domingos de Gusmão","São Francisco","Santo Inácio","São Bento"],0,"No século XIII.",3],
+ ["Que santo polonês deu a vida no lugar de um pai de família em Auschwitz?",["São Maximiliano Kolbe","São João Paulo II","Santo Estanislau","São Casimiro"],0,"Em 1941.",3],
+ ["Frei Galvão ficou famoso por quais objetos?",["Pílulas de papel com uma oração","Medalhas de prata","Velas bentas","Terços de madeira"],0,"As pílulas de Frei Galvão.",2],
+ ["Em que cidade viveu e serviu Santa Dulce dos Pobres?",["Salvador","Feira de Santana","Ilhéus","Porto Seguro"],0,"Onde fundou as Obras Sociais Irmã Dulce.",2],
+ ["Que papa canonizou Santa Dulce dos Pobres?",["Francisco","Bento XVI","João Paulo II","Leão XIV"],0,"Em 13 de outubro de 2019.",3],
+ ["Que santa é padroeira dos olhos, celebrada em 13 de dezembro?",["Santa Luzia","Santa Clara","Santa Ágata","Santa Cecília"],0,"Luzia vem de luz.",2],
+ ["Qual santa é padroeira da música?",["Santa Cecília","Santa Luzia","Santa Rita","Santa Bárbara"],0,"Festa em 22 de novembro.",2],
+ ["São Brás é invocado para proteger...",["a garganta","os olhos","os animais","as viagens"],0,"No seu dia há a bênção da garganta.",2],
+ ["Qual santo é o padroeiro da Igreja universal?",["São José","São Pedro","São Paulo","São Bento"],0,"Declarado por Pio IX em 1870.",2],
+ ["Em que dia se celebra São José, esposo de Maria?",["19 de março","1º de maio","25 de dezembro","24 de junho"],0,"Solenidade de São José.",2],
+ ["Quem são os protomártires do Brasil, canonizados em 2017?",["Mártires de Cunhaú e Uruaçu","Mártires do Japão","Mártires de Uganda","Mártires de Auschwitz"],0,"Mortos no Rio Grande do Norte em 1645.",3],
+ ["Santa Joana d'Arc lutou por qual país?",["França","Inglaterra","Espanha","Portugal"],0,"Padroeira da França.",2],
+ ["São Tarcísio é padroeiro de quem?",["Dos coroinhas","Dos pescadores","Dos médicos","Dos músicos"],0,"Morreu protegendo a Eucaristia.",3]],
 "Igreja e papas":[
- ["Quem foi o primeiro papa?",["Pedro","Paulo","Lino","Clemente"],0,"Tu és Pedro, e sobre esta pedra..."],
- ["Que papa foi eleito em maio de 2025?",["Leão XIV","Francisco","Bento XVI","João XXIV"],0,"Robert Francis Prevost, o primeiro papa nascido nos Estados Unidos."],
- ["O papa Francisco nasceu em que país?",["Argentina","Brasil","Itália","Chile"],0,"Jorge Mario Bergoglio, de Buenos Aires."],
- ["Como se chama a reunião dos cardeais que elege o papa?",["Conclave","Concílio","Sínodo","Consistório"],0,"Do latim cum clave, com chave."],
- ["O que anuncia a fumaça branca na Capela Sistina?",["Um novo papa foi eleito","A votação continua","Um santo foi canonizado","O papa está doente"],0,"A fumaça preta significa que ainda não há eleito."],
- ["Qual foi o último concílio ecumênico?",["Vaticano II","Trento","Vaticano I","Niceia"],0,"Realizado entre 1962 e 1965."],
- ["Em que concílio, no ano 325, foi formulado o Credo?",["Niceia","Trento","Éfeso","Latrão"],0,"O Credo niceno-constantinopolitano."],
- ["Quem faz a guarda pessoal do papa?",["A Guarda Suíça","Os Carabinieri","A Guarda Vaticana Real","Os Templários"],0,"Com uniformes coloridos, desde 1506."],
- ["Quem celebrou a primeira missa no Brasil, em 1500?",["Frei Henrique de Coimbra","Padre Anchieta","Padre Manuel da Nóbrega","Frei Galvão"],0,"Em 26 de abril de 1500."],
- ["Em que cidade fica o Cristo Redentor?",["Rio de Janeiro","São Paulo","Salvador","Aparecida"],0,"Inaugurado em 1931."],
- ["Qual é a grande festa religiosa de Belém do Pará?",["Círio de Nazaré","Festa do Divino","Romaria de Juazeiro","Festa de Iemanjá"],0,"Reúne milhões de pessoas em outubro."],
- ["Em que ano o Rio de Janeiro recebeu a Jornada Mundial da Juventude?",["2013","2007","2016","2000"],0,"Com o papa Francisco."],
- ["O que significa a sigla CNBB?",["Conferência Nacional dos Bispos do Brasil","Comissão Nacional de Bíblia Brasileira","Congresso Nacional das Basílicas","Centro Nacional de Batismo"],0,"Fundada em 1952."],
- ["Onde fica o túmulo de São Pedro?",["Sob a Basílica de São Pedro, no Vaticano","Em Jerusalém","Em Santiago de Compostela","Em Assis"],0,"O altar papal fica sobre ele."]]
+ ["Quem foi o primeiro papa?",["Pedro","Paulo","Lino","Clemente"],0,"Tu és Pedro, e sobre esta pedra...",1],
+ ["Que papa foi eleito em maio de 2025?",["Leão XIV","Francisco","Bento XVI","João XXIV"],0,"Robert Francis Prevost, o primeiro papa nascido nos Estados Unidos.",2],
+ ["O papa Francisco nasceu em que país?",["Argentina","Brasil","Itália","Chile"],0,"Jorge Mario Bergoglio, de Buenos Aires.",1],
+ ["Como se chama a reunião dos cardeais que elege o papa?",["Conclave","Concílio","Sínodo","Consistório"],0,"Do latim cum clave, com chave.",2],
+ ["O que anuncia a fumaça branca na Capela Sistina?",["Um novo papa foi eleito","A votação continua","Um santo foi canonizado","O papa está doente"],0,"A fumaça preta significa que ainda não há eleito.",1],
+ ["Qual foi o último concílio ecumênico?",["Vaticano II","Trento","Vaticano I","Niceia"],0,"Realizado entre 1962 e 1965.",3],
+ ["Em que concílio, no ano 325, foi formulado o Credo?",["Niceia","Trento","Éfeso","Latrão"],0,"Completado depois em Constantinopla.",3],
+ ["Quem faz a guarda pessoal do papa?",["A Guarda Suíça","Os Carabinieri","A Guarda Real","Os Templários"],0,"Com uniformes coloridos, desde 1506.",2],
+ ["Quem celebrou a primeira missa no Brasil, em 1500?",["Frei Henrique de Coimbra","Padre Anchieta","Padre Manuel da Nóbrega","Frei Galvão"],0,"Em 26 de abril de 1500.",3],
+ ["Em que cidade fica o Cristo Redentor?",["Rio de Janeiro","São Paulo","Salvador","Aparecida"],0,"Inaugurado em 1931.",1],
+ ["Qual é a grande festa religiosa de Belém do Pará?",["Círio de Nazaré","Festa do Divino","Romaria de Juazeiro","Festa de Iemanjá"],0,"Reúne milhões de pessoas em outubro.",2],
+ ["Em que ano o Rio de Janeiro recebeu a Jornada Mundial da Juventude?",["2013","2007","2016","2000"],0,"Com o papa Francisco.",2],
+ ["O que significa a sigla CNBB?",["Conferência Nacional dos Bispos do Brasil","Comissão Nacional da Bíblia Brasileira","Congresso Nacional das Basílicas","Centro Nacional de Batismo"],0,"Fundada em 1952.",2],
+ ["Onde fica o túmulo de São Pedro?",["Sob a Basílica de São Pedro, no Vaticano","Em Jerusalém","Em Santiago de Compostela","Em Assis"],0,"O altar papal fica sobre ele.",2],
+ ["Onde mora o papa?",["No Vaticano","Em Jerusalém","Em Assis","Em Paris"],0,"Dentro da cidade de Roma.",1],
+ ["Qual é o menor país do mundo, sede da Igreja Católica?",["Vaticano","Mônaco","San Marino","Malta"],0,"Tem menos de meio quilômetro quadrado.",1],
+ ["Como se chama a igreja principal de uma diocese, onde fica a cadeira do bispo?",["Catedral","Basílica","Capela","Matriz"],0,"Cátedra quer dizer cadeira.",2],
+ ["Quem está à frente de uma diocese?",["O bispo","O pároco","O diácono","O núncio"],0,"Sucessor dos apóstolos.",2],
+ ["Quem cuida de uma paróquia?",["O pároco","O bispo","O cardeal","O sacristão"],0,"O padre responsável pela comunidade.",1],
+ ["Qual é a cor das vestes dos cardeais?",["Vermelha","Roxa","Branca","Preta"],0,"Lembra a disposição de dar a vida pela fé.",2],
+ ["Qual é a cor da batina do papa?",["Branca","Vermelha","Roxa","Preta"],0,"Tradição desde o século XVI.",1],
+ ["Que anel o papa recebe no início do pontificado?",["Anel do Pescador","Anel de Salomão","Anel de Davi","Anel da Aliança"],0,"Lembra São Pedro, o pescador.",2],
+ ["Quantos papas a Igreja já teve, aproximadamente?",["Mais de 260","Cerca de 100","Cerca de 50","Mais de 500"],0,"Leão XIV é o 267º.",3],
+ ["Qual papa abriu o Concílio Vaticano II?",["São João XXIII","Paulo VI","Pio XII","João Paulo II"],0,"O papa bom, em 1962.",3],
+ ["Qual papa renunciou em 2013?",["Bento XVI","João Paulo II","Francisco","Paulo VI"],0,"O primeiro a renunciar em quase 600 anos.",2],
+ ["Qual era o nome de batismo de João Paulo II?",["Karol Wojtyła","Joseph Ratzinger","Angelo Roncalli","Giovanni Montini"],0,"Nasceu em Wadowice, na Polônia.",3],
+ ["Joseph Ratzinger adotou que nome como papa?",["Bento XVI","João Paulo I","Pio XII","Leão XIII"],0,"Papa de 2005 a 2013.",2],
+ ["Qual papa ficou apenas 33 dias no pontificado, em 1978?",["João Paulo I","Paulo VI","João XXIII","Pio XII"],0,"O papa do sorriso.",3],
+ ["Quem pintou o teto da Capela Sistina?",["Michelangelo","Leonardo da Vinci","Rafael","Caravaggio"],0,"Entre 1508 e 1512.",2],
+ ["Qual papa escreveu a encíclica Laudato Si', sobre o cuidado da casa comum?",["Francisco","Bento XVI","João Paulo II","Leão XIV"],0,"Em 2015.",2],
+ ["Qual papa escreveu a Rerum Novarum, sobre os trabalhadores, em 1891?",["Leão XIII","Pio X","Bento XV","Pio XI"],0,"Marco da doutrina social da Igreja.",3],
+ ["Como se chama a carta solene que o papa escreve a toda a Igreja?",["Encíclica","Homilia","Bula de ouro","Novena"],0,"Encíclica quer dizer carta circular.",2],
+ ["Como se chama a bênção do papa à cidade e ao mundo?",["Urbi et Orbi","Ad Gentes","Pax Domini","Ite missa est"],0,"Dada no Natal e na Páscoa.",2],
+ ["Que concílio respondeu à Reforma Protestante no século XVI?",["Trento","Vaticano I","Niceia","Latrão IV"],0,"De 1545 a 1563.",3],
+ ["Que concílio definiu a infalibilidade do papa, em 1870?",["Vaticano I","Vaticano II","Trento","Constança"],0,"Convocado por Pio IX.",3],
+ ["Qual é o país com mais católicos no mundo?",["Brasil","México","Itália","Filipinas"],0,"Tem mais de 100 milhões de católicos.",1],
+ ["Qual é a padroeira do Brasil?",["Nossa Senhora Aparecida","Nossa Senhora de Fátima","Santa Dulce","Nossa Senhora das Graças"],0,"Festa em 12 de outubro.",1],
+ ["Que ordem religiosa fundou a cidade de São Paulo, em 1554?",["Jesuítas","Franciscanos","Beneditinos","Dominicanos"],0,"Com Anchieta e Nóbrega.",2],
+ ["Em que cidade do Ceará fica a grande estátua do Padre Cícero?",["Juazeiro do Norte","Fortaleza","Crato","Sobral"],0,"Destino de romarias do Nordeste.",2],
+ ["Qual é o santuário mariano mais visitado do Brasil?",["Aparecida","Nazaré, em Belém","Penha, no Rio","Caravaggio, no Rio Grande do Sul"],0,"Recebe milhões de romeiros por ano.",1],
+ ["De onde vem a palavra papa?",["De pai","De pastor","De pedra","De príncipe"],0,"Do grego pappas.",3],
+ ["Qual é a língua oficial dos documentos da Santa Sé?",["Latim","Italiano","Grego","Hebraico"],0,"Muitos são traduzidos para várias línguas.",2],
+ ["Como se chama o representante diplomático do papa num país?",["Núncio apostólico","Cardeal-legado","Bispo auxiliar","Camerlengo"],0,"É como um embaixador.",3],
+ ["Quem administra a Santa Sé quando o papa morre ou renuncia?",["O camerlengo","O núncio","O bispo de Milão","O presidente da Itália"],0,"Até a eleição de um novo papa.",3],
+ ["O que é um Ano Santo, ou Jubileu?",["Um ano especial de graça e perdão","O ano da eleição de um papa","O ano de um concílio","Um ano sem missas"],0,"Abre-se a Porta Santa.",2],
+ ["De quantos em quantos anos acontece o Jubileu ordinário?",["25","50","10","100"],0,"O último foi em 2025.",3]]
+};
+/* níveis das perguntas de cada rota, na ordem em que estão cadastradas */
+const ROTA_NIV={santiago:[1,1,2,1,2,2,3,1,1,2,2,2],aparecida:[1,1,1,2,1,2,3,2,2,2,2,3]};
+const ROTA_EXTRA={
+ santiago:[
+  ["Como se chama o certificado que o peregrino recebe ao chegar a Santiago?",["Compostela","Credencial","Diploma do Caminho","Passaporte jacobeu"],0,"Emitido pela Oficina do Peregrino.",2],
+  ["Qual é o caminho mais percorrido até Santiago?",["Caminho Francês","Caminho Português","Caminho do Norte","Via da Prata"],0,"O caminho deste tabuleiro.",2],
+  ["Em que país fica Saint-Jean-Pied-de-Port, início do Caminho Francês?",["França","Espanha","Portugal","Itália"],0,"Do outro lado dos Pireneus.",1],
+  ["Em que dia se celebra Santiago Apóstolo?",["25 de julho","29 de junho","8 de setembro","1º de novembro"],0,"Festa padroeira da Espanha.",2],
+  ["Depois de Santiago, muitos peregrinos seguem até qual cabo à beira do oceano?",["Finisterra","Cabo da Roca","Gibraltar","Cabo Norte"],0,"Considerado o fim do mundo conhecido na antiguidade.",3],
+  ["Como se chama a praça diante da fachada principal da catedral de Santiago?",["Praça do Obradoiro","Praça Maior","Praça de São Pedro","Praça do Comércio"],0,"Ponto de chegada dos peregrinos.",3],
+  ["Qual cidade do Caminho tem a catedral famosa pelos vitrais?",["León","Burgos","Pamplona","Logroño"],0,"A Pulchra Leonina.",2],
+  ["Segundo a tradição, como o túmulo de Santiago foi encontrado no século IX?",["Por luzes de estrelas sobre um campo","Por um terremoto","Por um pescador no mar","Por um mapa antigo"],0,"Daí o nome Compostela, campo de estrelas.",3]],
+ aparecida:[
+  ["Por que os pescadores estavam no rio quando acharam a imagem?",["Buscavam peixes para um banquete do governador","Procuravam ouro","Buscavam um barco perdido","Iam a uma festa"],0,"O conde de Assumar passaria pela vila.",2],
+  ["Qual é a cor da imagem de Nossa Senhora Aparecida?",["Escura, cor de canela","Branca","Dourada","Azul"],0,"O barro escureceu com o tempo no rio e a fumaça das velas.",1],
+  ["Em que estado fica a cidade de Aparecida?",["São Paulo","Minas Gerais","Rio de Janeiro","Paraná"],0,"No Vale do Paraíba.",1],
+  ["Como se chama a basílica que guarda hoje a imagem?",["Basílica do Santuário Nacional","Basílica de São Pedro","Catedral da Sé","Basílica de Nazaré"],0,"Uma das maiores igrejas do mundo.",1],
+  ["Como se chama a passarela que liga a Basílica Velha à nova?",["Passarela da Fé","Ponte do Romeiro","Passarela da Paz","Ponte de Maria"],0,"Os romeiros a atravessam a pé.",3],
+  ["Como se chama a torre do Santuário de Aparecida, que tem um mirante?",["Torre Brasília","Torre da Fé","Torre do Romeiro","Torre Maria"],0,"Pode ser vista de longe no Vale do Paraíba.",3],
+  ["Em que ano o papa João Paulo II consagrou a nova Basílica?",["1980","1717","2007","1955"],0,"Na sua primeira visita ao Brasil.",3],
+  ["Que encontro de bispos da América Latina aconteceu em Aparecida em 2007?",["A V Conferência do CELAM","O Concílio Vaticano II","O Sínodo da Amazônia","A Jornada Mundial da Juventude"],0,"Aberta pelo papa Bento XVI.",3]]
 };
 const GERAIS=[];
-Object.entries(TEMAS).forEach(([t,arr])=>arr.forEach(q=>GERAIS.push([q[0],q[1],q[2],q[3],t])));
-Object.values(ROUTES).forEach(r=>r.perguntas.forEach(q=>{q[4]=q[4]||"Caminho"}));
+Object.entries(TEMAS).forEach(([t,arr])=>arr.forEach(q=>GERAIS.push([q[0],q[1],q[2],q[3],t,q[4]||2])));
+Object.entries(ROUTES).forEach(([rk,r])=>{
+ r.perguntas.forEach((q,i)=>{q[4]=rk==="santiago"?"Caminho de Santiago":"Aparecida";q[5]=(ROTA_NIV[rk]||[])[i]||2});
+ (ROTA_EXTRA[rk]||[]).forEach(q=>r.perguntas.push([q[0],q[1],q[2],q[3],rk==="santiago"?"Caminho de Santiago":"Aparecida",q[4]]));
+});
+const NIVEL_Q={facil:{nome:"Fácil",sub:"Para crianças e catequese",lv:[1]},medio:{nome:"Médio",sub:"Para a família",lv:[2]},dificil:{nome:"Difícil",sub:"Para quem conhece bem",lv:[3]},misto:{nome:"Misturado",sub:"Um pouco de tudo",lv:[1,2,3]}};
+function buildDeck(rk,nv){
+ const lv=(NIVEL_Q[nv]||NIVEL_Q.misto).lv,r=ROUTES[rk];
+ let pool=GERAIS.concat(r.perguntas,r.perguntas).filter(q=>lv.includes(q[5]));
+ if(pool.length<80){const ext=lv.includes(1)?[1,2]:lv.includes(3)?[2,3]:[1,2,3];pool=GERAIS.concat(r.perguntas,r.perguntas).filter(q=>ext.includes(q[5]))}
+ return shuffle(pool);
+}
 
 /* ===== Tabuleiro-paisagem: geometria do caminho + cenário por rota (SVG) ===== */
 const BW=1000,BH=640;
@@ -764,6 +1089,381 @@ function sceneSVG(rk){
 const SCENE_CACHE={};
 function scene(rk){return SCENE_CACHE[rk]||(SCENE_CACHE[rk]=sceneSVG(rk))}
 
+/* ===== Tabuleiro 3D (Three.js r128) — mesma geometria de caminho do 2D, cenário por rota ===== */
+const THREE_LIB="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+function loadThree(){return new Promise((res,rej)=>{if(window.THREE)return res();const s=document.createElement("script");s.src=THREE_LIB;s.onload=res;s.onerror=()=>rej(new Error("three"));document.head.appendChild(s)})}
+function webglOK(){try{const c=document.createElement("canvas");return !!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")))}catch(e){return false}}
+
+const B3={ready:false,route:null,root:null};
+const W=p=>[(p[0]-500)/10,(p[1]-320)/10];
+function vnoise(x,y){const i=Math.floor(x),j=Math.floor(y),f=x-i,g=y-j;const h=(a,b)=>{const s=Math.sin(a*127.1+b*311.7)*43758.5453;return s-Math.floor(s)};const u=f*f*(3-2*f),v=g*g*(3-2*g);return h(i,j)*(1-u)*(1-v)+h(i+1,j)*u*(1-v)+h(i,j+1)*(1-u)*v+h(i+1,j+1)*u*v}
+function fbm(x,y){return vnoise(x,y)*.6+vnoise(x*2.1,y*2.1)*.3+vnoise(x*4.3,y*4.3)*.1}
+const sstep=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};
+
+function b3Init(){
+ const T=THREE;
+ const root=document.createElement("div");root.className="b3root";
+ const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:"high-performance"});
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));
+ renderer.outputEncoding=T.LinearEncoding;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+ renderer.toneMapping=T.NoToneMapping;
+ root.appendChild(renderer.domElement);
+ const labels=document.createElement("div");labels.className="b3labels";root.appendChild(labels);
+ const scene=new T.Scene();
+ const camera=new T.PerspectiveCamera(38,1.6,.5,400);
+ const hemi=new T.HemisphereLight(0xfff4dc,0x55704a,.62);scene.add(hemi);
+ const sun=new T.DirectionalLight(0xfff0d0,.85);sun.position.set(30,60,25);sun.castShadow=true;
+ const sm=window.innerWidth<760?1024:2048;sun.shadow.mapSize.set(sm,sm);const sc=sun.shadow.camera;sc.left=-62;sc.right=62;sc.top=50;sc.bottom=-50;sc.near=1;sc.far=160;sun.shadow.bias=-.0006;sun.shadow.normalBias=.02;
+ scene.add(sun);scene.add(sun.target);
+ Object.assign(B3,{T,root,renderer,labels,scene,camera,sun,world:null,tiles:[],pawns:[],labelEls:[],
+  cam:{yaw:0,pitch:.72,dist:50,tx:0,ty:0,tz:4,gyaw:0,gpitch:.72,gdist:50,gtx:0,gty:0,gtz:4},follow:true,intro:1,t0:performance.now(),
+  shown:{},hops:[],fx:[],die:null,lastFresh:null,lastRolling:false,overDone:false,pulse:0,raf:0,visible:true});
+ /* controles: arrastar gira, roda/pinça aproxima, toque seleciona casa */
+ const pts=new Map();let downAt=null,moved=0,pinch0=0,dist0=0;
+ const el=renderer.domElement;el.style.touchAction="none";
+ el.addEventListener("pointerdown",e=>{el.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);downAt=[e.clientX,e.clientY];moved=0;if(pts.size===2){const a=[...pts.values()];pinch0=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);dist0=B3.cam.gdist}});
+ el.addEventListener("pointermove",e=>{if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId),dx=e.clientX-p[0],dy=e.clientY-p[1];pts.set(e.pointerId,[e.clientX,e.clientY]);moved+=Math.abs(dx)+Math.abs(dy);
+  if(pts.size===2){const a=[...pts.values()];const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);if(pinch0)B3.cam.gdist=Math.max(18,Math.min(150,dist0*pinch0/d));return}
+  if(moved>6){const c=B3.cam;if(e.pointerType==="mouse"&&e.buttons===2||e.shiftKey){const s=c.dist/400;c.gtx-=(dx*Math.cos(c.yaw)+dy*Math.sin(c.yaw))*s;c.gtz-=(-dx*Math.sin(c.yaw)+dy*Math.cos(c.yaw))*s;B3.follow=false}else{c.gyaw-=dx*.005;c.gpitch=Math.max(.42,Math.min(1.35,c.gpitch+dy*.004));c.gyaw=Math.max(-1.1,Math.min(1.1,c.gyaw))}}});
+ const up=e=>{if(pts.size===1&&moved<7&&downAt)pick(e);pts.delete(e.pointerId);if(pts.size<2)pinch0=0};
+ el.addEventListener("pointerup",up);el.addEventListener("pointercancel",e=>pts.delete(e.pointerId));
+ el.addEventListener("contextmenu",e=>e.preventDefault());
+ el.addEventListener("wheel",e=>{e.preventDefault();B3.cam.gdist=Math.max(18,Math.min(150,B3.cam.gdist*(1+Math.sign(e.deltaY)*.1)))},{passive:false});
+ const ray=new T.Raycaster(),mv=new T.Vector2();
+ function pick(e){const r=el.getBoundingClientRect();mv.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(mv,B3.camera);const hit=ray.intersectObjects(B3.tiles.map(t=>t.mesh),false)[0];if(hit&&typeof tileInfo==="function")tileInfo(hit.object.userData.i)}
+ new ResizeObserver(()=>b3Resize()).observe(root);
+ document.addEventListener("visibilitychange",()=>{B3.visible=!document.hidden;if(B3.visible)b3Loop()});
+ B3.ready=true;b3Loop();
+}
+function b3Resize(){const r=B3.root.getBoundingClientRect();if(!r.width||!r.height)return;B3.renderer.setSize(r.width,r.height,false);B3.camera.aspect=r.width/r.height;B3.camera.updateProjectionMatrix()}
+
+/* ---------- texturas desenhadas em canvas ---------- */
+function canvasTex(w,h,draw,rep){const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");draw(g,w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;if(rep){t.wrapS=t.wrapT=THREE.RepeatWrapping}return t}
+function svgImg(svg,color,cb){const s=svg.replace(/currentColor/g,color).replace("<svg ",'<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" ');const img=new Image();img.onload=()=>cb(img);img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s)}
+const ICON_COL={oracao:"#7b4fc9",acao:"#d9572b",reflexao:"#2a83cf",companheiro:"#e09a16",descanso:"#b5302c",bolha:"#c03a2e",atalho:"#16977f"};
+function tileTex(t,i){
+ const city=t.t==="cidade",end=i===35;
+ const tex=canvasTex(256,256,(g,w,h)=>{
+  const gr=g.createRadialGradient(80,70,10,128,128,190);
+  if(city){gr.addColorStop(0,"#fff8dc");gr.addColorStop(.5,"#f0c75a");gr.addColorStop(1,"#b8841c")}else{gr.addColorStop(0,"#fffdf3");gr.addColorStop(.55,"#f3e3bd");gr.addColorStop(1,"#d3b67c")}
+  g.fillStyle=gr;g.fillRect(0,0,w,h);g.strokeStyle=city?"#7a5208":"#8a6a36";g.lineWidth=10;g.strokeRect(5,5,w-10,h-10);
+  g.strokeStyle=city?"#fff3c8":"#fff8e6";g.lineWidth=3;g.strokeRect(18,18,w-36,h-36);
+  g.fillStyle=city?"#5c3e06":"#8b7650";g.font="700 34px 'Barlow Condensed',Arial";g.textAlign="left";g.fillText(String(i),26,56);
+  const bg=city?(end?"#a92332":"#173b83"):(ICON_COL[t.t]||null);
+  if(bg){g.beginPath();g.arc(128,136,72,0,7);g.fillStyle=bg;g.fill();g.lineWidth=6;g.strokeStyle="#ffffffaa";g.stroke();
+   const shine=g.createRadialGradient(100,105,4,128,136,72);shine.addColorStop(0,"#ffffff66");shine.addColorStop(1,"#ffffff00");g.fillStyle=shine;g.fill()}
+  else{g.beginPath();g.arc(128,136,14,0,7);g.fillStyle="#a48d5f";g.fill()}
+ });
+ const key=city?(end?"cross":"pin"):(CASAS[t.t]?CASAS[t.t].ic:null);
+ if(key)svgImg(SVG[key],"#ffffff",img=>{const g=tex.image.getContext("2d");g.drawImage(img,128-46,136-46,92,92);tex.needsUpdate=true});
+ return tex;
+}
+const TEX={};
+function cobbleTex(){return TEX.cob||(TEX.cob=canvasTex(256,256,(g,w,h)=>{g.fillStyle="#c9b48c";g.fillRect(0,0,w,h);const R=rnd(5);for(let y=0;y<8;y++)for(let x=0;x<6;x++){const ox=(y%2)*21;const px=x*43+ox-10,py=y*32;g.fillStyle=`hsl(${36+R()*8},${28+R()*10}%,${58+R()*14}%)`;g.beginPath();g.roundRect?g.roundRect(px+2,py+2,39,28,8):g.rect(px+2,py+2,39,28);g.fill();g.strokeStyle="#8a7650";g.lineWidth=2;g.stroke()}},true))}
+function waterTex(){return TEX.wat||(TEX.wat=canvasTex(256,128,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,"#3d8db8");gr.addColorStop(.5,"#5fb0d6");gr.addColorStop(1,"#3d8db8");g.fillStyle=gr;g.fillRect(0,0,w,h);g.strokeStyle="#d8f2ff";g.lineWidth=3;g.globalAlpha=.55;const R=rnd(9);for(let k=0;k<26;k++){const x=R()*w,y=R()*h;g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+10,y-4,x+22,y);g.stroke()}},true))}
+function skyTex(rk){return canvasTex(8,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);if(rk==="santiago"){gr.addColorStop(0,"#5f9ad6");gr.addColorStop(.55,"#a9d0ec");gr.addColorStop(.85,"#fde3a6");gr.addColorStop(1,"#f7c46c")}else{gr.addColorStop(0,"#4f93d0");gr.addColorStop(.5,"#9fd0ee");gr.addColorStop(.85,"#fbdca2");gr.addColorStop(1,"#f9b86a")}g.fillStyle=gr;g.fillRect(0,0,w,h)})}
+function dieFaceTex(n){return canvasTex(128,128,(g,w,h)=>{g.fillStyle="#fffaf0";g.fillRect(0,0,w,h);g.strokeStyle="#d9cfb8";g.lineWidth=8;g.strokeRect(0,0,w,h);const P={1:[[64,64]],2:[[36,36],[92,92]],3:[[32,32],[64,64],[96,96]],4:[[36,36],[92,36],[36,92],[92,92]],5:[[34,34],[94,34],[64,64],[34,94],[94,94]],6:[[36,30],[92,30],[36,64],[92,64],[36,98],[92,98]]}[n];g.fillStyle=n===1?"#a92332":"#1b1b1b";P.forEach(([x,y])=>{g.beginPath();g.arc(x,y,n===1?15:11,0,7);g.fill()})})}
+
+/* ---------- construção do mundo ---------- */
+function b3Build(rk){
+ const T=THREE,scene=B3.scene;
+ if(B3.world){scene.remove(B3.world);B3.world.traverse(o=>{if(o.geometry)o.geometry.dispose()})}
+ B3.labels.innerHTML="";B3.labelEls=[];B3.tiles=[];B3.pawns=[];B3.shown={};B3.hops=[];
+ const world=new T.Group();B3.world=world;scene.add(world);B3.route=rk;
+ const sant=rk==="santiago";
+ scene.background=skyTex(rk);scene.fog=new T.Fog(sant?0xf5e3bb:0xf4dfb0,120,240);
+ const path=PATH_DENSE.map(W);
+ const riverZ=x=>(RIVER_Y(x*10+500)-320)/10;
+ const [DX,DZ]=W([930,92]);
+ const MT=(x,z)=>30*sstep(19,-24,z)*(1-.8*sstep(-30,-58,z));
+ /* elevação ao longo do caminho: sempre subindo */
+ const E=path.map(p=>MT(p[0],p[1]));
+ for(let it=0;it<6;it++){for(let k=1;k<E.length-1;k++)E[k]=(E[k-1]+E[k]*2+E[k+1])/4}
+ for(let k=1;k<E.length;k++)E[k]=Math.max(E[k],E[k-1]+.004);
+ const SUM=E[E.length-1]+.4;
+ B3.E=E;B3.SUM=SUM;
+ const near=(x,z)=>{let m=1e9,mk=0;for(let k=0;k<path.length;k++){const dx=path[k][0]-x,dz=path[k][1]-z,d=dx*dx+dz*dz;if(d<m){m=d;mk=k}}return [Math.sqrt(m),mk]};
+ const distPath=(x,z)=>near(x,z)[0];
+ const baseH=(x,z)=>{let h=MT(x,z)+(fbm(x*.07+3,z*.07+7)-.45)*2.2;
+  const side=sstep(52,72,Math.abs(x));h+=side*(sant?Math.pow(fbm(x*.06,z*.06+1.7),1.4)*22+6:fbm(x*.05+2,z*.05)*14+4);
+  const dr=Math.abs(z-riverZ(x));if(dr<3.2&&z>10)h=h*sstep(1.4,3.2,dr)-1.1*(1-sstep(0,2.2,dr));
+  return h};
+ const hAt=(x,z)=>{const [dp,k]=near(x,z);let h=baseH(x,z);const t=sstep(3.3,7.5,dp);h=E[k]*(1-t)+h*t;
+  const dd=Math.hypot(x-DX,z-DZ),s=1-sstep(12,19,dd);h=h*(1-s)+SUM*s;return h};
+ B3.elev=i=>{const tp=TILE_POS[i],[x,z]=W([tp.x,tp.y]);return E[near(x,z)[1]]};
+ B3.hAt=hAt;
+ /* terreno */
+ const SX=150,SZ=120,geo=new T.PlaneGeometry(SX,SZ,150,120);geo.rotateX(-Math.PI/2);
+ const pos=geo.attributes.position,cols=new Float32Array(pos.count*3),c=new T.Color();
+ for(let k=0;k<pos.count;k++){const x=pos.getX(k),z=pos.getZ(k);const h=hAt(x,z);pos.setY(k,h);
+  const n=fbm(x*.15,z*.15),dp=distPath(x,z),dr=Math.abs(z-riverZ(x)),alt=Math.max(0,Math.min(1,h/SUM)),side=sstep(52,72,Math.abs(x));
+  if(sant&&side>.3&&h>SUM*.75)c.setRGB(.93,.94,.97);
+  else if(dr<1.9&&z>10)c.setHSL(.55,.35,.42);
+  else{c.setHSL((sant?.26:.29)-alt*.05+n*.03,.5-alt*.08,.29+n*.09+alt*.12);
+   const cliff=Math.abs(h-baseH(x,z));if(dp>5&&n>.62&&alt>.25)c.lerp(new T.Color(0x9a8a72),.5);
+   if(dp<4.4)c.lerp(new T.Color(0xc9a86a),.4*(1-sstep(3.3,4.4,dp)))}
+  cols[k*3]=c.r;cols[k*3+1]=c.g;cols[k*3+2]=c.b}
+ geo.setAttribute("color",new T.BufferAttribute(cols,3));geo.computeVertexNormals();
+ const ground=new T.Mesh(geo,new T.MeshStandardMaterial({vertexColors:true,roughness:.95,flatShading:false}));ground.receiveShadow=true;world.add(ground);
+ /* campos (Santiago: trigo; Aparecida: cafezal) */
+ if(sant){const fm=new T.MeshStandardMaterial({color:0xd9c46a,roughness:1});[[-22,31,16,5],[14,32,14,5],[-2,33,10,4]].forEach(([x,z,w,d])=>{const f=new T.Mesh(new T.BoxGeometry(w,.12,d),fm);f.position.set(x,hAt(x,z)+.05,z);f.receiveShadow=true;world.add(f)})}
+ else{const cm=new T.MeshStandardMaterial({color:0x2f6b34,roughness:.9,flatShading:true});const g=new T.SphereGeometry(.55,6,4);const inst=new T.InstancedMesh(g,cm,140);let n=0;const m=new T.Matrix4();for(let r=0;r<5;r++)for(let k=0;k<28&&n<140;k++){const x=-19+k*.8,z=30+r*1.1;if(distPath(x,z)<3.6)continue;m.makeTranslation(x,hAt(x,z)+.35,z);inst.setMatrixAt(n++,m)}inst.count=n;inst.castShadow=true;world.add(inst)}
+ /* rio */
+ {const pts=[];for(let x=-75;x<=75;x+=1.5)pts.push([x,riverZ(x)]);const g=ribbon(pts,2.6,-.42,15);const m=new T.Mesh(g,new T.MeshStandardMaterial({map:waterTex(),roughness:.15,metalness:.1,transparent:true,opacity:.92}));m.receiveShadow=true;world.add(m);B3.water=m.material.map}
+ /* estrada */
+ {const g=ribbon(path,5.4,E.map(v=>v+.06),6);const m=new T.Mesh(g,new T.MeshStandardMaterial({map:cobbleTex(),roughness:.9}));m.receiveShadow=true;world.add(m);
+  const e=ribbon(path,6.2,E.map(v=>v+.03),6);const em=new T.Mesh(e,new T.MeshStandardMaterial({color:0x7a5a2a,roughness:1}));em.receiveShadow=true;world.add(em)}
+ /* muretas nas curvas altas */
+ {const wm=new T.MeshStandardMaterial({color:0xb9a888,roughness:1,flatShading:true});const wg=new T.BoxGeometry(.5,.7,1.6);const inst=new T.InstancedMesh(wg,wm,260);let n=0;const mm=new T.Matrix4(),qq=new T.Quaternion();
+  for(let k=4;k<path.length-4&&n<260;k+=4){if(E[k]<4)continue;const a=path[k-1],c2=path[k+1];let dx=c2[0]-a[0],dz=c2[1]-a[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;const nx=-dz,nz=dx;const ang=Math.atan2(dx,dz);qq.setFromAxisAngle(new T.Vector3(0,1,0),ang);
+   for(const s of[1,-1]){const x=path[k][0]+nx*3.35*s,z=path[k][1]+nz*3.35*s;if(baseH(x,z)>E[k]+.4)continue;mm.compose(new T.Vector3(x,E[k]+.35,z),qq,new T.Vector3(1,1,1));inst.setMatrixAt(n++,mm)}}
+  inst.count=n;inst.castShadow=true;inst.receiveShadow=true;inst.instanceMatrix.needsUpdate=true;world.add(inst)}
+ /* ponte na curva */
+ {const bx=42.6,bz=riverZ(42.6);const stone=new T.MeshStandardMaterial({color:0xc9b48c,roughness:.9,flatShading:true});
+  const deck=new T.Mesh(new T.BoxGeometry(7.2,1,6.4),stone);deck.position.set(bx,-.45,bz);deck.castShadow=deck.receiveShadow=true;world.add(deck);
+  for(const s of[-1,1]){const p=new T.Mesh(new T.BoxGeometry(.5,.9,6.6),stone);p.position.set(bx+s*3.6,.4,bz);p.castShadow=true;world.add(p)}
+  const b2=new T.Mesh(new T.TorusGeometry(2.4,.45,6,14,Math.PI),stone);b2.position.set(-30,-.6,riverZ(-30));b2.rotation.y=Math.PI/2;b2.castShadow=true;world.add(b2)}
+ /* casas, capela */
+ const wall=new T.MeshStandardMaterial({color:sant?0xf6efe2:0xfff7ea,roughness:.9,flatShading:true}),roof=new T.MeshStandardMaterial({color:0xb9532f,roughness:.8,flatShading:true}),door=new T.MeshStandardMaterial({color:sant?0x5a7bb5:0x2f6fae,roughness:.8});
+ const R=rnd(sant?11:29);
+ const house=(x,z,s,rot)=>{const g=new T.Group();const b=new T.Mesh(new T.BoxGeometry(2.4,1.7,1.9),wall);b.position.y=.85;const r=new T.Mesh(new T.ConeGeometry(1.95,1.3,4),roof);r.position.y=2.35;r.rotation.y=Math.PI/4;r.scale.set(1.08,1,.85);const d=new T.Mesh(new T.BoxGeometry(.5,.8,.05),door);d.position.set(0,.4,.97);
+  [b,r].forEach(m=>{m.castShadow=true;m.receiveShadow=true});g.add(b,r,d);g.scale.setScalar(s);g.position.set(x,hAt(x,z),z);g.rotation.y=rot;world.add(g)};
+ const vill=sant?[[160,330,4],[690,340,3],[560,470,3],[120,470,2]]:[[160,328,3],[700,342,4],[580,468,2],[130,470,3]];
+ vill.forEach(([vx,vy,n],vi)=>{const [cx,cz]=W([vx,vy]);for(let k=0;k<n;k++){const x=cx+(k-(n-1)/2)*3+(R()-.5)*.8,z=cz+(R()-.5)*1.2+(k%2)*.6;if(distPath(x,z)>4.2)house(x,z,.9+R()*.25,(R()-.5)*.5)}
+  if(vi===1){const x=cx+n*1.9,z=cz-.6;if(distPath(x,z)>4.5){const g=new T.Group();const b=new T.Mesh(new T.BoxGeometry(2.6,2,3.4),wall);b.position.y=1;const r=new T.Mesh(new T.ConeGeometry(2.3,1.4,4),roof);r.position.y=2.7;r.rotation.y=Math.PI/4;r.scale.set(.85,1,1.12);const tw=new T.Mesh(new T.BoxGeometry(1.1,3.4,1.1),wall);tw.position.set(0,1.7,1.7);const tc=new T.Mesh(new T.ConeGeometry(.85,1.2,4),roof);tc.position.set(0,4,1.7);tc.rotation.y=Math.PI/4;const cr=cross3(T,.12);cr.position.set(0,4.9,1.7);[b,r,tw,tc].forEach(m=>{m.castShadow=true});g.add(b,r,tw,tc,cr);g.position.set(x,hAt(x,z),z);world.add(g)}}});
+ /* árvores (instanciadas) */
+ const trunkG=new T.CylinderGeometry(.16,.22,1.2,5),crownG=new T.IcosahedronGeometry(1.15,0),pineG=new T.ConeGeometry(1,2.6,7),palmG=new T.ConeGeometry(1.5,.7,7);
+ const trunkM=new T.MeshStandardMaterial({color:0x6b4423,roughness:1,flatShading:true}),leafM=new T.MeshStandardMaterial({color:0xffffff,roughness:.9,flatShading:true});
+ const N=200,tr=new T.InstancedMesh(trunkG,trunkM,N),cr=new T.InstancedMesh(crownG,leafM,N),pn=new T.InstancedMesh(pineG,leafM.clone(),N),pl=new T.InstancedMesh(palmG,leafM.clone(),60);
+ let nt=0,nc=0,np=0,nl=0;const m=new T.Matrix4(),q=new T.Quaternion(),sv=new T.Vector3(),pv=new T.Vector3(),col=new T.Color();
+ for(let k=0;k<700&&nt<N;k++){const x=(R()-.5)*140,z=-40+R()*80;if(distPath(x,z)<4.6||Math.abs(z-riverZ(x))<2.8)continue;
+  if(vill.some(([vx,vy,n])=>{const [cx,cz]=W([vx,vy]);return Math.abs(x-cx)<n*1.8+2&&Math.abs(z-cz)<2.6}))continue;
+  if(sant?(z>-4.5&&z<1.5&&x>-20&&x<18):(z>-4&&z<3&&x>-20&&x<21))continue;
+  if(Math.hypot(x-DX,z-DZ)<20)continue;
+  const h=hAt(x,z);if(sstep(52,72,Math.abs(x))>.3&&h>SUM*.75)continue;const s=.75+R()*.6,kind=R();
+  q.setFromAxisAngle(new T.Vector3(0,1,0),R()*6.28);
+  if(!sant&&kind<.18&&nl<60){m.compose(pv.set(x,h+1.9*s,z),q,sv.set(.6*s,3.2*s,.6*s));tr.setMatrixAt(nt++,m);m.compose(pv.set(x,h+3.6*s,z),q,sv.set(s,s,s));pl.setMatrixAt(nl,m);pl.setColorAt(nl++,col.setHSL(.3,.55,.32));continue}
+  m.compose(pv.set(x,h+.6*s,z),q,sv.set(s,s,s));tr.setMatrixAt(nt++,m);
+  if(kind<(sant?.38:.3)){m.compose(pv.set(x,h+2.2*s,z),q,sv.set(s*(sant&&kind<.12?.55:1),s*(sant&&kind<.12?1.5:1),s*(sant&&kind<.12?.55:1)));pn.setMatrixAt(np,m);pn.setColorAt(np++,col.setHSL(.36,.45,.22+R()*.06))}
+  else{m.compose(pv.set(x,h+1.75*s,z),q,sv.set(s,s*.95,s));cr.setMatrixAt(nc,m);cr.setColorAt(nc++,col.setHSL(.26+R()*.07,.5,.27+R()*.12))}}
+ tr.count=nt;cr.count=nc;pn.count=np;pl.count=nl;[tr,cr,pn,pl].forEach(o=>{if(!o.count)return;o.castShadow=true;o.receiveShadow=true;if(o.instanceColor)o.instanceColor.needsUpdate=true;o.instanceMatrix.needsUpdate=true;world.add(o)});
+ /* nuvens */
+ B3.clouds=[];const cm=new T.MeshStandardMaterial({color:0xffffff,roughness:1,flatShading:true,emissive:0x777777});
+ for(let k=0;k<12;k++){const g=new T.Group();for(let j=0;j<5;j++){const s=new T.Mesh(new T.IcosahedronGeometry(1.6+R()*1.6,1),cm);s.position.set(j*2.1-4,R()*1,R()*1.8);g.add(s)}const low=k<6;g.position.set(low?DX-34+k*12+R()*4:-70+(k-6)*24,low?SUM-4+R()*5:SUM+14+R()*10,low?DZ-6+R()*14:-50+R()*20);g.scale.set(1.5,.75,1.1);world.add(g);B3.clouds.push(g)}
+ /* destino */
+ const dest=sant?santiago3d(T):aparecida3d(T);dest.position.set(DX,SUM-.05,DZ);dest.rotation.y=sant?-.5:-.42;world.add(dest);B3.dest=new T.Vector3(DX,SUM+6,DZ);
+ /* glória: halo, raios e partículas de luz no cume */
+ {const halo=new T.Sprite(new T.SpriteMaterial({map:canvasTex(256,256,(g2,w,h)=>{const gr=g2.createRadialGradient(128,128,4,128,128,128);gr.addColorStop(0,"rgba(255,250,225,1)");gr.addColorStop(.25,"rgba(255,226,150,.75)");gr.addColorStop(.6,"rgba(255,206,110,.22)");gr.addColorStop(1,"rgba(255,200,100,0)");g2.fillStyle=gr;g2.fillRect(0,0,w,h)}),transparent:true,depthWrite:false,blending:T.AdditiveBlending,fog:false}));
+  halo.position.set(DX+2,SUM+22,DZ-14);halo.scale.set(70,70,1);world.add(halo);B3.halo=halo;
+  const rays=new T.Group();const rm=new T.MeshBasicMaterial({color:0xfff1c4,transparent:true,opacity:.07,depthWrite:false,blending:T.AdditiveBlending,side:T.DoubleSide,fog:false});
+  for(let k=0;k<7;k++){const r=new T.Mesh(new T.CylinderGeometry(4+k%3*2,.6,60,10,1,true),rm);r.position.y=30;r.rotation.z=(k-3)*.11;r.rotation.x=((k*37)%7-3)*.05;rays.add(r)}
+  rays.position.set(DX,SUM+2,DZ);world.add(rays);B3.rays=rays;
+  const n=90,pg=new T.BufferGeometry(),P=new Float32Array(n*3);for(let k=0;k<n;k++){P[k*3]=DX+(Math.random()-.5)*26;P[k*3+1]=SUM+Math.random()*24;P[k*3+2]=DZ+(Math.random()-.5)*22}
+  pg.setAttribute("position",new T.BufferAttribute(P,3));const sp=new T.Points(pg,new T.PointsMaterial({color:0xffe6a0,size:.45,transparent:true,opacity:.85,depthWrite:false,blending:T.AdditiveBlending}));world.add(sp);B3.sparks=sp}
+ /* marco de início */
+ {const [mx,mz]=W([30,505]);const g=new T.Group();if(sant){const st=new T.Mesh(new T.BoxGeometry(1.4,2.6,.8),new T.MeshStandardMaterial({color:0xcfc2a6,roughness:.95,flatShading:true}));st.position.y=1.3;const pl2=new T.Mesh(new T.PlaneGeometry(1.1,1.1),new T.MeshStandardMaterial({map:canvasTex(128,128,(g2)=>{g2.fillStyle="#24468f";g2.fillRect(0,0,128,128)}),roughness:.6}));pl2.position.set(0,1.75,.41);g.add(st,pl2);svgImg(SVG.shell,"#ffd76a",img=>{const t=pl2.material.map,c2=t.image.getContext("2d");c2.drawImage(img,20,14,88,88);t.needsUpdate=true});st.castShadow=true}
+  else{const post=new T.Mesh(new T.CylinderGeometry(.15,.18,3,6),trunkM);post.position.y=1.5;const sign=new T.Mesh(new T.BoxGeometry(2.4,.8,.15),new T.MeshStandardMaterial({color:0xffd23a,roughness:.7}));sign.position.set(.6,2.5,0);post.castShadow=sign.castShadow=true;g.add(post,sign)}
+  g.position.set(mx,hAt(mx,mz),mz);g.rotation.y=.4;world.add(g)}
+ /* casas do tabuleiro */
+ const sideM=new T.MeshStandardMaterial({color:0xb59b62,roughness:.9}),sideC=new T.MeshStandardMaterial({color:0xb8841c,roughness:.6,metalness:.2});
+ const shape=new T.Shape(),r0=.9,hs=2.55;shape.moveTo(-hs+r0,-hs);shape.lineTo(hs-r0,-hs);shape.quadraticCurveTo(hs,-hs,hs,-hs+r0);shape.lineTo(hs,hs-r0);shape.quadraticCurveTo(hs,hs,hs-r0,hs);shape.lineTo(-hs+r0,hs);shape.quadraticCurveTo(-hs,hs,-hs,hs-r0);shape.lineTo(-hs,-hs+r0);shape.quadraticCurveTo(-hs,-hs,-hs+r0,-hs);
+ const tg=new T.ExtrudeGeometry(shape,{depth:.6,bevelEnabled:true,bevelThickness:.18,bevelSize:.16,bevelSegments:2,curveSegments:4});tg.rotateX(-Math.PI/2);
+ const uv=tg.attributes.uv;for(let k=0;k<uv.count;k++){uv.setXY(k,(uv.getX(k)+hs)/(2*hs),(uv.getY(k)+hs)/(2*hs))}
+ S.board.forEach((t,i)=>{const tp=TILE_POS[i],[x,z]=W([tp.x,tp.y]);const city=t.t==="cidade";
+  const top=new T.MeshStandardMaterial({map:tileTex(t,i),roughness:.7,metalness:city?.15:0,emissive:0x000000});
+  const ey=B3.elev(i);const mesh=new T.Mesh(tg,[top,city?sideC:sideM]);mesh.position.set(x,ey+.15,z);mesh.rotation.y=-tp.a*Math.PI/180;if(city)mesh.scale.y=1.6;mesh.castShadow=mesh.receiveShadow=true;mesh.userData.i=i;world.add(mesh);
+  B3.tiles.push({mesh,x,z,y:ey,top:ey+(city?1.7:1.1),city});
+  if(city){const lab=document.createElement("span");lab.className="b3lab";lab.textContent=t.nome;B3.labels.appendChild(lab);B3.labelEls.push({el:lab,v:new T.Vector3(x,ey+1.6,z+3.6)})}});
+ const fl=(txt,i,dy,cls)=>{const tp=B3.tiles[i];const el=document.createElement("span");el.className="b3flag "+cls;el.textContent=txt;B3.labels.appendChild(el);B3.labelEls.push({el,v:new T.Vector3(tp.x,tp.top+dy,tp.z)})};
+ fl("Início",0,5.2,"");fl("Chegada",35,6.2,"");
+ /* anel do jogador da vez */
+ const ring=new T.Mesh(new T.TorusGeometry(3.4,.22,8,40),new T.MeshBasicMaterial({color:0xffd76a,transparent:true,opacity:.9}));ring.rotation.x=-Math.PI/2;world.add(ring);B3.ring=ring;
+ const mk=new T.Mesh(new T.OctahedronGeometry(.6,0),new T.MeshStandardMaterial({color:0xffd76a,emissive:0xd8a637,emissiveIntensity:.6,metalness:.4,roughness:.3}));world.add(mk);B3.marker=mk;
+ /* peões */
+ S.players.forEach((p,i)=>B3.pawns.push(makePawn(T,p,i,world)));
+ B3.intro=1;B3.t0=performance.now();B3.cam.dist=120;B3.cam.pitch=1.15;B3.cam.yaw=-.5;B3.cam.ty=SUM*.5;B3.cam.gty=0;B3.overDone=false;
+}
+function cross3(T,s){const g=new T.Group(),m=new T.MeshStandardMaterial({color:0xd8a637,metalness:.6,roughness:.35});const a=new T.Mesh(new T.BoxGeometry(s,s*7,s),m),b=new T.Mesh(new T.BoxGeometry(s*4.4,s,s),m);b.position.y=s*1.4;g.add(a,b);return g}
+function gable(T,w,h,d,mat){const s=new T.Shape();s.moveTo(-w/2,0);s.lineTo(w/2,0);s.lineTo(0,h);s.lineTo(-w/2,0);const g=new T.ExtrudeGeometry(s,{depth:d,bevelEnabled:false});g.translate(0,0,-d/2);return new T.Mesh(g,mat)}
+function bx(T,w,h,d,mat,x,y,z){const m=new T.Mesh(new T.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);return m}
+function santiago3d(T){
+ /* Catedral de Santiago de Compostela: fachada barroca do Obradoiro, duas torres, escadaria dupla, granito dourado */
+ const g=new T.Group(),st=new T.MeshStandardMaterial({color:0xcbb68c,roughness:.9,flatShading:true}),dk=new T.MeshStandardMaterial({color:0x9f8a64,roughness:.95,flatShading:true}),
+  sl=new T.MeshStandardMaterial({color:0x6c727d,roughness:.7,flatShading:true}),gl=new T.MeshStandardMaterial({color:0xffd27a,emissive:0xffa840,emissiveIntensity:.55,roughness:.4}),
+  hole=new T.MeshStandardMaterial({color:0x3a2f22,roughness:1}),lich=new T.MeshStandardMaterial({color:0x8d9a6a,roughness:1,flatShading:true});
+ /* praça e escadaria do Obradoiro */
+ g.add(bx(T,22,.3,8,new T.MeshStandardMaterial({color:0xd8ccb0,roughness:1}),0,.15,7));
+ for(let s=0;s<4;s++){g.add(bx(T,4.2,.45,1,st,-3.6,.45+s*.45,5.2-s*.9),bx(T,4.2,.45,1,st,3.6,.45+s*.45,5.2-s*.9))}
+ g.add(bx(T,15,2.3,4,st,0,1.15,1.4));
+ const y0=2.3;
+ /* nave e cruzeiro atrás */
+ g.add(bx(T,6.4,7.5,15,st,0,y0+3.75,-8));const r1=gable(T,7,2.8,15.4,sl);r1.position.set(0,y0+7.5,-8);g.add(r1);
+ g.add(bx(T,15,6.5,5,st,0,y0+3.25,-10));const r2=gable(T,5.4,2.4,15.4,sl);r2.rotation.y=Math.PI/2;r2.position.set(0,y0+6.5,-10);g.add(r2);
+ const drum=new T.Mesh(new T.CylinderGeometry(2.2,2.3,3,8),st);drum.position.set(0,y0+10.3,-10);g.add(drum);
+ const dome=new T.Mesh(new T.SphereGeometry(2.35,8,6,0,Math.PI*2,0,Math.PI/2),dk);dome.position.set(0,y0+11.8,-10);g.add(dome);
+ const ln=new T.Mesh(new T.CylinderGeometry(.5,.6,1.3,8),st);ln.position.set(0,y0+14.6,-10);g.add(ln);const c0=cross3(T,.14);c0.position.set(0,y0+15.9,-10);g.add(c0);
+ /* corpo central da fachada com os grandes vitrais */
+ g.add(bx(T,6.6,10.5,2,st,0,y0+5.25,.4));
+ g.add(bx(T,4.6,7.2,.1,gl,0,y0+5.2,1.42));
+ for(let k=-1;k<=1;k++)g.add(bx(T,.18,7.2,.16,dk,k*1.55,y0+5.2,1.48));for(let k=0;k<3;k++)g.add(bx(T,4.6,.16,.16,dk,0,y0+2.6+k*2.4,1.48));
+ g.add(bx(T,7,.4,2.4,dk,0,y0+10.6,.4));
+ g.add(bx(T,5,2.6,1.8,st,0,y0+12.1,.3));g.add(bx(T,2.4,1.9,.1,gl,0,y0+12,1.22));
+ g.add(bx(T,3.4,2.2,1.5,st,0,y0+14.5,.2));
+ const pd=gable(T,3.8,1.4,1.4,st);pd.position.set(0,y0+15.6,.2);g.add(pd);
+ /* São Tiago peregrino no alto */
+ const sb=new T.Mesh(new T.CylinderGeometry(.32,.45,1.5,8),dk);sb.position.set(0,y0+17.6,.4);const sh=new T.Mesh(new T.SphereGeometry(.3,8,6),dk);sh.position.set(0,y0+18.6,.4);const hat=new T.Mesh(new T.CylinderGeometry(.55,.55,.08,10),dk);hat.position.set(0,y0+18.85,.4);g.add(sb,sh,hat);
+ for(const s of[-1,1]){const p=new T.Mesh(new T.ConeGeometry(.3,1.4,6),st);p.position.set(s*2.4,y0+13.9,.3);g.add(p);const p2=new T.Mesh(new T.ConeGeometry(.25,1.1,6),st);p2.position.set(s*1.6,y0+16.1,.2);g.add(p2)}
+ /* as duas torres */
+ for(const s of[-1,1]){const x=s*4.9,z=.6;
+  g.add(bx(T,3.4,11,3.4,st,x,y0+5.5,z));for(const f of[1.71])g.add(bx(T,.9,1.8,.1,hole,x,y0+8.4,z+f));
+  g.add(bx(T,3.9,.4,3.9,dk,x,y0+11.2,z));
+  g.add(bx(T,2.8,3.8,2.8,st,x,y0+13.3,z));g.add(bx(T,1,2.2,.1,hole,x,y0+13.4,z+1.42));g.add(bx(T,.1,2.2,1,hole,x-s*1.42,y0+13.4,z));
+  g.add(bx(T,3.2,.35,3.2,dk,x,y0+15.35,z));
+  g.add(bx(T,2.2,2.8,2.2,st,x,y0+16.9,z));g.add(bx(T,.8,1.6,.1,hole,x,y0+17,z+1.12));
+  const oc=new T.Mesh(new T.CylinderGeometry(1.05,1.15,1.8,8),st);oc.position.set(x,y0+19.2,z);g.add(oc);
+  const dm=new T.Mesh(new T.SphereGeometry(1.15,8,6,0,Math.PI*2,0,Math.PI/2),dk);dm.position.set(x,y0+20.1,z);g.add(dm);
+  const lt=new T.Mesh(new T.CylinderGeometry(.32,.38,1.2,8),st);lt.position.set(x,y0+21.6,z);g.add(lt);const lc=new T.Mesh(new T.ConeGeometry(.42,.7,8),dk);lc.position.set(x,y0+22.5,z);g.add(lc);
+  const cr=cross3(T,.14);cr.position.set(x,y0+23.4,z);g.add(cr);
+  for(const [px,pz] of[[-1,-1],[1,-1],[-1,1],[1,1]]){const p=new T.Mesh(new T.ConeGeometry(.25,1.2,6),st);p.position.set(x+px*1.7,y0+12,z+pz*1.7);g.add(p);const q=new T.Mesh(new T.ConeGeometry(.2,1,6),st);q.position.set(x+px*1.4,y0+16,z+pz*1.4);g.add(q)}
+  for(let k=0;k<3;k++){const l=new T.Mesh(new T.SphereGeometry(.35+k*.1,5,4),lich);l.position.set(x+s*1.6,y0+2+k*3,z+1.5);l.scale.set(.6,1,.3);g.add(l)}}
+ /* Torre do Relógio (Berenguela) ao lado */
+ g.add(bx(T,2.6,11,2.6,st,7.5,y0+5.5,-12));g.add(bx(T,2.2,3,2.2,st,7.5,y0+12.5,-12));
+ const ck=new T.Mesh(new T.CircleGeometry(.75,16),new T.MeshStandardMaterial({color:0xfff6e0}));ck.position.set(7.5,y0+12.6,-10.88);g.add(ck);
+ const bd=new T.Mesh(new T.SphereGeometry(1.1,8,6,0,Math.PI*2,0,Math.PI/2),dk);bd.position.set(7.5,y0+14,-12);g.add(bd);const lt2=new T.Mesh(new T.CylinderGeometry(.25,.3,1.2,8),st);lt2.position.set(7.5,y0+15.5,-12);g.add(lt2);
+ g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});g.scale.setScalar(.9);return g;
+}
+function aparecida3d(T){
+ /* Santuário Nacional de Aparecida: planta em cruz grega de tijolo aparente, cúpula central, Torre Brasília e esplanada */
+ const g=new T.Group(),br=new T.MeshStandardMaterial({color:0xa9472d,roughness:.9,flatShading:true}),wh=new T.MeshStandardMaterial({color:0xf3ede2,roughness:.8,flatShading:true}),
+  rf=new T.MeshStandardMaterial({color:0x7b3a28,roughness:.85,flatShading:true}),cp=new T.MeshStandardMaterial({color:0x9fb3b8,roughness:.5,metalness:.25,flatShading:true}),
+  gl=new T.MeshStandardMaterial({color:0xffd27a,emissive:0xffa840,emissiveIntensity:.6,roughness:.4}),pl=new T.MeshStandardMaterial({color:0xd9d3c6,roughness:1}),gold=new T.MeshStandardMaterial({color:0xd8a637,metalness:.6,roughness:.35});
+ g.add(bx(T,40,.4,40,pl,0,.2,0));
+ const y0=.4,L=24,Wd=7.4,H=7;
+ /* quatro naves em cruz */
+ g.add(bx(T,L,H,Wd,br,0,y0+H/2,0));g.add(bx(T,Wd,H,L,br,0,y0+H/2,0));
+ const ga=gable(T,Wd+.6,2.8,L+.4,rf);ga.position.y=y0+H;g.add(ga);const gb=gable(T,Wd+.6,2.8,L+.4,rf);gb.rotation.y=Math.PI/2;gb.position.y=y0+H;g.add(gb);
+ /* faixas brancas e frontões com rosáceas */
+ g.add(bx(T,L+.3,.35,Wd+.3,wh,0,y0+H-.2,0),bx(T,Wd+.3,.35,L+.3,wh,0,y0+H-.2,0),bx(T,L+.3,.3,Wd+.3,wh,0,y0+2.4,0),bx(T,Wd+.3,.3,L+.3,wh,0,y0+2.4,0));
+ [[0,1],[0,-1],[1,0],[-1,0]].forEach(([sx,sz])=>{const ros=new T.Mesh(new T.CircleGeometry(1.4,20),gl);const ring=new T.Mesh(new T.TorusGeometry(1.45,.18,6,20),wh);
+  const arch=bx(T,2.2,3.6,.1,gl,0,0,0);const off=L/2+.07;const px=sx*off,pz=sz*off,ry=sx?Math.PI/2*sx:(sz>0?0:Math.PI);
+  [ros,ring].forEach(m=>{m.position.set(px,y0+H+.6,pz);m.rotation.y=ry;g.add(m)});arch.position.set(px,y0+4.4,pz);arch.rotation.y=ry;g.add(arch);
+  const door=bx(T,2.6,2.4,.12,new T.MeshStandardMaterial({color:0x4a2a18}),0,0,0);door.position.set(px,y0+1.2,pz);door.rotation.y=ry;g.add(door)});
+ /* volumes baixos nos cantos */
+ [[1,1],[1,-1],[-1,1],[-1,-1]].forEach(([a,b2])=>g.add(bx(T,6.6,4.4,6.6,br,a*7,y0+2.2,b2*7)));
+ /* tambor e cúpula central */
+ const dr=new T.Mesh(new T.CylinderGeometry(4.6,4.8,4.4,16),br);dr.position.y=y0+H+2.2;g.add(dr);
+ for(let k=0;k<16;k++){const a=k/16*Math.PI*2;const w=bx(T,.7,1.8,.1,gl,Math.sin(a)*4.72,y0+H+2.4,Math.cos(a)*4.72);w.rotation.y=a;g.add(w)}
+ const rg=new T.Mesh(new T.CylinderGeometry(5,5,.4,16),wh);rg.position.y=y0+H+4.5;g.add(rg);
+ const dm=new T.Mesh(new T.SphereGeometry(4.7,16,10,0,Math.PI*2,0,Math.PI/2),cp);dm.position.y=y0+H+4.7;dm.scale.y=1.15;g.add(dm);
+ for(let k=0;k<8;k++){const rb=new T.Mesh(new T.TorusGeometry(4.78,.14,4,14,Math.PI/2),wh);rb.position.y=y0+H+4.7;rb.scale.y=1.15;rb.rotation.y=k*Math.PI/4;g.add(rb)}
+ const ln=new T.Mesh(new T.CylinderGeometry(.9,1,2,10),wh);ln.position.y=y0+H+11.2;g.add(ln);const ld=new T.Mesh(new T.SphereGeometry(1,10,6,0,Math.PI*2,0,Math.PI/2),cp);ld.position.y=y0+H+12.2;g.add(ld);
+ const cr=cross3(T,.2);cr.position.y=y0+H+14.2;g.add(cr);
+ /* Torre Brasília, com relógio e mirante */
+ const tx=17,tz=-8;
+ g.add(bx(T,3.6,26,3.6,br,tx,y0+13,tz));for(let k=0;k<5;k++)g.add(bx(T,3.8,.25,3.8,wh,tx,y0+4+k*5,tz));
+ g.add(bx(T,4.2,4.6,4.2,wh,tx,y0+28.3,tz));
+ [[0,1],[1,0],[0,-1],[-1,0]].forEach(([sx,sz])=>{const op=bx(T,sx?.1:2.4,3,sz?.1:2.4,new T.MeshStandardMaterial({color:0x3a2f2a}),tx+sx*2.11,y0+28.3,tz+sz*2.11);g.add(op)});
+ [[0,1],[1,0]].forEach(([sx,sz])=>{const ck=new T.Mesh(new T.CircleGeometry(1.2,20),new T.MeshStandardMaterial({color:0xfff6e0}));ck.position.set(tx+sx*1.82,y0+23,tz+sz*1.82);ck.rotation.y=sx?Math.PI/2:0;g.add(ck);
+  const hd=bx(T,.12,.9,.05,new T.MeshStandardMaterial({color:0x222222}),0,0,0);hd.position.set(tx+sx*1.85,y0+23.3,tz+sz*1.85);hd.rotation.y=sx?Math.PI/2:0;g.add(hd)});
+ const tp=new T.Mesh(new T.ConeGeometry(3,4.2,4),cp);tp.position.set(tx,y0+32.7,tz);tp.rotation.y=Math.PI/4;g.add(tp);
+ const ct=cross3(T,.2);ct.position.set(tx,y0+35.8,tz);g.add(ct);
+ /* imagem de Nossa Senhora (manto azul e coroa) no nicho da fachada */
+ const nm=new T.Mesh(new T.ConeGeometry(.55,1.6,10),new T.MeshStandardMaterial({color:0x24468f,roughness:.6}));nm.position.set(0,y0+H+2.2,L/2+.4);const nh=new T.Mesh(new T.SphereGeometry(.22,8,6),new T.MeshStandardMaterial({color:0x5a3a28}));nh.position.set(0,y0+H+3.1,L/2+.4);const nc=new T.Mesh(new T.CylinderGeometry(.24,.18,.25,8),gold);nc.position.set(0,y0+H+3.35,L/2+.4);g.add(nm,nh,nc);
+ g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});g.scale.setScalar(.68);return g;
+}
+function ribbon(pts,width,y,uvScale){
+ const T=THREE,n=pts.length,P=new Float32Array(n*2*3),U=new Float32Array(n*2*2),idx=[];let acc=0;
+ for(let k=0;k<n;k++){const a=pts[Math.max(0,k-1)],b=pts[Math.min(n-1,k+1)];let dx=b[0]-a[0],dz=b[1]-a[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;const nx=-dz,nz=dx;
+  if(k>0)acc+=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);
+  const yy=Array.isArray(y)?y[k]:y;P.set([pts[k][0]+nx*width/2,yy,pts[k][1]+nz*width/2,pts[k][0]-nx*width/2,yy,pts[k][1]-nz*width/2],k*6);U.set([0,acc/uvScale,1,acc/uvScale],k*4);
+  if(k<n-1)idx.push(k*2,k*2+2,k*2+1,k*2+1,k*2+2,k*2+3)}
+ const g=new T.BufferGeometry();g.setAttribute("position",new T.BufferAttribute(P,3));g.setAttribute("uv",new T.BufferAttribute(U,2));g.setIndex(idx);g.computeVertexNormals();return g}
+function makePawn(T,p,i,world){
+ const prof=[[0,0],[1.05,0],[1.1,.18],[.95,.32],[.62,.5],[.5,1.1],[.42,1.75],[.62,1.95],[.66,2.08],[.4,2.2],[.68,2.55],[.75,2.9],[.6,3.25],[.3,3.42],[0,3.46]].map(([a,b])=>new T.Vector2(a,b));
+ const g=new T.Group();const mat=new T.MeshStandardMaterial({color:new T.Color(p.c),roughness:.3,metalness:.15});
+ const body=new T.Mesh(new T.LatheGeometry(prof,24),mat);body.castShadow=true;g.add(body);
+ if(p.kind==="robo"){const v=new T.Mesh(new T.BoxGeometry(.9,.32,.3),new T.MeshStandardMaterial({color:0x0b1733}));v.position.set(0,2.9,.55);const e1=new T.Mesh(new T.SphereGeometry(.09,8,6),new T.MeshBasicMaterial({color:0x99ffff}));e1.position.set(-.2,2.9,.72);const e2=e1.clone();e2.position.x=.2;g.add(v,e1,e2)}
+ g.scale.setScalar(1.05);world.add(g);
+ return {g,at:null,mat};
+}
+
+/* ---------- sincroniza com o estado do jogo ---------- */
+function slot(i){const n=S.players.length,p=S.players[i];const same=S.players.map((x,j)=>j).filter(j=>S.players[j].pos===p.pos);const k=same.indexOf(i),m=same.length;const tp=B3.tiles[p.pos];if(m<2)return [tp.x,tp.z];const a=k/m*Math.PI*2+.6;return [tp.x+Math.cos(a)*1.25,tp.z+Math.sin(a)*1.25]}
+function b3Sync(){
+ if(!B3.ready)return;
+ const sig=S.route+'|'+S.board.map(t=>t.t[0]+(t.i||'')).join('')+'|'+S.players.map(p=>p.c+p.kind).join(',');if(B3.sig!==sig){B3.sig=sig;b3Build(S.route)}
+ S.players.forEach((p,i)=>{const pw=B3.pawns[i];const [x,z]=slot(i);const tp=B3.tiles[p.pos];const y=tp.top+.15;
+  if(pw.at===null){pw.g.position.set(x,y,z);pw.at=p.pos;return}
+  if(pw.at!==p.pos||Math.hypot(pw.g.position.x-x,pw.g.position.z-z)>.05){const from=pw.g.position.clone();B3.hops=B3.hops.filter(h=>h.pw!==pw);B3.hops.push({pw,from,to:new THREE.Vector3(x,y,z),t0:performance.now(),dur:pw.at!==p.pos?250:180,arc:pw.at!==p.pos?2.2:.3});pw.at=p.pos}});
+ if(S.fresh&&JSON.stringify(S.fresh)!==B3.lastFresh){B3.lastFresh=JSON.stringify(S.fresh);const ti=S.board.findIndex(t=>t.t==="cidade"&&t.i===S.fresh.c);if(ti>=0){B3.tiles[ti].bounce=performance.now();burst(B3.tiles[ti],0xffd76a,40)}}
+ if(!S.fresh)B3.lastFresh=null;
+ if(S.rolling&&!B3.lastRolling)throwDie(S.die);B3.lastRolling=!!S.rolling;
+ if(UI.lastFollowCur!==S.cur){UI.lastFollowCur=S.cur;B3.follow=true}
+ if(S.over&&!B3.overDone){B3.overDone=true;B3.celebrate=performance.now()}
+ if(!S.over)B3.celebrate=0;
+}
+function burst(tile,color,n){const T=THREE,g=new T.BufferGeometry(),P=new Float32Array(n*3),V=[];for(let k=0;k<n;k++){P.set([tile.x,tile.top+.5,tile.z],k*3);const a=Math.random()*6.28,s=2+Math.random()*4;V.push([Math.cos(a)*s,5+Math.random()*6,Math.sin(a)*s])}
+ g.setAttribute("position",new T.BufferAttribute(P,3));const pts=new T.Points(g,new T.PointsMaterial({color,size:.55,transparent:true,depthWrite:false}));B3.world.add(pts);B3.fx.push({pts,V,t0:performance.now(),life:1300})}
+function throwDie(v){
+ const T=THREE;if(B3.die){B3.world.remove(B3.die.m)}
+ const mats=[3,4,1,6,2,5].map(n=>new T.MeshStandardMaterial({map:dieFaceTex(n),roughness:.4}));
+ const m=new T.Mesh(new T.BoxGeometry(1.8,1.8,1.8),mats);m.castShadow=true;
+ const p=S.players[S.cur],tp=B3.tiles[p.pos];const yaw=Math.random()*6.28;
+ const fin=new T.Quaternion();const ax={1:[1,0,0,0],6:[1,0,0,Math.PI],2:[1,0,0,-Math.PI/2],5:[1,0,0,Math.PI/2],3:[0,0,1,Math.PI/2],4:[0,0,1,-Math.PI/2]}[v]||[1,0,0,0];
+ fin.setFromAxisAngle(new T.Vector3(ax[0],ax[1],ax[2]),ax[3]);fin.premultiply(new T.Quaternion().setFromAxisAngle(new T.Vector3(0,1,0),yaw));
+ const start=new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6,Math.random()*6,Math.random()*6));
+ B3.world.add(m);B3.die={m,t0:performance.now(),from:new T.Vector3(tp.x-6,tp.top+9,tp.z+5),to:new T.Vector3(tp.x+2.5,tp.top+.9+.0,tp.z+3),fin,start,spin:new T.Vector3(7,9,5)};
+}
+
+/* ---------- laço de animação ---------- */
+const _v=()=>new THREE.Vector3();let _tmp=null;
+function b3Loop(){
+ if(!B3.ready||B3.raf)return;
+ const step=()=>{B3.raf=0;if(!B3.visible||!document.body.contains(B3.root))return;b3Frame();B3.raf=requestAnimationFrame(step)};
+ B3.raf=requestAnimationFrame(step);
+}
+function b3Frame(){
+ const T=THREE,now=performance.now(),c=B3.cam,reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+ if(!_tmp)_tmp=new T.Vector3();
+ /* saltos dos peões */
+ B3.hops=B3.hops.filter(h=>{const k=Math.min(1,(now-h.t0)/h.dur),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;h.pw.g.position.lerpVectors(h.from,h.to,e);h.pw.g.position.y+=Math.sin(Math.PI*k)*h.arc;h.pw.g.scale.set(1.05,1.05*(1+Math.sin(Math.PI*k)*.12),1.05);return k<1});
+ /* casa da vez e marcador */
+ const cur=S.players[S.cur];
+ if(cur&&B3.tiles[cur.pos]&&!S.over){const tp=B3.tiles[cur.pos],pw=B3.pawns[S.cur];B3.ring.visible=B3.marker.visible=true;B3.ring.position.set(tp.x,tp.y+.3,tp.z);const s=1+Math.sin(now/300)*.06;B3.ring.scale.set(s,s,s);B3.ring.material.color.set(cur.c);
+  B3.marker.position.set(pw.g.position.x,pw.g.position.y+4.6+(reduce?0:Math.sin(now/260)*.35),pw.g.position.z);B3.marker.rotation.y=now/500}
+ else{B3.ring.visible=B3.marker.visible=false}
+ B3.tiles.forEach((t,i)=>{const m=t.mesh;let sy=t.city?1.6:1;if(t.bounce){const k=(now-t.bounce)/900;if(k<1)sy*=1+Math.sin(k*Math.PI*3)*(1-k)*.8;else t.bounce=0}m.scale.y=sy;
+  const hl=cur&&i===cur.pos&&!S.over;m.material[0].emissive.setRGB(hl?.25+.12*Math.sin(now/250):0,hl?.2+.1*Math.sin(now/250):0,hl?.05:0)});
+ /* dado 3D */
+ if(B3.die){const d=B3.die,k=(now-d.t0)/750;if(k<1){d.m.position.lerpVectors(d.from,d.to,k);d.m.position.y+=Math.sin(k*Math.PI)*4*(1-k);const q=d.start.clone().slerp(d.fin,Math.pow(k,.6));d.m.quaternion.copy(q);d.m.rotateX((1-k)*d.spin.x*(1-k));d.m.rotateY((1-k)*d.spin.y*(1-k))}
+  else{d.m.position.copy(d.to);d.m.quaternion.copy(d.fin);if(k>3.2){d.m.material.forEach(mm=>{mm.transparent=true;mm.opacity=Math.max(0,1-(k-3.2)*2)});if(k>3.7){B3.world.remove(d.m);B3.die=null}}}}
+ /* partículas */
+ B3.fx=B3.fx.filter(f=>{const k=(now-f.t0)/f.life,dt=1/60;const P=f.pts.geometry.attributes.position;for(let j=0;j<f.V.length;j++){f.V[j][1]-=14*dt;P.setXYZ(j,P.getX(j)+f.V[j][0]*dt,P.getY(j)+f.V[j][1]*dt,P.getZ(j)+f.V[j][2]*dt)}P.needsUpdate=true;f.pts.material.opacity=1-k;if(k>=1){B3.world.remove(f.pts);f.pts.geometry.dispose();return false}return true});
+ /* cenário vivo */
+ if(!reduce){B3.clouds.forEach((g,k)=>{g.position.x+=.012*(1+k%3*.4);if(g.position.x>80)g.position.x=-80});if(B3.water)B3.water.offset.x=(now/9000)%1}
+ if(B3.rays&&!reduce){B3.rays.rotation.y=now/9000;B3.rays.children.forEach((r,k)=>{r.material.opacity=.055+.03*Math.sin(now/1400+k)});const P=B3.sparks.geometry.attributes.position;for(let k=0;k<P.count;k++){let y=P.getY(k)+.02;if(y>B3.SUM+26)y=B3.SUM;P.setY(k,y)}P.needsUpdate=true;B3.halo.material.opacity=.85+.15*Math.sin(now/2000)}
+ /* câmera */
+ if(B3.celebrate){const k=(now-B3.celebrate)/1000;c.gtx=B3.dest.x-6;c.gty=B3.dest.y;c.gtz=B3.dest.z+5;c.gdist=52;c.gpitch=.5;c.gyaw=-.25+Math.sin(k*.25)*.35;if(k<6&&Math.random()<.08)burst({x:B3.dest.x+(Math.random()-.5)*8,z:B3.dest.z+(Math.random()-.5)*6,top:B3.dest.y+6+Math.random()*8},[0xffd76a,0xa92332,0xffffff,0x5aa0ff][Math.floor(Math.random()*4)],60)}
+ else if(B3.follow&&cur){const ref=S.moving>=0?B3.pawns[S.moving]:B3.pawns[S.cur];if(ref){c.gtx=ref.g.position.x;c.gty=ref.g.position.y;c.gtz=ref.g.position.z+2}}
+ if(B3.intro){const k=Math.min(1,(now-B3.t0)/2600);B3.intro=k<1?1:0;if(k<1){c.gdist=Math.max(c.gdist,0)}}
+ const lf=B3.intro?.035:.08;c.yaw+=(c.gyaw-c.yaw)*lf;c.ty+=(c.gty-c.ty)*lf;c.pitch+=(c.gpitch-c.pitch)*lf;c.dist+=(c.gdist-c.dist)*lf;c.tx+=(c.gtx-c.tx)*lf;c.tz+=(c.gtz-c.tz)*lf;
+ const sway=reduce?0:Math.sin(now/4000)*.02;
+ const cx=c.tx+Math.sin(c.yaw+sway)*Math.cos(c.pitch)*c.dist,cy=c.ty+Math.sin(c.pitch)*c.dist,cz=c.tz+Math.cos(c.yaw+sway)*Math.cos(c.pitch)*c.dist;
+ B3.camera.position.set(cx,cy,cz);B3.camera.lookAt(c.tx,c.ty,c.tz);
+ B3.sun.position.set(c.tx+30,c.ty+60,c.tz+25);B3.sun.target.position.set(c.tx,c.ty,c.tz);
+ /* rótulos HTML */
+ const r=B3.root.getBoundingClientRect(),W2=r.width,H2=r.height;
+ B3.labelEls.forEach(L2=>{_tmp.copy(L2.v).project(B3.camera);const vis=_tmp.z<1&&_tmp.x>-1.2&&_tmp.x<1.2&&_tmp.y>-1.2&&_tmp.y<1.2;L2.el.style.display=vis?"":"none";if(vis){L2.el.style.transform=`translate(${((_tmp.x+1)/2*W2).toFixed(1)}px,${((1-_tmp.y)/2*H2).toFixed(1)}px) translate(-50%,-50%)`;const d=B3.camera.position.distanceTo(L2.v);L2.el.style.fontSize=Math.max(10,Math.min(16,560/d))+"px"}});
+ B3.renderer.render(B3.scene,B3.camera);
+}
+function b3Mount(container){
+ if(!B3.ready)b3Init();
+ container.appendChild(B3.root);b3Resize();b3Sync();b3Loop();
+}
+function b3Zoom(f){B3.cam.gdist=Math.max(18,Math.min(150,B3.cam.gdist*f))}
+function b3Center(){B3.follow=true;B3.cam.gdist=Math.min(B3.cam.gdist,50);B3.cam.gpitch=.72;B3.cam.gyaw=0}
+function b3Overview(){B3.follow=false;const a=B3.camera.aspect||1.6;B3.cam.gtx=2;B3.cam.gty=(B3.SUM||20)*.42;B3.cam.gtz=-2;B3.cam.gdist=Math.min(150,Math.max(108,112*1.6/a));B3.cam.gpitch=.5;B3.cam.gyaw=.18}
+
 /* ===== Rumo ao Céu — motor (máquina de estados) + local, robô e online ===== */
 const KEY="rumo-ao-ceu:partida", KEY_SOM="rumo-ao-ceu:som", KEY_ID="rumo-ao-ceu:id", KEY_NOME="rumo-ao-ceu:nome";
 const PALETA=["#2d5bd1","#d23a3a","#27a04f","#e0a41c","#8e44c9","#e0682a"];
@@ -775,6 +1475,7 @@ const CURTO={"Saint-Jean-Pied-de-Port":"St-Jean","Roncesvalles":"Roncesv.","Cruz
 const BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt"];
 const MQTT_LIB="https://cdn.jsdelivr.net/npm/mqtt@5.10.3/dist/mqtt.min.js";
 const L=36;
+const SHARE_KINDS={reflexao:{t:"Sua partilha",ph:"Escreva o que você quer partilhar com o grupo…"},acao:{t:"Seu compromisso",ph:"Qual será a sua boa ação? Ex.: ligar para minha avó"},oracao:{t:"Sua intenção",ph:"Por quem ou pelo que vocês vão rezar? (opcional)"}};
 SVG.robot='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="7" width="16" height="12" rx="3"/><circle cx="9" cy="13" r="1.8" fill="#0b1733"/><circle cx="15" cy="13" r="1.8" fill="#0b1733"/><rect x="11" y="2.5" width="2" height="4.5"/><circle cx="12" cy="2.5" r="1.6"/><rect x="1.5" y="11" width="2" height="5" rx="1"/><rect x="20.5" y="11" width="2" height="5" rx="1"/></svg>';
 SVG.wifi='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2.5 9a14 14 0 0 1 19 0M5.5 12.5a9.5 9.5 0 0 1 13 0M8.7 16a5 5 0 0 1 6.6 0"/><circle cx="12" cy="19.3" r="1.3" fill="currentColor"/></svg>';
 SVG.phone='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>';
@@ -785,7 +1486,7 @@ const rid=n=>Array.from({length:n},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.f
 
 /* estado do jogo (compartilhado online) e estado da interface (só deste aparelho) */
 let S={stage:"setup",route:"santiago",players:[]};
-const UI={screen:"setup",mode:"local",tab:"local",myId:lsGet(KEY_ID)||rid(10),code:"",conn:"off",overSeen:false,lastEv:0,joinT:null,
+const UI={nivel:lsGet("rumo-ao-ceu:nivel")||"medio",screen:"setup",mode:"local",tab:"local",myId:lsGet(KEY_ID)||rid(10),code:"",conn:"off",overSeen:false,lastEv:0,joinT:null,
  local:[{n:"Jogador 1",c:PALETA[0],kind:"humano"},{n:"Robô Tiago",c:PALETA[1],kind:"robo",nivel:"medio"}],
  nome:lsGet(KEY_NOME)||"",joinCode:"",err:""};
 lsSet(KEY_ID,UI.myId);
@@ -848,8 +1549,8 @@ function newGame(players){
  const r=ROUTES[S.route];
  S.stage="game";
  S.players=players.map((p,i)=>({id:p.id,kind:p.kind,nivel:p.nivel,n:(p.n||"").trim()||(p.kind==="robo"?ROBOS[i]:"Jogador "+(i+1)),c:p.c,pos:0,skip:false,gracas:0,stamps:[0]}));
- S.board=buildBoard(S.route);S.deck=shuffle(GERAIS.concat(r.perguntas,r.perguntas));
- S.cur=0;S.die=0;S.q=null;S.card=null;S.over=false;S.winner=-1;S.moving=-1;S.fresh=null;S.rolling=false;
+ S.board=buildBoard(S.route);S.nivel=S.nivel||UI.nivel||"misto";S.deck=buildDeck(S.route,S.nivel);
+ S.cur=0;S.die=0;S.q=null;S.card=null;S.shares=[];S.lastShare=null;S.over=false;S.winner=-1;S.moving=-1;S.fresh=null;S.rolling=false;
  S.log=[`A peregrinação começa em ${r.cidades[0][0]}.`];
  UI.overSeen=false;
  beginTurn(true);
@@ -870,17 +1571,17 @@ function engine(a,v){
  if(S.stage!=="game"||S.over)return;
  const p=S.players[S.cur];
  if(a==="draw"&&(S.phase==="turn"||S.phase==="handoff")){
-  if(!S.deck.length)S.deck=shuffle(GERAIS.concat(ROUTES[S.route].perguntas));
+  if(!S.deck.length)S.deck=buildDeck(S.route,S.nivel);
   S.q={q:S.deck.pop(),order:shuffle([0,1,2,3]),done:false};S.phase="question";commit();
  } else if(a==="answer"&&S.phase==="question"){
   const q=S.q;q.done=true;q.pick=v;q.ok=v===q.q[2];if(q.ok)p.acertos=(p.acertos||0)+1;S.phase="answered";ev(q.ok?"ok":"no");commit();
  } else if(a==="go"&&S.phase==="answered"){
   const q=S.q;S.q=null;
   if(q.ok){const d=1+Math.floor(Math.random()*6);S.die=d;S.rolling=true;S.phase="moving";S.log.push(`${p.n} acertou e tirou ${d}.`);ev("roll");commit();setTimeout(()=>{S.rolling=false;move(S.cur,d,land)},650)}
-  else{S.die=1;S.phase="moving";S.log.push(`${p.n} errou e deu um passo de fé.`);commit();move(S.cur,1,land)}
+  else{S.die=0;S.log.push(`${p.n} errou e ficou na casa ${p.pos}.`);endTurn()}
  } else if(a==="ack"){
   if(S.phase==="city"){S.log.push(`${p.n} chegou a ${S.board[p.pos].nome}.`);endTurn()}
-  else if(S.phase==="card"){const k=S.card.k;S.card=null;applyEffect(S.cur,k)}
+  else if(S.phase==="card"){const k=S.card.k;const txt=typeof v==="string"?v.replace(/\s+/g," ").trim().slice(0,240):"";if(txt&&SHARE_KINDS[k]){S.shares=S.shares||[];const sh={id:S.shares.length+1,n:p.n,c:p.c,k,q:S.card.txt,t:txt};S.shares.push(sh);S.lastShare=sh;S.log.push(`${p.n} partilhou: “${txt}”`)}S.card=null;applyEffect(S.cur,k)}
   else if(S.phase==="rest"){p.skip=false;S.log.push(`${p.n} descansou no albergue.`);endTurn()}
   else if(S.phase==="handoff"){engine("draw")}
  }
@@ -950,7 +1651,7 @@ function view(){const v=Object.assign({},S);delete v.deck;return v}
 async function hostRoom(code,resumeS){
  UI.mode="host";UI.code=code||rid(4);UI.screen=resumeS?"game":"lobby";
  if(resumeS)S=resumeS;
- else{const nome=(UI.nome||"").trim()||"Anfitrião";S={stage:"lobby",route:S.route||"santiago",code:UI.code,players:[{id:UI.myId,kind:"online",n:nome,c:PALETA[0]}]}}
+ else{const nome=(UI.nome||"").trim()||"Anfitrião";S={stage:"lobby",route:S.route||"santiago",nivel:UI.nivel,code:UI.code,players:[{id:UI.myId,kind:"online",n:nome,c:PALETA[0]}]}}
  S.code=UI.code;
  history.replaceState(null,"",location.pathname+"?sala="+UI.code);
  render();
@@ -1022,8 +1723,13 @@ function render(){
  syncStateModal();
  if(UI.lastScreen!==UI.screen){UI.lastScreen=UI.screen;window.scrollTo(0,0)}
  playEv();
+ showShare();
  if(keepInfo&&!document.body.contains(keepInfo))document.body.appendChild(keepInfo);
 }
+function showShare(){if(UI.screen!=="game")return;const sh=S.lastShare,last=sh?sh.id:0;if(UI.shareSeen==null||last<UI.shareSeen){UI.shareSeen=last;return}if(!sh||last===UI.shareSeen)return;UI.shareSeen=last;
+ const old=document.getElementById("sbub");if(old)old.remove();const k=SHARE_KINDS[sh.k],c=CASAS[sh.k];
+ const b=el(`<div class="sbubble" id="sbub" role="status" style="--pc:${sh.c}"><div class="sbh">${badge(c.ic,COR[sh.k])}<span><b>${esc(sh.n)}</b> · ${k.t.replace("Sua ","").replace("Seu ","")}</span><button aria-label="Fechar">×</button></div><p>“${esc(sh.t)}”</p></div>`);
+ b.querySelector("button").onclick=()=>b.remove();document.body.appendChild(b);clearTimeout(UI.sbT);UI.sbT=setTimeout(()=>{b.classList.add("out");setTimeout(()=>b.remove(),500)},9000)}
 function playEv(){if(S.ev&&S.ev.n>UI.lastEv){UI.lastEv=S.ev.n;(SONS[S.ev.k]||(()=>{}))()}}
 
 function legendHTML(){
@@ -1039,16 +1745,22 @@ function routeCards(onPick,disabled){
  return wrap;
 }
 function howBox(){return el(`<div class="frame box"><div class="ttl">Como se joga</div><div class="in how">
-  <div class="li">${badge("book","var(--city)")}<span><b>Responda a pergunta</b><small>Acertou, joga o dado. Errou, dá um passo de fé (1 casa).</small></span></div>
+  <div class="li">${badge("book","var(--city)")}<span><b>Responda a pergunta</b><small>Acertou, joga o dado. Errou, fica onde está e passa a vez.</small></span></div>
   <div class="li">${badge("pin","var(--city)")}<span><b>Cidades</b><small>Carimbam a credencial e contam uma história do caminho.</small></span></div>
   <div class="how2">${Object.entries(CASAS).map(([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`).join("")}</div>
   <p class="hint">Jogue no mesmo aparelho, contra robôs ou online com quem estiver longe. Toque em qualquer casa do tabuleiro para ver o que ela faz.</p>
  </div></div>`)}
 
+function nivelPicker(cur,onPick,disabled){
+ const w=el(`<div class="nivelpick" role="radiogroup" aria-label="Nível das perguntas"></div>`);
+ Object.entries(NIVEL_Q).forEach(([k,v])=>{const n=GERAIS.concat(ROUTES[S.route].perguntas).filter(q=>v.lv.includes(q[5])).length;
+  const b=el(`<button role="radio" aria-checked="${cur===k}" ${disabled?"disabled":""}><b>${v.nome}</b><small>${v.sub}</small><span class="nq">${n} perguntas</span></button>`);b.onclick=()=>onPick(k);w.appendChild(b)});
+ return w}
 /* ---------- tela inicial ---------- */
 function renderSetup(app){
  const sv=loadSave();
- app.appendChild(el(`<div><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a></div>`));
+ app.appendChild(el(`<div class="setbar"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a>${fsCan()?`<button class="obtn" id="fs">${fsOn()?"Sair da tela cheia":"⛶ Jogar em tela cheia"}</button>`:""}</div>`));
+ {const f=app.querySelector("#fs");if(f)f.onclick=fsToggle}
  app.appendChild(el(`<header class="hero"><img class="logo" src="${LOGO}" alt="Rumo ao Céu, o jogo da peregrinação" width="200" height="200"><div class="txt"><h1>Responda, caminhe e reze até o santuário</h1><p>Um tabuleiro de peregrinação para jogar em família, na catequese, contra robôs ou online com amigos.</p></div></header>`));
  if(sv){
   const rv=ROUTES[sv.S.route],lead=sv.S.players.slice().sort((a,b)=>b.pos-a.pos)[0];
@@ -1092,6 +1804,7 @@ function setupLocal(inn,sv){
   if(!UI.local.some(p=>p.kind==="humano")){UI.err="Inclua pelo menos uma pessoa.";return render()}
   const go=()=>{lsSet(KEY,null);UI.mode="local";UI.screen="game";newGame(UI.local)};
   if(sv)confirmBox("Começar outra peregrinação?","A partida em andamento será descartada.","Começar nova",go);else go()};
+ inn.appendChild(el(`<p class="sub"><span class="step">3</span>Nível das perguntas</p>`));inn.appendChild(nivelPicker(UI.nivel,k=>{UI.nivel=k;lsSet("rumo-ao-ceu:nivel",k);render()}));
  inn.appendChild(el(`<p class="hint">Toque no círculo para trocar a cor. Robôs respondem sozinhos: no Fácil acertam metade, no Difícil quase todas.</p>`));
  if(UI.err)inn.appendChild(el(`<p class="errmsg">${esc(UI.err)}</p>`));
  inn.appendChild(rb);
@@ -1116,10 +1829,16 @@ function setupOnline(inn){
 }
 
 /* ---------- sala de espera ---------- */
+function fsOn(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
+function fsCan(){const d=document.documentElement;return !!(d.requestFullscreen||d.webkitRequestFullscreen)&&(document.fullscreenEnabled!==false)}
+function fsToggle(){const d=document.documentElement;try{if(fsOn()){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}else{const r=(d.requestFullscreen||d.webkitRequestFullscreen).call(d,{navigationUI:"hide"});if(r&&r.catch)r.catch(()=>fsFail())}}catch(e){fsFail()}}
+function fsFail(){infoModal(`<div class="evtop" style="--ec:var(--royal)"><span class="evk">Tela cheia</span></div><div class="in"><p class="muted">Este navegador não deixou abrir em tela cheia. No iPhone, toque em Compartilhar e depois em “Adicionar à Tela de Início”: o jogo abre sem as barras do navegador.</p><div class="actions"><button class="gbtn sm" data-close>Entendi</button></div></div>`)}
+function fsBtn(){if(!fsCan())return "";return `<button class="ibtn" id="fs" aria-label="${fsOn()?"Sair da tela cheia":"Jogar em tela cheia"}" title="${fsOn()?"Sair da tela cheia":"Tela cheia"}">${fsOn()?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'}</button>`}
+document.addEventListener("fullscreenchange",()=>{document.documentElement.classList.toggle("isfs",fsOn());render()});document.addEventListener("webkitfullscreenchange",()=>{document.documentElement.classList.toggle("isfs",fsOn());render()});
 function renderLobby(app){
  const isHost=UI.mode==="host";
- app.appendChild(el(`<div class="gtop"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><img class="logo" src="${LOGO}" alt="Rumo ao Céu" width="58" height="58"><span class="sp"></span><span class="conn ${UI.conn}" id="conn" title="${connTxt()}"><i></i><span>${connTxt()}</span></span><button class="obtn" id="sair">Sair da sala</button></div>`));
- app.querySelector("#sair").onclick=()=>leaveRoom();
+ app.appendChild(el(`<div class="gtop"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><img class="logo" src="${LOGO}" alt="Rumo ao Céu" width="58" height="58"><span class="sp"></span><span class="conn ${UI.conn}" id="conn" title="${connTxt()}"><i></i><span>${connTxt()}</span></span>${fsCan()?fsBtn():""}<button class="obtn" id="sair">Sair da sala</button></div>`));
+ app.querySelector("#sair").onclick=()=>leaveRoom();{const f=app.querySelector("#fs");if(f)f.onclick=fsToggle}
  const s=el(`<section class="setup"></section>`);
  const left=el(`<div class="frame box"><div class="ttl">Sala ${esc(UI.code)}</div><div class="in"></div></div>`);
  const inn=left.querySelector(".in");
@@ -1131,6 +1850,7 @@ function renderLobby(app){
   inn.querySelector("#copiar").onclick=e=>{const inp=inn.querySelector("#link");const done=()=>{e.target.textContent="Copiado!";setTimeout(()=>{e.target.textContent="Copiar link"},1600)};try{navigator.clipboard.writeText(inp.value).then(done,()=>{inp.select();done()})}catch(err){inp.select();done()}};
   inn.appendChild(el(`<p class="sub">Rota</p>`));
   inn.appendChild(routeCards(k=>{if(!isHost)return;S.route=k;commit()},!isHost));
+  inn.appendChild(el(`<p class="sub">Nível das perguntas</p>`));inn.appendChild(nivelPicker(S.nivel||"medio",k=>{if(!isHost)return;S.nivel=k;UI.nivel=k;lsSet("rumo-ao-ceu:nivel",k);commit()},!isHost));
   inn.appendChild(el(`<p class="sub">Peregrinos (${S.players.length}/4)</p>`));
   const list=el(`<div class="plist"></div>`);
   S.players.forEach((p,i)=>{
@@ -1164,19 +1884,27 @@ function sealSVG(ci,on,color,big){
   <text class="s-t"><textPath href="#${id}" startOffset="50%" text-anchor="middle">${esc(name.length>20?(CURTO[name]||name):name)} · ${ci+1}</textPath></text>
   <g transform="translate(36,34) scale(1.15)" class="s-ic">${ic.replace('<svg viewBox="0 0 24 24"','<svg width="24" height="24" viewBox="0 0 24 24"')}</g></svg>`}
 
+const KEY_VIEW="rumo-ao-ceu:vista";
+function want3d(){
+ if(UI.view==null)UI.view=lsGet(KEY_VIEW)||(webglOK()?"3d":"2d");
+ if(UI.view!=="3d"||!webglOK())return false;
+ if(window.THREE)return true;
+ if(!UI.loading3d){UI.loading3d=true;loadThree().then(()=>{UI.loading3d=false;render()}).catch(()=>{UI.loading3d=false;UI.view="2d";render()})}
+ return false;
+}
 function renderGame(app){
  const r=ROUTES[S.route],p=S.players[S.cur],online=UI.mode!=="local",mine=canAct();
  if(UI.zoom==null)UI.zoom=defaultZoom();
  const prevScroll=document.getElementById("bscroll");const keepScroll=prevScroll?[prevScroll.scrollLeft,prevScroll.scrollTop]:null;
  /* topo */
  const top=el(`<header class="gtop"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><img class="logo" src="${LOGO}" alt="Rumo ao Céu" width="64" height="64">
-  <span class="rtag"><span class="rti">${SVG[r.ic]}</span><span><small>Rota</small>${r.nome}</span></span><span class="sp"></span>
+  <span class="rtag"><span class="rti">${SVG[r.ic]}</span><span><small>Rota · nível ${(NIVEL_Q[S.nivel]||NIVEL_Q.misto).nome}</small>${r.nome}</span></span><span class="sp"></span>
   <span class="tools">${online?`<span class="conn ${UI.conn}" id="conn" title="${connTxt()}"><i></i><span>${connTxt()}</span></span>`:""}
-  <button class="ibtn" id="help" aria-label="Como jogar" title="Como jogar">?</button>
+  ${fsBtn()}<button class="ibtn" id="help" aria-label="Como jogar" title="Como jogar">?</button>
   <button class="ibtn" id="som" aria-label="${SOM?"Desligar som":"Ligar som"}" title="${SOM?"Som ligado":"Som desligado"}">${SOM?'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none"/></svg>':'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2"/></svg>'}</button>
   ${UI.mode==="guest"?'<button class="obtn" id="sair">Sair</button>':'<button class="obtn" id="novo">Nova partida</button>'}</span></header>`);
  app.appendChild(top);
- top.querySelector("#help").onclick=helpModal;
+ top.querySelector("#help").onclick=helpModal;{const f=top.querySelector("#fs");if(f)f.onclick=fsToggle}
  top.querySelector("#som").onclick=()=>{SOM=!SOM;lsSet(KEY_SOM,SOM?"1":"0");if(SOM)SONS.ok();render()};
  const nv=top.querySelector("#novo");if(nv)nv.onclick=()=>confirmBox(online?"Encerrar esta partida?":"Recomeçar a peregrinação?",online?"Todos voltam para a sala de espera.":"O progresso desta partida será perdido.",online?"Encerrar":"Recomeçar",()=>{clearTimeout(botT);lsSet(KEY,null);if(online){S.stage="lobby";S.over=false;UI.screen="lobby";S.players=S.players.map(x=>({id:x.id,kind:x.kind,nivel:x.nivel,n:x.n,c:x.c}));commit()}else{UI.screen="setup";S={stage:"setup",route:S.route,players:[]};render()}});
  const sa=top.querySelector("#sair");if(sa)sa.onclick=()=>confirmBox("Sair da partida?","Você pode voltar pelo mesmo link enquanto a partida durar.","Sair",()=>leaveRoom());
@@ -1194,10 +1922,13 @@ function renderGame(app){
 
  /* tabuleiro */
  const cb=g.querySelector(".c-board");
- const bw=el(`<div class="bwrap ${UI.zoom<=1?"fitw":""}"><div class="bscroll" id="bscroll"><div class="bstage ${UI.zoom<=1?"fit":""}" id="bstage" style="${UI.zoom>1?"width:"+(UI.zoom*100).toFixed(0)+"%":""}">${scene(S.route)}<div class="tiles"></div><div class="pawns"></div>
+ const use3d=want3d();let bw;
+ if(use3d){bw=el(`<div class="bwrap b3wrap"><div class="b3box" id="b3box"></div><div class="zoom"><button id="zout" aria-label="Afastar">−</button><button id="zin" aria-label="Aproximar">+</button><button id="zme" aria-label="Seguir o jogador da vez" title="Seguir o jogador da vez">◎</button><button id="zall" aria-label="Ver o tabuleiro inteiro" title="Ver o tabuleiro inteiro">⤢</button><button id="vbtn" class="vtog" aria-label="Trocar para 2D" title="Trocar para 2D">2D</button></div><span class="b3hint">Arraste para girar · role ou pince para aproximar · toque numa casa</span></div>`)}
+ else{
+ bw=el(`<div class="bwrap ${UI.zoom<=1?"fitw":""}"><div class="bscroll" id="bscroll"><div class="bstage ${UI.zoom<=1?"fit":""}" id="bstage" style="${UI.zoom>1?"width:"+(UI.zoom*100).toFixed(0)+"%":""}">${scene(S.route)}<div class="tiles"></div><div class="pawns"></div>
   <span class="flag start" style="left:${(TILE_POS[0].x/10+5).toFixed(2)}%;top:${(TILE_POS[0].y/6.4-13).toFixed(2)}%">Início</span>
   <span class="flag end" style="left:${(TILE_POS[35].x/10-6).toFixed(2)}%;top:${(TILE_POS[35].y/6.4-11).toFixed(2)}%">Chegada</span></div></div>
-  <div class="zoom"><button id="zout" aria-label="Afastar" ${UI.zoom<=1?"disabled":""}>−</button><button id="zin" aria-label="Aproximar" ${UI.zoom>=3?"disabled":""}>+</button><button id="zme" aria-label="Centralizar no jogador da vez" title="Centralizar">◎</button></div></div>`);
+  <div class="zoom"><button id="zout" aria-label="Afastar" ${UI.zoom<=1?"disabled":""}>−</button><button id="zin" aria-label="Aproximar" ${UI.zoom>=3?"disabled":""}>+</button><button id="zme" aria-label="Centralizar no jogador da vez" title="Centralizar">◎</button>${webglOK()?`<button id="vbtn" class="vtog" aria-label="Trocar para 3D" title="Trocar para 3D">${UI.loading3d&&UI.view==="3d"?"…":"3D"}</button>`:""}</div></div>`);
  const tiles=bw.querySelector(".tiles"),curPos=S.over?-1:p.pos;
  S.board.forEach((t,i)=>{
   const pos=TILE_POS[i],c=CASAS[t.t],isEnd=i===L-1;
@@ -1221,11 +1952,12 @@ function renderGame(app){
   UI.pawnAt[i]=x.pos;
  });
  if(moves.length)requestAnimationFrame(()=>requestAnimationFrame(()=>moves.forEach(([d,tx,ty])=>{d.style.left=tx.toFixed(2)+"%";d.style.top=ty.toFixed(2)+"%"})));
+ }
  cb.appendChild(bw);
  cb.appendChild(el(`<div class="status"><span class="spill">${SVG.pin}<span>Casa <b>${p.pos}</b> de ${L-1}</span></span><span class="spill">${badge("pin","var(--royal)").replace('class="badge"','class="badge xs"')}<span>Cidade atual: <b>${esc(lastCity(p))}</b></span></span><span class="spill turn" style="--pc:${p.c}"><i></i><span>${S.over?"Fim da peregrinação":"Vez de <b>"+esc(p.n)+"</b>"}</span></span></div>`));
 
  /* painel direito */
- const lg=g.querySelector(".c-leg"),nq=GERAIS.length+ROUTES[S.route].perguntas.length;
+ const lg=g.querySelector(".c-leg"),nq=GERAIS.concat(ROUTES[S.route].perguntas).filter(q=>(NIVEL_Q[S.nivel]||NIVEL_Q.misto).lv.includes(q[5])).length;
  lg.appendChild(el(`<div class="parch"><h3>A Jornada</h3><ul><li>${badge("pin","var(--ruby)")}<span><b>36 casas</b> de peregrinação</span></li><li>${badge("cross","var(--royal)")}<span><b>11 cidades reais</b> com curiosidades</span></li><li>${badge("book","#7a4a1f")}<span><b>${nq} perguntas</b> de Bíblia, santos, liturgia e da rota</span></li></ul></div>`));
  const grid=(title,cls,keys)=>{const box=el(`<div class="evbox ${cls}"><h3>${title}</h3><div class="evgrid"></div></div>`);keys.forEach(k=>{const c=CASAS[k];const b=el(`<button class="ev" aria-label="${c.nome}: ${c.efeito}">${badge(c.ic,COR[k])}<b>${c.nome.replace(" em grupo","")}</b><small>${c.efeito}</small></button>`);b.onclick=()=>casaInfo(k);box.querySelector(".evgrid").appendChild(b)});return box};
  lg.appendChild(grid("Casas de sugestão","sug",["oracao","acao","reflexao","companheiro"]));
@@ -1245,7 +1977,7 @@ function renderGame(app){
  else{expanded=true;
   head=`<span class="qk">${q.q[4]?`<span class="cat">${esc(q.q[4])}</span>`:""}Pergunta para ${tag}</span><p class="qtext">${esc(q.q[0])}</p>`;
   body=`<div class="opts">${q.order.map((oi,j)=>{let c="";if(q.done){if(oi===q.q[2])c="right";else if(oi===q.pick)c="wrong"}return `<button class="opt ${c}" data-i="${oi}" ${q.done||!mine?"disabled":""}><span class="k">${"ABCD"[j]}</span><span class="tx">${esc(q.q[1][oi])}</span>${c==="right"?'<span class="ck">✓</span>':c==="wrong"?'<span class="ck">✗</span>':""}</button>`}).join("")}</div>${q.done?`<div class="verdict ${q.ok?"ok":"no"}"><b>${q.ok?"Isso mesmo!":"Não foi dessa vez."}</b> ${esc(q.q[3])}</div>`:""}`;
-  btn=mine?(q.done?`<button class="gbtn ${q.ok?"pulse":""}" id="act">${q.ok?"Jogar<br>o dado":"Passo<br>de fé"} <span class="tri"></span></button>`:`<button class="gbtn" disabled>Escolha a<br>resposta</button>`):wait(isBot?(q.done?"Robô seguindo…":"Robô pensando…"):(q.done?"Aguardando "+who:who+" está respondendo"))}
+  btn=mine?(q.done?`<button class="gbtn ${q.ok?"pulse":""}" id="act">${q.ok?"Jogar<br>o dado":"Passar<br>a vez"} <span class="tri"></span></button>`:`<button class="gbtn" disabled>Escolha a<br>resposta</button>`):wait(isBot?(q.done?"Robô seguindo…":"Robô pensando…"):(q.done?"Aguardando "+who:who+" está respondendo"))}
  bar.appendChild(el(`<div class="qcard ${expanded?"open":""}"><div class="scroll"><span class="sic">${SVG.cross}</span><div class="qhead">${head}</div></div>${body}</div>`));
  bar.appendChild(el(`<div class="dicebox"><div class="diewrap">${dieHTML(S.die,S.rolling)}</div>${btn}</div>`));
  if(expanded&&isMobile())bar.classList.add(mine?"open":"peek");
@@ -1255,7 +1987,13 @@ function renderGame(app){
  const ab=document.getElementById("act");if(ab)ab.onclick=()=>act(S.phase==="turn"?"draw":"go");
  const ag=document.getElementById("again");if(ag)ag.onclick=againAfterEnd;
  const vc=document.getElementById("vercel");if(vc)vc.onclick=()=>{UI.overSeen=false;syncStateModal()};
- /* zoom e centralização */
+ /* zoom, câmera e troca 2D/3D */
+ const vb=bw.querySelector("#vbtn");if(vb)vb.onclick=()=>{UI.view=UI.view==="3d"?"2d":"3d";lsSet(KEY_VIEW,UI.view);render()};
+ if(use3d){
+  bw.querySelector("#zin").onclick=()=>b3Zoom(.8);bw.querySelector("#zout").onclick=()=>b3Zoom(1.25);
+  bw.querySelector("#zme").onclick=b3Center;bw.querySelector("#zall").onclick=b3Overview;
+  b3Mount(document.getElementById("b3box"));
+ } else {
  const sc=document.getElementById("bscroll");
  const setZ=z=>{UI.zoom=Math.max(1,Math.min(3,z));UI.followCur=true;render()};
  bw.querySelector("#zin").onclick=()=>setZ(UI.zoom+.5);
@@ -1263,6 +2001,7 @@ function renderGame(app){
  bw.querySelector("#zme").onclick=()=>centerOn(S.players[S.cur].pos,true);
  if(keepScroll&&!UI.followCur){sc.scrollLeft=keepScroll[0];sc.scrollTop=keepScroll[1]}
  requestAnimationFrame(()=>{const tgt=S.moving>=0?S.players[S.moving].pos:S.players[S.cur].pos;if(UI.followCur||UI.lastCenterCur!==S.cur||S.moving>=0){centerOn(tgt,!UI.followCur&&!!keepScroll);UI.followCur=false;UI.lastCenterCur=S.cur}});
+ }
  /* faixa de troca de vez */
  if(UI.bannerFor!==S.cur+"|"+(S.log.length>1?S.log.length:0)&&S.phase==="turn"&&!S.over&&S.players.length>1){UI.bannerFor=S.cur+"|"+S.log.length;turnBanner(p)}
  if(expanded&&!isMobile()&&UI.qSeen!==q.q[0]){UI.qSeen=q.q[0];requestAnimationFrame(()=>bar.scrollIntoView({block:"nearest",behavior:"smooth"}))}
@@ -1311,11 +2050,13 @@ function syncStateModal(){
   html=`<div class="evtop" style="--ec:var(--royal)"><span class="evk">${S.card.novo?"Novo selo na credencial":"Cidade já carimbada"}</span></div><div class="in"><div class="stampwrap ${S.card.novo?"anim":""}">${sealSVG(t.i,true,p.c,true)}</div><small class="muted center">${who} chegou a</small><h3 class="center">${esc(t.nome)}</h3><p class="fact">${esc(t.fact)}</p><div class="actions">${btn("Seguir caminho")}</div></div>`;
  } else if(S.phase==="card"){
   const c=CASAS[S.card.k];
-  html=`<div class="evtop" style="--ec:${COR[S.card.k]}">${badge(c.ic,COR[S.card.k])}<span class="evk">${c.grupo==="esp"?"Casa de sugestão":"Imprevisto"} · ${c.nome}</span></div><div class="in"><small class="muted">${who} caiu em</small><h3>${c.nome}</h3><p class="fact">${esc(S.card.txt)}</p><p class="eff">${c.efeito}</p><div class="actions">${btn(c.bt)}</div></div>`;
+  const sk=SHARE_KINDS[S.card.k];const field=sk&&mine&&p.kind!=="robo"?`<label class="share"><span>${sk.t} ${UI.mode!=="local"?"<small>· todos vão ver</small>":""}</span><textarea id="stxt" maxlength="240" rows="3" placeholder="${esc(sk.ph)}"></textarea><small class="cnt"><span id="scnt">0</span>/240 · opcional</small></label>`:"";
+  html=`<div class="evtop" style="--ec:${COR[S.card.k]}">${badge(c.ic,COR[S.card.k])}<span class="evk">${c.grupo==="esp"?"Casa de sugestão":"Imprevisto"} · ${c.nome}</span></div><div class="in"><small class="muted">${who} caiu em</small><h3>${c.nome}</h3><p class="fact">${esc(S.card.txt)}</p>${field}<p class="eff">${c.efeito}</p><div class="actions">${btn(c.bt)}</div></div>`;
  } else if(S.phase==="over"){return arrival()}
  const o=el(`<div class="overlay" id="ovs"><div class="card ${cls}" role="dialog" aria-modal="true">${html}</div></div>`);o.dataset.key=key;
  document.body.appendChild(o);
- const ok=o.querySelector("#sok");if(ok){ok.onclick=()=>{ok.disabled=true;act("ack")};ok.focus({preventScroll:true})}
+ const ok=o.querySelector("#sok"),ta=o.querySelector("#stxt");if(ta){ta.oninput=()=>{o.querySelector("#scnt").textContent=ta.value.length};ta.onkeydown=e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey))ok&&ok.click()}}
+ if(ok){ok.onclick=()=>{ok.disabled=true;act("ack",ta?ta.value:undefined)};if(ta&&!isMobile())ta.focus({preventScroll:true});else ok.focus({preventScroll:true})}
 }
 function closeStateModal(){const o=document.getElementById("ovs");if(o)o.remove()}
 
@@ -1330,6 +2071,7 @@ function arrival(){
    <div class="sum">${rank.map((x)=>`<div class="srow" style="--pc:${x.c}">${avatar(x,S.players.indexOf(x))}<span class="nm">${esc(x.n)}</span><span class="st"><b>${x.pos}</b><small>casas</small></span><span class="st"><b>${x.stamps.length}/11</b><small>selos</small></span><span class="st"><b>${x.acertos||0}</b><small>acertos</small></span><span class="st"><b>${x.gracas}</b><small>graças</small></span></div>`).join("")}</div>
    <h4>Credencial de ${esc(w.n)}</h4>
    <div class="seals done">${r.cidades.map((c,ci)=>`<span class="sealb" title="${esc(c[0])}">${sealSVG(ci,w.stamps.includes(ci),w.c)}</span>`).join("")}</div>
+   ${(S.shares&&S.shares.length)?`<h4>Mural das partilhas</h4><div class="mural">${S.shares.map(sh=>`<div class="mpost" style="--pc:${sh.c}"><span class="mk">${esc(CASAS[sh.k].nome)}</span><p>“${esc(sh.t)}”</p><small>${esc(sh.n)}</small></div>`).join("")}</div>`:""}
    <div class="pray"><p class="inv">Na peregrinação ninguém fica para trás. Esperem juntos os últimos peregrinos chegarem e rezem em ação de graças:</p>
     <p class="salve"><b>Salve, Rainha,</b> Mãe de misericórdia, vida, doçura e esperança nossa, salve! A vós bradamos, os degredados filhos de Eva; a vós suspiramos, gemendo e chorando neste vale de lágrimas. Eia, pois, advogada nossa, esses vossos olhos misericordiosos a nós volvei; e, depois deste desterro, mostrai-nos Jesus, bendito fruto do vosso ventre. Ó clemente, ó piedosa, ó doce sempre Virgem Maria. Rogai por nós, santa Mãe de Deus, para que sejamos dignos das promessas de Cristo. Amém.</p></div>
    <div class="actions"><button class="obtn" id="ver">Ver o tabuleiro</button>${UI.mode==="guest"?"":'<button class="gbtn sm" id="again2">Nova partida <span class="tri"></span></button>'}</div>
@@ -1347,7 +2089,7 @@ function infoModal(html,cls){closeInfo();const o=el(`<div class="overlay info" i
  const f=o.querySelector(".gbtn")||o.querySelector("button");if(f)f.focus({preventScroll:true});const cd=o.querySelector(".card");if(cd)cd.scrollTop=0;return o}
 function closeInfo(){const o=document.getElementById("ovi");if(o)o.remove()}
 function confirmBox(t,txt,ok,fn){infoModal(`<div class="evtop" style="--ec:var(--ruby)"><span class="evk">Confirmar</span></div><div class="in"><h3>${esc(t)}</h3><p class="muted">${esc(txt)}</p><div class="actions"><button class="obtn" data-close>Cancelar</button><button class="gbtn sm" id="cok">${esc(ok)}</button></div></div>`);document.getElementById("cok").onclick=()=>{closeInfo();fn()}}
-function helpModal(){infoModal(`<div class="evtop" style="--ec:var(--gold)"><span class="evk">Como jogar</span></div><div class="in"><ol class="rules"><li>Tire uma carta e responda a pergunta.</li><li>Acertou? Jogue o dado e ande o número sorteado.</li><li>Errou? Dê um passo de fé: ande 1 casa.</li><li>Cada casa tem um efeito: cidades dão selos na credencial; as outras trazem sugestões ou imprevistos.</li><li>Quem chegar primeiro ao santuário vence, mas a peregrinação só termina quando todos rezam juntos.</li></ol><div class="leg2">${legendHTML()}</div><div class="actions"><button class="gbtn sm" data-close>Entendi</button></div></div>`)}
+function helpModal(){infoModal(`<div class="evtop" style="--ec:var(--gold)"><span class="evk">Como jogar</span></div><div class="in"><ol class="rules"><li>Tire uma carta e responda a pergunta.</li><li>Acertou? Jogue o dado e ande o número sorteado.</li><li>Errou? Fica onde está e passa a vez.</li><li>Cada casa tem um efeito: cidades dão selos na credencial; as outras trazem sugestões ou imprevistos.</li><li>Quem chegar primeiro ao santuário vence, mas a peregrinação só termina quando todos rezam juntos.</li></ol><div class="leg2">${legendHTML()}</div><div class="actions"><button class="gbtn sm" data-close>Entendi</button></div></div>`)}
 function casaInfo(k){const c=CASAS[k];infoModal(`<div class="evtop" style="--ec:${COR[k]}">${badge(c.ic,COR[k])}<span class="evk">${c.grupo==="esp"?"Casa de sugestão":"Imprevisto"}</span></div><div class="in"><h3>${c.nome}</h3><p class="eff">${c.efeito}</p><p class="muted">Exemplo de cartão: ${esc(c.cards[0])}</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`)}
 function tileInfo(i){
  const t=S.board[i];
