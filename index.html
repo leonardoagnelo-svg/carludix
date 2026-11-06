@@ -174,7 +174,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
     <div class="links">
       <a href="#inicio" class="active">Início</a>
       <a href="#jogos">Jogos</a>
-      <a href="#sobre">Sobre</a>
     </div>
     <a class="btn btn-red btn-sm" href="#jogos">Jogar agora</a>
   </nav>
@@ -189,7 +188,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
         <p>Desafios rápidos de futebol, conhecimento e estratégia. Grátis, sem cadastro, no celular ou no computador.</p>
         <div class="actions">
           <a class="btn btn-red" href="#jogos">Ver os jogos</a>
-          <a class="btn btn-ghost" href="#sobre">Conheça a CARLUDIX</a>
+          <a class="btn btn-ghost" href="#jogos">Desafio do dia</a>
         </div>
         <div class="facts">
           <div class="fact"><b id="factGames">6 jogos</b><span>e mais a caminho</span></div>
@@ -227,21 +226,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
     </div>
   </section>
 
-  <section class="section" id="sobre" aria-labelledby="sobreTitle">
-    <div class="wrap about">
-      <div>
-        <span class="label">Sobre</span>
-        <h2 id="sobreTitle">Por trás do nome</h2>
-        <p>A CARLUDIX nasceu para ser um lugar de diversão saudável: jogos rápidos para jogar sozinho, com a família ou com os amigos, e competir com respeito.</p>
-        <p>O nome guarda uma homenagem a Carlo Acutis, o jovem que mostrou que a internet e os jogos também podem ser usados para o bem. <span class="star" aria-hidden="true">✦</span></p>
-      </div>
-      <div class="name" aria-label="Significado do nome CARLUDIX">
-        <div><b>CAR</b><span>Carlo Acutis, a inspiração</span></div>
-        <div><b>LUD</b><span>de <i>ludus</i>, “jogo” em latim</span></div>
-        <div><b>IX</b><span>o toque moderno e tecnológico</span></div>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer class="footer">
@@ -354,7 +338,7 @@ const navLinks = [...document.querySelectorAll('.links a')];
 const io = new IntersectionObserver(es => es.forEach(en => {
   if(en.isIntersecting) navLinks.forEach(a => a.classList.toggle('active', a.hash==='#'+en.target.id));
 }), {rootMargin:'-45% 0px -50% 0px'});
-['inicio','jogos','sobre'].forEach(id => io.observe($(id)));
+['inicio','jogos'].forEach(id => io.observe($(id)));
 
 $('factGames').textContent = games.length + ' jogos';
 $('year').textContent = new Date().getFullYear();
