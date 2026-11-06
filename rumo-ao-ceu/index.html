@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Rumo ao Céu: tabuleiro de peregrinação a Santiago ou Aparecida. Avance respondendo perguntas, rezando e partilhando.">
+<link rel="icon" type="image/png" href="logo.png">
+<title>Rumo ao Céu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,700;0,800;1,700&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: game console — players on the left, illustrated board in the middle, special squares on the right, question bar + die along the bottom. Deliberately single dark theme (night-blue with gold frames). */
+:root{
+  color-scheme:dark;
+  --night:#0b1733; --night2:#13254d; --panel:#0f1f42; --panel2:#182d5c;
+  --gold:#f2b632; --gold2:#ffd970; --gold-dk:#a8730f; --ink:#f4f1e8; --muted:#b9c3d9;
+  --parch:#efe2c2; --parch-dk:#cdb98c; --parch-ink:#3b2a14;
+  --good:#38b26a; --bad:#d9483b;
+  --t-oracao:#8e5bd6; --t-acao:#e0612f; --t-reflexao:#2d8fd6; --t-companheiro:#e6a21f;
+  --t-descanso:#c23b2e; --t-bolha:#c23b2e; --t-atalho:#1fa58b;
+  --display:"Alegreya",Georgia,serif;
+  --ui:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{background:radial-gradient(1200px 600px at 50% -10%,#1d3a78 0%,transparent 60%),var(--night);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;min-height:100vh;
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:14px 32px}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+/* gold frame */
+.frame{background:linear-gradient(180deg,var(--panel2),var(--panel));border-radius:18px;position:relative;
+  border:2px solid transparent;background-clip:padding-box;box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #2a1c05,0 0 0 5px var(--gold),0 10px 30px rgba(0,0,0,.45)}
+.ttl{font-family:var(--ui);font-weight:700;font-size:22px;letter-spacing:.02em;text-align:center;padding:6px 10px;margin:-2px -2px 0;border-bottom:2px solid var(--gold-dk);background:linear-gradient(180deg,#0a1532,#14295a);border-radius:16px 16px 0 0}
+.gbtn{font-family:var(--ui);font-weight:700;color:#3a2404;border:0;border-radius:16px;padding:12px 24px;font-size:22px;line-height:1.05;
+  background:linear-gradient(180deg,var(--gold2),var(--gold) 55%,#d48a10);box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -3px 0 rgba(0,0,0,.2),0 0 0 2px #7a4f08,0 6px 18px rgba(242,182,50,.35);display:inline-flex;align-items:center;gap:10px;justify-content:center}
+.gbtn:hover:not(:disabled){filter:brightness(1.08)}
+.gbtn:disabled{filter:grayscale(.7) brightness(.7);cursor:default}
+.gbtn .tri{width:0;height:0;border-left:14px solid #3a2404;border-top:9px solid transparent;border-bottom:9px solid transparent}
+.obtn{font-family:var(--ui);font-weight:600;font-size:17px;background:#0a1532;border:2px solid var(--gold-dk);border-radius:12px;padding:8px 16px;color:var(--ink)}
+.obtn:hover{border-color:var(--gold)}
+
+/* top bar */
+.top{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.logo{width:clamp(120px,15vw,190px);height:auto;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.topmid{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.topmid h2{font-family:var(--display);font-style:italic;font-weight:700;font-size:clamp(18px,2.4vw,26px);margin:0;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.routes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.rbtn{display:flex;align-items:center;gap:12px;padding:10px 18px;border-radius:18px;background:linear-gradient(180deg,#14295a,#0a1532);box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #000a,0 6px 16px rgba(0,0,0,.4);text-align:left;border:0}
+.rbtn[aria-pressed="true"]{box-shadow:0 0 0 3px var(--gold2),0 0 22px rgba(242,182,50,.55)}
+.rbtn .ic{width:44px;height:44px;flex:none}
+.rbtn b{display:block;font-family:var(--ui);font-weight:700;font-size:22px;line-height:1;color:var(--ink)}
+.rbtn b span{color:var(--gold2);font-size:26px}
+.rbtn small{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+@media (max-width:640px){.top{grid-template-columns:1fr;justify-items:center}}
+
+/* game grid */
+.game{display:grid;grid-template-columns:230px minmax(0,1fr) 250px;grid-template-areas:"pl board leg" "pl bar bar";gap:16px;align-items:start}
+.c-pl{grid-area:pl;display:flex;flex-direction:column;gap:12px}
+.c-board{grid-area:board;min-width:0}
+.c-leg{grid-area:leg}
+.c-bar{grid-area:bar;min-width:0}
+@media (max-width:1080px){.game{grid-template-columns:minmax(0,1fr) 240px;grid-template-areas:"board leg" "bar bar" "pl pl"}.c-pl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}}
+@media (max-width:720px){.game{grid-template-columns:minmax(0,1fr);grid-template-areas:"board" "bar" "pl" "leg"}}
+
+/* players */
+.pcard{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:999px;background:linear-gradient(90deg,var(--pc),#0a1532 85%);box-shadow:0 0 0 2px var(--gold-dk),0 4px 12px rgba(0,0,0,.4)}
+.pcard.on{box-shadow:0 0 0 3px var(--gold2),0 0 18px rgba(242,182,50,.5)}
+.av{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px;background:radial-gradient(circle at 35% 30%,#fff6,transparent 60%),var(--pc);border:3px solid var(--gold);color:#fff;text-shadow:0 1px 2px #0008}
+.pcard .nm{font-family:var(--ui);font-weight:700;font-size:20px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pcard .sc{display:flex;align-items:center;gap:6px;font-family:var(--ui);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
+.pcard .sc svg{width:18px;height:18px}
+.pcard .info{min-width:0;flex:1}
+.pcard .st{font-size:12px;color:var(--gold2);font-family:var(--ui);letter-spacing:.04em}
+
+/* credential booklet */
+.cred{border-radius:14px;padding:14px;background:linear-gradient(135deg,#6b3f1d,#4a2a12);box-shadow:0 0 0 2px #2b1709,0 8px 20px rgba(0,0,0,.5);position:relative}
+.cred h3{margin:0 0 8px;font-family:var(--display);font-style:italic;font-weight:700;font-size:19px;color:var(--gold2);display:flex;align-items:center;gap:8px}
+.cred .pages{background:var(--parch);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;color:var(--parch-ink)}
+.cred .row{display:flex;flex-direction:column;gap:4px}
+.cred .row b{font-family:var(--ui);font-size:14px}
+.stamps{display:flex;flex-wrap:wrap;gap:4px}
+.stamp{width:22px;height:22px;border-radius:50%;border:1.5px dashed #a8946b;display:grid;place-items:center;font-size:10px;font-family:var(--display);font-weight:800;color:#a8946b}
+.stamp.on{border:2px solid currentColor;transform:rotate(-10deg);background:rgba(255,255,255,.35)}
+
+/* board */
+.boardbox{padding:14px;border-radius:18px;overflow:hidden;position:relative;
+  background:
+   radial-gradient(160px 60px at 85% 6%,#fff3 0%,transparent 70%),
+   radial-gradient(500px 140px at 20% 8%,#6f9a5d 0%,transparent 70%),
+   radial-gradient(600px 160px at 75% 10%,#5b8a54 0%,transparent 70%),
+   linear-gradient(180deg,#8fb3d9 0%,#b8d0e3 14%,#6e9b58 22%,#4f8044 55%,#3f6d39 100%);
+  box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #000a,0 0 0 5px var(--gold),0 10px 30px rgba(0,0,0,.45)}
+.boardbox::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 70%,#ffffff10 0 2px,transparent 3px) 0 0/34px 34px,radial-gradient(circle at 60% 30%,#00000012 0 3px,transparent 4px) 0 0/46px 46px;pointer-events:none}
+.board{display:grid;gap:5px;position:relative;margin-top:40px}
+.tile{position:relative;aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;text-align:center;min-width:0;
+  background:linear-gradient(160deg,#f6ecd2,var(--parch) 50%,#dcc79a);box-shadow:inset 0 -3px 0 #b49c6a,inset 0 2px 0 #fff8,0 3px 0 #6d5a33,0 5px 8px rgba(0,0,0,.35)}
+.tile .n{position:absolute;top:2px;left:5px;font-size:10px;color:#8b7650;font-family:var(--ui);font-weight:600}
+.badge{width:62%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:inset 0 2px 0 #fff6,inset 0 -2px 0 #0003,0 1px 2px #0005}
+.badge svg{width:62%;height:62%}
+.tile .lbl{font-family:var(--ui);font-weight:700;font-size:clamp(8px,1vw,11px);line-height:1;color:var(--parch-ink);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile.caminho .badge{background:transparent;box-shadow:none;color:#a48d5f}
+.tile.cidade{background:linear-gradient(160deg,#fff2c4,#f3cf6a 60%,#c99627);box-shadow:inset 0 -3px 0 #9a6c12,inset 0 2px 0 #fff9,0 3px 0 #5c3e06,0 0 0 2px var(--gold2),0 6px 12px rgba(0,0,0,.45)}
+.tile.cidade .badge{background:radial-gradient(circle at 35% 30%,#6a8fd8,#22468f);}
+.tile.cidade .lbl{color:#3a2404}
+.tile.fim{background:linear-gradient(160deg,#ffe28a,var(--gold) 60%,#b8770c);}
+.tile.fim .badge{background:radial-gradient(circle at 35% 30%,#ff7a6b,#b21f1f)}
+.tile.inicio .badge{background:radial-gradient(circle at 35% 30%,#6a8fd8,#22468f)}
+.tokens{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;gap:1px;padding-bottom:6%;pointer-events:none}
+.pawn{width:clamp(12px,1.9vw,22px);height:clamp(16px,2.6vw,30px);transition:transform .2s;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.pawn.cur{transform:translateY(-4px) scale(1.15)}
+.flag{position:absolute;top:8px;font-family:var(--display);font-weight:800;font-size:clamp(13px,1.6vw,18px);color:#fff;padding:3px 14px;border-radius:6px;background:linear-gradient(180deg,#d33b2b,#9c1f16);box-shadow:0 0 0 2px var(--gold),0 3px 8px #0007;z-index:2}
+.flag.a{left:14px}.flag.b{right:14px}
+
+/* legend */
+.leg{display:flex;flex-direction:column}
+.leg .sec{padding:10px 12px;display:flex;flex-direction:column;gap:9px}
+.li{display:flex;gap:10px;align-items:center}
+.li .badge{width:40px;flex:none}
+.li b{font-family:var(--ui);font-weight:700;font-size:17px;display:block;line-height:1.05}
+.li small{color:var(--muted);font-size:13px;line-height:1.2;display:block}
+.leg .ttl.mid{border-radius:0;border-top:2px solid var(--gold-dk);margin:0 -2px}
+
+/* bottom bar */
+.bar{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 16px}
+@media (max-width:900px){.bar{grid-template-columns:1fr}}
+.qbox{border-radius:14px;padding:12px 16px;background:#0a1532;box-shadow:0 0 0 2px var(--gold-dk);min-height:110px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.qbox .qh{display:flex;align-items:center;gap:8px;font-family:var(--ui);font-weight:700;font-size:20px;color:var(--gold2)}
+.qbox .qh svg{width:24px;height:24px}
+.qbox p{margin:0;font-family:var(--ui);font-weight:600;font-size:clamp(17px,1.7vw,21px);line-height:1.2;text-wrap:balance}
+.qbox .expl{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted)}
+.verdict{font-family:var(--ui);font-weight:700;font-size:18px}
+.verdict.ok{color:#6fe39b}.verdict.no{color:#ff8a7d}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;padding:6px 14px 6px 8px;border-radius:999px;border:2px solid var(--gold-dk);background:linear-gradient(180deg,#14295a,#0a1532);font-family:var(--ui);font-weight:600;font-size:17px;min-height:36px}
+.opt .k{width:24px;text-align:center;font-weight:700;color:var(--gold2)}
+.opt .tx{flex:1;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--gold2)}
+.opt:disabled{cursor:default}
+.opt.right{background:linear-gradient(180deg,#3fc172,#1f8a48);border-color:#bff2cf}
+.opt.right .k{color:#fff}
+.opt.wrong{background:linear-gradient(180deg,#e0594b,#a62a20);border-color:#ffc4bc}
+.opt.wrong .k{color:#fff}
+.opt .ck{font-weight:700}
+.opts.empty .opt{opacity:.35}
+.diebox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+.diewrap{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#ffe7a0 0%,#f2b632 30%,transparent 68%);}
+.die{width:70px;height:70px;border-radius:14px;background:linear-gradient(145deg,#fff,#dcdcdc);box-shadow:inset 0 -4px 0 #0002,0 6px 14px #0007;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:9px}
+.die i{width:12px;height:12px;border-radius:50%;background:#1b1b1b;place-self:center;visibility:hidden}
+.die.roll{animation:spin .55s}
+@keyframes spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(200deg) scale(.85)}100%{transform:rotate(360deg) scale(1)}}
+
+/* setup */
+.setup{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:820px){.setup{grid-template-columns:1fr}}
+.box{padding:0 0 16px}
+.box .in{padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+.prow{display:flex;gap:10px;align-items:center}
+.prow input{flex:1;min-width:0;padding:10px 14px;border-radius:12px;border:2px solid var(--gold-dk);background:#0a1532;color:var(--ink);font-family:var(--ui);font-weight:600;font-size:19px}
+.stops{display:flex;flex-wrap:wrap;gap:6px}
+.stops span{font-family:var(--ui);font-weight:600;font-size:14px;padding:3px 10px;border-radius:999px;background:#0a1532;border:1px solid var(--gold-dk);color:var(--muted)}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.lead{font-size:15px;color:var(--muted);margin:0}
+
+/* log */
+.log{font-size:13px;color:var(--muted);max-height:120px;overflow:auto;display:flex;flex-direction:column;gap:3px;padding:10px 14px}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(4,9,22,.7);display:grid;place-items:center;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));z-index:20}
+.card{max-width:500px;width:100%;padding:0 0 20px;max-height:calc(100vh - 40px);overflow:auto}
+.card .in{padding:16px 20px 0;display:flex;flex-direction:column;gap:12px}
+.card .kind{display:flex;align-items:center;gap:12px}
+.card .kind .badge{width:58px;flex:none}
+.card .kind small{font-family:var(--ui);color:var(--gold2);letter-spacing:.06em;text-transform:uppercase;font-size:13px}
+.card h3{margin:0;font-family:var(--display);font-weight:800;font-size:28px;line-height:1.1}
+.fact{font-family:var(--display);font-style:italic;font-size:20px;margin:0;line-height:1.35}
+.eff{font-family:var(--ui);font-weight:700;font-size:18px;color:var(--gold2);margin:0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.rank{display:flex;flex-direction:column;gap:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.back{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-family:var(--ui);font-weight:700;font-size:16px;letter-spacing:.06em;color:var(--gold2);text-decoration:none;padding:6px 14px;border-radius:999px;border:2px solid var(--gold-dk);background:#0a1532}
+.back:hover{border-color:var(--gold2)}
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="wrap"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><div id="app" style="display:flex;flex-direction:column;gap:14px"></div></div>
+
+<script>
+const LOGO="logo.png";
+const COLORS=["#2d5bd1","#d23a3a","#27a04f","#e0a41c"];
+const NOMES=["Azul","Vermelho","Verde","Amarelo"];
+const SVG={
+ shell:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21c-.6 0-1.1-.3-1.4-.8L3 9.6C2.4 8.8 2.7 7.6 3.6 7.1 6 5.7 8.9 5 12 5s6 .7 8.4 2.1c.9.5 1.2 1.7.6 2.5l-7.6 10.6c-.3.5-.8.8-1.4.8z" opacity=".95"/><path d="M12 6v14M8 6.5l3.2 13M16 6.5l-3.2 13M5 8.2l6.2 11.3M19 8.2l-6.2 11.3" stroke="#0004" stroke-width="1" fill="none"/></svg>',
+ pray:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 3c-.6 0-1 .5-1 1.1v7.4L6.6 15c-.4.4-.6.9-.6 1.4V21h4v-3l1.6-2.3c.2-.3.4-.7.4-1.1V4.1C12 3.5 11.6 3 11 3zm2 0c.6 0 1 .5 1 1.1v7.4l3.4 3.5c.4.4.6.9.6 1.4V21h-4v-3l-1.6-2.3c-.2-.3-.4-.7-.4-1.1V4.1C12 3.5 12.4 3 13 3z"/></svg>',
+ heart:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20.5 4.6 13.3C2.5 11.2 2.5 7.9 4.6 6c2-1.9 5-1.6 6.7.5L12 7.3l.7-.8c1.7-2.1 4.7-2.4 6.7-.5 2.1 1.9 2.1 5.2 0 7.3L12 20.5z"/></svg>',
+ chat:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm3 7a1.3 1.3 0 1 0 0-2.6A1.3 1.3 0 0 0 7 11zm5 0a1.3 1.3 0 1 0 0-2.6 1.3 1.3 0 0 0 0 2.6zm5 0a1.3 1.3 0 1 0 0-2.6 1.3 1.3 0 0 0 0 2.6z"/></svg>',
+ group:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="3"/><circle cx="5.5" cy="9" r="2.3"/><circle cx="18.5" cy="9" r="2.3"/><path d="M6.5 20v-3.5C6.5 13.5 9 12 12 12s5.5 1.5 5.5 4.5V20zM1.5 20v-2.6c0-2 1.6-3.2 3.6-3.2.5 0 1 .1 1.4.2-.9 1-1.4 2.4-1.4 4.1V20zM22.5 20v-2.6c0-2-1.6-3.2-3.6-3.2-.5 0-1 .1-1.4.2.9 1 1.4 2.4 1.4 4.1V20z"/></svg>',
+ bed:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 6h2v7h8V8h7a3 3 0 0 1 3 3v8h-2v-3H4v3H2z"/><circle cx="7.5" cy="10" r="2"/></svg>',
+ foot:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c-2.5 0-3.5-2-3.3-4.6.2-2.4 1.3-3.9 1.1-6.4C6.6 7.4 7.5 5 9.6 5c2.2 0 2.9 2.3 2.6 5-.3 2.8-.5 4.5.3 6.6.8 2.4-1 4.4-3.5 4.4z"/><circle cx="15" cy="5" r="1.6"/><circle cx="17.6" cy="7" r="1.2"/><circle cx="18.6" cy="9.8" r="1"/><circle cx="18.6" cy="12.4" r=".9"/><circle cx="14" cy="16" r="2.2" fill="#ffd2c9"/></svg>',
+ shoe:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 16.5c0-1.6.5-3.8 1.6-5.5l2.3 1.4 1.7-2.6 3 1.8 1.7-2.4C14.6 11 17.5 12 20 12.6c1.3.3 2 1.3 2 2.5v1.4z"/><rect x="2" y="17.3" width="20" height="2.4" rx="1.2"/><path d="M1 8h4M1 11h2" stroke="currentColor" stroke-width="1.6"/></svg>',
+ cross:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.5 2h3v6h6v3h-6v11h-3V11h-6V8h6z"/></svg>',
+ pin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>',
+ dot:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/></svg>',
+ book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6c-2-1.5-5-2-9-2v14c4 0 7 .5 9 2 2-1.5 5-2 9-2V4c-4 0-7 .5-9 2zM12 6v14"/></svg>',
+ crown:'<svg viewBox="0 0 48 48"><path d="M24 4l3 4h-6z" fill="#f2b632"/><path d="M12 14l5 5 7-9 7 9 5-5-2 11H14z" fill="#f2b632"/><path d="M18 26c0 9 2 16 6 18 4-2 6-9 6-18z" fill="#1d3f8a" stroke="#f2b632" stroke-width="1.5"/><circle cx="24" cy="31" r="3" fill="#f6e2a8"/></svg>',
+ shellBig:'<svg viewBox="0 0 48 48"><path d="M24 44c-1.2 0-2.2-.6-2.8-1.6L6 21c-1.2-1.7-.6-4 1.2-5C12 13.2 17.8 12 24 12s12 1.2 16.8 4c1.8 1 2.4 3.3 1.2 5L26.8 42.4c-.6 1-1.6 1.6-2.8 1.6z" fill="#f2b632"/><path d="M24 13v30M16 14l6.4 28M32 14l-6.4 28M10 17.5l12.4 23M38 17.5l-12.4 23" stroke="#a8730f" stroke-width="1.6" fill="none"/></svg>'
+};
+const ROUTES={
+ santiago:{nome:"Caminho de Santiago",l1:"Caminho de",l2:"Santiago",sub:"Caminho Francês · cerca de 780 km",ic:"shellBig",meta:"Santiago de Compostela",
+  cidades:[
+   ["Saint-Jean-Pied-de-Port","Ponto de partida tradicional do Caminho Francês, ainda do lado francês dos Pireneus. Aqui o peregrino recebe a credencial e o primeiro carimbo."],
+   ["Roncesvalles","Depois da travessia dos Pireneus, a etapa mais dura do início, a colegiata acolhe peregrinos há muitos séculos."],
+   ["Pamplona","Capital de Navarra, conhecida no mundo todo pela festa de São Firmino, em julho."],
+   ["Logroño","Capital de La Rioja, terra de vinhedos. Na rua do Laurel, peregrinos e moradores se encontram à noite."],
+   ["Burgos","A catedral gótica de Burgos é Patrimônio da Humanidade. Um bom lugar para descansar antes da Meseta."],
+   ["León","A catedral de León é famosa pelos vitrais: quase dois mil metros quadrados de luz colorida."],
+   ["Astorga","O Palácio Episcopal de Astorga foi projetado por Antoni Gaudí."],
+   ["Cruz de Ferro","Ponto mais alto do Caminho Francês. O peregrino deixa ao pé da cruz uma pedra trazida de casa, entregando o que pesa no coração."],
+   ["O Cebreiro","No alto da serra, é a porta de entrada da Galícia. A igreja da aldeia é uma das mais antigas do Caminho."],
+   ["Sarria","Daqui faltam pouco mais de 100 km: é onde começa quem quer fazer o mínimo exigido para a Compostela."],
+   ["Santiago","Chegada à catedral onde repousa o apóstolo Tiago. Na missa do peregrino, o botafumeiro balança sobre a nave."]],
+  perguntas:[
+   ["Santiago, padroeiro do Caminho, é qual apóstolo?",["Tiago Maior, irmão de João","Tiago Menor","Tadeu","Tomé"],0,"Tiago Maior, filho de Zebedeu e irmão de João Evangelista."],
+   ["Qual é o símbolo do peregrino de Santiago?",["A concha (vieira)","A âncora","O peixe","A pomba"],0,"A concha vieira aparece nas mochilas e marca o caminho."],
+   ["Qual a distância mínima a pé para receber a Compostela?",["100 km","50 km","200 km","300 km"],0,"A pé ou a cavalo, 100 km; de bicicleta, 200 km."],
+   ["Como se chama o documento carimbado ao longo do Caminho?",["Credencial","Passaporte","Bula","Salvo-conduto"],0,"A credencial do peregrino recebe carimbos em albergues, igrejas e cafés."],
+   ["Como se chama o grande incensário da catedral de Santiago?",["Botafumeiro","Turíbulo de ouro","Incensório real","Fumeiro"],0,"Ele balança de ponta a ponta do transepto, puxado por vários homens."],
+   ["Em que região da Espanha fica Santiago de Compostela?",["Galícia","Navarra","Castela","Astúrias"],0,"Santiago é a capital da Galícia."],
+   ["Quando há Ano Santo Compostelano?",["Quando 25 de julho cai num domingo","A cada 25 anos","Em todo ano par","Quando o papa visita Santiago"],0,"A festa de Santiago é em 25 de julho."],
+   ["Que sinal pintado orienta o peregrino no Caminho?",["Uma seta amarela","Uma cruz vermelha","Um círculo azul","Um triângulo branco"],0,"As setas amarelas aparecem em muros, postes e pedras."],
+   ["Que saudação os peregrinos trocam pelo Caminho?",["Buen Camino!","Ave, peregrino!","Paz e bem!","Saúde!"],0,"Também se ouve o antigo Ultreia, que quer dizer ir mais além."],
+   ["Qual escritor brasileiro escreveu sobre sua peregrinação a Santiago?",["Paulo Coelho","Jorge Amado","Erico Verissimo","Ariano Suassuna"],0,"Em O Diário de um Mago, de 1987."],
+   ["Que cordilheira o peregrino cruza logo na primeira etapa?",["Pireneus","Alpes","Andes","Cantábrica"],0,"De Saint-Jean-Pied-de-Port a Roncesvalles."],
+   ["O que o peregrino deixa na Cruz de Ferro?",["Uma pedra trazida de casa","Uma vela acesa","Uma fita colorida","A credencial"],0,"A pedra simboliza aquilo que ele quer entregar a Deus."]]
+ },
+ aparecida:{nome:"Romaria a Aparecida",l1:"Romaria a",l2:"Aparecida",sub:"Caminho da Fé · Serra da Mantiqueira",ic:"crown",meta:"Aparecida",
+  cidades:[
+   ["Águas da Prata","Ponto de partida do Caminho da Fé, cidade das águas minerais. O caminho foi inaugurado em 2003, inspirado no Caminho de Santiago."],
+   ["Andradas","Já em Minas Gerais, Andradas é conhecida pelos vinhos."],
+   ["Ouro Fino","Cidade lembrada na moda de viola O Menino da Porteira."],
+   ["Inconfidentes","O nome homenageia os inconfidentes mineiros. A cidade é famosa pelo artesanato em crochê."],
+   ["Borda da Mata","Conhecida pela produção de pijamas, recebe os romeiros com muita hospitalidade."],
+   ["Estiva","Terra de plantações de morango no Sul de Minas."],
+   ["Consolação","Pequena cidade entre morros. O nome já é um convite a descansar em Deus."],
+   ["Paraisópolis","Uma das maiores cidades do trecho, boa parada antes da subida da serra."],
+   ["Luminosa","A subida da Serra da Luminosa é um dos trechos mais duros da romaria. Lá de cima já se vê o caminho que falta."],
+   ["Pindamonhangaba","Já no Vale do Paraíba: a basílica está perto."],
+   ["Aparecida","Chegada ao Santuário Nacional, casa da Mãe Aparecida, padroeira do Brasil."]],
+  perguntas:[
+   ["Em que ano a imagem de Nossa Senhora Aparecida foi encontrada?",["1717","1822","1888","1654"],0,"Foi pescada em outubro de 1717."],
+   ["Em que rio a imagem foi encontrada?",["Paraíba do Sul","Tietê","São Francisco","Amazonas"],0,"Primeiro veio o corpo, depois a cabeça, nas redes dos pescadores."],
+   ["Quantos pescadores encontraram a imagem?",["Três","Dois","Cinco","Doze"],0,"Domingos Garcia, João Alves e Filipe Pedroso."],
+   ["De que material é feita a imagem?",["Terracota (barro cozido)","Madeira","Bronze","Marfim"],0,"Uma pequena imagem de barro cozido, com cerca de 40 cm."],
+   ["Em que dia se celebra Nossa Senhora Aparecida?",["12 de outubro","8 de dezembro","15 de agosto","2 de fevereiro"],0,"Também é feriado nacional."],
+   ["Em que ano ela foi proclamada padroeira do Brasil?",["1930","1717","1900","1980"],0,"Pelo papa Pio XI."],
+   ["Qual destes papas NÃO visitou Aparecida?",["Paulo VI","João Paulo II","Bento XVI","Francisco"],0,"João Paulo II (1980), Bento XVI (2007) e Francisco (2013) estiveram lá."],
+   ["No milagre do escravo Zacarias, o que aconteceu?",["As correntes caíram","Ele foi curado da cegueira","Ele andou sobre as águas","Ele ouviu a voz de Maria"],0,"Ao rezar diante da imagem, as correntes se soltaram."],
+   ["Qual milagre aconteceu nas primeiras orações diante da imagem?",["As velas se acenderam sozinhas","Choveu pétalas","A imagem chorou","O rio secou"],0,"É conhecido como o milagre das velas."],
+   ["Quem doou a coroa e o manto da imagem?",["Princesa Isabel","Dom Pedro II","Marquês de Pombal","Getúlio Vargas"],0,"Em 1888."],
+   ["O Caminho da Fé foi inspirado em qual peregrinação?",["Caminho de Santiago","Romaria de Fátima","Peregrinação a Lourdes","Via Sacra de Jerusalém"],0,"Foi criado em 2003."],
+   ["O que aconteceu com a imagem em 1978?",["Foi quebrada e depois restaurada","Foi levada a Roma","Foi roubada por dez anos","Foi coroada pelo papa"],0,"Ela se partiu em muitos pedaços e foi cuidadosamente restaurada."]]
+ }
+};
+const GERAIS=[
+ ["Quantos evangelhos há no Novo Testamento?",["4","3","5","12"],0,"Mateus, Marcos, Lucas e João."],
+ ["Quem negou Jesus três vezes?",["Pedro","Judas","Tomé","João"],0,"Antes de o galo cantar."],
+ ["Em que cidade Jesus nasceu?",["Belém","Nazaré","Jerusalém","Cafarnaum"],0,"Belém da Judeia."],
+ ["Qual foi o primeiro milagre de Jesus, segundo João?",["Água em vinho em Caná","Multiplicação dos pães","Cura de um cego","Ressurreição de Lázaro"],0,"Nas bodas de Caná, a pedido de Maria."],
+ ["Quem batizou Jesus?",["João Batista","Pedro","André","Zacarias"],0,"No rio Jordão."],
+ ["Quantos livros tem a Bíblia católica?",["73","66","72","80"],0,"46 no Antigo e 27 no Novo Testamento."],
+ ["Qual é o primeiro livro da Bíblia?",["Gênesis","Êxodo","Mateus","Salmos"],0,"Começa com a criação do mundo."],
+ ["Quantas Ave-Marias se rezam em uma dezena do terço?",["10","7","12","5"],0,"Precedidas de um Pai-Nosso e seguidas do Glória."],
+ ["Quem construiu a arca?",["Noé","Moisés","Abraão","Jonas"],0,"Gênesis, capítulos 6 a 9."],
+ ["Quantos dias Jesus jejuou no deserto?",["40","7","30","3"],0,"Por isso a Quaresma tem quarenta dias."],
+ ["Quem era a mãe de João Batista?",["Isabel","Ana","Marta","Maria Madalena"],0,"Prima de Maria."],
+ ["Qual apóstolo duvidou da ressurreição?",["Tomé","Filipe","Mateus","Bartolomeu"],0,"Ele quis tocar nas chagas."],
+ ["Que tempo litúrgico prepara o Natal?",["Advento","Quaresma","Tempo Comum","Páscoa"],0,"São quatro domingos."],
+ ["Qual a cor litúrgica da Quaresma?",["Roxo","Verde","Branco","Vermelho"],0,"Cor de penitência e conversão."],
+ ["Quantos são os sacramentos?",["7","5","10","3"],0,"Batismo, Crisma, Eucaristia, Penitência, Unção, Ordem e Matrimônio."],
+ ["O que se celebra em Pentecostes?",["A vinda do Espírito Santo","O nascimento de Jesus","A Ascensão","A Anunciação"],0,"Cinquenta dias depois da Páscoa."],
+ ["Quem escreveu a maior parte das cartas do Novo Testamento?",["Paulo","Pedro","Tiago","João"],0,"O apóstolo dos gentios."],
+ ["Quem recebeu os Dez Mandamentos?",["Moisés","Elias","Davi","Arão"],0,"No monte Sinai."],
+ ["Que oração Jesus ensinou aos discípulos?",["Pai-Nosso","Ave-Maria","Salve-Rainha","Credo"],0,"Mateus 6 e Lucas 11."],
+ ["Quem foi o primeiro papa?",["Pedro","Paulo","Lino","Clemente"],0,"Tu és Pedro, e sobre esta pedra..."],
+ ["Qual é o último livro da Bíblia?",["Apocalipse","Atos","Judas","Malaquias"],0,"Atribuído a João."],
+ ["Qual anjo anunciou a Maria que ela seria mãe de Jesus?",["Gabriel","Miguel","Rafael","Uriel"],0,"Lucas, capítulo 1."],
+ ["Na multiplicação, quantos pães e peixes havia?",["5 pães e 2 peixes","7 pães e 3 peixes","2 pães e 5 peixes","12 pães e 1 peixe"],0,"E sobraram doze cestos."],
+ ["Quem venceu o gigante Golias?",["Davi","Sansão","Saul","Josué"],0,"Com uma funda e uma pedra."],
+ ["Qual foi o primeiro santo nascido no Brasil?",["Frei Galvão","Padre Anchieta","Irmã Dulce","Madre Paulina"],0,"Canonizado em 2007 por Bento XVI."],
+ ["Como ficou conhecida Santa Dulce dos Pobres?",["Anjo Bom da Bahia","Mãe dos Aflitos","Santa das Rosas","Apóstola do Recife"],0,"Canonizada em 2019."],
+ ["Em que cidade Jesus cresceu?",["Nazaré","Belém","Betânia","Jericó"],0,"Por isso era chamado de Nazareno."],
+ ["Os discípulos de Emaús reconheceram Jesus quando ele...",["partiu o pão","mostrou as chagas","chamou seus nomes","acalmou o mar"],0,"Lucas, capítulo 24."],
+ ["Quem viu primeiro Jesus ressuscitado, segundo João?",["Maria Madalena","Pedro","João","Maria, sua mãe"],0,"Ela o confundiu com o jardineiro."],
+ ["Quem fundou a ordem dos franciscanos?",["São Francisco de Assis","Santo Domingos","São Bento","Santo Inácio"],0,"No começo do século XIII."],
+ ["Qual livro da Bíblia tem 150 orações cantadas?",["Salmos","Provérbios","Cântico dos Cânticos","Lamentações"],0,"Muitos atribuídos ao rei Davi."],
+ ["Que dia inicia a Quaresma?",["Quarta-feira de Cinzas","Domingo de Ramos","Sexta-feira Santa","Primeiro domingo do Advento"],0,"Lembra-te que és pó..."]
+];
+const CASAS={
+ oracao:{ic:"pray",nome:"Oração em grupo",curto:"Rezemos juntos!",grupo:"esp",cards:[
+  "Parem tudo e rezem juntos um Pai-Nosso pelo peregrino da vez.",
+  "Rezem uma Ave-Maria por alguém doente que vocês conheçam.",
+  "O peregrino escolhe uma intenção e todos rezam um Glória ao Pai.",
+  "Em silêncio por 30 segundos, agradeça por três coisas de hoje.",
+  "Façam juntos o sinal da cruz e peçam a bênção para a caminhada."],efeito:"Depois de rezar, avance 1 casa.",bt:"Rezamos, amém"},
+ acao:{ic:"heart",nome:"Boa ação",curto:"Um gesto de caridade para a semana.",grupo:"esp",cards:[
+  "Compromisso da semana: mande mensagem para alguém que você não vê há tempos.",
+  "Compromisso da semana: ajude em casa numa tarefa que normalmente não é sua.",
+  "Diga agora um elogio sincero a cada jogador da mesa.",
+  "Compromisso da semana: separe uma roupa ou alimento para doar.",
+  "Peça perdão ou agradeça a alguém que precisa ouvir isso de você."],efeito:"Ganhe 1 graça pelo compromisso.",bt:"Aceito o compromisso"},
+ reflexao:{ic:"chat",nome:"Reflexão",curto:"Uma pergunta para partilhar com o grupo.",grupo:"esp",cards:[
+  "Conte um momento em que você sentiu Deus perto.",
+  "Qual santo você levaria como companheiro de caminhada? Por quê?",
+  "O que você deixaria aos pés da cruz se pudesse? (Pode responder em silêncio.)",
+  "Que pessoa foi um anjo no seu caminho?",
+  "Qual é a sua passagem favorita da Bíblia?"],efeito:"Compartilhe e ganhe 1 graça.",bt:"Compartilhei"},
+ companheiro:{ic:"group",nome:"Partilha",curto:"Todos os outros jogadores avançam 1 casa.",grupo:"esp",cards:[
+  "Você divide o lanche com outros peregrinos e todos seguem animados.",
+  "Vocês cantam juntos e a caminhada fica leve."],efeito:"Todos os outros avançam 1 casa.",bt:"Seguimos juntos"},
+ descanso:{ic:"bed",nome:"Albergue",curto:"Descanse! Perde a vez.",grupo:"imp",cards:[
+  "O corpo pediu pausa. Você pernoita no albergue e retoma o caminho depois.",
+  "Choveu forte e o caminho alagou. Melhor esperar no albergue."],efeito:"Você perde a próxima vez.",bt:"Boa noite"},
+ bolha:{ic:"foot",nome:"Bolha no pé",curto:"Cuidado! Volte 2 casas.",grupo:"imp",cards:[
+  "Uma bolha no pé obriga você a voltar até a farmácia da última vila.",
+  "Você errou a seta e andou para o lado errado."],efeito:"Volte 2 casas.",bt:"Ai, voltar"},
+ atalho:{ic:"shoe",nome:"Bom passo",curto:"Que alegria! Avance 2 casas.",grupo:"imp",cards:[
+  "Céu limpo, trilha seca e um café no caminho. O passo rende!",
+  "Um morador indica uma trilha boa e bem sinalizada."],efeito:"Avance 2 casas.",bt:"Avançar"}
+};
+const COR={oracao:"var(--t-oracao)",acao:"var(--t-acao)",reflexao:"var(--t-reflexao)",companheiro:"var(--t-companheiro)",descanso:"var(--t-descanso)",bolha:"var(--t-bolha)",atalho:"var(--t-atalho)"};
+const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const L=36;
+let S={route:"santiago",players:[{n:"Jogador 1"},{n:"Jogador 2"}],screen:"setup"};
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function el(h){const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstChild}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function badge(k,bg){return `<span class="badge" style="background:radial-gradient(circle at 35% 30%,#fff5,transparent 55%),${bg}">${SVG[k]}</span>`}
+function pawn(c){return `<svg class="pawn" viewBox="0 0 20 28"><ellipse cx="10" cy="25" rx="9" ry="3" fill="${c}"/><path d="M4 25c0-6 3-9 3-12h6c0 3 3 6 3 12z" fill="${c}"/><circle cx="10" cy="7" r="5" fill="${c}"/><circle cx="8.3" cy="5.4" r="1.6" fill="#fff8"/><path d="M7 13h6" stroke="#0003" stroke-width="2"/></svg>`}
+function dieHTML(n){const on=PIPS[n]||[];return `<div class="die" id="die" aria-label="Dado: ${n||"sem valor"}">${Array.from({length:9},(_,i)=>`<i style="${on.includes(i)?"visibility:visible":""}"></i>`).join("")}</div>`}
+
+function buildBoard(rk){
+ const r=ROUTES[rk],b=new Array(L).fill(null),n=r.cidades.length;
+ r.cidades.forEach((c,i)=>{b[Math.round(i*(L-1)/(n-1))]={t:"cidade",i,nome:c[0],fact:c[1]}});
+ let pool=shuffle([].concat(Array(5).fill("oracao"),Array(4).fill("acao"),Array(4).fill("reflexao"),Array(2).fill("descanso"),Array(3).fill("bolha"),Array(3).fill("atalho"),Array(2).fill("companheiro")));
+ for(let i=0;i<L;i++) if(!b[i]) b[i]={t:pool.pop()||"caminho"};
+ return b;
+}
+
+function topBar(){
+ const t=el(`<header class="top"><img class="logo" src="${LOGO}" alt="Rumo ao Céu, o jogo da peregrinação"><div class="topmid"><h2>Escolha a rota da peregrinação</h2><div class="routes"></div></div></header>`);
+ const rs=t.querySelector(".routes");
+ for(const k of Object.keys(ROUTES)){const r=ROUTES[k];
+  const b=el(`<button class="rbtn" aria-pressed="${S.route===k}"><span class="ic">${SVG[r.ic]}</span><span><b>${r.l1}<br><span>${r.l2}</span></b><small>${r.sub}</small></span></button>`);
+  b.onclick=()=>{if(S.screen==="game"&&k===S.route)return;S.route=k;S.screen="setup";render()};rs.appendChild(b)}
+ return t;
+}
+
+function render(){
+ const app=document.getElementById("app");app.innerHTML="";
+ app.appendChild(topBar());
+ if(S.screen==="setup") renderSetup(app); else renderGame(app);
+}
+
+function legend(){
+ const esp=Object.entries(CASAS).filter(([k,c])=>c.grupo==="esp"),imp=Object.entries(CASAS).filter(([k,c])=>c.grupo==="imp");
+ const li=([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.curto}</small></span></div>`;
+ return `<div class="ttl">Casas especiais</div><div class="sec">${esp.map(li).join("")}</div><div class="ttl mid">Imprevistos</div><div class="sec">${imp.map(li).join("")}</div>`;
+}
+
+function renderSetup(app){
+ const r=ROUTES[S.route];
+ const s=el(`<section class="setup"></section>`);
+ const p=el(`<div class="frame box"><div class="ttl">Peregrinos</div><div class="in"><p class="lead">De 1 a 4 jogadores. Rota escolhida: <b style="color:var(--gold2)">${r.nome}</b>.</p><div id="plist" style="display:flex;flex-direction:column;gap:10px"></div><div class="actions" style="justify-content:space-between"><div style="display:flex;gap:8px"><button class="obtn" id="add">+ Jogador</button><button class="obtn" id="rem">− Jogador</button></div><button class="gbtn" id="start">Começar <span class="tri"></span></button></div><div class="stops">${r.cidades.map(c=>`<span>${esc(c[0])}</span>`).join("")}</div></div></div>`);
+ const list=p.querySelector("#plist");
+ S.players.forEach((pl,i)=>{const row=el(`<div class="prow"><span class="av" style="--pc:${COLORS[i]}">${i+1}</span><input id="pn${i}" aria-label="Nome do jogador ${i+1}" value="${esc(pl.n)}" maxlength="16"></div>`);row.querySelector("input").oninput=e=>pl.n=e.target.value;list.appendChild(row)});
+ p.querySelector("#add").onclick=()=>{if(S.players.length<4){S.players.push({n:"Jogador "+(S.players.length+1)});render()}};
+ p.querySelector("#rem").onclick=()=>{if(S.players.length>1){S.players.pop();render()}};
+ p.querySelector("#start").onclick=startGame;
+ s.appendChild(p);
+ const h=el(`<div class="frame box"><div class="ttl">Como se joga</div><div class="in">
+  <div class="li">${badge("book","#22468f")}<span><b>Responda a pergunta</b><small>Acertou, joga o dado. Errou, dá um passo de fé (1 casa).</small></span></div>
+  <div class="li">${badge("pin","#22468f")}<span><b>Cidades</b><small>Carimbam a credencial e contam uma história do caminho.</small></span></div>
+  <div class="how">${Object.entries(CASAS).map(([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`).join("")}</div>
+ </div></div>`);
+ s.appendChild(h);
+ app.appendChild(s);
+}
+
+function startGame(){
+ const r=ROUTES[S.route];
+ S.players=S.players.map((p,i)=>({n:(p.n||"").trim()||"Jogador "+(i+1),c:COLORS[i],pos:0,skip:false,gracas:0,stamps:[0]}));
+ S.board=buildBoard(S.route);
+ S.deck=shuffle(GERAIS.concat(r.perguntas,r.perguntas));
+ S.cur=0;S.die=0;S.q=null;S.log=[`A peregrinação começa em ${r.cidades[0][0]}.`];S.busy=false;S.over=false;
+ S.screen="game";render();
+}
+
+function cols(){const w=window.innerWidth;return w<520?6:w<720?7:w<1080?8:9}
+
+function renderGame(app){
+ const r=ROUTES[S.route],p=S.players[S.cur];
+ const g=el(`<section class="game"><div class="c-pl"></div><div class="c-board"><div class="boardbox"><span class="flag a">Início</span><span class="flag b">Chegada</span><div class="board" id="board"></div></div></div><aside class="c-leg frame leg">${legend()}</aside><div class="c-bar frame"><div class="bar"></div></div></section>`);
+ // players
+ const pl=g.querySelector(".c-pl");
+ S.players.forEach((x,i)=>pl.appendChild(el(`<div class="pcard ${i===S.cur&&!S.over?"on":""}" style="--pc:${x.c}"><span class="av">${esc(x.n[0]||"?").toUpperCase()}</span><span class="info"><span class="nm" style="display:block">${esc(x.n)}</span><span class="sc">${SVG.shell.replace('fill="currentColor"','fill="#f2b632"')} ${x.pos} casas · ${x.gracas} graça${x.gracas===1?"":"s"}</span>${x.skip?'<span class="st">DESCANSANDO</span>':""}</span></div>`)));
+ pl.appendChild(el(`<div class="cred"><h3><span style="width:22px;height:22px;display:inline-block">${SVG.shell.replace('fill="currentColor"','fill="#f2b632"')}</span>Credencial do Peregrino</h3><div class="pages">${S.players.map(x=>`<div class="row"><b style="color:${x.c}">${esc(x.n)} · ${x.stamps.length}/${r.cidades.length}</b><div class="stamps" style="color:${x.c}">${r.cidades.map((c,ci)=>`<span class="stamp ${x.stamps.includes(ci)?"on":""}" title="${esc(c[0])}">${esc(c[0][0])}</span>`).join("")}</div></div>`).join("")}</div></div>`));
+ pl.appendChild(el(`<div class="frame"><div class="ttl" style="font-size:17px">Diário do caminho</div><div class="log">${S.log.slice(-25).reverse().map(l=>`<div>${esc(l)}</div>`).join("")}</div></div>`));
+ // board
+ const board=g.querySelector("#board"),C=cols();
+ board.style.gridTemplateColumns=`repeat(${C},minmax(0,1fr))`;
+ S.board.forEach((t,i)=>{
+  const row=Math.floor(i/C),col=row%2?C-1-i%C:i%C, c=CASAS[t.t], isEnd=i===L-1, isStart=i===0;
+  let inner,cls=t.t;
+  if(t.t==="cidade"){cls+=isEnd?" fim":isStart?" inicio":"";inner=badge(isEnd?"cross":"pin",isEnd?"#b21f1f":"#22468f")+`<span class="lbl">${esc(t.nome)}</span>`}
+  else if(c){inner=badge(c.ic,COR[t.t])}
+  else inner=`<span class="badge">${SVG.dot}</span>`;
+  const tile=el(`<div class="tile ${cls}" style="grid-row:${row+1};grid-column:${col+1}"><span class="n">${i}</span>${inner}<div class="tokens"></div></div>`);
+  tile.title=t.t==="cidade"?t.nome:(c?c.nome+": "+c.efeito:"Caminho");
+  S.players.forEach((x,pi)=>{if(x.pos===i){const tk=el(pawn(x.c));if(pi===S.cur)tk.classList.add("cur");tile.querySelector(".tokens").appendChild(tk)}});
+  board.appendChild(tile);
+ });
+ // bar
+ const bar=g.querySelector(".bar");
+ const q=S.q;
+ let qhtml,ohtml;
+ if(S.over){qhtml=`<div class="qh">${SVG.cross} Peregrinação concluída</div><p>${esc(S.players.find(x=>x.pos>=L-1)?.n||"")} chegou a ${esc(r.meta)}!</p>`;ohtml=`<div class="opts" style="justify-content:center"><button class="gbtn" id="again" style="font-size:19px">Nova peregrinação</button></div>`}
+ else if(!q){qhtml=`<div class="qh">${SVG.book} Pergunta</div><p>Vez de <span style="color:${p.c};filter:brightness(1.4)">${esc(p.n)}</span>. ${p.skip?"Está descansando no albergue nesta rodada.":"Tire uma pergunta para caminhar."}</p>`;
+  ohtml=`<div class="opts empty">${["A","B","C","D"].map(k=>`<div class="opt"><span class="k">${k}</span><span class="tx">&nbsp;</span></div>`).join("")}</div>`}
+ else{qhtml=`<div class="qh">${SVG.book} Pergunta para ${esc(p.n)}</div><p>${esc(q.q[0])}</p>${q.done?`<div class="verdict ${q.ok?"ok":"no"}">${q.ok?"Isso mesmo!":"Não foi dessa vez."}</div><div class="expl">${esc(q.q[3])}</div>`:""}`;
+  ohtml=`<div class="opts">${q.order.map((oi,j)=>{let c="";if(q.done){if(oi===q.q[2])c="right";else if(oi===q.pick)c="wrong"}return `<button class="opt ${c}" data-i="${oi}" ${q.done?"disabled":""}><span class="k">${"ABCD"[j]}</span><span class="tx">${esc(q.q[1][oi])}</span>${c==="right"?'<span class="ck">✓</span>':""}</button>`}).join("")}</div>`}
+ let btn;
+ if(S.over) btn="";
+ else if(!q) btn=`<button class="gbtn" id="act" ${S.busy?"disabled":""}>${p.skip?"Passar a vez":"Tirar<br>pergunta"} <span class="tri"></span></button>`;
+ else if(!q.done) btn=`<button class="gbtn" disabled>Responda <span class="tri"></span></button>`;
+ else btn=`<button class="gbtn" id="act" ${S.busy?"disabled":""}>${q.ok?"Jogar<br>o dado":"Passo<br>de fé"} <span class="tri"></span></button>`;
+ bar.appendChild(el(`<div class="qbox">${qhtml}</div>`));
+ bar.appendChild(el(ohtml));
+ bar.appendChild(el(`<div class="diebox"><div class="diewrap">${dieHTML(S.die)}</div>${btn}</div>`));
+ app.appendChild(g);
+
+ g.querySelectorAll(".opt[data-i]").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+ const act=document.getElementById("act"); if(act) act.onclick=action;
+ const ag=document.getElementById("again"); if(ag) ag.onclick=()=>{S.players=S.players.map(x=>({n:x.n}));S.screen="setup";render()};
+}
+
+function log(t){S.log.push(t)}
+function action(){
+ const p=S.players[S.cur],q=S.q;
+ if(!q){
+  if(p.skip){p.skip=false;log(`${p.n} descansou no albergue.`);return nextPlayer()}
+  if(!S.deck.length) S.deck=shuffle(GERAIS.concat(ROUTES[S.route].perguntas));
+  S.q={q:S.deck.pop(),order:shuffle([0,1,2,3]),done:false};render();
+  const f=document.querySelector(".opt[data-i]");if(f)f.focus();return;
+ }
+ if(q.done){
+  S.q=null;
+  if(q.ok){const d=1+Math.floor(Math.random()*6);S.die=d;log(`${p.n} acertou e tirou ${d}.`);render();const de=document.getElementById("die");if(de)de.classList.add("roll");S.busy=true;setTimeout(()=>move(p,d,land),560)}
+  else{S.die=1;log(`${p.n} errou e deu um passo de fé.`);move(p,1,land)}
+ }
+}
+function answer(i){const q=S.q;if(!q||q.done)return;q.done=true;q.pick=i;q.ok=i===q.q[2];render();const a=document.getElementById("act");if(a)a.focus()}
+
+function move(p,steps,cb){
+ S.busy=true;const dir=steps<0?-1:1;let left=Math.abs(steps);
+ const tick=()=>{if(left===0||(dir>0&&p.pos>=L-1)||(dir<0&&p.pos<=0)){S.busy=false;render();cb&&cb();return}
+  p.pos+=dir;left--;render();setTimeout(tick,230)};
+ tick();
+}
+function stampCity(p){const t=S.board[p.pos];if(t.t==="cidade"&&!p.stamps.includes(t.i)){p.stamps.push(t.i);return true}return false}
+
+function modal(html){closeModal();const o=el(`<div class="overlay" id="ov"><div class="card frame" role="dialog" aria-modal="true">${html}</div></div>`);document.body.appendChild(o);const f=o.querySelector("button");if(f)f.focus();return o}
+function closeModal(){const o=document.getElementById("ov");if(o)o.remove()}
+
+function land(){
+ const p=S.players[S.cur],t=S.board[p.pos];
+ if(p.pos>=L-1){stampCity(p);return finish(p)}
+ if(t.t==="cidade"){
+  const novo=stampCity(p);
+  modal(`<div class="ttl">${novo?"Carimbo na credencial":"Cidade já carimbada"}</div><div class="in"><div class="kind">${badge("pin","#22468f")}<div><small>${esc(p.n)} chegou a</small><h3>${esc(t.nome)}</h3></div></div><p class="fact">${esc(t.fact)}</p><div class="actions"><button class="gbtn" id="ok" style="font-size:19px">Seguir caminho <span class="tri"></span></button></div></div>`);
+  document.getElementById("ok").onclick=()=>{closeModal();log(`${p.n} chegou a ${t.nome}.`);nextPlayer()};return;
+ }
+ const c=CASAS[t.t];
+ if(!c) return nextPlayer();
+ const txt=c.cards[Math.floor(Math.random()*c.cards.length)];
+ modal(`<div class="ttl">${c.grupo==="esp"?"Casa especial":"Imprevisto"}</div><div class="in"><div class="kind">${badge(c.ic,COR[t.t])}<div><small>${esc(p.n)} caiu em</small><h3>${c.nome}</h3></div></div><p class="fact">${esc(txt)}</p><p class="eff">${c.efeito}</p><div class="actions"><button class="gbtn" id="ok" style="font-size:19px">${c.bt} <span class="tri"></span></button></div></div>`);
+ document.getElementById("ok").onclick=()=>{closeModal();applyEffect(p,t.t)};
+}
+
+function applyEffect(p,k){
+ const after=()=>{const w=S.players.find(x=>x.pos>=L-1);if(w){stampCity(w);return finish(w)}stampCity(p);nextPlayer()};
+ if(k==="oracao"){log(`${p.n} rezou e avançou 1.`);move(p,1,after)}
+ else if(k==="acao"||k==="reflexao"){p.gracas++;log(`${p.n} ganhou 1 graça.`);nextPlayer()}
+ else if(k==="descanso"){p.skip=true;log(`${p.n} vai descansar no albergue.`);nextPlayer()}
+ else if(k==="bolha"){log(`${p.n} voltou 2 casas.`);move(p,-2,after)}
+ else if(k==="atalho"){log(`${p.n} avançou 2 casas.`);move(p,2,after)}
+ else if(k==="companheiro"){S.players.forEach(o=>{if(o!==p&&o.pos<L-1){o.pos++;stampCity(o)}});log(`${p.n} partilhou: os outros avançaram 1.`);after()}
+ else nextPlayer();
+}
+function nextPlayer(){if(S.over)return;S.cur=(S.cur+1)%S.players.length;render()}
+
+function finish(w){
+ S.over=true;S.cur=S.players.indexOf(w);render();const r=ROUTES[S.route];
+ const rank=S.players.slice().sort((a,b)=>b.pos-a.pos||b.gracas-a.gracas);
+ log(`${w.n} chegou a ${r.meta}!`);
+ modal(`<div class="ttl">Chegada</div><div class="in"><div class="kind">${badge("cross","#b21f1f")}<div><small>Peregrinação concluída</small><h3>${esc(w.n)} chegou a ${esc(r.meta)}!</h3></div></div><p class="fact">${S.route==="santiago"?"Abraço no apóstolo e Compostela na mão. Buen Camino!":"Aos pés da Mãe Aparecida, o romeiro agradece cada passo."}</p>
+  <div class="rank">${rank.map((x,i)=>`<div class="pcard" style="--pc:${x.c}"><span class="av">${i+1}</span><span class="info"><span class="nm" style="display:block">${esc(x.n)}</span><span class="sc">${x.stamps.length} carimbos · ${x.gracas} graças</span></span></div>`).join("")}</div>
+  <p style="margin:0;color:var(--muted)">Na peregrinação ninguém perde: esperem juntos os últimos chegarem e rezem uma Salve-Rainha em ação de graças.</p>
+  <div class="actions"><button class="obtn" id="ver">Ver tabuleiro</button><button class="gbtn" id="again2" style="font-size:19px">Nova peregrinação</button></div></div>`);
+ document.getElementById("ver").onclick=closeModal;
+ document.getElementById("again2").onclick=()=>{closeModal();S.players=S.players.map(x=>({n:x.n}));S.screen="setup";render()};
+}
+
+let rz,lastC=0;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(S.screen==="game"&&cols()!==lastC){lastC=cols();render()}},150)});
+render();
+</script>
+
+</body>
+</html>
