@@ -7,262 +7,405 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow:wght@400;500;600;700&display=swap">
-<meta name="description" content="Mais ou Menos: quem tem mais gols, títulos ou valor de mercado? Jogue sozinho, contra o robô ou nos pênaltis com um amigo.">
+<meta name="description" content="Mais ou Menos: quem tem mais gols, títulos ou valor de mercado? Jogue sozinho, o desafio diário, contra o robô ou nos pênaltis com um amigo.">
 <meta name="theme-color" content="#070605">
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
 <meta property="og:title" content="Mais ou Menos">
 <meta property="og:description" content="Quem tem mais gols, títulos ou valor de mercado? Duvido você passar da minha sequência.">
 <meta property="og:image" content="https://carludix.com/mais-ou-menos/logo.png">
-<style>body{margin:0} :root{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)} img{max-width:100%}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)} img{max-width:100%}</style>
 <style>
-/* Layout: logo compacto no topo, abas de modo, placar de estádio em uma linha, dois cartões de duelo lado a lado (também no celular). Visual único escuro, por escolha. */
+/* Layout: cabeçalho com voltar + logo que encolhe durante o jogo, abas de modo, placar de LED, faixa de filtros, dois cartões-figurinha lado a lado, ações logo abaixo. Visual único escuro (escudo preto e dourado), por escolha. */
 :root{
   --bg:#070605;          /* preto do escudo */
   --panel:#13110d;
-  --line:#3a2f17;
+  --panel-2:#0c0a07;
+  --line:#3a2f17;        /* divisórias */
+  --edge:#6b5a33;        /* bordas de controles (3:1) */
   --fg:#f4efe4;
   --muted:#a89b80;
   --led:#f6b512;         /* dourado do logo */
+  --led-dim:#8a6a1c;
+  --ink:#120d02;         /* texto sobre dourado */
   --ok:#3ccf4e;          /* seta verde */
   --bad:#ef3b2c;         /* seta vermelha */
-  --display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
-  --body:"Barlow", "Segoe UI", system-ui, sans-serif;
+  --display:"Big Shoulders Display","Roboto Condensed","Arial Narrow",sans-serif-condensed,"Helvetica Neue",sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
   color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{height:100%}
+html,body{min-height:100%}
 body{
-  background:var(--bg);
-  background-image:radial-gradient(ellipse 80% 45% at 50% 0%, rgba(246,181,18,.16), transparent 70%);
+  margin:0;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 45% at 50% 0%, rgba(246,181,18,.16), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(60,207,78,.022) 0 56px, transparent 56px 112px);
+  background-repeat:no-repeat, repeat;
+  background-size:100% 100vh, auto;
   color:var(--fg); font-family:var(--body); font-size:16px;
   padding-left:max(16px, env(safe-area-inset-left,0px));
   padding-right:max(16px, env(safe-area-inset-right,0px));
 }
-.wrap{max-width:860px; margin:0 auto; padding-block:16px 32px; display:flex; flex-direction:column; gap:16px}
+button,a{-webkit-tap-highlight-color:transparent}
+button{font-family:inherit}
+.wrap{max-width:860px; margin:0 auto; padding-block:14px 32px; display:flex; flex-direction:column; gap:14px}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+:focus-visible{outline:none; box-shadow:0 0 0 2px var(--bg), 0 0 0 4px #fff; border-radius:6px}
 
-/* Voltar ao portal */
-.back{align-self:flex-start; font:800 15px var(--display); letter-spacing:.08em; color:var(--muted); text-decoration:none;
-  border:1.5px solid var(--line); border-radius:999px; padding:8px 14px; min-height:40px; display:inline-flex; align-items:center}
-.back:hover{color:var(--led); border-color:var(--led)}
-.modes.three{grid-template-columns:repeat(3,1fr)}
-
-/* Logo */
-.hero{display:flex; justify-content:center}
-.hero img{width:auto; max-width:100%; max-height:min(22vh,190px); height:auto; filter:drop-shadow(0 8px 30px rgba(246,181,18,.25))}
+/* Topo */
+.top{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.back,.iconbtn{font:800 15px var(--display); letter-spacing:.08em; color:var(--muted); text-decoration:none; background:transparent;
+  border:1.5px solid var(--edge); border-radius:999px; padding:8px 14px; min-height:44px; display:inline-flex; align-items:center; gap:6px; cursor:pointer}
+.back:active,.iconbtn:active{transform:scale(.97)}
+@media (hover:hover){.back:hover,.iconbtn:hover{color:var(--led); border-color:var(--led)}}
+.hero{display:flex; justify-content:center; transition:max-height .25s ease}
+.hero img{width:auto; max-width:100%; max-height:min(22vh,180px); height:auto; filter:drop-shadow(0 8px 30px rgba(246,181,18,.25)); transition:max-height .25s ease}
+body.compact .hero img{max-height:84px}
 
 /* Abas */
-.modes{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
-.mode{font:800 18px var(--display); letter-spacing:.04em; text-transform:uppercase; color:var(--muted);
-  background:var(--panel); border:1.5px solid var(--line); border-radius:8px; padding:9px 8px; cursor:pointer; min-height:56px;
+.modes{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
+.modes.four{grid-template-columns:repeat(4,1fr)}
+.mode{font:800 17px var(--display); letter-spacing:.04em; text-transform:uppercase; color:var(--muted);
+  background:var(--panel); border:1.5px solid var(--edge); border-radius:8px; padding:8px 4px; cursor:pointer; min-height:52px;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; line-height:1.05}
-.mode small{font:500 12px var(--body); letter-spacing:0; text-transform:none; color:var(--muted)}
-.mode[aria-pressed="true"]{color:var(--led); border-color:var(--led); background:#1a1407}
+.mode small{font:500 11.5px var(--body); letter-spacing:0; text-transform:none; color:var(--muted)}
+.mode[aria-pressed="true"]{color:var(--ink); background:var(--led); border-color:var(--led)}
+.mode[aria-pressed="true"] small{color:#3a2a06}
+.mode:active{transform:translateY(1px) scale(.98)}
+@media (hover:hover){.mode:not([aria-pressed="true"]):hover{color:var(--fg); border-color:var(--led)}}
+body.compact .mode small{display:none}
+body.compact .mode{min-height:44px}
 
-/* Placar */
+/* Placar de LED */
 .board{
-  background:#030302; border:2px solid var(--line); border-radius:6px;
-  display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:12px;
-  padding:10px 16px;
-  box-shadow:inset 0 0 0 4px #0d0b07, 0 10px 30px rgba(0,0,0,.4);
+  background-color:#030302;
+  background-image:radial-gradient(rgba(246,181,18,.07) 1px, transparent 1.6px);
+  background-size:5px 5px;
+  border:2px solid var(--line); border-radius:8px;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px;
+  padding:10px 16px; min-height:64px;
+  box-shadow:inset 0 0 0 1px #000, 0 10px 30px rgba(0,0,0,.4);
 }
-.brand{font-family:var(--display); font-weight:900; line-height:.95; text-transform:uppercase; text-align:center}
+.board .mid{font:800 13px var(--display); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); text-align:center}
+.board .mid b{display:block; color:var(--led); font-size:18px; white-space:nowrap}
+@media (max-width:420px){.board .mid{font-size:11px} .board .mid b{font-size:15px} .lbl{letter-spacing:.08em}}
+.brand{font-family:var(--display); font-weight:900; line-height:.95; text-transform:uppercase; text-align:center; grid-column:1 / -1; font-size:clamp(24px,5vw,32px)}
 .brand span{color:var(--led)}
-.brand.wide{grid-column:1 / -1; font-size:clamp(24px,5vw,34px)}
 .stat{display:flex; align-items:baseline; gap:10px}
 .stat.right{justify-content:flex-end}
 .lbl{font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
 .digits{
-  font-family:var(--display); font-weight:800; font-size:clamp(36px,7vw,52px); line-height:1;
-  color:var(--led); text-shadow:0 0 14px rgba(246,181,18,.45); font-variant-numeric:tabular-nums;
+  position:relative; display:inline-block;
+  font-family:var(--display); font-weight:800; font-size:clamp(36px,7vw,50px); line-height:1;
+  color:var(--led); text-shadow:0 0 14px rgba(246,181,18,.5); font-variant-numeric:tabular-nums;
 }
-.digits.dim{color:#8a6a1c; text-shadow:none}
+.digits > span{position:relative; z-index:1}
+.digits.dim{color:var(--led-dim); text-shadow:none}
 .digits.sm{font-size:30px}
+.plusone{position:absolute; right:-6px; top:-14px; font:900 16px var(--display); color:var(--ok); white-space:nowrap; animation:rise .9s ease forwards; pointer-events:none}
+@keyframes rise{0%{opacity:0; transform:translateY(8px)}25%{opacity:1; transform:none}100%{opacity:0; transform:translateY(-18px)}}
 .bump{animation:bump .35s ease}
 @keyframes bump{40%{transform:scale(1.18)}}
 
 /* Filtros */
-.chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+.chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center}
 .chip{
-  font:600 14px var(--body); color:var(--muted); background:transparent; white-space:nowrap;
-  border:1.5px solid var(--line); border-radius:999px; padding:10px 16px; min-height:44px; cursor:pointer;
+  font:600 14px var(--body); color:var(--muted); background:transparent; white-space:nowrap; cursor:pointer;
+  border:1.5px solid var(--edge); border-radius:999px; padding:10px 16px; min-height:44px; display:inline-flex; align-items:center; gap:6px;
 }
-.chip[aria-pressed="true"]{color:#120d02; background:var(--led); border-color:var(--led)}
-button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(--led); outline-offset:3px}
+.chip[aria-pressed="true"]{color:var(--ink); background:var(--led); border-color:var(--led)}
+.chip:active{transform:translateY(1px) scale(.98)}
+@media (hover:hover){.chip:not([aria-pressed="true"]):hover{color:var(--fg); border-color:var(--led)}}
+.chips .sep{width:1px; height:28px; background:var(--line); flex:none}
 
 /* Pergunta */
-.play{display:flex; flex-direction:column; gap:16px}
+.play{display:flex; flex-direction:column; gap:14px}
 .q{text-align:center; display:flex; flex-direction:column; gap:4px; align-items:center}
 .q .cat{font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--led)}
-.q h1{margin:0; font-family:var(--display); font-weight:800; font-size:clamp(24px,4.6vw,36px); line-height:1.05; text-wrap:balance}
+.q h1{margin:0; font-family:var(--display); font-weight:800; font-size:clamp(22px,4.4vw,34px); line-height:1.08; text-wrap:balance}
+.q h1:focus{box-shadow:none}
 .q .note{font-size:13px; color:var(--muted)}
-.turn{font:800 16px var(--display); letter-spacing:.08em; text-transform:uppercase; color:#120d02; background:var(--led); padding:4px 12px; border-radius:4px; margin-bottom:4px}
+.turn{font:800 16px var(--display); letter-spacing:.08em; text-transform:uppercase; color:var(--ink); background:var(--led); padding:4px 12px; border-radius:4px; margin-bottom:4px}
+.turn.next{background:transparent; color:var(--muted); border:1.5px solid var(--edge)}
 
-/* Duelo */
+/* Duelo: cartões estilo figurinha */
 .duel{display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:stretch}
-.vs{align-self:center; font-family:var(--display); font-weight:900; font-size:28px; color:var(--muted)}
+.duel.enter .card{animation:enter .26s ease both}
+.duel.enter .card:last-child{animation-delay:.06s}
+@keyframes enter{from{opacity:0; transform:translateY(12px)}}
+.vs{align-self:center; width:40px; height:40px; display:grid; place-items:center; border-radius:50%;
+  background:var(--panel-2); border:1.5px solid var(--led); color:var(--led); font:900 15px var(--display); letter-spacing:.04em}
 .card{
-  appearance:none; text-align:left; color:var(--fg); font:inherit; cursor:pointer;
-  background:var(--panel); border:2px solid var(--line); border-radius:10px;
-  padding:18px 16px; min-height:180px; min-width:0;
-  display:flex; flex-direction:column; justify-content:space-between; gap:12px;
-  transition:border-color .15s, transform .15s, background .2s;
-  position:relative; overflow:hidden;
+  appearance:none; text-align:left; color:var(--fg); font:inherit; cursor:pointer; position:relative; overflow:hidden;
+  background:var(--panel); border:2px solid var(--edge); border-radius:12px;
+  box-shadow:inset 0 0 0 3px var(--panel), inset 0 0 0 4px rgba(246,181,18,.18);
+  padding:0 0 16px; min-height:190px; min-width:0;
+  display:grid; grid-template-rows:auto 1fr auto auto; gap:10px;
+  transition:border-color .15s, transform .15s, background .2s, opacity .2s;
 }
-.card:hover:not(:disabled){border-color:var(--led); transform:translateY(-2px)}
+.card .band{display:flex; align-items:center; gap:8px; padding:9px 14px; background:rgba(246,181,18,.08); border-bottom:1px solid var(--line); min-width:0}
+.card .flag{font-size:18px; line-height:1}
+.card .kind{font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
+.card .name{padding:0 14px; align-self:center; font-family:var(--display); font-weight:800; font-size:clamp(26px,4.4vw,38px); line-height:1.02; padding-top:.06em; text-transform:uppercase; overflow-wrap:break-word; hyphens:manual}
+.card .name.l7{font-size:.9em}
+.card .name.l9{font-size:.78em}
+.card .name.l11{font-size:.66em}
+.card .name{min-width:0}
+.card .val{padding:0 14px; font-family:var(--display); font-weight:900; font-size:clamp(32px,6vw,46px); line-height:1; font-variant-numeric:tabular-nums; min-height:1em; display:flex; align-items:baseline; gap:4px; flex-wrap:wrap}
+.card .val small{font-size:.42em; font-weight:700; color:var(--muted); letter-spacing:.04em}
+.card .val.hidden{color:var(--edge)}
+.card .val.flip{animation:flip .4s ease}
+@keyframes flip{0%{transform:rotateX(90deg); opacity:.2}100%{transform:none; opacity:1}}
+.card.win .val::after{content:"▲"; color:var(--ok); font-size:.5em; margin-left:2px}
+.card.lose .val::after,.card.picked-wrong .val::after{content:"▼"; color:var(--bad); font-size:.5em; margin-left:2px}
+.card:active:not(:disabled){transform:scale(.98); border-color:var(--led)}
+@media (hover:hover){.card:hover:not(:disabled){border-color:var(--led); transform:translateY(-2px); box-shadow:inset 0 0 0 3px var(--panel), inset 0 0 0 4px rgba(246,181,18,.35), 0 8px 24px rgba(0,0,0,.4)}}
 .card:disabled{cursor:default}
-.card .kind{font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
-.card .name{font-family:var(--display); font-weight:800; font-size:clamp(26px,4.6vw,38px); line-height:.95; text-transform:uppercase; overflow-wrap:anywhere; hyphens:auto}
-.card .val{font-family:var(--display); font-weight:900; font-size:clamp(32px,6vw,46px); line-height:1; font-variant-numeric:tabular-nums; min-height:1em}
-.card .val small{font-size:.42em; font-weight:700; color:var(--muted); margin-left:4px; letter-spacing:.04em}
-.card .val.hidden{color:var(--line)}
+.card.waiting{opacity:.6; filter:saturate(.6)}
+.card.known{cursor:default}
 .card.win{border-color:var(--ok); background:linear-gradient(180deg, rgba(60,207,78,.13), var(--panel) 70%)}
-.card.lose{opacity:.75}
-.card.picked-wrong{border-color:var(--bad); background:linear-gradient(180deg, rgba(239,59,44,.15), var(--panel) 70%)}
+.card.lose{opacity:.78}
+.card.picked-wrong{border-color:var(--bad); background:linear-gradient(180deg, rgba(239,59,44,.15), var(--panel) 70%); opacity:1}
 .card.shake{animation:shake .3s ease}
 @keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
-.tag{position:absolute; top:10px; right:10px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:3px 7px; border-radius:4px}
+.tag{justify-self:start; margin:0 14px; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; padding:4px 8px; border-radius:4px}
 .tag.ok{background:var(--ok); color:#06120b}
 .tag.bad{background:var(--bad); color:#1a0503}
-.plus{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%); font:900 26px var(--display); color:var(--led);
-  text-shadow:0 0 18px rgba(246,181,18,.6); white-space:nowrap; pointer-events:none; animation:plus .9s ease forwards}
-@keyframes plus{0%{opacity:0; transform:translate(-50%,-20%) scale(.8)}25%{opacity:1; transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0; transform:translate(-50%,-120%) scale(1)}}
 
 /* Ações */
-.actions{display:flex; flex-direction:column; align-items:center; gap:10px; min-height:90px}
-.msg{font-weight:600; font-size:17px; text-align:center; text-wrap:balance}
+.actions{display:flex; flex-direction:column; align-items:center; gap:10px; min-height:80px}
+.msg{font-weight:600; font-size:17px; text-align:center; text-wrap:balance; margin:0}
 .msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)} .msg.small{font-size:15px}
-.hint{color:var(--muted); font-weight:500}
+.hint{color:var(--muted); font-weight:500; text-align:center}
+.keys{display:none; font-size:12.5px; color:var(--muted)}
+@media (hover:hover) and (pointer:fine){.keys{display:block}}
+.kbd{font:700 11px var(--body); border:1px solid var(--edge); border-radius:4px; padding:1px 5px}
 .btn{
   font:800 20px var(--display); letter-spacing:.06em; text-transform:uppercase; text-decoration:none; text-align:center;
-  background:var(--led); color:#1a1205; border:0; border-radius:6px; padding:12px 24px; min-height:48px; cursor:pointer;
-  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  background:var(--led); color:var(--ink); border:1.5px solid var(--led); border-radius:8px; padding:10px 22px; min-height:48px; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; position:relative; overflow:hidden;
 }
-.btn.ghost{background:transparent; color:var(--fg); border:1.5px solid var(--line)}
-.btn.wa{background:#25d366; color:#04210f}
-.btn.sm{font-size:16px; padding:8px 16px; min-height:44px}
-.btn.next{position:relative; overflow:hidden}
-.btn.next .bar{position:absolute; left:0; bottom:0; height:3px; background:rgba(0,0,0,.35); width:0; animation:fill linear forwards}
+.btn:active{transform:translateY(1px) scale(.98); filter:brightness(.92)}
+@media (hover:hover){.btn:hover{filter:brightness(1.08)}}
+.btn:disabled{opacity:.5; cursor:not-allowed}
+.btn.ghost{background:transparent; color:var(--fg); border-color:var(--edge)}
+.btn.wa{background:#25d366; border-color:#25d366; color:#04210f}
+.btn.ok{background:var(--ok); border-color:var(--ok); color:#06120b}
+.btn.sm{font-size:16px; padding:8px 14px; min-height:44px}
+.btn.big{font-size:24px; min-height:58px; padding:12px 26px}
+.btn .bar{position:absolute; left:0; bottom:0; height:4px; background:var(--ink); opacity:.5; width:0; animation:fill linear forwards}
 @keyframes fill{to{width:100%}}
+.linkish{background:none; border:0; color:var(--muted); font:500 13px var(--body); text-decoration:underline; text-underline-offset:3px; cursor:pointer; min-height:36px; padding:4px 8px}
 .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
 .row.left{justify-content:flex-start}
+.classic-btns{display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:420px}
+.classic-btns .btn{font-size:22px; min-height:56px}
+.btn.up{background:var(--ok); border-color:var(--ok); color:#06120b}
+.btn.down{background:var(--bad); border-color:var(--bad); color:#1a0503}
+.shot{font:900 34px var(--display); letter-spacing:.06em; animation:bump .5s ease}
+.shot.ok{color:var(--ok)} .shot.bad{color:var(--bad)}
 
 /* Fim de jogo */
 .over{
-  border:2px solid var(--bad); border-radius:10px; background:#170908; width:100%;
-  padding:18px; text-align:center; display:flex; flex-direction:column; gap:6px; align-items:center;
+  border:2px solid var(--bad); border-radius:12px; background:#170908; width:100%;
+  padding:16px; text-align:center; display:flex; flex-direction:column; gap:8px; align-items:center;
 }
-.over.win-panel{border-color:var(--led); background:#171207}
-.over .big{font-family:var(--display); font-weight:900; font-size:56px; line-height:1; color:var(--led); font-variant-numeric:tabular-nums}
-.over .rank{font-weight:600}
-.record{font:900 22px var(--display); letter-spacing:.08em; color:#120d02; background:var(--led); padding:4px 12px; border-radius:4px; animation:bump .5s ease 2}
+.over.win-panel{border-color:var(--led); background:radial-gradient(120% 80% at 50% 0, rgba(246,181,18,.18), #171207 70%)}
+.over .big{font-family:var(--display); font-weight:900; font-size:clamp(64px,18vw,96px); line-height:.9; color:var(--led); font-variant-numeric:tabular-nums; text-shadow:0 0 22px rgba(246,181,18,.4)}
+.over .rank{font-weight:700; font-size:17px}
+.over .grid{font-size:18px; letter-spacing:1px; line-height:1.3; word-break:break-all}
+.record{font:900 22px var(--display); letter-spacing:.08em; color:var(--ink); background:var(--led); padding:4px 12px; border-radius:4px; animation:bump .5s ease 2}
 .copied{font-size:13px; color:var(--ok); min-height:1em}
+.share{display:flex; flex-direction:column; align-items:center; gap:6px; width:100%}
 
 /* Configuração */
 .setup{display:flex; flex-direction:column; gap:16px}
 .lead{margin:0; line-height:1.55; max-width:62ch; margin-inline:auto; text-align:center}
-.form{display:flex; flex-direction:column; gap:8px; max-width:360px; width:100%; margin:0 auto}
+.lead.muted{color:var(--muted); font-size:14.5px}
+.form{display:flex; flex-direction:column; gap:8px; max-width:380px; width:100%; margin:0 auto}
 .form label,.box label{font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
-.form input,.form select,.box input{font:600 18px var(--body); color:var(--fg); background:var(--panel); border:1.5px solid var(--line); border-radius:6px; padding:10px 12px; min-width:0; min-height:48px}
-.form input:focus,.form select:focus,.box input:focus{outline:2px solid var(--led); outline-offset:1px}
+.form input,.form select,.box input{font:600 18px var(--body); color:var(--fg); background:var(--panel); border:1.5px solid var(--edge); border-radius:8px; padding:10px 12px; min-width:0; min-height:48px; width:100%}
+.form input:focus,.form select:focus,.box input:focus{border-color:var(--led); box-shadow:none; outline:none}
+[aria-invalid="true"]{border-color:var(--bad)!important; box-shadow:0 0 0 1px var(--bad)!important}
 .form .btn{margin-top:8px}
+.levels{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:520px; width:100%; margin:0 auto}
+.level{display:flex; flex-direction:column; align-items:center; gap:4px; padding:14px 8px; min-height:96px; border-radius:10px; cursor:pointer;
+  background:var(--panel); border:1.5px solid var(--edge); color:var(--fg)}
+.level b{font:900 24px var(--display); text-transform:uppercase; letter-spacing:.04em}
+.level span{font-size:12.5px; color:var(--muted); text-align:center}
+.level:active{transform:scale(.98)}
+@media (hover:hover){.level:hover{border-color:var(--led)}}
+.level.dificil b{color:var(--bad)} .level.medio b{color:var(--led)} .level.facil b{color:var(--ok)}
+details.more{max-width:380px; width:100%; margin:0 auto}
+details.more summary{cursor:pointer; color:var(--muted); font-weight:600; font-size:14px; text-align:center; padding:10px; min-height:44px}
+.handoff{display:flex; flex-direction:column; align-items:center; gap:14px; padding:28px 16px; border:2px dashed var(--edge); border-radius:12px; text-align:center}
+.handoff .who{font:900 clamp(40px,12vw,64px) var(--display); text-transform:uppercase; color:var(--led); line-height:.95; overflow-wrap:anywhere}
 .online-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-.box{background:var(--panel); border:1.5px solid var(--line); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.box{background:var(--panel); border:1.5px solid var(--edge); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:10px; min-width:0}
 .box h2{margin:0; font:800 22px var(--display); text-transform:uppercase; letter-spacing:.03em}
 .box p{margin:0; color:var(--muted)}
+.box.weekly{border-color:var(--led)}
 .err{color:var(--bad); font-size:14px; min-height:1em}
+#code{font:800 28px var(--display); letter-spacing:.3em; text-transform:uppercase; text-align:center}
 .code-row{display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap}
 .code{font:900 44px var(--display); letter-spacing:.18em; color:var(--led); user-select:all}
 .ranking{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
-.ranking li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; background:#0c0a07; font-weight:600}
-.ranking li.me{outline:1.5px solid var(--led)}
+.ranking li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; background:var(--panel-2); font-weight:600}
+.ranking li.me{box-shadow:inset 0 0 0 1.5px var(--led)}
 .ranking li.empty{color:var(--muted); font-weight:500}
 .ranking .who{min-width:0; overflow-wrap:anywhere}
-.ranking .live{font-size:12px; color:var(--muted); font-weight:500}
+.ranking .live{font-size:12px; color:var(--ok); font-weight:600}
+.ranking .live::before{content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--ok); margin-right:5px; vertical-align:1px}
+.ranking li:nth-child(1) .digits{color:#f6b512}
+.ranking li:nth-child(2) .digits{color:#d4d4d4; text-shadow:none}
+.ranking li:nth-child(3) .digits{color:#d08a45; text-shadow:none}
+.pill-code{display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:6px 8px 6px 12px; border-radius:8px; cursor:pointer;
+  background:var(--panel-2); border:1.5px solid var(--edge); color:var(--led); font:900 18px var(--display); letter-spacing:.14em}
+.pill-code em{font-style:normal; font:800 15px var(--display); letter-spacing:0; color:var(--ink); background:var(--led); border-radius:4px; padding:2px 7px}
 #setup .btn{align-self:center}
 
 /* Placar dos pênaltis */
 .pen{grid-column:1 / -1; display:flex; flex-direction:column; gap:6px}
 .pen-row{display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:12px; padding:4px 6px; border-radius:6px}
-.pen-row.on{background:#1a1407}
+.pen-row.on{background:rgba(246,181,18,.1)}
 .pen-name{font:800 22px var(--display); text-transform:uppercase; overflow-wrap:anywhere}
+.pen-name small{font:700 11px var(--body); letter-spacing:.1em; color:var(--muted)}
 .dots{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end}
-.dot{width:16px; height:16px; border-radius:50%; border:2px solid var(--line)}
+.dot{position:relative; width:16px; height:16px; border-radius:50%; border:2px solid var(--edge)}
 .dot.g{background:var(--ok); border-color:var(--ok)}
-.dot.m{background:var(--bad); border-color:var(--bad)}
+.dot.m{border-color:var(--bad)}
+.dot.m::after{content:"×"; position:absolute; inset:0; display:grid; place-items:center; font:900 12px/1 var(--body); color:var(--bad)}
+.dot.next{border-color:var(--led); animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(246,181,18,.25)}}
+.thinking::after{content:""; display:inline-block; width:1.2em; text-align:left; animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+
+/* Painéis por cima: estatísticas, confirmação, aviso */
+.sheet{position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.72); display:flex; justify-content:center; align-items:flex-end;
+  padding:max(12px, env(safe-area-inset-top,0px)) max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px))}
+.sheet-body{background:var(--bg); border:1.5px solid var(--edge); border-bottom:0; border-radius:14px 14px 0 0; width:100%; max-width:640px; max-height:92vh; overflow:auto;
+  padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:14px}
+.sheet h2{margin:0; font:900 28px var(--display); text-transform:uppercase}
+.sheet-head{display:flex; justify-content:space-between; align-items:center; gap:10px}
+.kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.kpi{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:2px; min-width:0}
+.kpi b{font:900 30px var(--display); color:var(--led); font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px; color:var(--muted)}
+.cats{display:flex; flex-direction:column; gap:6px}
+.catrow{display:grid; grid-template-columns:minmax(0,1fr) 110px 46px; gap:10px; align-items:center; font-size:14px}
+.catrow .meter{height:8px; background:var(--panel); border-radius:4px; overflow:hidden; border:1px solid var(--line)}
+.catrow .meter i{display:block; height:100%; background:var(--led)}
+.catrow b{text-align:right; font-variant-numeric:tabular-nums}
+.badges{display:grid; grid-template-columns:repeat(2,1fr); gap:8px}
+.badge{display:flex; gap:10px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px}
+.badge .ico{width:36px; height:36px; flex:none; display:grid; place-items:center; border-radius:50%; background:var(--panel-2); border:1.5px solid var(--edge); font-size:18px; filter:grayscale(1); opacity:.5}
+.badge.on .ico{filter:none; opacity:1; border-color:var(--led)}
+.badge b{display:block; font-size:14px}
+.badge span{font-size:12px; color:var(--muted)}
+.switch{display:flex; justify-content:space-between; align-items:center; gap:12px; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 12px}
+.toggle{width:52px; height:30px; border-radius:999px; border:1.5px solid var(--edge); background:var(--panel-2); position:relative; cursor:pointer; flex:none}
+.toggle::after{content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:var(--muted); transition:transform .15s}
+.toggle[aria-checked="true"]{background:var(--led); border-color:var(--led)}
+.toggle[aria-checked="true"]::after{transform:translateX(22px); background:var(--ink)}
+.confirm-body{max-width:460px; text-align:center; align-items:center}
+.toast{position:fixed; left:50%; bottom:calc(16px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); z-index:50;
+  background:var(--led); color:var(--ink); font:800 17px var(--display); letter-spacing:.04em; padding:10px 16px; border-radius:999px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5); max-width:calc(100vw - 32px); text-align:center; animation:toast 2.8s ease forwards; pointer-events:none}
+@keyframes toast{0%{opacity:0; transform:translate(-50%,12px)}10%,85%{opacity:1; transform:translate(-50%,0)}100%{opacity:0; transform:translate(-50%,8px)}}
 
 /* Rodapé */
-footer{max-width:65ch; margin:8px auto 0; text-align:center}
+footer{max-width:65ch; margin:4px auto 0; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px}
 footer summary{cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; padding:10px; min-height:44px}
 footer p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
 
 @media (max-width:620px){
   .wrap{gap:12px; padding-block:10px 24px}
-  .hero img{max-height:104px}
-  .modes{grid-template-columns:repeat(2,1fr)}
-  .modes.three{grid-template-columns:repeat(3,1fr)}
-  .modes.three .mode small{display:none}
-  .mode{font-size:15px; min-height:50px; padding:6px 4px}
-  .mode small{font-size:11px}
-  .chips{flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; scrollbar-width:none; margin-inline:-4px; padding:2px 4px}
+  .hero img{max-height:96px}
+  body.compact .hero img{max-height:56px}
+  .modes,.modes.four{gap:5px}
+  .mode{font-size:14px; min-height:44px; padding:6px 2px}
+  .mode small{display:none}
+  .chips{flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; scrollbar-width:none;
+    margin-inline:-16px; padding:2px 16px; scroll-padding-inline:16px;
+    -webkit-mask-image:linear-gradient(90deg,#000 85%,transparent); mask-image:linear-gradient(90deg,#000 85%,transparent)}
   .chips::-webkit-scrollbar{display:none}
   .chip{padding:10px 14px}
-  .board{padding:8px 12px}
+  .board{padding:8px 12px; gap:8px}
   .duel{gap:8px}
-  .vs{font-size:18px}
-  .card{min-height:150px; padding:12px 10px; gap:8px}
-  .card .kind{font-size:10px; letter-spacing:.08em}
-  .card .name{font-size:clamp(18px,5.6vw,24px)}
-  .card .val{font-size:clamp(26px,8vw,34px)}
-  .tag{top:6px; right:6px; font-size:10px}
-  .q h1{font-size:clamp(22px,6vw,28px)}
+  .vs{width:30px; height:30px; font-size:12px}
+  .card{min-height:168px; padding-bottom:12px; gap:8px}
+  .card .band{padding:7px 9px; gap:6px}
+  .card .flag{font-size:15px}
+  .card .kind{font-size:10px; letter-spacing:.06em}
+  .card .name{font-size:clamp(22px,7vw,30px); padding:0 10px}
+  .card .val{font-size:clamp(28px,8.5vw,36px); padding:0 10px}
+  .tag{margin:0 10px; font-size:10px; padding:3px 6px}
+  .q h1{font-size:clamp(19px,5.2vw,24px)}
   .online-grid{grid-template-columns:1fr}
-  .dot{width:12px; height:12px}
+  .dot{width:13px; height:13px}
   .btn{font-size:18px}
+  .levels{gap:8px}
+  .level b{font-size:20px}
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .badges{grid-template-columns:1fr}
+  .catrow{grid-template-columns:minmax(0,1fr) 70px 42px}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+@media (prefers-reduced-motion:reduce){
+  .duel.enter .card,.card.shake,.val.flip,.bump,.record,.shot,.dot.next,.toast{animation:none}
+  .plusone{display:none}
+  .thinking::after{animation:none; content:"..."}
+  .card,.hero img,.hero{transition:none}
+}
 </style>
+
 </head>
 <body>
 <div class="wrap">
-  <a class="back" href="https://carludix.com/">← CARLUDIX</a>
+  <div class="top">
+    <a class="back" href="https://carludix.com/">← CARLUDIX</a>
+    <button class="iconbtn" id="openStats" type="button">Estatísticas</button>
+  </div>
   <div class="hero"><img src="escudo.webp" alt="Mais ou Menos: gols, títulos e valor de mercado" width="480" height="378"></div>
 
-  <nav class="modes" aria-label="Modo de jogo">
+  <nav class="modes" id="modes" aria-label="Modo de jogo">
     <button class="mode" id="m-solo" data-m="solo" aria-pressed="true">Sozinho<small>bata seu recorde</small></button>
+    <button class="mode" id="m-diario" data-m="diario" aria-pressed="false">Diário<small>10 duelos do dia</small></button>
     <button class="mode" id="m-robo" data-m="robo" aria-pressed="false">Robô<small>pênaltis contra a máquina</small></button>
     <button class="mode" id="m-penaltis" data-m="penaltis" aria-pressed="false">Pênaltis<small>2 no mesmo celular</small></button>
     <button class="mode" id="m-online" data-m="online" aria-pressed="false">Online<small>desafio com código</small></button>
   </nav>
 
-  <header class="board" id="board" aria-live="polite"></header>
+  <header class="board" id="board"></header>
 
   <section id="setup" class="setup" hidden></section>
 
   <section id="play" class="play">
-    <nav class="chips" id="chips" aria-label="Categorias">
-      <button class="chip" id="f-all" data-f="all" aria-pressed="true">Tudo</button>
-      <button class="chip" id="f-gols" data-f="gols" aria-pressed="false">Gols</button>
-      <button class="chip" id="f-titulos" data-f="titulos" aria-pressed="false">Títulos</button>
-      <button class="chip" id="f-valor" data-f="valor" aria-pressed="false">Valor de mercado</button>
+    <nav class="chips" id="chips" aria-label="Categorias e formato">
+      <button class="chip" data-f="all" aria-pressed="true">Tudo</button>
+      <button class="chip" data-f="gols" aria-pressed="false"><span aria-hidden="true">⚽</span> Gols</button>
+      <button class="chip" data-f="titulos" aria-pressed="false"><span aria-hidden="true">🏆</span> Títulos</button>
+      <button class="chip" data-f="valor" aria-pressed="false"><span aria-hidden="true">💰</span> Valor</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button class="chip" id="fmtClassic" aria-pressed="false">▲▼ Formato clássico</button>
     </nav>
 
     <section class="q">
       <span class="turn" id="turn" hidden></span>
       <span class="cat" id="cat"></span>
-      <h1 id="question"></h1>
+      <h1 id="question" tabindex="-1"></h1>
       <span class="note" id="note"></span>
     </section>
 
-    <section class="duel">
+    <section class="duel" id="duel">
       <button class="card" id="cardA"></button>
-      <div class="vs" aria-hidden="true">×</div>
+      <div class="vs" aria-hidden="true">VS</div>
       <button class="card" id="cardB"></button>
     </section>
 
-    <section class="actions" id="actions" aria-live="assertive"></section>
+    <section class="actions" id="actions" aria-live="polite"></section>
   </section>
 
   <footer>
@@ -271,10 +414,19 @@ footer p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
       <p>As categorias de gols usam só jogadores que já pararam ou saíram daquela competição, então os números não mudam.
       Copas do Mundo até 2026 (Espanha bicampeã). Champions até a final de 2026 (PSG bicampeão). Libertadores, Brasileirão e Copa do Brasil até 2025.
       Brasileirão pela contagem da CBF, que dá o título de 1987 só ao Sport; o duelo Flamengo × Santos fica de fora por causa dessa polêmica.
-      Bola de Ouro até a edição de 2026 (Harry Kane). Valor de mercado: Transfermarkt, em milhões de euros, em duas fotografias: antes da Copa (junho de 2026) e depois da Copa (julho de 2026).</p>
+      Gols no Brasileirão: Série A, todas as épocas, segundo o levantamento do Lance!.
+      Bola de Ouro até a edição de 2026 (Harry Kane). Valor de mercado: Transfermarkt, em milhões de euros, em junho de 2026 (antes da Copa) e julho de 2026 (depois da Copa).</p>
     </details>
   </footer>
 </div>
+
+<div class="sheet" id="statsSheet" hidden role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+  <div class="sheet-body" id="statsBody"></div>
+</div>
+<div class="sheet" id="confirmSheet" hidden role="dialog" aria-modal="true">
+  <div class="sheet-body confirm-body" id="confirmBody"></div>
+</div>
+<div id="toastHost" aria-live="polite"></div>
 
 <script>
 const CATS = {
@@ -320,8 +472,8 @@ const CATS = {
       ["Cruzeiro","Brasil",2],["Internacional","Brasil",2],["Corinthians","Brasil",1],["Vasco","Brasil",1],
       ["Atlético Mineiro","Brasil",1],["Fluminense","Brasil",1],["Botafogo","Brasil",1],["Atlético Nacional","Colômbia",2],["Colo-Colo","Chile",1],["LDU","Equador",1],["Once Caldas","Colômbia",1],["Vélez Sarsfield","Argentina",1],["San Lorenzo","Argentina",1],["Racing","Argentina",1],["Argentinos Juniors","Argentina",1]
     ]},
-  copas: { group:"titulos", label:"Copas do Mundo", q:"Qual seleção tem mais Copas do Mundo?", unit:["título","títulos"], kind:"Seleção",
-    note:"Até 2026, com o bi da Espanha.",
+  copas: { group:"titulos", label:"Copa do Mundo (FIFA)", q:"Qual seleção tem mais títulos de Copa do Mundo?", unit:["título","títulos"], kind:"Seleção",
+    note:"Mundial de seleções. Até 2026, com o bi da Espanha.",
     items:[
       ["Brasil","América do Sul",5],["Alemanha","Europa",4],["Itália","Europa",4],["Argentina","América do Sul",3],
       ["França","Europa",2],["Uruguai","América do Sul",2],["Espanha","Europa",2],["Inglaterra","Europa",1],
@@ -337,7 +489,7 @@ const CATS = {
       ["Guarani","SP",1],["Sport","PE",1]
     ]},
   selecao: { group:"gols", label:"Gols pela Seleção", q:"Quem fez mais gols pela Seleção Brasileira?", unit:["gol","gols"], kind:"Jogador",
-    note:"Jogos oficiais. Só jogadores que já deixaram a Seleção.",
+    note:"Jogos oficiais. Neymar ainda está na ativa, então fica de fora.",
     items:[
       ["Pelé","1957–1971",77],["Ronaldo Fenômeno","1994–2011",62],["Romário","1987–2005",55],["Zico","1976–1986",48],
       ["Bebeto","1985–1998",39],["Rivaldo","1993–2003",35],["Ronaldinho","1999–2013",33],["Kaká","2002–2016",29],
@@ -361,8 +513,8 @@ const CATS = {
       ["Xavi","Espanha",4],["Clarence Seedorf","Holanda",4],["Sergio Busquets","Espanha",3],["Vinícius Júnior","Brasil",2],
       ["Kaká","Brasil",1],["Ronaldinho","Brasil",1],["Ronaldo Fenômeno","Brasil",0],["Zlatan Ibrahimović","Suécia",0],["Gianluigi Buffon","Itália",0]
     ]},
-  copaamerica: { group:"titulos", label:"Copa América", q:"Qual seleção tem mais Copas América?", unit:["título","títulos"], kind:"Seleção",
-    note:"Até a edição de 2024.",
+  copaamerica: { group:"titulos", label:"Copa América (Conmebol)", q:"Qual seleção tem mais títulos de Copa América?", unit:["título","títulos"], kind:"Seleção",
+    note:"Torneio sul-americano, não é a Copa do Mundo. Até 2024.",
     items:[
       ["Argentina","América do Sul",16],["Uruguai","América do Sul",15],["Brasil","América do Sul",9],["Paraguai","América do Sul",2],
       ["Chile","América do Sul",2],["Peru","América do Sul",2],["Colômbia","América do Sul",1],["Bolívia","América do Sul",1],
@@ -391,15 +543,22 @@ const CATS = {
       ["Jermain Defoe","Inglaterra",162],["Michael Owen","Inglaterra",150],["Robin van Persie","Holanda",144],["Didier Drogba","Costa do Marfim",104],
       ["Cristiano Ronaldo","Portugal",103],["Fernando Torres","Espanha",85],["Roberto Firmino","Brasil",82]
     ]},
-  valor: { group:"valor", label:"Valor de mercado", q:"Quem vale mais no mercado?", unit:["mi €","mi €"], kind:"Jogador",
-    note:"Transfermarkt, atualização pós-Copa (julho de 2026).",
+  golsbr: { group:"gols", label:"Gols no Brasileirão", q:"Quem fez mais gols no Brasileirão?", unit:["gol","gols"], kind:"Jogador",
+    note:"Série A, todas as épocas. Só jogadores que já pararam.",
     items:[
-      ["Lamine Yamal","Barcelona",220],["Erling Haaland","Manchester City",220],["Kylian Mbappé","Real Madrid",200],
-      ["Michael Olise","Bayern de Munique",170],["Jude Bellingham","Real Madrid",160],["Pedri","Barcelona",150],
-      ["Vinícius Júnior","Real Madrid",140],["Elliot Anderson","Inglaterra",120],["Julián Álvarez","Atlético de Madrid",110],
-      ["Cole Palmer","Chelsea",105]
+      ["Roberto Dinamite","Vasco",190],["Fred","Fluminense",158],["Romário","Vasco",154],["Edmundo","Vasco",153],["Zico","Flamengo",135],
+      ["Diego Souza","Sport",130],["Túlio Maravilha","Botafogo",129],["Serginho Chulapa","São Paulo",127],["Dadá Maravilha","Atlético-MG",127],
+      ["Washington","Fluminense",126],["Luís Fabiano","São Paulo",116],["Wellington Paulista","Fortaleza",108],["Pelé","Santos",101]
     ]},
-  valorpre: { group:"valor", label:"Valor antes da Copa", q:"Quem valia mais antes da Copa de 2026?", unit:["mi €","mi €"], kind:"Jogador",
+  valor: { group:"valor", label:"Valor de mercado pós-Copa", q:"Quem valia mais em julho de 2026, depois da Copa?", unit:["mi €","mi €"], kind:"Jogador",
+    note:"Transfermarkt, julho de 2026. Valores mudam toda temporada.",
+    items:[
+      ["Lamine Yamal","Espanha",220],["Erling Haaland","Noruega",220],["Kylian Mbappé","França",200],
+      ["Michael Olise","França",170],["Jude Bellingham","Inglaterra",160],["Pedri","Espanha",150],
+      ["Vinícius Júnior","Brasil",140],["Elliot Anderson","Inglaterra",120],["Julián Álvarez","Argentina",110],
+      ["Cole Palmer","Inglaterra",105]
+    ]},
+  valorpre: { group:"valor", label:"Valor de mercado pré-Copa", q:"Quem valia mais em junho de 2026, antes da Copa?", unit:["mi €","mi €"], kind:"Jogador",
     note:"Transfermarkt, junho de 2026, na abertura da Copa.",
     items:[
       ["Lamine Yamal","Espanha",200],["Pedri","Espanha",150],["Vinícius Júnior","Brasil",150],["Jude Bellingham","Inglaterra",140],
@@ -410,125 +569,270 @@ const CATS = {
     ]}
 };
 
+/* ================= utilidades ================= */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const u = (n, cat) => n === 1 ? cat.unit[0] : cat.unit[1];
-const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const RM = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch(e){} };
+const PFX = "mais-ou-menos:";
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(PFX+k); if (v === null) return d; try { return JSON.parse(v); } catch(e){ return v; } } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(PFX+k, JSON.stringify(v)); } catch(e){} },
+  del(k){ try { localStorage.removeItem(PFX+k); } catch(e){} }
+};
 const ON_SITE = /carludix\.com$|github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname) || location.protocol === "file:";
 const GAME_URL = ON_SITE ? location.origin + location.pathname : "https://claude.ai/artifact/5TBz17zs9FZQGSywhriXhX";
-// fora do Claude não há placar online: esconde a aba
-if (ON_SITE){ document.getElementById("m-online").hidden = true; document.querySelector(".modes").classList.add("three"); }
+const FILTER_LABEL = { all:"Tudo", gols:"Gols", titulos:"Títulos", valor:"Valor" };
+const FLAGS = {"Alemanha":"🇩🇪","Brasil":"🇧🇷","França":"🇫🇷","Hungria":"🇭🇺","Inglaterra":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Argentina":"🇦🇷","Peru":"🇵🇪","Polônia":"🇵🇱",
+  "Portugal":"🇵🇹","Itália":"🇮🇹","Espanha":"🇪🇸","Croácia":"🇭🇷","Bulgária":"🇧🇬","Holanda":"🇳🇱","Libéria":"🇱🇷","Rep. Tcheca":"🇨🇿","Ucrânia":"🇺🇦",
+  "Uruguai":"🇺🇾","Paraguai":"🇵🇾","Chile":"🇨🇱","Colômbia":"🇨🇴","Equador":"🇪🇨","Escócia":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","Sérvia":"🇷🇸","Romênia":"🇷🇴","Suécia":"🇸🇪",
+  "Costa do Marfim":"🇨🇮","Bélgica":"🇧🇪","México":"🇲🇽","Bolívia":"🇧🇴","Venezuela":"🇻🇪","Dinamarca":"🇩🇰","Grécia":"🇬🇷","Turquia":"🇹🇷","Noruega":"🇳🇴","Uruguai ":"🇺🇾"};
+function flagOf(item, cat){
+  if (cat.kind === "Seleção") return FLAGS[item[0]] || "🏳️";
+  if (/^[A-Z]{2}$/.test(item[1]) || cat === CATS.selecao || cat === CATS.golsbr) return "🇧🇷";
+  return FLAGS[item[1]] || "";
+}
+function toast(text){ const h = $("toastHost"); h.innerHTML = `<div class="toast">${esc(text)}</div>`; }
+function today(){ const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 
-/* ---------- sorteio ---------- */
+/* ================= sorteio ================= */
 function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
 function seedOf(str){ let h=2166136261; for (const ch of str){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
 const ratioOf = (a,b) => { const hi = Math.max(a[2],b[2]), lo = Math.min(a[2],b[2]); return lo === 0 ? Infinity : hi/lo; };
-
 let rng = Math.random, filter = "all", recent = [];
-// level = acertos seguidos: começa com pares fáceis e fica mais parelho
 function fits(r, level){
   if (level < 5)  return r >= 2;
   if (level < 10) return r >= 1.3 && r <= 3;
   return r <= 1.6;
 }
+// sorteia a categoria primeiro (valor de mercado com peso menor) e depois um par que caiba no nível
 function pickRound(level){
   const keys = Object.keys(CATS).filter(k => filter==="all" || CATS[k].group===filter);
-  for (let tries=0; tries<1500; tries++){
-    const relax = tries > 900;              // se não achar par no nível, aceita qualquer um
-    const k = keys[Math.floor(rng()*keys.length)];
-    const list = CATS[k].items;
-    const a = list[Math.floor(rng()*list.length)];
-    const b = list[Math.floor(rng()*list.length)];
-    if (a===b || a[2]===b[2]) continue;
-    if ((CATS[k].exclude||[]).some(([x,y]) => (a[0]===x&&b[0]===y)||(a[0]===y&&b[0]===x))) continue;
-    const key = [a[0],b[0]].sort().join("|")+k;
-    if (recent.includes(key)) continue;
-    if (!relax && !fits(ratioOf(a,b), level)) continue;
-    recent.push(key); if (recent.length > 30) recent.shift();
-    return { cat:CATS[k], a, b };
+  const w = keys.map(k => (filter==="all" && CATS[k].group==="valor") ? .5 : 1);
+  const total = w.reduce((a,b) => a+b, 0);
+  for (let attempt=0; attempt<400; attempt++){
+    let r = rng()*total, k = keys[keys.length-1];
+    for (let i=0;i<keys.length;i++){ r -= w[i]; if (r <= 0){ k = keys[i]; break; } }
+    const c = CATS[k], L = c.items, relax = attempt > 260;
+    for (let t=0; t<40; t++){
+      const a = L[Math.floor(rng()*L.length)], b = L[Math.floor(rng()*L.length)];
+      if (a===b || a[2]===b[2]) continue;
+      if ((c.exclude||[]).some(([x,y]) => (a[0]===x&&b[0]===y)||(a[0]===y&&b[0]===x))) continue;
+      const ratio = ratioOf(a,b);
+      if (c.group==="valor" && ratio < 1.25) continue;
+      const key = [a[0],b[0]].sort().join("|")+k;
+      if (recent.includes(key)) continue;
+      if (!relax && !fits(ratio, level)) continue;
+      recent.push(key); if (recent.length > 30) recent.shift();
+      return { k, cat:c, a, b };
+    }
   }
   recent = []; return pickRound(level);
 }
-
-/* ---------- um duelo ---------- */
-let current = null, locked = true, onAnswer = null, autoTimer = null;
-function clearAuto(){ if (autoTimer){ clearTimeout(autoTimer); autoTimer = null; } }
-function cardHTML(item, cat){
-  return `<span class="kind">${cat.kind} · ${esc(item[1])}</span>
-    <span class="name">${esc(item[0])}</span>
-    <span class="val hidden">?</span>`;
+function roundFrom(saved){
+  const c = CATS[saved.k]; if (!c) return null;
+  const a = c.items.find(i => i[0]===saved.a), b = c.items.find(i => i[0]===saved.b);
+  return a && b ? { k:saved.k, cat:c, a, b } : null;
 }
+
+/* ================= estatísticas e conquistas ================= */
+const BADGES = [
+  ["estreia","⚽","Estreia","Jogar a primeira partida"],
+  ["seq10","🔟","Titular absoluto","10 acertos seguidos"],
+  ["seq20","🏅","Bola de Ouro","20 acertos seguidos"],
+  ["classico10","▲","Mais ou menos raiz","10 seguidos no formato clássico"],
+  ["diario10","📅","Dia perfeito","10 de 10 no desafio diário"],
+  ["ofensiva7","🔥","Uma semana inteira","7 dias seguidos no diário"],
+  ["roboDificil","🤖","Venceu a máquina","Ganhar do robô no difícil"],
+  ["matador","🥅","Matador","5 gols em 5 cobranças"],
+  ["america","🌎","Rei da América","20 acertos na Libertadores"],
+  ["var","📺","Chamou o VAR","Usar a segunda chance"],
+  ["online","🌐","Desafiante","Jogar um desafio online"],
+  ["cem","💯","Cem acertos","100 acertos no total"]
+];
+function stats(){ return Object.assign({ partidas:0, soma:0, ok:0, total:0, cats:{}, rec:{}, badges:{} }, store.get("stats", {})); }
+(function migrate(){ const old = store.get("recorde", null); if (old !== null && typeof old === "number"){ const s = stats(); s.rec.all = Math.max(s.rec.all||0, old); store.set("stats", s); store.del("recorde"); } })();
+function unlock(id){
+  const s = stats(); if (s.badges[id]) return;
+  s.badges[id] = Date.now(); store.set("stats", s);
+  const b = BADGES.find(x => x[0]===id); if (b) toast(`Conquista: ${b[2]}`);
+}
+function recordAnswer(k, right){
+  const s = stats(); s.total++; if (right) s.ok++;
+  const c = s.cats[k] || [0,0]; c[1]++; if (right) c[0]++; s.cats[k] = c;
+  store.set("stats", s);
+  if (s.ok >= 100) unlock("cem");
+  if (k === "liberta" && c[0] >= 20) unlock("america");
+}
+function recKey(f, classic){ return (classic ? "c-" : "") + f; }
+function bestFor(f, classic){ return stats().rec[recKey(f, classic)] || 0; }
+function setBest(f, classic, n){ const s = stats(); s.rec[recKey(f, classic)] = n; store.set("stats", s); }
+function finishRun(n){ const s = stats(); s.partidas++; s.soma += n; store.set("stats", s); unlock("estreia"); }
+
+function openStats(){
+  const s = stats(), pct = s.total ? Math.round(100*s.ok/s.total) : 0;
+  const media = s.partidas ? (s.soma/s.partidas).toFixed(1).replace(".", ",") : "0";
+  const rows = Object.entries(s.cats).filter(([k]) => CATS[k]).map(([k,[o,t]]) => ({k, o, t, p:t ? o/t : 0})).sort((a,b) => b.t - a.t);
+  const worst = rows.filter(r => r.t >= 5).sort((a,b) => a.p - b.p)[0];
+  const recs = [["all","Tudo"],["gols","Gols"],["titulos","Títulos"],["valor","Valor"]];
+  const auto = autoOn();
+  $("statsBody").innerHTML = `
+    <div class="sheet-head"><h2 id="statsTitle">Estatísticas</h2><button class="btn ghost sm" id="closeStats">Fechar</button></div>
+    <div class="kpis">
+      <div class="kpi"><b>${s.partidas}</b><span>partidas</span></div>
+      <div class="kpi"><b>${media}</b><span>média de acertos</span></div>
+      <div class="kpi"><b>${pct}%</b><span>de acerto (${s.ok}/${s.total})</span></div>
+    </div>
+    <div><p class="lbl">Recordes</p><div class="kpis">${recs.map(([f,l]) => `<div class="kpi"><b>${s.rec[f]||0}</b><span>${l}</span></div>`).join("")}<div class="kpi"><b>${s.rec["c-all"]||0}</b><span>Clássico</span></div><div class="kpi"><b>${(store.get("ofensiva",{n:0}).n)||0}</b><span>dias seguidos no diário</span></div></div></div>
+    ${worst ? `<p class="lead muted">Sua categoria mais difícil: <b>${esc(CATS[worst.k].label)}</b> (${Math.round(worst.p*100)}% de acerto).</p>` : ""}
+    <div class="cats"><p class="lbl">Acerto por categoria</p>${rows.length ? rows.map(r => `<div class="catrow"><span>${esc(CATS[r.k].label)}</span><span class="meter"><i style="width:${Math.round(r.p*100)}%"></i></span><b>${Math.round(r.p*100)}%</b></div>`).join("") : `<p class="lead muted">Jogue algumas partidas para ver seus números aqui.</p>`}</div>
+    <div><p class="lbl">Conquistas (${Object.keys(s.badges).length} de ${BADGES.length})</p><div class="badges">${BADGES.map(([id,ico,t,d]) => `<div class="badge ${s.badges[id]?"on":""}"><span class="ico" aria-hidden="true">${ico}</span><div><b>${t}</b><span>${d}</span></div></div>`).join("")}</div></div>
+    <div class="switch"><span>Avançar sozinho depois de acertar</span><button class="toggle" id="autoSwitch" role="switch" aria-checked="${auto}" aria-label="Avançar sozinho depois de acertar"></button></div>`;
+  $("statsSheet").hidden = false; $("closeStats").focus();
+  $("closeStats").onclick = closeStats;
+  $("autoSwitch").onclick = () => { const v = !autoOn(); store.set("auto", v); $("autoSwitch").setAttribute("aria-checked", v); };
+}
+function closeStats(){ $("statsSheet").hidden = true; $("openStats").focus(); }
+$("openStats").onclick = openStats;
+$("statsSheet").addEventListener("click", e => { if (e.target === $("statsSheet")) closeStats(); });
+
+/* ================= confirmação ================= */
+function confirmBox(text, yesLabel, onYes, noLabel){
+  $("confirmBody").innerHTML = `<p class="msg">${esc(text)}</p><div class="row"><button class="btn" id="cfNo">${esc(noLabel || "Continuar jogando")}</button><button class="btn ghost" id="cfYes">${esc(yesLabel)}</button></div>`;
+  $("confirmSheet").hidden = false; $("cfNo").focus();
+  $("cfNo").onclick = () => { $("confirmSheet").hidden = true; };
+  $("cfYes").onclick = () => { $("confirmSheet").hidden = true; onYes(); };
+}
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (!$("confirmSheet").hidden) $("confirmSheet").hidden = true;
+  else if (!$("statsSheet").hidden) closeStats();
+});
+
+/* ================= um duelo ================= */
+let current = null, locked = true, onAnswer = null, autoTimer = null, pendingNext = null, classicTurn = false;
+const autoOn = () => store.get("auto", !RM());
+function clearAuto(){ if (autoTimer){ clearTimeout(autoTimer); autoTimer = null; } }
+function cardHTML(item, cat, revealed){
+  return `<span class="band"><span class="flag" aria-hidden="true">${flagOf(item, cat)}</span><span class="kind">${cat.kind} · ${esc(item[1])}</span></span>
+    <span class="name ${nameSize(item[0])}">${esc(item[0])}</span>
+    <span class="val ${revealed ? "" : "hidden"}">${revealed ? `${item[2]}<small>${u(item[2],cat)}</small>` : "?"}</span>`;
+}
+function nameSize(n){ const w = Math.max(...n.split(/\s+/).map(x => x.length)); return w >= 11 ? "l11" : w >= 9 ? "l9" : w >= 7 ? "l7" : ""; }
 function showDuel(handler, level, opts){
-  clearAuto();
-  current = pickRound(level || 0); locked = !!(opts && opts.lockCards); onAnswer = handler;
+  opts = opts || {};
+  clearAuto(); pendingNext = null;
+  current = opts.restore || pickRound(level || 0);
+  classicTurn = !!opts.classic;
+  locked = !!opts.lockCards || classicTurn; onAnswer = handler;
   const {cat,a,b} = current;
   $("cat").textContent = cat.label;
-  $("question").textContent = cat.q;
+  $("question").textContent = classicTurn ? `${b[0]} tem mais ou menos ${cat.unit[1]} que ${a[0]}?` : cat.q;
   $("note").textContent = cat.note;
-  for (const [id,item] of [["cardA",a],["cardB",b]]){
+  for (const [id,item,known] of [["cardA",a,classicTurn],["cardB",b,false]]){
     const el = $(id);
-    el.className = "card"; el.disabled = locked;
-    el.innerHTML = cardHTML(item, cat);
-    el.setAttribute("aria-label", `${item[0]}, ${item[1]}`);
+    el.className = "card" + (opts.lockCards ? " waiting" : "") + (classicTurn ? " known" : "");
+    el.disabled = locked;
+    el.innerHTML = cardHTML(item, cat, known);
+    el.setAttribute("aria-label", classicTurn ? `${item[0]}, ${item[1]}${known ? `, ${item[2]} ${u(item[2],cat)}` : ""}` : `Escolher ${item[0]}, ${item[1]}`);
   }
-  $("actions").innerHTML = (opts && opts.hint) || `<span class="hint">Toque em quem tem mais.</span>`;
-  $("play").scrollIntoView({block:"nearest", behavior: reduceMotion() ? "auto" : "smooth"});
+  const duel = $("duel"); duel.classList.remove("enter"); void duel.offsetWidth; duel.classList.add("enter");
+  if (classicTurn){
+    $("actions").innerHTML = `<div class="classic-btns"><button class="btn up" id="cMais">▲ Mais</button><button class="btn down" id="cMenos">▼ Menos</button></div>
+      <span class="keys"><span class="kbd">↑</span> mais · <span class="kbd">↓</span> menos</span>`;
+    $("cMais").onclick = () => chooseClassic("mais"); $("cMenos").onclick = () => chooseClassic("menos");
+  } else {
+    $("actions").innerHTML = opts.hint || `<span class="hint">Toque em quem tem mais.</span><span class="keys">Teclas <span class="kbd">←</span> <span class="kbd">→</span> ou <span class="kbd">1</span> e <span class="kbd">2</span></span>`;
+  }
+  if (!opts.noFocus) $("question").focus({preventScroll:true});
+  $("play").scrollIntoView({block:"nearest", behavior: RM() ? "auto" : "smooth"});
 }
 function countUp(el, to, cat){
   const valEl = el.querySelector(".val");
-  valEl.classList.remove("hidden");
+  valEl.classList.remove("hidden"); valEl.classList.add("flip");
   const unit = u(to, cat);
-  if (reduceMotion() || to===0){ valEl.innerHTML = `${to}<small>${unit}</small>`; return; }
-  const t0 = performance.now(), dur = 550;
+  if (RM() || to===0){ valEl.innerHTML = `${to}<small>${unit}</small>`; return; }
+  const t0 = performance.now(), dur = 350;
   (function step(t){
     const p = Math.min(1,(t-t0)/dur);
     valEl.innerHTML = `${Math.round(to*(1-Math.pow(1-p,3)))}<small>${unit}</small>`;
     if (p<1) requestAnimationFrame(step);
   })(t0);
 }
+function reveal(pickedSide, right, byRobot){
+  const {cat,a,b} = current;
+  const elA = $("cardA"), elB = $("cardB");
+  elA.disabled = elB.disabled = true;
+  elA.classList.remove("waiting"); elB.classList.remove("waiting");
+  if (!classicTurn) countUp(elA, a[2], cat);
+  countUp(elB, b[2], cat);
+  const winEl = a[2] > b[2] ? elA : elB, loseEl = winEl===elA ? elB : elA;
+  winEl.classList.add("win"); loseEl.classList.add("lose");
+  const pickedEl = pickedSide==="A" ? elA : elB;
+  let tag;
+  if (byRobot) tag = right ? `<span class="tag bad">Robô marcou</span>` : `<span class="tag ok">Robô errou</span>`;
+  else tag = right ? `<span class="tag ok">Acertou</span>` : `<span class="tag bad">Errou</span>`;
+  if (!right && !byRobot){ pickedEl.classList.add("picked-wrong","shake"); pickedEl.classList.remove("lose"); }
+  pickedEl.insertAdjacentHTML("beforeend", tag);
+  elA.setAttribute("aria-label", `${a[0]}, ${a[2]} ${u(a[2],cat)}${a[2]>b[2]?", tem mais":""}`);
+  elB.setAttribute("aria-label", `${b[0]}, ${b[2]} ${u(b[2],cat)}${b[2]>a[2]?", tem mais":""}`);
+  if (!byRobot) buzz(right ? 25 : [60,40,60]);
+}
 function choose(side, byRobot){
-  if (!current || $("play").hidden) return;
+  if (!current || $("play").hidden || classicTurn) return;
   if (locked && !byRobot) return;
   locked = true;
   const {cat,a,b} = current;
   const picked = side==="A" ? a : b, other = side==="A" ? b : a;
   const right = picked[2] > other[2];
-  const elA = $("cardA"), elB = $("cardB");
-  elA.disabled = elB.disabled = true;
-  countUp(elA, a[2], cat); countUp(elB, b[2], cat);
-  const winEl = a[2] > b[2] ? elA : elB, loseEl = winEl===elA ? elB : elA;
-  winEl.classList.add("win"); loseEl.classList.add("lose");
-  const pickedEl = side==="A" ? elA : elB;
-  if (right) pickedEl.insertAdjacentHTML("beforeend",`<span class="tag ok">Acertou</span>`);
-  else {
-    pickedEl.classList.add("picked-wrong","shake"); pickedEl.classList.remove("lose");
-    pickedEl.insertAdjacentHTML("beforeend",`<span class="tag bad">Errou</span>`);
-  }
-  elA.setAttribute("aria-label", `${a[0]}, ${a[2]} ${u(a[2],cat)}${a[2]>b[2]?", tem mais":""}`);
-  elB.setAttribute("aria-label", `${b[0]}, ${b[2]} ${u(b[2],cat)}${b[2]>a[2]?", tem mais":""}`);
-  if (!byRobot) buzz(right ? 25 : [60,40,60]);
+  reveal(side, right, byRobot);
   const fact = right
     ? `${picked[0]} tem ${picked[2]} ${u(picked[2],cat)} contra ${other[2]}.`
     : `${other[0]} tem ${other[2]} ${u(other[2],cat)}, ${picked[0]} tem ${picked[2]}.`;
-  onAnswer && onAnswer(right, fact, pickedEl);
+  if (!byRobot) recordAnswer(current.k, right);
+  onAnswer && onAnswer(right, fact);
 }
-function plusBadge(el, text){ if (el) el.insertAdjacentHTML("beforeend", `<span class="plus" aria-hidden="true">${esc(text)}</span>`); }
+function chooseClassic(dir){
+  if (!current || !classicTurn || $("play").hidden || pendingNext) return;
+  if ($("cMais") && $("cMais").disabled) return;
+  const {cat,a,b} = current;
+  const right = dir === "mais" ? b[2] > a[2] : b[2] < a[2];
+  $("cMais").disabled = $("cMenos").disabled = true;
+  reveal("B", right, false);
+  const fact = `${b[0]} tem ${b[2]} ${u(b[2],cat)}, ${b[2] > a[2] ? "mais" : "menos"} que os ${a[2]} de ${a[0]}.`;
+  recordAnswer(current.k, right);
+  onAnswer && onAnswer(right, fact);
+}
 function actions(html, focusId){
   $("actions").innerHTML = html;
   const f = focusId && $(focusId);
   if (f){ f.focus({preventScroll:true}); f.scrollIntoView({block:"nearest"}); }
 }
-function nextButton(label, fn, auto){
-  // botão de avançar com barra de tempo; avança sozinho depois de "auto" ms
-  const ms = auto ? (reduceMotion() ? 1800 : 1200) : 0;
-  const html = `<button class="btn next" id="next">${esc(label)}${ms ? `<span class="bar" style="animation-duration:${ms}ms"></span>` : ""}</button>`;
+// botão de seguir: com avanço automático opcional e toque em qualquer lugar do jogo
+function offerNext(label, fn, auto){
+  const ms = auto && autoOn() ? (RM() ? 3000 : 2200) : 0;
+  pendingNext = fn;
+  const html = `<button class="btn" id="next">${esc(label)}${ms ? `<span class="bar" style="animation-duration:${ms}ms"></span>` : ""}</button>
+    ${auto ? `<button class="linkish" id="autoToggle">Avanço automático: ${autoOn() ? "ligado" : "desligado"}</button>` : ""}`;
   return { html, wire(){
-    $("next").onclick = () => { clearAuto(); fn(); };
-    if (ms) autoTimer = setTimeout(() => { autoTimer = null; fn(); }, ms);
+    $("next").onclick = e => { e.stopPropagation(); runNext(); };
+    if ($("autoToggle")) $("autoToggle").onclick = e => {
+      e.stopPropagation(); const v = !autoOn(); store.set("auto", v);
+      $("autoToggle").textContent = `Avanço automático: ${v ? "ligado" : "desligado"}`;
+      if (!v){ clearAuto(); const bar = document.querySelector("#next .bar"); if (bar) bar.remove(); }
+    };
+    if (ms) autoTimer = setTimeout(() => { autoTimer = null; runNext(); }, ms);
   }};
 }
+function runNext(){ if (!pendingNext) return; const f = pendingNext; pendingNext = null; clearAuto(); f(); }
+$("play").addEventListener("click", e => {
+  if (!pendingNext) return;
+  if (e.target.closest("button,a,input,select,textarea")) return;
+  runNext();
+});
 function bump(el){ if (!el) return; el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
+function plusOne(el, text){ if (!el || RM()) return; el.querySelectorAll(".plusone").forEach(x => x.remove()); el.insertAdjacentHTML("beforeend", `<span class="plusone" aria-hidden="true">${esc(text)}</span>`); }
 function rank(n){
   if (n>=20) return "Nível Bola de Ouro.";
   if (n>=12) return "Craque da resenha.";
@@ -536,109 +840,270 @@ function rank(n){
   if (n>=3)  return "Entrou bem no segundo tempo.";
   return "Ficou no banco hoje.";
 }
+function compact(){ document.body.classList.add("compact"); }
+function digits(id, n, cls){ return `<span class="digits ${cls||""}" id="${id}"><span>${n}</span></span>`; }
+function setDigits(id, n){ const el = $(id); if (el) el.querySelector("span").textContent = n; return el; }
 
-/* ---------- compartilhar ---------- */
-function shareBlock(text){
-  const wa = "https://wa.me/?text=" + encodeURIComponent(text + "\n" + GAME_URL);
-  return `<div class="row">
-      <a class="btn wa sm" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
-      <button class="btn ghost sm" id="copyShare">Copiar resultado</button>
-    </div>
-    <span class="copied" id="copiedMsg"></span>
-    <textarea id="shareText" class="sr" aria-hidden="true" tabindex="-1">${esc(text + "\n" + GAME_URL)}</textarea>`;
+/* ================= compartilhar ================= */
+function shareBlock(text, img){
+  const full = text + "\n" + (img && img.link ? img.link : GAME_URL);
+  const wa = "https://wa.me/?text=" + encodeURIComponent(full);
+  return `<div class="share">
+      <div class="row">
+        <a class="btn wa sm" href="${wa}" target="_blank" rel="noopener">WhatsApp</a>
+        <button class="btn ghost sm" data-copy>${esc(img && img.copyLabel || "Copiar resultado")}</button>
+        ${ON_SITE && img && img.card ? `<button class="btn ghost sm" data-image>Imagem</button>` : ""}
+      </div>
+      <span class="copied"></span>
+      <textarea class="sr" aria-hidden="true" tabindex="-1">${esc(full)}</textarea>
+    </div>`;
 }
-function wireShare(){
-  const b = $("copyShare"); if (!b) return;
-  b.onclick = async () => {
-    const t = $("shareText").value;
-    try { await navigator.clipboard.writeText(t); $("copiedMsg").textContent = "Copiado. É só colar no grupo."; }
-    catch(e){ const ta = $("shareText"); ta.classList.remove("sr"); ta.removeAttribute("aria-hidden"); ta.style.width="100%"; ta.rows=3; ta.select(); $("copiedMsg").textContent = "Selecionei o texto: copie e cole no grupo."; }
-  };
+function wireShare(img){
+  document.querySelectorAll(".share").forEach(box => {
+    const ta = box.querySelector("textarea"), msg = box.querySelector(".copied");
+    const cp = box.querySelector("[data-copy]");
+    if (cp) cp.onclick = async () => {
+      try { await navigator.clipboard.writeText(ta.value); msg.textContent = "Copiado. É só colar no grupo."; }
+      catch(e){ ta.classList.remove("sr"); ta.removeAttribute("aria-hidden"); ta.style.width="100%"; ta.rows=3; ta.select(); msg.textContent = "Selecionei o texto: copie e cole no grupo."; }
+    };
+    const im = box.querySelector("[data-image]");
+    if (im && img && img.card) im.onclick = () => shareImage(img.card, msg);
+  });
+}
+function gridOf(arr, max){ const g = arr.map(x => x ? "🟩" : "🟥"); return g.length > max ? "…" + g.slice(-max).join("") : g.join(""); }
+// imagem quadrada para status/grupo (só no site; o Claude não permite baixar arquivos)
+function shareImage(card, msg){
+  const c = document.createElement("canvas"); c.width = c.height = 1080; const x = c.getContext("2d");
+  const g = x.createRadialGradient(540,0,50,540,0,900); g.addColorStop(0,"#3a2a06"); g.addColorStop(1,"#070605");
+  x.fillStyle = g; x.fillRect(0,0,1080,1080);
+  x.strokeStyle = "#f6b512"; x.lineWidth = 10; x.strokeRect(40,40,1000,1000);
+  x.textAlign = "center"; x.fillStyle = "#f4efe4"; x.font = "900 96px 'Big Shoulders Display', Impact, sans-serif";
+  x.fillText("MAIS OU MENOS", 540, 190);
+  x.fillStyle = "#a89b80"; x.font = "700 40px Barlow, sans-serif"; x.fillText(card.kicker, 540, 270);
+  x.fillStyle = "#f6b512"; x.font = "900 300px 'Big Shoulders Display', Impact, sans-serif"; x.fillText(card.big, 540, 580);
+  x.fillStyle = "#f4efe4"; x.font = "700 46px Barlow, sans-serif"; x.fillText(card.line, 540, 670);
+  if (card.grid){ x.font = "56px sans-serif"; x.fillText(card.grid, 540, 780); }
+  x.fillStyle = "#a89b80"; x.font = "600 36px Barlow, sans-serif"; x.fillText(GAME_URL.replace(/^https?:\/\//,""), 540, 960);
+  c.toBlob(async blob => {
+    const file = new File([blob], "mais-ou-menos.png", {type:"image/png"});
+    try { if (navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text:"Mais ou Menos"}); return; } } catch(e){ return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "mais-ou-menos.png"; document.body.appendChild(a); a.click(); a.remove();
+    msg.textContent = "Imagem salva.";
+  }, "image/png");
 }
 
-/* ---------- modo sozinho ---------- */
-let streak = 0, best = 0, bestAtStart = 0;
-try { best = +localStorage.getItem("mais-ou-menos:recorde") || 0; } catch(e){}
+/* ================= modo sozinho ================= */
+let solo = null;
+let classic = !!store.get("classic", false);
 function soloBoard(){
+  const best = bestFor(filter, classic);
   $("board").innerHTML = `
-    <div class="stat left"><span class="lbl">Sequência</span><span class="digits" id="streak">${streak}</span></div>
-    <div class="stat right"><span class="lbl">Recorde</span><span class="digits dim" id="best">${best}</span></div>`;
+    <div class="stat left"><span class="lbl">Sequência</span>${digits("streak", solo ? solo.streak : 0)}</div>
+    <div class="mid">${classic ? "Clássico" : FILTER_LABEL[filter]}<b>${solo && solo.varUsed ? "VAR usado" : "VAR: 1"}</b></div>
+    <div class="stat right"><span class="lbl">Recorde</span>${digits("best", best, "dim")}</div>`;
 }
-function soloStart(){ rng = Math.random; streak = 0; bestAtStart = best; soloBoard(); soloNext(); }
-function soloNext(){ showDuel(soloAnswer, streak); }
-function soloAnswer(right, fact, pickedEl){
+function saveRun(){ if (solo) store.set("partida", { streak:solo.streak, run:solo.run, varUsed:solo.varUsed, filter, classic, round: current ? {k:current.k, a:current.a[0], b:current.b[0]} : null }); }
+function soloEnter(){
+  const saved = store.get("partida", null);
+  if (saved && saved.streak > 0){
+    $("play").hidden = true; $("setup").hidden = false;
+    filter = saved.filter || "all"; classic = !!saved.classic; syncChips();
+    solo = { streak:saved.streak, run:saved.run||[], varUsed:!!saved.varUsed, best0:bestFor(filter, classic) };
+    soloBoard();
+    $("setup").innerHTML = `<p class="lead">Você parou numa sequência de <b>${saved.streak}</b>. Quer continuar de onde parou?</p>
+      <div class="row"><button class="btn" id="resume">Continuar sequência</button><button class="btn ghost" id="fresh">Nova partida</button></div>`;
+    $("resume").focus();
+    $("resume").onclick = () => { $("setup").hidden = true; $("play").hidden = false; const r = saved.round && roundFrom(saved.round); soloNext(r); };
+    $("fresh").onclick = () => { finishRun(saved.streak); store.del("partida"); $("setup").hidden = true; $("play").hidden = false; soloStart(); };
+    return;
+  }
+  $("setup").hidden = true; $("play").hidden = false; soloStart();
+}
+function soloStart(){
+  rng = Math.random; recent = [];
+  solo = { streak:0, run:[], varUsed:false, best0:bestFor(filter, classic) };
+  store.del("partida"); soloBoard(); soloNext();
+}
+function soloNext(restore){
+  showDuel(soloAnswer, solo.streak, { classic, restore });
+  saveRun();
+}
+const MILESTONES = [5,10,15,20,25,30,40,50];
+function soloAnswer(right, fact){
+  compact();
   if (right){
-    streak++; $("streak").textContent = streak; bump($("streak"));
-    plusBadge(pickedEl, `+1 · sequência ${streak}`);
-    if (streak > best){ best = streak; $("best").textContent = best; bump($("best")); try{localStorage.setItem("mais-ou-menos:recorde",best)}catch(e){} }
-    const nb = nextButton("Próximo duelo", soloNext, true);
-    actions(`<span class="msg ok">Isso! ${esc(fact)}</span>${nb.html}`, "next"); nb.wire();
+    solo.streak++; solo.run.push(1);
+    const el = setDigits("streak", solo.streak); bump(el); plusOne(el, "+1");
+    if (MILESTONES.includes(solo.streak)){ toast(`${solo.streak} seguidas!`); buzz([30,50,30]); }
+    if (solo.streak >= 10) unlock("seq10");
+    if (solo.streak >= 20) unlock("seq20");
+    if (classic && solo.streak >= 10) unlock("classico10");
+    if (solo.streak > bestFor(filter, classic)){ setBest(filter, classic, solo.streak); bump(setDigits("best", solo.streak)); }
+    store.set("partida", { streak:solo.streak, run:solo.run, varUsed:solo.varUsed, filter, classic, round:null });
+    const nb = offerNext("Próximo duelo", () => soloNext(), true);
+    actions(`<p class="msg ok">Isso! ${esc(fact)}</p>${nb.html}`, "next"); nb.wire();
   } else {
-    const final = streak, isRecord = final > bestAtStart && final > 0;
-    streak = 0; $("streak").textContent = 0;
-    const text = `Mais ou Menos ⚽ Fiz ${final} em sequência (${rank(final).replace(/\.$/,"")}). Duvido você passar!`;
-    actions(`<div class="over"><span class="lbl">Fim de jogo · sequência final</span>
-      ${isRecord ? `<span class="record">Novo recorde!</span>` : ""}
-      <span class="big">${final}</span>
-      <span class="rank">${rank(final)}</span><span class="msg bad small">${esc(fact)}</span>
-      <div class="row"><button class="btn" id="again">Jogar de novo</button></div>
-      ${shareBlock(text)}</div>`, "again");
-    $("again").onclick = soloStart; wireShare();
+    solo.run.push(0);
+    store.del("partida");
+    if (!solo.varUsed && solo.streak >= 1){
+      actions(`<div class="over"><p class="msg bad">${esc(fact)}</p>
+        <span class="rank">Quer chamar o VAR? Você mantém a sequência de ${solo.streak}. Só dá para usar uma vez por partida.</span>
+        <div class="row"><button class="btn" id="useVar">Chamar o VAR</button><button class="btn ghost" id="endRun">Encerrar</button></div></div>`, "useVar");
+      $("useVar").onclick = () => { solo.varUsed = true; solo.run.pop(); unlock("var"); soloBoard(); toast("VAR: segue o jogo"); soloNext(); };
+      $("endRun").onclick = () => soloOver(fact);
+    } else soloOver(fact);
   }
 }
+function soloOver(fact){
+  solo.over = true;
+  const final = solo.streak, isRecord = final > solo.best0 && final > 0;
+  finishRun(final);
+  const {cat,a,b} = current;
+  const grid = gridOf(solo.run, 15);
+  const text = `⚽ Mais ou Menos${classic ? " (clássico)" : ""}: ${final} seguidas\n${grid}\nCaí em: ${a[0]} × ${b[0]} (${cat.label})\nRecorde: ${bestFor(filter, classic)}. Me passa?`;
+  const card = { kicker: classic ? "FORMATO CLÁSSICO" : "SEQUÊNCIA", big:String(final), line:rank(final).replace(/\.$/,""), grid:gridOf(solo.run, 12) };
+  actions(`<div class="over ${isRecord ? "win-panel" : ""}"><span class="lbl">Fim de jogo · sequência final</span>
+    ${isRecord ? `<span class="record">Novo recorde!</span>` : ""}
+    <span class="big">${final}</span>
+    <span class="rank">${rank(final)}</span>
+    <div class="row"><button class="btn" id="again">Jogar de novo</button></div>
+    ${shareBlock(text, {card})}
+    <p class="msg bad small">${esc(fact)}</p>
+    <button class="linkish" id="seeStats">Ver estatísticas e conquistas</button></div>`, "again");
+  wireShare({card});
+  $("again").onclick = soloStart; $("seeStats").onclick = openStats;
+}
 
-/* ---------- pênaltis (2 pessoas ou contra o robô) ---------- */
+/* ================= desafio diário ================= */
+let daily = null;
+const DAILY_LEVELS = [0,1,2,3,5,6,7,8,10,11];
+function dailyEnter(){
+  $("setup").hidden = true; $("play").hidden = false;
+  const date = today(), saved = store.get("diario:" + date, { res:[] });
+  daily = { date, res:saved.res.slice() };
+  filter = "all"; rng = mulberry32(seedOf("D" + date)); recent = [];
+  // refaz os sorteios já respondidos para continuar na mesma sequência
+  for (let i=0;i<daily.res.length;i++) pickRound(DAILY_LEVELS[i]);
+  dailyBoard();
+  if (daily.res.length >= 10){ dailyOver(true); return; }
+  dailyNext();
+}
+function dailyBoard(){
+  const of = store.get("ofensiva", { n:0 });
+  const [y,m,d] = daily.date.split("-");
+  $("board").innerHTML = `
+    <div class="stat left"><span class="lbl">Acertos</span>${digits("dOk", daily.res.filter(Boolean).length)}</div>
+    <div class="mid">Diário ${d}/${m}<b>${Math.min(daily.res.length+1, 10)} de 10</b></div>
+    <div class="stat right"><span class="lbl">Dias seguidos</span>${digits("dStreak", of.n||0, "dim")}</div>`;
+}
+function dailyNext(){ showDuel(dailyAnswer, DAILY_LEVELS[daily.res.length]); }
+function dailyAnswer(right, fact){
+  compact();
+  daily.res.push(right ? 1 : 0);
+  store.set("diario:" + daily.date, { res:daily.res });
+  dailyBoard(); if (right) plusOne($("dOk"), "+1");
+  if (daily.res.length >= 10){
+    const nb = offerNext("Ver resultado", () => dailyOver(false), false);
+    actions(`<p class="msg ${right?"ok":"bad"}">${right ? "Isso! " : ""}${esc(fact)}</p>${nb.html}`, "next"); nb.wire();
+  } else {
+    const nb = offerNext(`Duelo ${daily.res.length+1} de 10`, dailyNext, right);
+    actions(`<p class="msg ${right?"ok":"bad"}">${right ? "Isso! " : "Errou. "}${esc(fact)}</p>${nb.html}`, "next"); nb.wire();
+  }
+}
+function dailyOver(already){
+  const ok = daily.res.filter(Boolean).length;
+  const of = store.get("ofensiva", { n:0, last:null });
+  if (!already && of.last !== daily.date){
+    const y = new Date(); y.setDate(y.getDate()-1);
+    const yk = `${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,"0")}-${String(y.getDate()).padStart(2,"0")}`;
+    of.n = of.last === yk ? (of.n||0) + 1 : 1; of.last = daily.date; store.set("ofensiva", of);
+    finishRun(ok);
+  }
+  if (ok === 10) unlock("diario10");
+  if ((of.n||0) >= 7) unlock("ofensiva7");
+  dailyBoard();
+  const [yy,mm,dd] = daily.date.split("-");
+  const grid = gridOf(daily.res, 10);
+  const text = `⚽ Mais ou Menos · Diário ${dd}/${mm}: ${ok}/10\n${grid}${of.n > 1 ? `\n🔥 ${of.n} dias seguidos` : ""}`;
+  const card = { kicker:`DESAFIO DIÁRIO ${dd}/${mm}`, big:`${ok}/10`, line: of.n > 1 ? `${of.n} dias seguidos` : "Todo dia tem um novo", grid };
+  const now = new Date(), mid = new Date(now); mid.setHours(24,0,0,0);
+  const mins = Math.round((mid - now)/60000), h = Math.floor(mins/60), m = mins % 60;
+  $("cat").textContent = "Desafio diário"; $("question").textContent = already ? "Você já jogou o desafio de hoje" : "Desafio de hoje concluído";
+  $("note").textContent = `O próximo sai em ${h}h${String(m).padStart(2,"0")}. Todo mundo recebe os mesmos 10 duelos.`;
+  if (already){ $("cardA").parentElement.hidden = true; }
+  actions(`<div class="over win-panel"><span class="lbl">Seu resultado</span><span class="big">${ok}/10</span>
+    <span class="grid">${grid}</span>
+    ${shareBlock(text, {card})}
+    <button class="linkish" id="seeStats">Ver estatísticas e conquistas</button></div>`, "seeStats");
+  wireShare({card}); $("seeStats").onclick = openStats;
+}
+
+/* ================= pênaltis (2 pessoas ou contra o robô) ================= */
 let pen = null;
-const ROBO = { facil:{label:"Fácil", base:.58}, medio:{label:"Médio", base:.74}, dificil:{label:"Difícil", base:.88} };
+const ROBO = {
+  facil:{ label:"Fácil", base:.55, info:"erra cerca de 1 em 2" },
+  medio:{ label:"Médio", base:.70, info:"erra cerca de 1 em 3" },
+  dificil:{ label:"Difícil", base:.82, info:"erra cerca de 1 em 5" }
+};
 function penSetup(vsRobot){
   $("setup").hidden = false; $("play").hidden = true;
-  let n1 = "", n2 = "", lvl = "medio";
-  try { n1 = localStorage.getItem("mais-ou-menos:jogador1") || ""; n2 = localStorage.getItem("mais-ou-menos:jogador2") || ""; lvl = localStorage.getItem("mais-ou-menos:nivel-robo") || "medio"; } catch(e){}
-  $("board").innerHTML = vsRobot
-    ? `<div class="brand wide">Você <span>×</span> Robô</div>`
-    : `<div class="brand wide">Disputa de <span>pênaltis</span></div>`;
+  const n1 = store.get("jogador1", "") || "", n2 = store.get("jogador2", "") || "";
   const catSel = `<label for="pcat">Categorias da disputa</label>
       <select id="pcat"><option value="all">Tudo</option><option value="gols">Gols</option><option value="titulos">Títulos</option><option value="valor">Valor de mercado</option></select>`;
-  $("setup").innerHTML = vsRobot ? `
-    <p class="lead">Disputa de pênaltis contra o robô. Você bate, ele bate. Acertou, é gol. São 5 cobranças para cada lado e, se empatar, alternadas até alguém errar. Quanto mais parelho o duelo, mais o robô erra.</p>
-    <form id="penForm" class="form">
-      <label for="p1">Seu nome</label><input id="p1" maxlength="18" value="${esc(n1)}" placeholder="Você" autocomplete="off">
-      <label for="lvl">Nível do robô</label>
-      <select id="lvl">${Object.entries(ROBO).map(([k,v]) => `<option value="${k}" ${k===lvl?"selected":""}>${v.label}</option>`).join("")}</select>
-      ${catSel}
-      <button class="btn" type="submit">Começar contra o robô</button>
-    </form>` : `
-    <p class="lead">Cada um responde um duelo por vez, passando o celular. Acertou, é gol. Depois de 5 cobranças para cada lado, se empatar, vai para as alternadas até alguém errar.</p>
-    <form id="penForm" class="form">
-      <label for="p1">Primeiro a bater</label><input id="p1" maxlength="18" value="${esc(n1)}" placeholder="Jogador 1" autocomplete="off">
-      <label for="p2">Segundo a bater</label><input id="p2" maxlength="18" value="${esc(n2)}" placeholder="Jogador 2" autocomplete="off">
-      ${catSel}
-      <button class="btn" type="submit">Começar a disputa</button>
-    </form>`;
+  if (vsRobot){
+    $("board").innerHTML = `<div class="brand">Você <span>×</span> Robô</div>`;
+    $("setup").innerHTML = `
+      <p class="lead">Pênaltis contra o robô: 5 cobranças para cada lado e alternadas se empatar. Escolha o nível para começar.</p>
+      <div class="levels">${Object.entries(ROBO).map(([k,v]) => `<button class="level ${k}" data-level="${k}"><b>${v.label}</b><span>Robô ${v.info}</span></button>`).join("")}</div>
+      <details class="more"><summary>Mais opções</summary><form class="form" id="penForm" onsubmit="return false">
+        <label for="p1">Seu nome</label><input id="p1" maxlength="18" value="${esc(n1)}" placeholder="Você" autocomplete="off">
+        ${catSel}</form></details>
+      <p class="lead muted">O robô erra mais quando o duelo é parelho. Você e ele recebem duelos da mesma dificuldade em cada cobrança.</p>`;
+    document.querySelectorAll(".level").forEach(b => b.onclick = () => {
+      const name = ($("p1").value.trim()) || "Você";
+      store.set("jogador1", $("p1").value.trim()); store.set("nivel-robo", b.dataset.level);
+      startPen([name, "Robô"], 1, b.dataset.level, $("pcat").value);
+    });
+    const last = store.get("nivel-robo", "medio"); const lb = document.querySelector(`.level[data-level="${last}"]`); if (lb) lb.focus();
+  } else {
+    $("board").innerHTML = `<div class="brand">Disputa de <span>pênaltis</span></div>`;
+    $("setup").innerHTML = `
+      <p class="lead">Cada um responde um duelo por vez, passando o celular. Acertou, é gol. São 5 cobranças para cada lado e, se empatar, alternadas até alguém errar.</p>
+      <form id="penForm" class="form">
+        <label for="p1">Primeiro a bater</label><input id="p1" maxlength="18" value="${esc(n1)}" placeholder="Jogador 1" autocomplete="off">
+        <label for="p2">Segundo a bater</label><input id="p2" maxlength="18" value="${esc(n2)}" placeholder="Jogador 2" autocomplete="off">
+        ${catSel}
+        <button class="btn" type="submit">${n1 && n2 ? `Revanche ${esc(n1)} × ${esc(n2)}` : "Começar a disputa"}</button>
+      </form>`;
+    $("penForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const a = $("p1").value.trim() || "Jogador 1", b = $("p2").value.trim() || "Jogador 2";
+      store.set("jogador1", $("p1").value.trim()); store.set("jogador2", $("p2").value.trim());
+      startPen([a,b], -1, null, $("pcat").value);
+    });
+  }
   document.querySelectorAll("#penForm input").forEach(i => i.addEventListener("focus", () => i.select()));
-  $("penForm").addEventListener("submit", e => {
-    e.preventDefault();
-    const a = $("p1").value.trim() || (vsRobot ? "Você" : "Jogador 1");
-    const b = vsRobot ? "Robô" : ($("p2").value.trim() || "Jogador 2");
-    filter = $("pcat").value;
-    const level = vsRobot ? $("lvl").value : null;
-    try { localStorage.setItem("mais-ou-menos:jogador1", $("p1").value.trim()); if (!vsRobot) localStorage.setItem("mais-ou-menos:jogador2", $("p2").value.trim()); if (level) localStorage.setItem("mais-ou-menos:nivel-robo", level); } catch(e){}
-    rng = Math.random;
-    pen = { names:[a,b], kicks:[[],[]], turn:0, done:false, robot: vsRobot ? 1 : -1, level };
-    $("setup").hidden = true; $("play").hidden = false;
-    penBoard(); penKick();
-  });
+}
+function startPen(names, robot, level, cat){
+  filter = cat || "all"; rng = Math.random; recent = [];
+  pen = { names, kicks:[[],[]], turn:0, done:false, robot, level, cat:filter };
+  $("setup").hidden = true; $("play").hidden = false;
+  penBoard(); penKick();
 }
 function goals(i){ return pen.kicks[i].filter(Boolean).length; }
 function penBoard(){
   const row = i => {
     const k = pen.kicks[i], total = Math.max(5, k.length + (pen.turn===i && !pen.done ? 1 : 0), pen.kicks[1-i].length);
     let dots = "";
-    for (let j=0;j<total;j++) dots += `<span class="dot ${j<k.length ? (k[j]?"g":"m") : ""}" aria-hidden="true"></span>`;
+    for (let j=0;j<total;j++){
+      const cls = j < k.length ? (k[j] ? "g" : "m") : (j === k.length && pen.turn === i && !pen.done ? "next" : "");
+      dots += `<span class="dot ${cls}" aria-hidden="true"></span>`;
+    }
+    const g = goals(i);
     return `<div class="pen-row ${pen.turn===i && !pen.done ? "on" : ""}">
-      <span class="pen-name">${esc(pen.names[i])}${i===pen.robot ? ` <small class="lbl">${ROBO[pen.level].label}</small>` : ""}</span>
-      <span class="dots">${dots}</span><span class="digits sm">${goals(i)}</span>
-      <span class="sr">${esc(pen.names[i])}: ${goals(i)} gols em ${k.length} cobranças.</span></div>`;
+      <span class="pen-name">${esc(pen.names[i])}${i===pen.robot ? ` <small>${ROBO[pen.level].label}</small>` : ""}</span>
+      <span class="dots">${dots}</span>${digits("pg"+i, g, "sm")}
+      <span class="sr">${esc(pen.names[i])}: ${g} ${g===1?"gol":"gols"} em ${k.length} ${k.length===1?"cobrança":"cobranças"}.</span></div>`;
   };
   $("board").innerHTML = `<div class="pen">${row(0)}${row(1)}</div>`;
 }
@@ -656,73 +1121,98 @@ function penWinner(){
 }
 function robotChance(){
   const r = ratioOf(current.a, current.b), base = ROBO[pen.level].base;
-  const adj = r >= 3 ? .12 : r >= 2 ? .05 : r <= 1.3 ? -.15 : r <= 1.6 ? -.08 : 0;
-  return Math.min(.97, Math.max(.3, base + adj));
+  const adj = r >= 3 ? .08 : r >= 2 ? .04 : r <= 1.3 ? -.15 : r <= 1.6 ? -.08 : 0;
+  return Math.min(.90, Math.max(.3, base + adj));
 }
 function penKick(){
-  const t = $("turn"); t.hidden = false;
+  const t = $("turn"); t.hidden = false; t.classList.remove("next");
   const isRobot = pen.turn === pen.robot;
   t.textContent = isRobot ? "Cobrança do robô" : `Cobrança de ${pen.names[pen.turn]}`;
-  const level = pen.kicks[pen.turn].length * 2; // as cobranças ficam mais difíceis
+  const level = pen.kicks[pen.turn].length * 2; // mesma dificuldade para os dois lados em cada cobrança
   if (!isRobot){ showDuel(penAnswer, level); return; }
-  showDuel(penAnswer, level, { lockCards:true, hint:`<span class="hint">O robô está pensando…</span>` });
-  const think = reduceMotion() ? 500 : 1100 + Math.random()*700;
+  showDuel(penAnswer, level, { lockCards:true, noFocus:true, hint:`<span class="hint thinking">O robô está pensando</span>` });
+  const think = RM() ? 600 : 1100 + Math.random()*700;
   autoTimer = setTimeout(() => {
+    autoTimer = null;
     const correctSide = current.a[2] > current.b[2] ? "A" : "B";
     const side = Math.random() < robotChance() ? correctSide : (correctSide === "A" ? "B" : "A");
-    autoTimer = null; choose(side, true);
+    choose(side, true);
   }, think);
 }
-function penAnswer(right, fact, pickedEl){
-  const isRobot = pen.turn === pen.robot;
+function penAnswer(right, fact){
+  compact();
+  const isRobot = pen.turn === pen.robot, shooter = pen.turn;
   pen.kicks[pen.turn].push(right);
-  if (right) plusBadge(pickedEl, "Gol!");
   const w = penWinner();
   if (w >= 0) pen.done = true; else pen.turn = 1 - pen.turn;
   penBoard();
-  const who = isRobot
-    ? (right ? `O robô marcou. ${esc(fact)}` : `O robô errou! ${esc(fact)}`)
-    : (right ? `Gol! ${esc(fact)}` : `Defendeu! ${esc(fact)}`);
+  const t = $("turn");
+  if (w >= 0) t.hidden = true;
+  else { t.textContent = pen.turn === pen.robot ? "Próximo: robô" : `Próximo: ${pen.names[pen.turn]}`; t.classList.add("next"); }
+  const goodForHuman = pen.robot >= 0 ? (isRobot ? !right : right) : right;
+  const shot = right ? `<span class="shot ${goodForHuman ? "ok" : "bad"}">⚽ GOL${isRobot ? " DO ROBÔ" : ""}!</span>` : `<span class="shot ${goodForHuman ? "ok" : "bad"}">🧤 ${isRobot ? "O ROBÔ ERROU" : "DEFENDEU"}!</span>`;
+  const msg = `<p class="msg small ${goodForHuman ? "ok" : "bad"}">${esc(fact)}</p>`;
   if (w >= 0){
-    $("turn").hidden = true;
     const robotWon = w === pen.robot, humanWon = pen.robot >= 0 && !robotWon;
+    if (humanWon && pen.level === "dificil") unlock("roboDificil");
+    [0,1].forEach(i => { if (i !== pen.robot && pen.kicks[i].length >= 5 && pen.kicks[i].slice(0,5).every(Boolean)) unlock("matador"); });
+    finishRun(goals(pen.robot === 0 ? 1 : 0));
     const headline = pen.robot >= 0
-      ? (humanWon ? `Você venceu o robô no nível ${ROBO[pen.level].label.toLowerCase()}.` : "O robô venceu desta vez.")
+      ? (humanWon ? `Você venceu o robô no nível ${ROBO[pen.level].label.toLowerCase()}.` : `O robô venceu no nível ${ROBO[pen.level].label.toLowerCase()}.`)
       : `${esc(pen.names[w])} venceu nos pênaltis.`;
     const dots = i => pen.kicks[i].map(k => k ? "🟢" : "🔴").join("");
-    const text = `Mais ou Menos ⚽ ${pen.names[0]} ${goals(0)} × ${goals(1)} ${pen.names[1]} nos pênaltis\n${pen.names[0]}: ${dots(0)}\n${pen.names[1]}: ${dots(1)}`;
-    actions(`<div class="over ${robotWon ? "" : "win-panel"}"><span class="lbl">Fim da disputa</span>
+    const lvl = pen.robot >= 0 ? ` (robô ${ROBO[pen.level].label.toLowerCase()})` : "";
+    const text = `⚽ Mais ou Menos · pênaltis${lvl}\n${pen.names[0]} ${goals(0)} × ${goals(1)} ${pen.names[1]}\n${pen.names[0]}: ${dots(0)}\n${pen.names[1]}: ${dots(1)}`;
+    const card = { kicker: pen.robot >= 0 ? `PÊNALTIS CONTRA O ROBÔ ${ROBO[pen.level].label.toUpperCase()}` : "DISPUTA DE PÊNALTIS", big:`${goals(0)}×${goals(1)}`, line:`${pen.names[0]} × ${pen.names[1]}`, grid:"" };
+    actions(`${shot}<div class="over ${robotWon ? "" : "win-panel"}"><span class="lbl">Fim da disputa</span>
       ${humanWon && pen.level==="dificil" ? `<span class="record">Venceu no difícil!</span>` : ""}
       <span class="big">${goals(0)} × ${goals(1)}</span>
       <span class="rank">${headline}</span>
-      <span class="msg ${right?"ok":"bad"} small">${who}</span>
       <div class="row"><button class="btn" id="rematch">Revanche</button><button class="btn ghost" id="newnames">${pen.robot>=0 ? "Mudar nível" : "Trocar jogadores"}</button></div>
-      ${shareBlock(text)}</div>`, "rematch");
-    wireShare();
+      ${shareBlock(text, {card})}
+      ${msg}</div>`, "rematch");
+    wireShare({card});
     $("rematch").onclick = () => {
-      if (pen.robot >= 0) pen = { ...pen, kicks:[[],[]], turn:0, done:false };
-      else pen = { ...pen, names:pen.names.slice().reverse(), kicks:[[],[]], turn:0, done:false };
-      penBoard(); penKick();
+      // na revanche, quem bateu primeiro passa a bater depois
+      const names = pen.names.slice().reverse(), robot = pen.robot >= 0 ? 1 - pen.robot : -1;
+      startPen(names, robot, pen.level, pen.cat);
     };
     $("newnames").onclick = () => penSetup(pen.robot >= 0);
   } else if (pen.turn === pen.robot){
-    const nb = nextButton("Vez do robô", penKick, true);
-    actions(`<span class="msg ${right?"ok":"bad"}">${who}</span>${nb.html}`, "next"); nb.wire();
+    const nb = offerNext("Vez do robô", penKick, true);
+    actions(`${shot}${msg}${nb.html}`, "next"); nb.wire();
   } else if (pen.robot >= 0){
-    const nb = nextButton("Sua cobrança", penKick, false);
-    actions(`<span class="msg ${right?"bad":"ok"}">${who}</span>${nb.html}`, "next"); nb.wire();
+    const nb = offerNext("Sua cobrança", penKick, false);
+    actions(`${shot}${msg}${nb.html}`, "next"); nb.wire();
   } else {
-    const nb = nextButton(`Passa para ${pen.names[pen.turn]}`, penKick, false);
-    actions(`<span class="msg ${right?"ok":"bad"}">${who}</span>${nb.html}`, "next"); nb.wire();
+    const nb = offerNext(`Passa para ${pen.names[pen.turn]}`, penHandoff, false);
+    actions(`${shot}${msg}${nb.html}`, "next"); nb.wire();
   }
 }
+// tela de troca: esconde a resposta anterior até o próximo pegar o celular
+function penHandoff(){
+  $("play").hidden = true; $("setup").hidden = false;
+  $("setup").innerHTML = `<div class="handoff"><span class="lbl">Passe o celular para</span><span class="who">${esc(pen.names[pen.turn])}</span>
+    <button class="btn big" id="ready">Mostrar minha pergunta</button></div>`;
+  $("ready").focus();
+  $("ready").onclick = () => { $("setup").hidden = true; $("play").hidden = false; penKick(); };
+}
 
-/* ---------- desafio online (código) ---------- */
-let db = null, userCap = null, myId = null, dbState = "loading", allScores = {}, myLocal = {}, onl = null;
+/* ================= desafio online (só dentro do Claude) ================= */
+let db = null, userCap = null, myId = null, dbState = "loading", allScores = {}, myLocal = {}, onl = { phase:"lobby" };
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const LIVE_STALE = 5 * 60 * 1000;
 function newCode(){ let c=""; for (let i=0;i<5;i++) c += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)]; return c; }
+function weekCode(){
+  const d = new Date(); const day = (d.getDay()+6)%7; d.setDate(d.getDate()-day+3);
+  const y = d.getFullYear(), w1 = new Date(y,0,4), wk = 1 + Math.round(((d - w1)/86400000 - 3 + ((w1.getDay()+6)%7))/7);
+  const r = mulberry32(seedOf(`W${y}-${wk}`)); let c=""; for (let i=0;i<5;i++) c += CODE_CHARS[Math.floor(r()*CODE_CHARS.length)];
+  return { code:c, label:`Semana ${wk}` };
+}
+const isLive = e => e.live && (Date.now() - (e.at||0) < LIVE_STALE);
 
 (async function initOnline(){
+  if (ON_SITE){ dbState = "off"; return; }
   try {
     const cl = window.claude;
     if (!cl || !cl.use){ dbState = "off"; return; }
@@ -732,81 +1222,103 @@ function newCode(){ let c=""; for (let i=0;i<5;i++) c += CODE_CHARS[Math.floor(M
     if (!myId){ dbState = "off"; refreshOnline(); return; }
     const timer = setTimeout(() => { if (dbState==="loading"){ dbState="off"; refreshOnline(); } }, 10000);
     db.collection("placar").onSnapshot(snap => {
-      clearTimeout(timer); dbState = "ok";
+      clearTimeout(timer); const first = dbState !== "ok"; dbState = "ok";
       const next = {};
       for (const d of snap.docs){ const v = d.data(); if (v && v.res) next[d.id] = v.res; }
-      allScores = next; refreshOnline();
-    }, () => { clearTimeout(timer); dbState = "off"; refreshOnline(); });
-  } catch(e){ dbState = "off"; refreshOnline(); }
+      allScores = next;
+      // tentativa que ficou "jogando" de uma visita anterior: encerra
+      if (first) for (const [c, e] of Object.entries(myResults())) if (e.live && !(onl.phase==="playing" && onl.code===c)) saveMine(c, { n:e.n, at:e.at }).catch(()=>{});
+      refreshOnline(first);
+    }, () => { clearTimeout(timer); dbState = "off"; refreshOnline(true); });
+  } catch(e){ dbState = "off"; refreshOnline(true); }
 })();
 
-function refreshOnline(){
-  if (mode !== "online") return;
-  if (!onl || !onl.playing) onlineSetup();
-}
 function myResults(){ return Object.assign({}, (myId && allScores[myId]) || {}, myLocal); }
-function saveMine(code, entry){
-  myLocal[code] = entry;
-  return db.doc("placar/" + myId).set({ res: myResults() });
+function saveMine(code, entry){ myLocal[code] = entry; return db.doc("placar/" + myId).set({ res: myResults() }); }
+function entriesFor(code){
+  const merged = Object.assign({}, allScores); if (myId) merged[myId] = myResults();
+  return Object.entries(merged).filter(([,r]) => r[code]).map(([id,r]) => ({id, n:r[code].n, at:r[code].at||0, live:isLive(r[code])}))
+    .sort((x,y) => y.n - x.n || x.at - y.at);
 }
-
-function onlineSetup(){
+// só redesenha o pedaço que mudou, para não apagar o que a pessoa está digitando
+function refreshOnline(full){
+  if (mode !== "online") return;
+  if (full || dbState !== "ok"){ if (onl.phase === "lobby" || onl.phase === "room") onlineRender(); return; }
+  if (onl.phase === "lobby" && $("myCodes")) $("myCodes").innerHTML = myCodesHTML();
+  if (onl.phase === "room" && $("ranking")) fillRanking(onl.code);
+}
+function onlineRender(){
   $("setup").hidden = false; $("play").hidden = true; $("turn").hidden = true;
-  $("board").innerHTML = `<div class="brand wide">Desafio <span>online</span></div>`;
+  $("board").innerHTML = `<div class="brand">Desafio <span>online</span></div>`;
   if (dbState === "loading"){ $("setup").innerHTML = `<p class="lead">Conectando ao placar…</p>`; return; }
   if (dbState === "off"){
-    $("setup").innerHTML = `<p class="lead">O desafio online só funciona abrindo o jogo pelo link do Claude, com a sua conta. Enquanto isso, jogue sozinho, contra o robô ou nos pênaltis.</p>`;
+    $("setup").innerHTML = `<p class="lead">Não deu para conectar ao placar online. Verifique se você abriu o jogo pelo link do Claude, com a sua conta, e tente de novo.</p>
+      <p class="lead muted">Enquanto isso, jogue sozinho, o diário, contra o robô ou nos pênaltis.</p>`;
     return;
   }
-  if (onl && onl.code){ renderRanking(onl.code); return; }
+  if (onl.phase === "room"){ renderRoom(onl.code); return; }
+  const wk = weekCode();
   $("setup").innerHTML = `
-    <p class="lead">Todo mundo que entra com o mesmo código recebe exatamente a mesma sequência de duelos. Vale só a primeira tentativa de cada um. Quem for mais longe ganha.</p>
+    <p class="lead">Todo mundo que entra com o mesmo código recebe a mesma sequência de duelos. Vale só a primeira tentativa de cada um. Quem for mais longe ganha.</p>
+    <div class="box weekly"><h2>Desafio da semana</h2><p>Um código igual para todo mundo até domingo. ${wk.label}.</p><button class="btn" id="weekly">Jogar o ${wk.code}</button></div>
     <div class="online-grid">
-      <div class="box"><h2>Criar desafio</h2><p>Gera um código para mandar para os amigos.</p><button class="btn" id="create">Criar código</button></div>
-      <form class="box" id="joinForm"><h2>Entrar num desafio</h2><label for="code">Código recebido</label>
-        <input id="code" maxlength="5" autocomplete="off" placeholder="EX: K7QPA" style="text-transform:uppercase">
-        <button class="btn" type="submit">Entrar</button><span class="err" id="codeErr"></span></form>
+      <div class="box"><h2>Criar desafio</h2><p>Gera um código para mandar para o seu grupo.</p><button class="btn" id="create">Criar código</button></div>
+      <form class="box" id="joinForm" novalidate><h2>Entrar num desafio</h2><label for="code">Código recebido</label>
+        <input id="code" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="K7QPA" aria-describedby="codeErr">
+        <span class="err" id="codeErr"></span>
+        <button class="btn" type="submit">Entrar</button></form>
     </div>
-    ${myCodesHTML()}`;
+    <div id="myCodes">${myCodesHTML()}</div>`;
+  $("weekly").onclick = () => openCode(wk.code);
   $("create").onclick = () => openCode(newCode());
+  $("code").addEventListener("input", () => { $("code").removeAttribute("aria-invalid"); $("codeErr").textContent = ""; });
   $("joinForm").addEventListener("submit", e => {
     e.preventDefault();
-    const c = $("code").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
-    if (c.length !== 5){ $("codeErr").textContent = "O código tem 5 letras ou números."; return; }
+    const c = $("code").value.trim().toUpperCase().replace(/\s/g,"");
+    const bad = c.length !== 5 || [...c].some(ch => !CODE_CHARS.includes(ch));
+    if (bad){ $("code").setAttribute("aria-invalid","true"); $("codeErr").textContent = "Esse código não existe. São 5 letras ou números, e não usamos O, I, 0 e 1."; $("code").focus(); return; }
+    if (!entriesFor(c).length && c !== wk.code){
+      confirmBox(`Ninguém jogou o ${c} ainda. É esse código mesmo?`, "Entrar assim mesmo", () => openCode(c), "Corrigir");
+      return;
+    }
     openCode(c);
   });
-  document.querySelectorAll("[data-code]").forEach(b => b.onclick = () => openCode(b.dataset.code));
 }
 function myCodesHTML(){
   const mine = myResults(), codes = Object.keys(mine);
   if (!codes.length) return "";
-  return `<div class="box"><h2>Seus desafios</h2><div class="row left">${codes.map(c => `<button class="chip" data-code="${esc(c)}">${esc(c)} · ${mine[c].n}</button>`).join("")}</div></div>`;
+  return `<div class="box"><h2>Seus desafios</h2><div class="row left">${codes.map(c => `<button class="pill-code" data-code="${esc(c)}">${esc(c)}<em>${mine[c].n}</em></button>`).join("")}</div></div>`;
 }
-function openCode(code){ onl = { code, playing:false }; renderRanking(code); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-code]"); if (b && mode === "online") openCode(b.dataset.code); });
+function openCode(code){ onl = { phase:"room", code }; try { history.replaceState(null, "", "#desafio-" + code); } catch(e){} renderRoom(code); }
 
-async function renderRanking(code){
-  const merged = Object.assign({}, allScores); if (myId) merged[myId] = myResults();
-  const entries = Object.entries(merged).filter(([,r]) => r[code]).map(([id,r]) => ({id, n:r[code].n, at:r[code].at||0, live:!!r[code].live}))
-    .sort((x,y) => y.n - x.n || x.at - y.at);
+function renderRoom(code){
   const played = !!myResults()[code];
-  const invite = `Mais ou Menos ⚽ Te desafio! Abre o jogo, vai em Online e usa o código ${code}.`;
+  const invite = `⚽ Mais ou Menos: te desafio! Abre o link e joga o desafio ${code}.`;
+  const link = GAME_URL + "#desafio-" + code;
   $("setup").innerHTML = `
     <div class="code-row"><span class="lbl">Código do desafio</span><span class="code">${esc(code)}</span></div>
-    <p class="lead">Mande este código para quem vai jogar. A pessoa abre o jogo, vai em Online e digita o código.</p>
-    ${shareBlock(invite)}
-    ${played ? "" : `<p class="lead" style="color:var(--muted)">Ao começar, a tentativa já conta. Sair no meio vale como fim.</p><button class="btn" id="go">Jogar este desafio</button><span class="err" id="goErr"></span>`}
-    <div class="box"><h2>Classificação</h2><ol class="ranking" id="ranking">${entries.length ? entries.map(e => `<li data-id="${esc(e.id)}"><span class="who">…</span><span><span class="live">${e.live ? "jogando · " : ""}</span><span class="digits sm">${e.n}</span></span></li>`).join("") : `<li class="empty">Ninguém jogou ainda. Seja o primeiro.</li>`}</ol></div>
-    <button class="btn ghost" id="back">Voltar</button>`;
-  wireShare();
+    ${played ? "" : `<p class="lead muted">Ao começar, a tentativa já conta. Sair no meio vale como fim.</p><button class="btn big" id="go">Jogar este desafio</button><span class="err" id="goErr"></span>`}
+    <div class="box"><h2>Classificação</h2><ol class="ranking" id="ranking"></ol></div>
+    <p class="lead muted">Mande o link para o grupo. Quem abrir cai direto neste desafio.</p>
+    ${shareBlock(invite, { link, copyLabel:"Copiar convite" })}
+    <button class="btn ghost" id="backLobby">Voltar</button>`;
+  wireShare({});
+  fillRanking(code);
   if ($("go")) $("go").onclick = () => onlinePlay(code);
-  $("back").onclick = () => { onl = null; onlineSetup(); };
+  $("backLobby").onclick = () => { onl = { phase:"lobby" }; try { history.replaceState(null, "", location.pathname); } catch(e){} onlineRender(); };
+}
+async function fillRanking(code){
+  const ol = $("ranking"); if (!ol) return;
+  const entries = entriesFor(code);
+  ol.innerHTML = entries.length ? entries.map((e,i) => `<li data-id="${esc(e.id)}" class="${e.id===myId?"me":""}"><span class="who">${i+1}º  …</span><span>${e.live ? `<span class="live">jogando</span> ` : ""}<span class="digits sm">${e.n}</span></span></li>`).join("")
+    : `<li class="empty">Ninguém jogou ainda. Seja o primeiro.</li>`;
   if (entries.length && userCap){
     try {
       const ps = await userCap.profiles(entries.map(e => e.id));
-      document.querySelectorAll("#ranking li[data-id]").forEach((li,i) => {
+      ol.querySelectorAll("li[data-id]").forEach((li,i) => {
         const id = li.dataset.id, p = ps && ps[id];
         li.querySelector(".who").textContent = `${i+1}º  ${(p && p.name) || "Alguém"}${id===myId ? " (você)" : ""}`;
-        if (id===myId) li.classList.add("me");
       });
     } catch(e){}
   }
@@ -816,71 +1328,124 @@ async function onlinePlay(code){
   try { await saveMine(code, { n:0, at:Date.now(), live:true }); }
   catch(e){
     delete myLocal[code]; $("go").disabled = false;
-    $("goErr").textContent = "Não deu para registrar sua tentativa. Peça a quem compartilhou o jogo para te dar permissão de usar a página.";
+    $("goErr").textContent = "Não conseguimos registrar sua tentativa. Verifique se está logado no Claude e tente de novo. Se continuar, peça para quem compartilhou o jogo te dar permissão de usar a página.";
     return;
   }
-  onl = { code, playing:true, n:0 };
-  rng = mulberry32(seedOf(code)); recent = [];
+  unlock("online");
+  onl = { phase:"playing", code, n:0, run:[] };
+  rng = mulberry32(seedOf(code)); recent = []; filter = "all";
   $("setup").hidden = true; $("play").hidden = false;
   $("board").innerHTML = `
-    <div class="stat left"><span class="lbl">Sequência</span><span class="digits" id="streak">0</span></div>
-    <div class="stat right"><span class="lbl">Desafio</span><span class="digits dim">${esc(code)}</span></div>`;
+    <div class="stat left"><span class="lbl">Sequência</span>${digits("streak", 0)}</div>
+    <div class="mid">Desafio<b>${esc(code)}</b></div>
+    <div class="stat right"><span class="lbl">Líder</span>${digits("leader", (entriesFor(code).filter(e => e.id!==myId)[0]||{n:0}).n, "dim")}</div>`;
   showDuel(onlineAnswer, 0);
 }
-function onlineAnswer(right, fact, pickedEl){
+function onlineAnswer(right, fact){
+  compact();
   const code = onl.code;
   if (right){
-    onl.n++; $("streak").textContent = onl.n; bump($("streak"));
-    plusBadge(pickedEl, `+1 · sequência ${onl.n}`);
+    onl.n++; onl.run.push(1);
+    const el = setDigits("streak", onl.n); bump(el); plusOne(el, "+1");
     saveMine(code, { n:onl.n, at:Date.now(), live:true }).catch(()=>{});
-    const nb = nextButton("Próximo duelo", () => showDuel(onlineAnswer, onl.n), true);
-    actions(`<span class="msg ok">Isso! ${esc(fact)}</span>${nb.html}`, "next"); nb.wire();
-  } else {
-    const n = onl.n;
-    onl.playing = false;
-    const text = `Mais ou Menos ⚽ Fiz ${n} no desafio ${code}. Usa o código e tenta me passar!`;
-    actions(`<div class="over"><span class="lbl">Fim · desafio ${esc(code)}</span><span class="big">${n}</span>
-      <span class="rank">${rank(n)}</span><span class="msg bad small">${esc(fact)}</span>
-      <span class="msg small" id="saveMsg">Salvando no placar…</span>
-      <div class="row"><button class="btn" id="seeRank">Ver classificação</button></div>
-      ${shareBlock(text)}</div>`, "seeRank");
-    wireShare();
-    $("seeRank").onclick = () => { onl = { code, playing:false }; onlineSetup(); };
-    saveMine(code, { n, at:Date.now() }).then(
-      () => { if ($("saveMsg")) $("saveMsg").textContent = "Resultado salvo."; },
-      () => { if ($("saveMsg")) $("saveMsg").textContent = "Não deu para salvar o resultado final."; }
-    );
-  }
+    const nb = offerNext("Próximo duelo", () => showDuel(onlineAnswer, onl.n), true);
+    actions(`<p class="msg ok">Isso! ${esc(fact)}</p>${nb.html}`, "next"); nb.wire();
+  } else onlineEnd(fact);
 }
+function onlineEnd(fact, quiet){
+  const n = onl.n, code = onl.code; onl.run.push(0);
+  onl.phase = "over";
+  const save = saveMine(code, { n, at:Date.now() });
+  if (quiet) return save;
+  const list = entriesFor(code), pos = list.findIndex(e => e.id === myId) + 1, leader = list[0];
+  const posTxt = pos ? `Você ficou em ${pos}º de ${list.length}${leader && leader.id !== myId ? ` · o líder tem ${leader.n}` : ""}.` : "";
+  const text = `⚽ Mais ou Menos · desafio ${code}: ${n} seguidas\n${gridOf(onl.run, 15)}\n${posTxt}\nUsa o código e tenta me passar!`;
+  actions(`<div class="over ${pos===1 ? "win-panel" : ""}"><span class="lbl">Fim · desafio ${esc(code)}</span><span class="big">${n}</span>
+    <span class="rank">${esc(posTxt || rank(n))}</span>
+    <div class="row"><button class="btn" id="seeRank">Ver classificação</button></div>
+    ${shareBlock(text, { link: GAME_URL + "#desafio-" + code })}
+    <p class="msg bad small">${esc(fact)}</p><span class="msg small" id="saveMsg">Salvando no placar…</span></div>`, "seeRank");
+  wireShare({});
+  $("seeRank").onclick = () => { onl = { phase:"room", code }; onlineRender(); };
+  save.then(() => { if ($("saveMsg")) $("saveMsg").textContent = "Resultado salvo."; }, () => { if ($("saveMsg")) $("saveMsg").textContent = "Não deu para salvar o resultado final."; });
+}
+function abandonOnline(){ if (onl.phase === "playing"){ onlineEnd("", true); onl = { phase:"lobby" }; } }
+addEventListener("pagehide", () => { if (onl.phase === "playing") onlineEnd("", true); });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden" && onl.phase === "playing") saveMine(onl.code, { n:onl.n, at:Date.now() }).catch(()=>{});
+  else if (document.visibilityState === "visible" && onl.phase === "playing") saveMine(onl.code, { n:onl.n, at:Date.now(), live:true }).catch(()=>{});
+});
 
-/* ---------- troca de modo ---------- */
-let mode = "solo";
+/* ================= troca de modo e filtros ================= */
+let mode = null;
+function inProgress(){
+  if (mode === "solo") return solo && !solo.over && solo.streak >= 3 ? `Trocar agora encerra sua sequência de ${solo.streak}.` : "";
+  if (mode === "robo" || mode === "penaltis") return pen && !pen.done && (pen.kicks[0].length + pen.kicks[1].length) > 0 ? "Trocar agora abandona a disputa de pênaltis." : "";
+  if (mode === "online") return onl.phase === "playing" ? `Trocar agora encerra sua tentativa no desafio ${onl.code} com ${onl.n}.` : "";
+  return "";
+}
+function guard(action){
+  const warn = inProgress();
+  if (!warn){ action(); return; }
+  confirmBox(`${warn} Trocar mesmo?`, "Trocar", action);
+}
+function leaveCurrent(){
+  clearAuto(); pendingNext = null;
+  if (mode === "solo" && solo && !solo.over && solo.streak > 0){ finishRun(solo.streak); store.del("partida"); solo = null; }
+  if (mode === "online") abandonOnline();
+}
 function setMode(m){
-  clearAuto();
+  if (m === mode) return;
+  guard(() => { leaveCurrent(); applyMode(m); });
+}
+function applyMode(m){
   mode = m; current = null; locked = true;
   document.querySelectorAll(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.m===m));
-  $("turn").hidden = true;
+  $("turn").hidden = true; $("duel").hidden = false;
   $("chips").hidden = m !== "solo";
-  if (m === "solo"){ const on = document.querySelector("#chips .chip[aria-pressed=\"true\"]"); filter = on ? on.dataset.f : "all"; $("setup").hidden = true; $("play").hidden = false; soloStart(); }
+  if (m === "solo"){ filter = store.get("filtro", "all"); syncChips(); soloEnter(); }
+  if (m === "diario") dailyEnter();
   if (m === "penaltis") penSetup(false);
   if (m === "robo") penSetup(true);
-  if (m === "online"){ filter = "all"; onl = null; onlineSetup(); }
+  if (m === "online"){ filter = "all"; if (onl.phase !== "room") onl = { phase:"lobby" }; onlineRender(); }
+}
+function syncChips(){
+  document.querySelectorAll("#chips [data-f]").forEach(x => x.setAttribute("aria-pressed", x.dataset.f === filter));
+  $("fmtClassic").setAttribute("aria-pressed", classic);
 }
 document.querySelectorAll(".mode").forEach(b => b.onclick = () => setMode(b.dataset.m));
+document.querySelectorAll("#chips [data-f]").forEach(c => c.onclick = () => {
+  if (c.dataset.f === filter) return;
+  guard(() => { if (solo && !solo.over && solo.streak > 0) finishRun(solo.streak); filter = c.dataset.f; store.set("filtro", filter); syncChips(); soloStart(); });
+});
+$("fmtClassic").onclick = () => guard(() => { if (solo && !solo.over && solo.streak > 0) finishRun(solo.streak); classic = !classic; store.set("classic", classic); syncChips(); soloStart(); });
 
 $("cardA").onclick = () => choose("A");
 $("cardB").onclick = () => choose("B");
-document.querySelectorAll("#chips .chip").forEach(c => c.onclick = () => {
-  document.querySelectorAll("#chips .chip").forEach(x => x.setAttribute("aria-pressed", x===c));
-  filter = c.dataset.f;
-  if (mode === "solo") soloStart();
-});
 document.addEventListener("keydown", e => {
   if (e.target.closest && e.target.closest("input,select,textarea")) return;
+  if (!$("confirmSheet").hidden || !$("statsSheet").hidden) return;
+  if (classicTurn){
+    if (e.key==="ArrowUp" || e.key==="1"){ e.preventDefault(); chooseClassic("mais"); }
+    if (e.key==="ArrowDown" || e.key==="2"){ e.preventDefault(); chooseClassic("menos"); }
+    return;
+  }
   if (e.key==="ArrowLeft" || e.key==="1") choose("A");
   if (e.key==="ArrowRight" || e.key==="2") choose("B");
 });
-setMode("solo");
+
+/* ================= início ================= */
+if (ON_SITE){ $("m-online").hidden = true; $("modes").classList.add("four"); }
+(function start(){
+  const m = /^#desafio-([A-Z0-9]{5})$/.exec(location.hash);
+  if (m && !ON_SITE){ onl = { phase:"room", code:m[1] }; applyMode("online"); return; }
+  applyMode("solo");
+})();
+addEventListener("hashchange", () => {
+  const m = /^#desafio-([A-Z0-9]{5})$/.exec(location.hash);
+  if (m && !ON_SITE && !(onl.phase==="room" && onl.code===m[1])) guard(() => { leaveCurrent(); onl = { phase:"room", code:m[1] }; mode = null; applyMode("online"); });
+});
 </script>
+
 </body>
 </html>
