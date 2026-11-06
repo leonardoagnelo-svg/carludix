@@ -1,0 +1,10 @@
+{
+  "name": "Onde fica? · O jogo da geografia da fé",
+  "short_name": "Onde fica?",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08132b",
+  "theme_color": "#08132b",
+  "icons": [{ "src": "logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
+}
