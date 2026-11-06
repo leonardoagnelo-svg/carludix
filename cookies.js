@@ -26,7 +26,64 @@
     s.crossOrigin = 'anonymous';
     s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
     document.head.appendChild(s);
+    adsReady = true;
+    renderAds();
   }
+
+  /* ===== Espaços de anúncio =====
+     Coloque na página onde o anúncio pode aparecer:
+       <div class="cdx-ad" data-ad="jogo-resultado"></div>
+     O espaço fica INVISÍVEL até um anúncio ser de fato exibido (nada de buraco vazio).
+     Para telas que aparecem depois (ex.: fim de partida), chame window.CarludixAds.render()
+     logo após mostrar a tela. */
+  var SLOTS = {
+    'portal-meio': '2628174437',
+    'portal-rodape': '3724653743',
+    'jogo-resultado': '7904551849'
+  };
+  var adsReady = false;
+
+  function fillSlot(box) {
+    if (box.getAttribute('data-cdx-done')) return;
+    var id = SLOTS[box.getAttribute('data-ad')];
+    if (!id) return;
+    box.setAttribute('data-cdx-done', '1');
+    var ins = document.createElement('ins');
+    ins.className = 'adsbygoogle';
+    ins.style.display = 'block';
+    ins.setAttribute('data-ad-client', ADSENSE_CLIENT);
+    ins.setAttribute('data-ad-slot', id);
+    ins.setAttribute('data-ad-format', 'auto');
+    ins.setAttribute('data-full-width-responsive', 'true');
+    box.appendChild(ins);
+    // só mostra o espaço quando o Google realmente preencher um anúncio
+    try {
+      new MutationObserver(function () {
+        var st = ins.getAttribute('data-ad-status');
+        if (st === 'filled') box.classList.add('cdx-filled');
+        else if (st === 'unfilled') box.classList.remove('cdx-filled');
+      }).observe(ins, { attributes: true, attributeFilter: ['data-ad-status'] });
+    } catch (e) {}
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }
+
+  function renderAds() {
+    if (!adsReady) return;
+    var list = document.querySelectorAll('.cdx-ad');
+    for (var i = 0; i < list.length; i++) {
+      // ignora espaços escondidos (ex.: tela de resultado ainda fechada)
+      var p = list[i].parentElement;
+      if (p && p.getClientRects().length === 0) continue;
+      fillSlot(list[i]);
+    }
+  }
+  window.CarludixAds = { render: renderAds };
+
+  var adCss =
+    '.cdx-ad{display:none;margin:24px auto;max-width:970px;text-align:center}' +
+    '.cdx-ad.cdx-filled{display:block}' +
+    '.cdx-ad.cdx-filled:before{content:"Publicidade";display:block;font:11px/1.4 Inter,ui-sans-serif,system-ui,sans-serif;' +
+    'letter-spacing:.12em;text-transform:uppercase;color:#6c7891;margin-bottom:6px}';
 
   var css =
     '#cdx-cookies{position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;max-width:560px;margin:0 auto;' +
@@ -74,6 +131,10 @@
   window.CarludixCookies = { status: get, open: open };
 
   function init() {
+    if (!document.getElementById('cdx-ad-css')) {
+      var st = document.createElement('style'); st.id = 'cdx-ad-css'; st.textContent = adCss;
+      document.head.appendChild(st);
+    }
     var s = get();
     if (s) loadAds(s); else open();
     // links com data-cookies abrem o aviso (ex.: rodapé)
