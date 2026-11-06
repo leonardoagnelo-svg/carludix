@@ -6,7 +6,7 @@
 <title>Mais ou Menos</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700;1,800;1,900&family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow:wght@400;500;600;700&display=swap">
 <meta name="description" content="Mais ou Menos: quem tem mais gols, títulos ou valor de mercado? Jogue sozinho, o desafio diário, contra o robô ou nos pênaltis com um amigo.">
 <meta name="theme-color" content="#070605">
 <link rel="icon" type="image/png" href="logo.png">
@@ -149,10 +149,10 @@ body.compact .mode{min-height:44px}
 .card .band{display:flex; align-items:center; gap:8px; padding:9px 14px; background:rgba(246,181,18,.08); border-bottom:1px solid var(--line); min-width:0}
 .card .flag{font-size:18px; line-height:1}
 .card .kind{font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0}
-.card .name{padding:0 14px; align-self:center; font-family:var(--display); font-weight:800; font-size:clamp(26px,4.4vw,38px); line-height:1.02; padding-top:.06em; text-transform:uppercase; overflow-wrap:break-word; hyphens:manual}
-.card .name.l7{font-size:.9em}
-.card .name.l9{font-size:.78em}
-.card .name.l11{font-size:.66em}
+.card .name{padding:0 14px; align-self:center; --fs:clamp(30px,4.6vw,42px); font-family:var(--display); font-weight:800; font-size:var(--fs); line-height:1.02; padding-top:.06em; text-transform:uppercase; overflow-wrap:break-word; hyphens:manual}
+.card .name.l7{font-size:calc(var(--fs)*.92)}
+.card .name.l9{font-size:calc(var(--fs)*.8)}
+.card .name.l11{font-size:calc(var(--fs)*.68)}
 .card .name{min-width:0}
 .card .val{padding:0 14px; font-family:var(--display); font-weight:900; font-size:clamp(32px,6vw,46px); line-height:1; font-variant-numeric:tabular-nums; min-height:1em; display:flex; align-items:baseline; gap:4px; flex-wrap:wrap}
 .card .val small{font-size:.42em; font-weight:700; color:var(--muted); letter-spacing:.04em}
@@ -340,7 +340,7 @@ footer p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
   .card .band{padding:7px 9px; gap:6px}
   .card .flag{font-size:15px}
   .card .kind{font-size:10px; letter-spacing:.06em}
-  .card .name{font-size:clamp(22px,7vw,30px); padding:0 10px}
+  .card .name{--fs:clamp(24px,7.6vw,32px); padding:0 10px}
   .card .val{font-size:clamp(28px,8.5vw,36px); padding:0 10px}
   .tag{margin:0 10px; font-size:10px; padding:3px 6px}
   .q h1{font-size:clamp(19px,5.2vw,24px)}
@@ -353,6 +353,134 @@ footer p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
   .badges{grid-template-columns:1fr}
   .catrow{grid-template-columns:minmax(0,1fr) 70px 42px}
 }
+
+/* ===== Identidade do banner: estádio à noite, painéis com moldura dourada, itálico pesado, botões em pílula ===== */
+:root{
+  --display:"Exo 2","Arial Black",Impact,sans-serif;
+  --cond:"Barlow Condensed","Arial Narrow",sans-serif-condensed,sans-serif;
+  --gold-fill:linear-gradient(180deg,#ffe788 0%,#f8c21c 42%,#d99a00 100%);
+  --gold-edge:linear-gradient(140deg,#ffe07a 0%,#7a560a 35%,#f6b512 62%,#4a3507 100%);
+  --panel-fill:linear-gradient(180deg,#17130c 0%,#0b0907 100%);
+  --glow:0 0 0 1px rgba(0,0,0,.6), 0 10px 30px rgba(0,0,0,.55), 0 0 26px rgba(246,181,18,.10);
+}
+body{
+  background-color:#050403;
+  background-image:
+    radial-gradient(circle at 8% 4%, rgba(255,226,140,.38) 0, rgba(255,200,80,.12) 7%, transparent 22%),
+    radial-gradient(circle at 92% 4%, rgba(255,226,140,.30) 0, rgba(255,200,80,.10) 7%, transparent 22%),
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(246,181,18,.14), transparent 70%),
+    radial-gradient(ellipse 120% 30% at 50% 100%, rgba(40,90,30,.22), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(60,207,78,.02) 0 56px, transparent 56px 112px);
+  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,repeat;
+  background-size:100% 100vh,100% 100vh,100% 100vh,100% 100%,auto;
+}
+/* painel com moldura dourada degradê */
+.board,.card,.over,.box,.level,.mode,.sheet-body,.handoff,.kpi,.badge,.switch,.ranking li,.pill-code,.extras{
+  border:1.5px solid transparent;
+  background:var(--panel-fill) padding-box, var(--gold-edge) border-box;
+  box-shadow:var(--glow);
+}
+.card{border-width:2px; border-radius:16px}
+.board,.over,.box,.sheet-body,.handoff,.extras{border-radius:16px}
+.mode,.level,.kpi,.badge,.switch{border-radius:12px}
+.ranking li{border-radius:10px}
+.board{background-image:radial-gradient(rgba(246,181,18,.06) 1px, transparent 1.6px), var(--panel-fill), var(--gold-edge);
+  background-origin:padding-box,padding-box,border-box; background-clip:padding-box,padding-box,border-box; background-size:5px 5px,auto,auto}
+.over{background:radial-gradient(120% 70% at 50% 0, rgba(239,59,44,.18), transparent 60%) padding-box, var(--panel-fill) padding-box, linear-gradient(140deg,#ff7a6e,#5c130d 45%,#ef3b2c 70%,#3a0b07) border-box}
+.over.win-panel{background:radial-gradient(120% 70% at 50% 0, rgba(246,181,18,.22), transparent 60%) padding-box, var(--panel-fill) padding-box, var(--gold-edge) border-box}
+
+/* tipografia em itálico pesado */
+.mode,.btn,.brand,.q h1,.digits,.over .big,.card .val,.turn,.shot,.record,.box h2,.sheet h2,.code,.level b,.pen-name,.handoff .who,.back,.iconbtn,.kpi b,.tagline,.nums b,.extras b,.toast{font-family:var(--display); font-style:italic}
+.q h1{font-weight:800; letter-spacing:-.01em}
+.card .name{font-family:var(--cond); font-style:italic; font-weight:800; letter-spacing:.01em; line-height:.98}
+.digits,.over .big,.kpi b,.nums b{font-weight:900}
+.digits{background:var(--gold-fill); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none; filter:drop-shadow(0 0 10px rgba(246,181,18,.45))}
+.digits.dim{background:linear-gradient(180deg,#b8902f,#6e530f); -webkit-background-clip:text; background-clip:text; filter:none}
+.over .big{background:var(--gold-fill); -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none; filter:drop-shadow(0 0 18px rgba(246,181,18,.4))}
+.brand span,.tagline em{background:var(--gold-fill); -webkit-background-clip:text; background-clip:text; color:transparent}
+.q .cat,.lbl{letter-spacing:.16em}
+
+/* botões em pílula dourada brilhante */
+.btn{border-radius:999px; border:0; background:var(--gold-fill); color:#1a1003; font-weight:900; letter-spacing:.02em; text-transform:none;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.55), inset 0 -3px 0 rgba(120,70,0,.45), 0 8px 22px rgba(246,181,18,.28); padding:12px 28px}
+.btn::before{content:""; position:absolute; inset:2px 12px auto; height:42%; border-radius:999px; background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0)); pointer-events:none}
+.btn.ghost{background:var(--panel-fill) padding-box, var(--gold-edge) border-box; border:1.5px solid transparent; color:var(--fg); box-shadow:var(--glow)}
+.btn.ghost::before,.btn.wa::before{display:none}
+.btn.wa{background:linear-gradient(180deg,#5af08e,#25d366 50%,#159c49); color:#04210f; box-shadow:inset 0 2px 0 rgba(255,255,255,.4), 0 8px 22px rgba(37,211,102,.25)}
+.btn.up{background:linear-gradient(180deg,#7cf08a,#3ccf4e 50%,#1f8f2e); color:#04150a; box-shadow:inset 0 2px 0 rgba(255,255,255,.45), 0 8px 22px rgba(60,207,78,.3)}
+.btn.down{background:linear-gradient(180deg,#ff8a7d,#ef3b2c 50%,#a8180c); color:#1d0402; box-shadow:inset 0 2px 0 rgba(255,255,255,.4), 0 8px 22px rgba(239,59,44,.3)}
+.btn.next .play-ico,.btn .play-ico{width:0; height:0; border-left:13px solid currentColor; border-top:8px solid transparent; border-bottom:8px solid transparent}
+.back,.iconbtn{border-radius:999px; background:var(--panel-fill) padding-box, var(--gold-edge) border-box; border:1.5px solid transparent; color:var(--fg); font-weight:800}
+
+/* abas de modo com ícone */
+.modes-head{display:flex; align-items:center; gap:10px; font:900 italic 16px var(--display); text-transform:uppercase; letter-spacing:.04em; color:#1a1003;
+  background:linear-gradient(90deg,#ffe788,#f6b512 60%,rgba(246,181,18,0)); border-radius:10px 10px 0 0; padding:6px 14px; margin-bottom:-6px; width:max-content; max-width:100%}
+.modes-head svg{width:20px; height:20px}
+.mode{gap:4px; color:var(--fg); text-transform:none; font-weight:800; font-size:17px}
+.mode .ico{width:26px; height:26px; color:var(--led)}
+.mode small{color:var(--muted)}
+.mode[aria-pressed="true"]{background:var(--gold-fill) padding-box, var(--gold-edge) border-box; color:#1a1003; box-shadow:inset 0 2px 0 rgba(255,255,255,.5), 0 0 24px rgba(246,181,18,.35)}
+.mode[aria-pressed="true"] .ico{color:#1a1003}
+.mode .eye{fill:#1a1003}
+.mode[aria-pressed="true"] .eye{fill:#f6b512}
+.mode[aria-pressed="true"] small{color:#4a3305}
+body.compact .mode .ico{width:20px; height:20px}
+
+/* abertura: frase e números */
+.hero{align-items:center; gap:28px}
+.pitch{display:flex; flex-direction:column; gap:12px; min-width:0}
+.tagline{margin:0; font-weight:900; font-size:clamp(26px,3.6vw,40px); line-height:1.05; text-wrap:balance}
+.tagline em{font-style:italic; padding-right:.1em}
+.nums{display:flex; gap:0}
+.nums div{display:flex; flex-direction:column; align-items:center; padding:0 18px; border-left:1.5px solid rgba(246,181,18,.45)}
+.nums div:first-child{border-left:0; padding-left:0}
+.nums b{font-size:30px; line-height:1; background:var(--gold-fill); -webkit-background-clip:text; background-clip:text; color:transparent}
+.nums span{font-size:12.5px; color:var(--fg); margin-top:3px}
+body.compact .pitch{display:none}
+
+/* cartões */
+.card .band{background:linear-gradient(90deg,rgba(246,181,18,.16),rgba(246,181,18,0)); border-bottom:1px solid rgba(246,181,18,.25)}
+.card.win{background:radial-gradient(120% 70% at 50% 0, rgba(60,207,78,.22), transparent 65%) padding-box, var(--panel-fill) padding-box, linear-gradient(140deg,#8cff9a,#1c6b26 45%,#3ccf4e 70%,#0f3a14) border-box; box-shadow:0 0 26px rgba(60,207,78,.3)}
+.card.picked-wrong{background:radial-gradient(120% 70% at 50% 0, rgba(239,59,44,.22), transparent 65%) padding-box, var(--panel-fill) padding-box, linear-gradient(140deg,#ff8a7d,#6b160d 45%,#ef3b2c 70%,#3a0b07) border-box; box-shadow:0 0 26px rgba(239,59,44,.3)}
+@media (hover:hover){.card:hover:not(:disabled){box-shadow:0 0 30px rgba(246,181,18,.3), var(--glow)}}
+.vs{background:var(--gold-fill); color:#1a1003; border:0; font-style:italic; font-family:var(--display); box-shadow:0 0 18px rgba(246,181,18,.45)}
+.tag{border-radius:999px; font-family:var(--display); font-style:italic}
+
+/* filtros e níveis em pílula como no banner */
+.chip{border-radius:999px; background:var(--panel-fill) padding-box, var(--gold-edge) border-box; border:1.5px solid transparent; color:var(--fg)}
+.chip[aria-pressed="true"]{background:var(--gold-fill) padding-box, var(--gold-edge) border-box; color:#1a1003; box-shadow:inset 0 2px 0 rgba(255,255,255,.5)}
+.level b{font-weight:900}
+.level.facil{background:radial-gradient(100% 80% at 50% 0, rgba(60,207,78,.18), transparent 70%) padding-box, var(--panel-fill) padding-box, linear-gradient(140deg,#8cff9a,#1c6b26 45%,#3ccf4e 70%,#0f3a14) border-box}
+.level.dificil{background:radial-gradient(100% 80% at 50% 0, rgba(239,59,44,.18), transparent 70%) padding-box, var(--panel-fill) padding-box, linear-gradient(140deg,#ff8a7d,#6b160d 45%,#ef3b2c 70%,#3a0b07) border-box}
+.turn{border-radius:999px; background:var(--gold-fill); padding:5px 16px}
+.turn.next{background:var(--panel-fill) padding-box, var(--gold-edge) border-box; border:1.5px solid transparent; color:var(--fg)}
+
+/* faixa de extras */
+.extras{display:grid; grid-template-columns:auto repeat(3,1fr); align-items:center; gap:0; padding:10px 6px; width:100%}
+.extras > *{display:flex; align-items:center; gap:10px; padding:4px 14px; border-left:1px solid rgba(246,181,18,.35); min-width:0}
+.extras > :first-child{border-left:0}
+.extras b{font-weight:900; font-size:18px; text-transform:uppercase; color:var(--led); display:flex; align-items:center; gap:8px}
+.extras button{background:none; border:0; color:var(--fg); font:600 14px var(--body); text-align:left; cursor:pointer; padding:4px 14px; min-height:44px}
+.extras span{font:600 14px var(--body); color:var(--fg)}
+.extras svg{width:24px; height:24px; flex:none; color:var(--led)}
+.extras .wa-ico{color:#25d366}
+
+@media (max-width:620px){
+  .hero{flex-direction:column; gap:6px}
+  .tagline{font-size:20px; text-align:center}
+  .nums{display:none}
+  .modes-head{display:none}
+  .mode{font-size:13px; gap:2px; min-height:56px}
+  .mode .ico{width:22px; height:22px}
+  body.compact .mode{min-height:46px}
+  .btn{padding:11px 22px}
+  .extras{grid-template-columns:1fr 1fr 1fr; padding:6px 2px}
+  .extras > :first-child{display:none}
+  .extras > :nth-child(2){border-left:0}
+  .extras > *{padding:4px 8px; flex-direction:column; text-align:center; gap:4px}
+  .extras button,.extras span{font-size:12px; text-align:center; padding:4px 6px}
+}
+
 @media (prefers-reduced-motion:reduce){
   .duel.enter .card,.card.shake,.val.flip,.bump,.record,.shot,.dot.next,.toast{animation:none}
   .plusone{display:none}
@@ -368,14 +496,15 @@ footer p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
     <a class="back" href="https://carludix.com/">← CARLUDIX</a>
     <button class="iconbtn" id="openStats" type="button">Estatísticas</button>
   </div>
-  <div class="hero"><img src="escudo.webp" alt="Mais ou Menos: gols, títulos e valor de mercado" width="480" height="378"></div>
+  <div class="hero"><img src="escudo.webp" alt="Mais ou Menos: gols, títulos e valor de mercado" width="480" height="378"><div class="pitch"><p class="tagline">O desafio dos números do <em>futebol!</em></p><div class="nums"><div><b>297</b><span>nomes</span></div><div><b>16</b><span>categorias</span></div><div><b>~2.500</b><span>duelos possíveis</span></div></div></div></div>
 
+  <div class="modes-head" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.5 7h11a5 5 0 0 1 4.9 6l-.9 4.2a2.6 2.6 0 0 1-4.4 1.3L14.6 16H9.4l-2.5 2.5a2.6 2.6 0 0 1-4.4-1.3L1.6 13A5 5 0 0 1 6.5 7zm1 3v1.7H5.8v1.6h1.7V15h1.6v-1.7h1.7v-1.6H9.1V10zm8.7.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2zm2.4 2.3a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/></svg>Modos de jogo</div>
   <nav class="modes" id="modes" aria-label="Modo de jogo">
-    <button class="mode" id="m-solo" data-m="solo" aria-pressed="true">Sozinho<small>bata seu recorde</small></button>
-    <button class="mode" id="m-diario" data-m="diario" aria-pressed="false">Diário<small>10 duelos do dia</small></button>
-    <button class="mode" id="m-robo" data-m="robo" aria-pressed="false">Robô<small>pênaltis contra a máquina</small></button>
-    <button class="mode" id="m-penaltis" data-m="penaltis" aria-pressed="false">Pênaltis<small>2 no mesmo celular</small></button>
-    <button class="mode" id="m-online" data-m="online" aria-pressed="false">Online<small>desafio com código</small></button>
+    <button class="mode" id="m-solo" data-m="solo" aria-pressed="true"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7.5" r="4.2"/><path d="M3.5 21c.6-4.6 4.1-7.2 8.5-7.2s7.9 2.6 8.5 7.2z"/></svg><span>Sozinho</span><small>bata seu recorde</small></button>
+    <button class="mode" id="m-diario" data-m="diario" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M8.5 15.5l2.3 2.3 4.7-4.6"/></svg><span>Diário</span><small>10 duelos do dia</small></button>
+    <button class="mode" id="m-robo" data-m="robo" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="11" y="1.5" width="2" height="4" rx="1"/><circle cx="12" cy="1.8" r="1.6"/><rect x="4" y="6" width="16" height="13" rx="4"/><rect x="1" y="10" width="2.5" height="5" rx="1.2"/><rect x="20.5" y="10" width="2.5" height="5" rx="1.2"/><circle class="eye" cx="9" cy="12" r="1.8"/><circle class="eye" cx="15" cy="12" r="1.8"/><rect class="eye" x="8.5" y="15.5" width="7" height="1.6" rx=".8"/></svg><span>Robô</span><small>pênaltis contra a máquina</small></button>
+    <button class="mode" id="m-penaltis" data-m="penaltis" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="7.5" r="3.5"/><circle cx="16.5" cy="8.5" r="3"/><path d="M1.5 20c.5-3.9 3.2-6.2 6.5-6.2s6 2.3 6.5 6.2z"/><path d="M14.6 13.9c.6-.1 1.2-.2 1.9-.2 3 0 5.3 2.1 5.8 5.6h-6.4c-.2-2.2-.6-3.9-1.3-5.4z"/></svg><span>Pênaltis</span><small>2 no mesmo celular</small></button>
+    <button class="mode" id="m-online" data-m="online" aria-pressed="false"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M2.5 9a14 14 0 0 1 19 0M5.8 12.6a9 9 0 0 1 12.4 0M9.1 16.1a4.2 4.2 0 0 1 5.8 0"/><circle cx="12" cy="19.4" r="1.4" fill="currentColor" stroke="none"/></svg><span>Online</span><small>desafio com código</small></button>
   </nav>
 
   <header class="board" id="board"></header>
@@ -408,6 +537,12 @@ footer p{font-size:12.5px; color:var(--muted); line-height:1.5; margin:0}
     <section class="actions" id="actions" aria-live="polite"></section>
   </section>
 
+  <div class="extras">
+    <b><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>Extras</b>
+    <button type="button" data-open-stats><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="13" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>Estatísticas detalhadas</button>
+    <button type="button" data-open-stats><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15zm0 3.2l-1.3 2.7-3 .4 2.2 2.1-.5 2.9 2.6-1.4 2.6 1.4-.5-2.9 2.2-2.1-3-.4zM7.4 16.2l-1.9 6.3 3.6-1.5 2.5 2.4 1.1-5.6M16.6 16.2l1.9 6.3-3.6-1.5-2.5 2.4"/></svg>12 conquistas</button>
+    <span><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8zm-3.3 4.4c-.2 0-.5 0-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4.9 2.9.8 3.4.7.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4l-.5-.3-1.8-.9c-.3-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.6.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.5-1.4-1.8-.1-.3 0-.4.1-.5l.4-.5.3-.4v-.4l-.8-2c-.2-.5-.4-.5-.6-.5z"/></svg>Compartilhe no WhatsApp</span>
+  </div>
   <footer>
     <details>
       <summary>Fontes e critérios</summary>
@@ -695,6 +830,7 @@ function openStats(){
 }
 function closeStats(){ $("statsSheet").hidden = true; $("openStats").focus(); }
 $("openStats").onclick = openStats;
+document.querySelectorAll("[data-open-stats]").forEach(x => x.onclick = openStats);
 $("statsSheet").addEventListener("click", e => { if (e.target === $("statsSheet")) closeStats(); });
 
 /* ================= confirmação ================= */
