@@ -75,7 +75,7 @@ a{color:var(--gold-hi)}
 .ribbon::before{left:-14px;border-right:none;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,40% 50%)}
 .ribbon::after{right:-14px;border-left:none;clip-path:polygon(0 0,100% 0,60% 50%,100% 100%,0 100%)}
 @media(min-width:820px) and (max-width:1199px){.brand{flex-direction:row;justify-content:center;gap:20px}.brand .logoimg{width:180px}.brand .ribbon{max-width:320px}.portal{align-self:center}}
-@media(max-width:819px){.brand{flex-direction:row;justify-content:space-between;align-items:center;gap:12px}.brand .logoimg{width:76px;filter:drop-shadow(0 4px 12px rgba(240,189,62,.3))}.ribbon{display:none}.portal{align-self:center;order:2}.brand .logo{order:1}.brandname{display:block!important}}
+@media(max-width:819px){.brand{flex-direction:row;justify-content:space-between;align-items:center;gap:12px}.brand .logoimg{width:76px;filter:drop-shadow(0 4px 12px rgba(240,189,62,.3))}.brand .ribbon{display:none}.brand .portal{align-self:center;order:2}.brand .logo{order:1}.brandname{display:block!important}}
 .brandname{display:none;order:1;flex:1;min-width:0;font-family:var(--display);font-weight:800;font-size:1.5rem;line-height:1;color:var(--gold)}
 .brandname small{display:block;font-family:var(--body);font-weight:500;font-size:.85rem;color:var(--muted);margin-top:3px}
 @media(min-width:820px){.boardcol>*,.acts{width:100%;max-width:min(660px,calc((100vh - 230px)*1.08));margin-inline:auto}.boardcol{align-items:center}}
@@ -109,7 +109,8 @@ a{color:var(--gold-hi)}
   .t-day{display:none}
   .t-pts{padding:6px 12px;gap:0}.t-pts svg{display:none}.t-pts b{font-size:1.35rem}.t-pts small{font-size:.78rem}
   .t-lives{padding:10px 6px 4px}.lives{gap:4px}.lives i{width:10px;height:21px}
-  .roundbtn{width:46px;height:46px}.t-icons{gap:6px}
+  .roundbtn{width:42px;height:42px}.roundbtn svg{width:22px;height:22px}.t-icons{gap:5px}
+  .lives i{width:9px;height:20px}.lives{gap:3px}.t-lives{padding:10px 4px 4px}
 }
 /* instrução e faixa de vez */
 .howto{margin:0;font-size:1.02rem;line-height:1.35;text-align:center;color:var(--text);text-wrap:balance}
@@ -205,6 +206,35 @@ a{color:var(--gold-hi)}
 .joinrow input{font-family:var(--mono);font-size:1.05rem;letter-spacing:.2em;text-transform:uppercase;width:9ch;padding:8px 10px;min-height:44px;border-radius:10px;border:1.5px solid #3c4580;background:#0b0f2a;color:var(--text)}
 .joinrow input:focus{outline:none;border-color:var(--gold)}
 .wait{grid-column:1/-1;padding:70px 16px;text-align:center;color:var(--muted);font-size:1.05rem}
+/* tela inicial */
+.home{max-width:620px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:18px;padding-bottom:20px}
+.home .portal{align-self:flex-start}
+.home .logoimg{width:min(270px,58vw)}
+@media(max-width:520px){.home{gap:14px}.home .ribbon{font-size:1.05rem;padding:9px 16px}.hcard{min-height:0;padding:14px}.hcard svg{width:34px;height:34px}}
+.home .ribbon{font-size:1.2rem}
+.hgrid{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:520px){.hgrid{grid-template-columns:1fr}}
+.hcard{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:16px;border-radius:18px;cursor:pointer;background:linear-gradient(180deg,#1d2760,#121a45);border:2px solid rgba(240,189,62,.55);color:var(--text);min-height:140px;position:relative}
+.hcard:hover,.hcard:focus-visible{outline:none;border-color:var(--gold-hi);box-shadow:0 0 22px rgba(240,189,62,.45)}
+.hcard svg{width:44px;height:44px}
+.hcard b{font-family:var(--display);font-weight:800;font-size:1.45rem;line-height:1.05;color:var(--gold-hi)}
+.hcard span{color:var(--muted);line-height:1.35}
+.hcard em{font-style:normal;font-weight:700;font-size:.9rem;color:var(--gold);margin-top:auto}
+.hcard.main{grid-column:1/-1;background:linear-gradient(180deg,#3a2a12,#1a1430);border-color:var(--gold);min-height:0}
+.hcard.main b{font-size:1.8rem}
+.hcard .go{position:absolute;right:14px;top:14px;font-family:var(--display);font-weight:800;color:var(--ink);background:linear-gradient(180deg,var(--gold-hi),var(--gold));border-radius:999px;padding:6px 14px;font-size:1.05rem}
+.hfoot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.hstats{color:var(--muted);text-align:center;margin:0}
+.hstats b{color:var(--gold-hi)}
+/* sorteio e marcas da velha */
+.cell .mark{position:absolute;top:4px;right:4px;width:clamp(20px,5vw,30px);height:clamp(20px,5vw,30px);border-radius:50%;display:grid;place-items:center;background:#1a1240;border:2px solid #fff}
+.cell .mark svg{width:64%;height:64%}
+.cell.own-b .mark{background:#5a1430}
+.coin{display:inline-flex;align-items:center;gap:10px}
+.coin i{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#f0bd3e 55%,#a2700f);display:inline-block}
+@media(prefers-reduced-motion:no-preference){.turnbar.draw .coin i{animation:flip .5s linear 3}}
+@keyframes flip{50%{transform:scaleX(.1)}}
+.turnbar.draw{background:linear-gradient(180deg,#fff3c4,var(--gold-hi));color:var(--ink);border-color:#fff}
 /* salas online */
 .salas{grid-column:1/-1;padding:18px 10px;display:flex;flex-direction:column;gap:16px}
 .salas h3{margin:0;font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--gold);text-align:center}
@@ -275,7 +305,21 @@ a{color:var(--gold-hi)}
 </head>
 <body>
 
-<div class="app">
+<section class="home" id="home" aria-labelledby="homeTitle" hidden>
+  <a class="portal" href="https://carludix.com/catolicos/">← CARLUDIX</a>
+  <h1 class="logo" id="homeTitle"><img class="logoimg" src="logo-grade.webp" alt="Grade dos Santos" width="560" height="548"></h1>
+  <p class="ribbon">Relacione os critérios e complete a grade com os santos certos!</p>
+  <div class="hgrid">
+    <button class="hcard main" data-go="daily"><span class="go" aria-hidden="true">Jogar</span><b>Desafio do Dia</b><span>Uma grade nova todo dia, igual para todo mundo. 9 velas para completar.</span><em id="hDaily"></em></button>
+    <button class="hcard" data-go="practice"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="6" width="36" height="36" rx="5" fill="none" stroke="#f0bd3e" stroke-width="3.5"/><path d="M18 6v36M30 6v36M6 18h36M6 30h36" stroke="#f0bd3e" stroke-width="3"/><rect x="18" y="18" width="12" height="12" fill="#f0bd3e"/></svg><b>Grade de Treino</b><span>Grades aleatórias, quantas quiser.</span></button>
+    <button class="hcard" data-go="bot"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="14" width="30" height="24" rx="7" fill="#f0bd3e"/><circle cx="18" cy="26" r="3.5" fill="#1b1102"/><circle cx="30" cy="26" r="3.5" fill="#1b1102"/><path d="M19 33h10" stroke="#1b1102" stroke-width="2.5" stroke-linecap="round"/><path d="M24 14V8" stroke="#f0bd3e" stroke-width="3"/><circle cx="24" cy="7" r="3" fill="#ffe594"/></svg><b>Contra o Robô</b><span>Jogo da velha com santos. Sorteio decide quem começa.</span><em id="hBot"></em></button>
+    <button class="hcard" data-go="online" style="grid-column:1/-1"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="14" r="6" fill="#f0bd3e"/><circle cx="11" cy="18" r="4.5" fill="#c88a14"/><circle cx="37" cy="18" r="4.5" fill="#c88a14"/><path d="M13 38c0-8 5-13 11-13s11 5 11 13z" fill="#f0bd3e"/><path d="M3 36c0-6 3-9 8-9 2 0 3 .4 4 1-2 2-3 5-3 8zM45 36c0-6-3-9-8-9-2 0-3 .4-4 1 2 2 3 5 3 8z" fill="#c88a14"/></svg><b>Jogar Online</b><span>Jogo da velha contra um amigo, cada um no seu celular. Crie uma sala e mande o link pelo WhatsApp.</span></button>
+  </div>
+  <p class="hstats" id="hStats"></p>
+  <div class="hfoot"><button class="btn" id="hHelp">Como jogar</button></div>
+</section>
+
+<div class="app" id="app">
   <header class="brand">
     <a class="portal" href="https://carludix.com/catolicos/">← CARLUDIX</a>
     <h1 class="logo"><img class="logoimg" src="logo-grade.webp" alt="Grade dos Santos" width="560" height="548"></h1>
@@ -294,6 +338,7 @@ a{color:var(--gold-hi)}
       <span><small id="ptslabel">Pontuação</small><b id="pts">0 pts</b></span>
     </div>
     <div class="t-icons">
+      <button class="pill roundbtn" id="homeBtn" aria-label="Tela inicial"><svg viewBox="0 0 24 24" fill="none" stroke="#f0bd3e" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button>
       <button class="pill roundbtn" id="helpBtn" aria-label="Como jogar"><svg viewBox="0 0 24 24" fill="none" stroke="#f0bd3e" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M9 9a3 3 0 1 1 4 2.8c-.7.3-1 .9-1 1.6V15"/><circle cx="12" cy="19" r=".6" fill="#f0bd3e"/></svg></button>
       <button class="pill roundbtn" id="setBtn" aria-label="Configurações"><svg viewBox="0 0 24 24" fill="#f0bd3e" aria-hidden="true"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4L6.6 11a7.5 7.5 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button>
     </div>
@@ -325,7 +370,7 @@ a{color:var(--gold-hi)}
       <div class="duel" id="duelCtl" hidden>
         <p class="small" style="margin-top:12px">Na sua vez, escolha uma casa e diga um santo que se encaixe. Acertou, a casa é sua. Errou, passa a vez. Fecha 3 em linha quem vence; se ninguém fechar, ganha quem tiver mais casas.</p>
         <div id="onlineBox" class="duel" hidden></div>
-        <div class="legend"><span><i class="dot da"></i><span id="legA">Você</span></span><span><i class="dot db"></i><span id="legB">Robô</span></span></div>
+        <div class="legend"><span><i class="dot da"></i><span id="legA">Você</span> ✕</span><span><i class="dot db"></i><span id="legB">Robô</span> ◯</span></div>
         <ul id="duelLog" class="log" aria-label="Últimas jogadas"></ul>
         <div><button class="btn" id="newBot" hidden>Nova partida</button></div>
       </div>
@@ -518,6 +563,8 @@ const ICON={
 };
 const CROSS=`<svg viewBox="0 0 64 80" aria-hidden="true"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${GH}"/><stop offset=".5" stop-color="${G}"/><stop offset="1" stop-color="${GL}"/></linearGradient></defs><path d="M28 4h8v20h20v8H36v44h-8V32H8v-8h20z" fill="url(#cg)" stroke="#fff0b0" stroke-width="1"/><circle cx="32" cy="28" r="7" fill="none" stroke="url(#cg)" stroke-width="3"/></svg>`;
 const SIL=`<svg class="sil" viewBox="0 0 100 112" aria-hidden="true"><ellipse cx="50" cy="16" rx="22" ry="7" fill="none" stroke="#c4a46a" stroke-width="3"/><path d="M50 24c10 0 18 8 18 19 0 8-4 14-8 18v5c14 4 26 12 30 46H10c4-34 16-42 30-46v-5c-4-4-8-10-8-18 0-11 8-19 18-19z" fill="#d9c08c"/><path d="M50 72v24M38 84h24" stroke="#f6ead0" stroke-width="7" stroke-linecap="round"/></svg>`;
+const MARKX=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="#ffe594" stroke-width="4" stroke-linecap="round"/></svg>`;
+const MARKO=`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="#ffd0dc" stroke-width="3.6"/></svg>`;
 const CHECK=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const BULB=`<svg class="bulb" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.1h6c0-.9.4-1.6 1-2.1A7 7 0 0 0 12 2z" fill="#f0bd3e" stroke="#7a5d28" stroke-width="1.3"/><path d="M9 19h6M10 22h4" stroke="#7a5d28" stroke-width="1.8" stroke-linecap="round"/></svg>`;
 const WAICON=`<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3z" fill="#fff"/><path d="M16 5.3a10.7 10.7 0 0 0-9 16.4l.2.4-1.1 4 4.1-1 .4.2A10.7 10.7 0 1 0 16 5.3z" fill="#25d366"/><path d="M12.2 9.8c-.3-.6-.5-.6-.8-.6h-.7c-.2 0-.6.1-.9.4-.3.4-1.2 1.1-1.2 2.7s1.2 3.1 1.3 3.4c.2.2 2.3 3.6 5.6 4.9 2.8 1.1 3.3.9 3.9.8.6-.1 2-.8 2.2-1.6.3-.8.3-1.4.2-1.6-.1-.1-.3-.2-.6-.4l-2.1-1c-.3-.1-.5-.2-.7.1l-1 1.2c-.2.2-.4.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.5l-1.4-3z" fill="#fff"/></svg>`;
@@ -582,6 +629,10 @@ function renderChrome(){
     document.querySelector(".t-pts").hidden=true;
     $("howto").hidden=true;
     let txt="",cls="idle";
+    if(grid&&!state.setup&&!state.over&&drawing()){
+      tb.hidden=false;tb.className="turnbar draw";tb.innerHTML=`<span class="coin"><i aria-hidden="true"></i>${drawTxt}</span>`;
+      $("passBtn").disabled=true;acts.hidden=false;renderInvite();renderDuelBar();return;
+    }
     if(grid&&!state.setup&&!state.over){
       if(mode==="online"&&!state.players?.B){txt=`Esperando alguém entrar na sala ${NET.code}…`}
       else if(mode==="online"&&NET.pending){txt="Enviando sua jogada…";cls="idle"}
@@ -614,9 +665,9 @@ function render(){
   const keep=document.activeElement&&document.activeElement.id;
   board.innerHTML="";
   if(state.setup){
-    board.innerHTML=`<div class="setup"><h3>Contra o Robô</h3><p>Jogo da velha com santos. Na sua vez, toque numa casa e diga um santo que sirva. Acertou, a casa é sua; errou, passa a vez.</p><p><b>Escolha o nível do robô:</b></p><div class="choices" role="group" aria-label="Nível do robô">${["facil","medio","dificil"].map(l=>`<button class="choice" data-l="${l}" aria-pressed="${l===botLevel}">${{facil:"Fácil",medio:"Médio",dificil:"Difícil"}[l]}</button>`).join("")}</div><button class="btn solid big" id="botGo">Começar partida</button></div>`;
+    board.innerHTML=`<div class="setup"><h3>Contra o Robô</h3><p>Jogo da velha com santos. Na sua vez, toque numa casa e diga um santo que sirva. Acertou, a casa é sua; errou, passa a vez.</p><p>Um sorteio decide quem começa. Você joga com ✕ e o robô com ◯.</p><p><b>Escolha o nível do robô:</b></p><div class="choices" role="group" aria-label="Nível do robô">${["facil","medio","dificil"].map(l=>`<button class="choice" data-l="${l}" aria-pressed="${l===botLevel}">${{facil:"Fácil",medio:"Médio",dificil:"Difícil"}[l]}</button>`).join("")}</div><button class="btn solid big" id="botGo">Começar partida</button></div>`;
     board.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{botLevel=b.dataset.l;board.querySelectorAll(".choice").forEach(x=>x.setAttribute("aria-pressed",x===b))});
-    $("botGo").onclick=()=>{state.setup=false;render();$("cell4")?.focus()};
+    $("botGo").onclick=()=>{state.setup=false;state.turn=Math.random()<.5?"A":"B";showDraw(state.turn);render();if(state.turn==="B")setTimeout(()=>{if(mode==="bot"&&!state.over&&state.turn==="B")botTurn()},DRAWMS);else setTimeout(()=>$("cell4")?.focus(),DRAWMS)};
     renderChrome();$("endbox").innerHTML="";return;
   }
   const sc=state.cells.filter(x=>x!==null).length;
@@ -624,7 +675,7 @@ function render(){
   corner.innerHTML=CROSS+`<span class="n">${isDuel()?"":sc+"/9"}</span>`;
   board.appendChild(corner);
   grid.cols.forEach(c=>board.appendChild(critEl(c)));
-  const myTurn=!isDuel()||(state.turn===me&&!state.over&&!botBusy&&(mode!=="online"||(NET.code&&state.players&&state.players.B&&!NET.pending)));
+  const myTurn=!isDuel()||(state.turn===me&&!state.over&&!botBusy&&!drawing()&&(mode!=="online"||(NET.code&&state.players&&state.players.B&&!NET.pending)));
   const lastI=isDuel()&&state.log&&state.log[0]&&state.log[0].i>=0?state.log[0].i:null;
   grid.rows.forEach((r,ri)=>{
     board.appendChild(critEl(r));
@@ -636,7 +687,7 @@ function render(){
         if(lastI===i)b.classList.add("last");
         b.setAttribute("aria-disabled","true");
         const tag=isDuel()?"":`<span class="pt">+${state.pts[i]}</span>`;
-        b.innerHTML=`${tag}<span class="chk">${CHECK}</span><span class="ph">${initials(p.name)}</span><span class="nm">${p.name}</span>`;
+        b.innerHTML=`${tag}${isDuel()?`<span class="mark">${x.by==="A"?MARKX:MARKO}</span>`:`<span class="chk">${CHECK}</span>`}<span class="ph">${initials(p.name)}</span><span class="nm">${p.name}</span>`;
         b.setAttribute("aria-label",isDuel()?`Casa ${i+1}, ${p.name}, de ${sideName(x.by)}`:`Casa ${i+1}, ${p.name}, ${state.pts[i]} pontos${hasHint(i)?", com dica":""}`);
         if(flashI===i){b.classList.add("flash");b.dataset.gain="+"+state.pts[i]}
         b.onclick=()=>toast(`${p.name}: ${ri2.l} e ${ci2.l}.`)}
@@ -792,6 +843,14 @@ function renderStats(){
   $("stats").innerHTML=`<li>${I.trophy}<span>Desafios: <b>${s.played}</b></span></li><li>${I.target}<span>Acertos: <b>${s.hits}</b> (${pct}%)</span></li><li>${I.fire}<span>Sequência: <b>${streak} dia${streak===1?"":"s"}</b></span></li><li>${I.bars}<span>Melhor pontuação: <b>${s.best} pts</b></span></li><li>${I.bot}<span>Contra o robô: <b>${b.w}</b> vitória${b.w===1?"":"s"}, <b>${b.l}</b> derrota${b.l===1?"":"s"}, <b>${b.d}</b> empate${b.d===1?"":"s"}</span></li>`;
 }
 
+// ===== Sorteio de quem começa =====
+const DRAWMS=2400;let drawUntil=0,drawTxt="";
+const drawing=()=>Date.now()<drawUntil;
+function showDraw(starter){
+  drawTxt="Sorteando quem começa…";drawUntil=Date.now()+DRAWMS;
+  setTimeout(()=>{drawTxt=starter===me?"Sorteio: você começa!":`Sorteio: ${esc(sideName(starter))} começa!`;renderChrome()},1100);
+  setTimeout(()=>{drawUntil=0;render()},DRAWMS+30);
+}
 // ===== Duelo (jogo da velha) =====
 let me="A",botBusy=false;
 const LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
@@ -947,9 +1006,10 @@ function applyRemote(d){
   if(d.players.B&&d.players.B.id!==myId&&!(d.players.A.id===myId)){leaveRoom(true);NET.err="A sala ficou cheia.";renderSalas();return}
   const was=state&&state.log&&state.log[0];
   if(seed!==d.seed||!grid){seed=d.seed;grid=makeGrid(seed)}
-  state=d;NET.pending=false;
+  const newDraw=d.drawn&&(!state||state.drawn!==d.drawn)&&Date.now()-d.drawn<15000;
+  state=d;NET.pending=false;if(newDraw)showDraw(d.turn);
   const now=d.log&&d.log[0];
-  if(now&&(!was||JSON.stringify(was)!==JSON.stringify(now))&&now.by!==me&&d.turns>0)toast(now.i<0?`${sideName(now.by)} passou a vez`:now.ok?`${sideName(now.by)}: ${now.n} na casa ${now.i+1}`:`${sideName(now.by)} errou com ${now.n} na casa ${now.i+1}`);
+  if(now&&!newDraw&&(!was||JSON.stringify(was)!==JSON.stringify(now))&&now.by!==me&&d.turns>0)toast(now.i<0?`${sideName(now.by)} passou a vez`:now.ok?`${sideName(now.by)}: ${now.n} na casa ${now.i+1}`:`${sideName(now.by)} errou com ${now.n} na casa ${now.i+1}`);
   render();
 }
 function pubState(){if(!NET.c||!NET.code)return;state.at=Date.now();pubRetained(RT(NET.code)+"/state",{d:state},7200)}
@@ -960,7 +1020,7 @@ function handleCmd(m){
   const B=state.players.B;
   if(m.t==="join"){
     const name=(typeof m.name==="string"?m.name:"").trim().slice(0,20)||"Jogador 2";
-    if(!B){state.players.B={id:m.id,name};state.turns=state.turns||0;lobbyAnnounce();pubState();render();toast(`${name} entrou na sala!`)}
+    if(!B){state.players.B={id:m.id,name};state.turn=Math.random()<.5?"A":"B";state.starter=state.turn;state.drawn=Date.now();lobbyAnnounce();pubState();showDraw(state.turn);render();toast(`${name} entrou na sala!`)}
     else if(B.id===m.id)pubState();
     return}
   if(!B||B.id!==m.id)return;
@@ -977,10 +1037,10 @@ function handleCmd(m){
   }
 }
 function newRound(keepWaiting){
-  const starter=state.starter==="A"?"B":"A";
+  const starter=keepWaiting?"A":(Math.random()<.5?"A":"B");
   const keep={code:state.code,open:state.open,players:state.players,hostId:state.hostId};
-  state={...freshDuel(),...keep,seed:Math.floor(Math.random()*1e9),starter:keepWaiting?"A":starter,turn:keepWaiting?"A":starter};
-  seed=state.seed;grid=makeGrid(seed);pubState();render();
+  state={...freshDuel(),...keep,seed:Math.floor(Math.random()*1e9),starter,turn:starter,drawn:keepWaiting?0:Date.now()};
+  seed=state.seed;grid=makeGrid(seed);pubState();if(!keepWaiting)showDraw(starter);render();
 }
 function askRematch(){
   if(mode!=="online"||!state.over)return;
@@ -1149,9 +1209,28 @@ document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{
   else if(mode==="online"&&NET.code)askConfirm(`Sair da sala ${NET.code}?${NET.host?" Como você criou a sala, ela será fechada.":""}`,"Sair","Ficar na sala",()=>start(m));
   else start(m);
 });
+function showHome(){
+  if(NET.code)leaveRoom(true);
+  $("app").hidden=true;$("home").hidden=false;window.scrollTo(0,0);
+  const st=normState(store.get(SKEY+todayNum)),sc=st.cells.filter(x=>x!==null).length;
+  $("hDaily").textContent=st.over?`Grade #${todayNum} feita: ${sc}/9 · ${scoreOf(st)} pts`:(st.left<9?`Grade #${todayNum} em andamento: ${sc}/9`:`Grade #${todayNum} de hoje`);
+  const b=store.get(BKEY)||{w:0,l:0,d:0};$("hBot").textContent=b.w+b.l+b.d?`Você ${b.w} × ${b.l} robô`:"";
+  const s=getStats(),streak=s.last!==null&&s.last>=todayNum-1?s.streak:0;
+  $("hStats").innerHTML=s.played?`Sequência: <b>${streak} dia${streak===1?"":"s"}</b> · melhor pontuação: <b>${s.best} pts</b>`:"";
+  setTimeout(()=>document.querySelector(".hcard.main").focus(),30);
+}
+function enterGame(m){$("home").hidden=true;$("app").hidden=false;window.scrollTo(0,0);start(m)}
+document.querySelectorAll(".hcard").forEach(b=>b.onclick=()=>enterGame(b.dataset.go));
+$("hHelp").onclick=()=>openModal("helpModal");
+$("homeBtn").onclick=()=>{
+  const busy=mode==="bot"&&state&&!state.setup&&!state.over&&state.turns>0;
+  if(busy)askConfirm("Sair da partida contra o robô? Ela será perdida.","Sair","Continuar jogando",showHome);
+  else if(mode==="online"&&NET.code)askConfirm(`Sair da sala ${NET.code}?${NET.host?" Como você criou a sala, ela será fechada.":""}`,"Sair","Ficar na sala",showHome);
+  else showHome();
+};
 {const sala=(new URLSearchParams(location.search).get("sala")||"").toUpperCase().replace(/[^A-Z]/g,"").slice(0,4);
- if(sala.length===4){NET.joinCode=sala;start("online");if(myName())joinRoom(sala)}else start("daily")}
-if(!store.get(VKEY)&&mode==="daily"){showIntro(0);openModal("introModal");setTimeout(()=>$("introNext").focus(),60)}
+ if(sala.length===4){NET.joinCode=sala;start("online");if(myName())joinRoom(sala)}else{mode="daily";state=fresh();showHome()}}
+if(!store.get(VKEY)&&!$("home").hidden){showIntro(0);openModal("introModal");setTimeout(()=>$("introNext").focus(),60)}
 </script>
 
 </body>
