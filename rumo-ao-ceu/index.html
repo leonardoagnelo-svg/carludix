@@ -3,137 +3,176 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rumo ao Céu</title>
 <meta name="description" content="Rumo ao Céu: tabuleiro de peregrinação a Santiago ou Aparecida. Avance respondendo perguntas, rezando e partilhando.">
 <link rel="icon" type="image/png" href="logo.png">
-<title>Rumo ao Céu</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,700;0,800;1,700&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
-/* Layout: game console — players on the left, illustrated board in the middle, special squares on the right, question bar + die along the bottom. Deliberately single dark theme (night-blue with gold frames). */
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0} img{max-width:100%} [hidden]{display:none!important}
+/* Layout: game console — compact header, players left, board with a drawn trail in the middle, special squares right, question bar pinned under the board. Deliberately single dark theme (night-blue with gold frames). */
 :root{
   color-scheme:dark;
-  --night:#0b1733; --night2:#13254d; --panel:#0f1f42; --panel2:#182d5c;
+  --night:#0b1733; --panel:#0f1f42; --panel2:#182d5c; --deep:#0a1532;
   --gold:#f2b632; --gold2:#ffd970; --gold-dk:#a8730f; --ink:#f4f1e8; --muted:#b9c3d9;
-  --parch:#efe2c2; --parch-dk:#cdb98c; --parch-ink:#3b2a14;
-  --good:#38b26a; --bad:#d9483b;
+  --parch:#efe2c2; --parch-ink:#3b2a14;
   --t-oracao:#8e5bd6; --t-acao:#e0612f; --t-reflexao:#2d8fd6; --t-companheiro:#e6a21f;
-  --t-descanso:#c23b2e; --t-bolha:#c23b2e; --t-atalho:#1fa58b;
+  --t-descanso:#c23b2e; --t-bolha:#c23b2e; --t-atalho:#1fa58b; --city:#22468f;
   --display:"Alegreya",Georgia,serif;
   --ui:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"Barlow","Segoe UI",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 body{background:radial-gradient(1200px 600px at 50% -10%,#1d3a78 0%,transparent 60%),var(--night);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;min-height:100vh;
-  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:14px 32px}
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));padding-block:12px 28px}
 button{font:inherit;cursor:pointer;color:inherit}
-button:focus-visible,input:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold2);outline-offset:2px}
 .wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.app{display:flex;flex-direction:column;gap:14px}
 
-/* gold frame */
 .frame{background:linear-gradient(180deg,var(--panel2),var(--panel));border-radius:18px;position:relative;
-  border:2px solid transparent;background-clip:padding-box;box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #2a1c05,0 0 0 5px var(--gold),0 10px 30px rgba(0,0,0,.45)}
-.ttl{font-family:var(--ui);font-weight:700;font-size:22px;letter-spacing:.02em;text-align:center;padding:6px 10px;margin:-2px -2px 0;border-bottom:2px solid var(--gold-dk);background:linear-gradient(180deg,#0a1532,#14295a);border-radius:16px 16px 0 0}
-.gbtn{font-family:var(--ui);font-weight:700;color:#3a2404;border:0;border-radius:16px;padding:12px 24px;font-size:22px;line-height:1.05;
-  background:linear-gradient(180deg,var(--gold2),var(--gold) 55%,#d48a10);box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -3px 0 rgba(0,0,0,.2),0 0 0 2px #7a4f08,0 6px 18px rgba(242,182,50,.35);display:inline-flex;align-items:center;gap:10px;justify-content:center}
+  box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #000a,0 0 0 5px var(--gold),0 10px 30px rgba(0,0,0,.45)}
+.ttl{font-family:var(--ui);font-weight:700;font-size:21px;letter-spacing:.02em;text-align:center;padding:6px 10px;border-bottom:2px solid var(--gold-dk);background:linear-gradient(180deg,#0a1532,#14295a);border-radius:16px 16px 0 0}
+.ttl.mid{border-radius:0;border-top:2px solid var(--gold-dk)}
+.ttl .step{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--gold);color:#3a2404;font-size:17px;margin-right:8px;vertical-align:2px}
+.gbtn{font-family:var(--ui);font-weight:700;color:#3a2404;border:0;border-radius:16px;padding:12px 22px;font-size:22px;line-height:1.05;
+  background:linear-gradient(180deg,var(--gold2),var(--gold) 55%,#d48a10);box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -3px 0 rgba(0,0,0,.2),0 0 0 2px #7a4f08,0 6px 18px rgba(242,182,50,.35);display:inline-flex;align-items:center;gap:10px;justify-content:center;text-align:center}
 .gbtn:hover:not(:disabled){filter:brightness(1.08)}
 .gbtn:disabled{filter:grayscale(.7) brightness(.7);cursor:default}
-.gbtn .tri{width:0;height:0;border-left:14px solid #3a2404;border-top:9px solid transparent;border-bottom:9px solid transparent}
-.obtn{font-family:var(--ui);font-weight:600;font-size:17px;background:#0a1532;border:2px solid var(--gold-dk);border-radius:12px;padding:8px 16px;color:var(--ink)}
+.gbtn.sm{font-size:18px;padding:10px 18px}
+.tri{width:0;height:0;border-left:13px solid #3a2404;border-top:8px solid transparent;border-bottom:8px solid transparent;flex:none}
+.obtn{font-family:var(--ui);font-weight:600;font-size:17px;background:var(--deep);border:2px solid var(--gold-dk);border-radius:12px;padding:8px 14px;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
 .obtn:hover{border-color:var(--gold)}
+.ibtn{width:40px;height:40px;border-radius:50%;background:var(--deep);border:2px solid var(--gold-dk);display:grid;place-items:center;color:var(--gold2);font-family:var(--ui);font-weight:700;font-size:20px;flex:none}
+.ibtn:hover{border-color:var(--gold2)}
+.ibtn svg{width:20px;height:20px}
+.back{display:inline-flex;align-items:center;gap:6px;font-family:var(--ui);font-weight:700;font-size:16px;letter-spacing:.06em;color:var(--gold2);text-decoration:none;padding:6px 14px;border-radius:999px;border:2px solid var(--gold-dk);background:var(--deep);white-space:nowrap}
+.back:hover{border-color:var(--gold2)}
 
-/* top bar */
-.top{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
-.logo{width:clamp(120px,15vw,190px);height:auto;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
-.topmid{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
-.topmid h2{font-family:var(--display);font-style:italic;font-weight:700;font-size:clamp(18px,2.4vw,26px);margin:0;text-shadow:0 2px 6px rgba(0,0,0,.6)}
-.routes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-.rbtn{display:flex;align-items:center;gap:12px;padding:10px 18px;border-radius:18px;background:linear-gradient(180deg,#14295a,#0a1532);box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #000a,0 6px 16px rgba(0,0,0,.4);text-align:left;border:0}
-.rbtn[aria-pressed="true"]{box-shadow:0 0 0 3px var(--gold2),0 0 22px rgba(242,182,50,.55)}
-.rbtn .ic{width:44px;height:44px;flex:none}
-.rbtn b{display:block;font-family:var(--ui);font-weight:700;font-size:22px;line-height:1;color:var(--ink)}
-.rbtn b span{color:var(--gold2);font-size:26px}
-.rbtn small{display:block;color:var(--muted);font-size:13px;margin-top:3px}
-@media (max-width:640px){.top{grid-template-columns:1fr;justify-items:center}}
+/* setup header */
+.hero{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.hero .logo{width:clamp(130px,16vw,200px);height:auto;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5))}
+.hero .txt{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1}
+.hero h1{margin:0;font-family:var(--display);font-style:italic;font-weight:700;font-size:clamp(22px,3vw,34px);line-height:1.1;text-wrap:balance}
+.hero p{margin:0;color:var(--muted);max-width:56ch}
+.resume{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;background:var(--deep);box-shadow:0 0 0 2px var(--gold)}
+.resume span{font-family:var(--ui);font-size:18px;font-weight:600;flex:1;min-width:180px}
+
+/* compact game header */
+.gtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.gtop .logo{width:58px;height:58px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+.rtag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;border-radius:999px;background:var(--deep);box-shadow:0 0 0 2px var(--gold-dk);font-family:var(--ui);font-weight:700;font-size:18px}
+.rtag svg{width:28px;height:28px}
+.rtag small{font-weight:500;color:var(--muted);font-size:14px}
+.gtop .sp{flex:1}
+.gtop .tools{display:flex;gap:8px;align-items:center}
+@media (max-width:720px){.gtop{gap:8px}.gtop .logo{width:44px;height:44px}.gtop .rtag{order:5;width:100%;justify-content:center}.gtop .sp{display:none}.gtop .tools{margin-left:auto}.gtop .obtn{font-size:15px;padding:6px 10px}}
+
+/* setup */
+.setup{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.setup{grid-template-columns:1fr}}
+.box .in{padding:14px 18px 18px;display:flex;flex-direction:column;gap:14px}
+.routes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.rcard{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:16px;background:linear-gradient(180deg,#14295a,var(--deep));box-shadow:0 0 0 2px var(--gold-dk);border:0;text-align:left}
+.rcard[aria-pressed="true"]{box-shadow:0 0 0 3px var(--gold2),0 0 22px rgba(242,182,50,.45)}
+.rcard .h{display:flex;align-items:center;gap:10px}
+.rcard .h svg{width:42px;height:42px;flex:none}
+.rcard b{display:block;font-family:var(--ui);font-weight:700;font-size:21px;line-height:1}
+.rcard b span{color:var(--gold2);font-size:25px}
+.rcard small{color:var(--muted);font-size:13px}
+.rcard .stops{display:flex;flex-wrap:wrap;gap:4px}
+.rcard .stops span{font-family:var(--ui);font-weight:600;font-size:13px;padding:1px 8px;border-radius:999px;background:#0006;border:1px solid #a8730f88;color:var(--muted)}
+.rcard .chk{margin-left:auto;width:26px;height:26px;border-radius:50%;border:2px solid var(--gold-dk);display:grid;place-items:center;color:#3a2404;font-weight:800;flex:none}
+.rcard[aria-pressed="true"] .chk{background:var(--gold);border-color:var(--gold2)}
+.sub{font-family:var(--ui);font-weight:700;font-size:19px;color:var(--gold2);margin:0}
+.prow{display:flex;gap:10px;align-items:center}
+.prow input{flex:1;min-width:0;padding:10px 14px;border-radius:12px;border:2px solid var(--gold-dk);background:var(--deep);color:var(--ink);font-family:var(--ui);font-weight:600;font-size:19px}
+.av{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px;background:radial-gradient(circle at 35% 30%,#fff6,transparent 60%),var(--pc);border:3px solid var(--gold);color:#fff;text-shadow:0 1px 2px #0008;padding:0}
+button.av:hover{border-color:var(--gold2)}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.rowbtns{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.how{display:flex;flex-direction:column;gap:10px}
+.how2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 
 /* game grid */
-.game{display:grid;grid-template-columns:230px minmax(0,1fr) 250px;grid-template-areas:"pl board leg" "pl bar bar";gap:16px;align-items:start}
+.game{display:grid;grid-template-columns:230px minmax(0,1fr) 240px;grid-template-areas:"pl board leg" "pl bar leg";gap:16px;align-items:start}
 .c-pl{grid-area:pl;display:flex;flex-direction:column;gap:12px}
 .c-board{grid-area:board;min-width:0}
 .c-leg{grid-area:leg}
 .c-bar{grid-area:bar;min-width:0}
-@media (max-width:1080px){.game{grid-template-columns:minmax(0,1fr) 240px;grid-template-areas:"board leg" "bar bar" "pl pl"}.c-pl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}}
-@media (max-width:720px){.game{grid-template-columns:minmax(0,1fr);grid-template-areas:"board" "bar" "pl" "leg"}}
+@media (min-width:721px){.c-bar{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:5}}
+@media (max-width:1080px){.game{grid-template-columns:minmax(0,1fr) 230px;grid-template-areas:"board leg" "bar bar" "pl pl"}.c-pl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
+@media (max-width:720px){.game{grid-template-columns:minmax(0,1fr);grid-template-areas:"board" "bar" "pl"}.c-leg.leg{display:none}.gtop .rtag small{display:none}}
 
-/* players */
-.pcard{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:999px;background:linear-gradient(90deg,var(--pc),#0a1532 85%);box-shadow:0 0 0 2px var(--gold-dk),0 4px 12px rgba(0,0,0,.4)}
+.pcard{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border-radius:999px;background:linear-gradient(90deg,var(--pc),var(--deep) 85%);box-shadow:0 0 0 2px var(--gold-dk),0 4px 12px rgba(0,0,0,.4)}
 .pcard.on{box-shadow:0 0 0 3px var(--gold2),0 0 18px rgba(242,182,50,.5)}
-.av{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px;background:radial-gradient(circle at 35% 30%,#fff6,transparent 60%),var(--pc);border:3px solid var(--gold);color:#fff;text-shadow:0 1px 2px #0008}
+.pcard .info{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
 .pcard .nm{font-family:var(--ui);font-weight:700;font-size:20px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pcard .sc{display:flex;align-items:center;gap:6px;font-family:var(--ui);font-weight:600;font-size:16px;font-variant-numeric:tabular-nums}
-.pcard .sc svg{width:18px;height:18px}
-.pcard .info{min-width:0;flex:1}
-.pcard .st{font-size:12px;color:var(--gold2);font-family:var(--ui);letter-spacing:.04em}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;background:#0008;font-family:var(--ui);font-weight:600;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip svg{width:13px;height:13px}
+.chip.warn{background:var(--t-descanso)}
 
-/* credential booklet */
-.cred{border-radius:14px;padding:14px;background:linear-gradient(135deg,#6b3f1d,#4a2a12);box-shadow:0 0 0 2px #2b1709,0 8px 20px rgba(0,0,0,.5);position:relative}
+.cred{border-radius:14px;padding:14px;background:linear-gradient(135deg,#6b3f1d,#4a2a12);box-shadow:0 0 0 2px #2b1709,0 8px 20px rgba(0,0,0,.5)}
 .cred h3{margin:0 0 8px;font-family:var(--display);font-style:italic;font-weight:700;font-size:19px;color:var(--gold2);display:flex;align-items:center;gap:8px}
+.cred h3 svg{width:22px;height:22px}
 .cred .pages{background:var(--parch);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;color:var(--parch-ink)}
 .cred .row{display:flex;flex-direction:column;gap:4px}
-.cred .row b{font-family:var(--ui);font-size:14px}
+.cred .row b{font-family:var(--ui);font-size:15px}
+.cred .tip{font-size:12px;color:#7a6a4a;margin:0}
 .stamps{display:flex;flex-wrap:wrap;gap:4px}
-.stamp{width:22px;height:22px;border-radius:50%;border:1.5px dashed #a8946b;display:grid;place-items:center;font-size:10px;font-family:var(--display);font-weight:800;color:#a8946b}
-.stamp.on{border:2px solid currentColor;transform:rotate(-10deg);background:rgba(255,255,255,.35)}
+.stamp{width:24px;height:24px;border-radius:50%;border:1.5px dashed #a8946b;display:grid;place-items:center;font-size:11px;font-family:var(--ui);font-weight:700;color:#a8946b;background:none;padding:0}
+.stamp svg{width:14px;height:14px}
+.stamp.on{border:2px solid currentColor;transform:rotate(-10deg);background:rgba(255,255,255,.4)}
+.stamp.new{animation:stampIn .7s ease-out}
+@keyframes stampIn{0%{transform:scale(2.4) rotate(-30deg);opacity:0}60%{transform:scale(.9) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-10deg)}}
+.log{font-size:13px;color:var(--muted);max-height:120px;overflow:auto;display:flex;flex-direction:column;gap:3px;padding:10px 14px}
 
 /* board */
-.boardbox{padding:14px;border-radius:18px;overflow:hidden;position:relative;
-  background:
-   radial-gradient(160px 60px at 85% 6%,#fff3 0%,transparent 70%),
-   radial-gradient(500px 140px at 20% 8%,#6f9a5d 0%,transparent 70%),
-   radial-gradient(600px 160px at 75% 10%,#5b8a54 0%,transparent 70%),
-   linear-gradient(180deg,#8fb3d9 0%,#b8d0e3 14%,#6e9b58 22%,#4f8044 55%,#3f6d39 100%);
+.boardbox{padding:12px;border-radius:18px;position:relative;
+  background:radial-gradient(160px 60px at 85% 6%,#fff3 0%,transparent 70%),radial-gradient(500px 140px at 20% 8%,#6f9a5d 0%,transparent 70%),radial-gradient(600px 160px at 75% 10%,#5b8a54 0%,transparent 70%),linear-gradient(180deg,#8fb3d9 0%,#b8d0e3 8%,#6e9b58 16%,#4f8044 55%,#3f6d39 100%);
   box-shadow:0 0 0 2px var(--gold-dk),0 0 0 4px #000a,0 0 0 5px var(--gold),0 10px 30px rgba(0,0,0,.45)}
-.boardbox::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 70%,#ffffff10 0 2px,transparent 3px) 0 0/34px 34px,radial-gradient(circle at 60% 30%,#00000012 0 3px,transparent 4px) 0 0/46px 46px;pointer-events:none}
-.board{display:grid;gap:5px;position:relative;margin-top:40px}
-.tile{position:relative;aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;text-align:center;min-width:0;
+.board{display:grid;gap:12px;position:relative;margin-top:22px}
+@media (max-width:720px){.board{gap:7px;margin-top:16px}}
+.trail{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}
+.tile{position:relative;z-index:1;aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;text-align:center;min-width:0;cursor:pointer;
   background:linear-gradient(160deg,#f6ecd2,var(--parch) 50%,#dcc79a);box-shadow:inset 0 -3px 0 #b49c6a,inset 0 2px 0 #fff8,0 3px 0 #6d5a33,0 5px 8px rgba(0,0,0,.35)}
+.tile:hover{filter:brightness(1.05)}
 .tile .n{position:absolute;top:2px;left:5px;font-size:10px;color:#8b7650;font-family:var(--ui);font-weight:600}
-.badge{width:62%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:inset 0 2px 0 #fff6,inset 0 -2px 0 #0003,0 1px 2px #0005}
+.badge{width:60%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;color:#fff;box-shadow:inset 0 2px 0 #fff6,inset 0 -2px 0 #0003,0 1px 2px #0005;flex:none}
 .badge svg{width:62%;height:62%}
-.tile .lbl{font-family:var(--ui);font-weight:700;font-size:clamp(8px,1vw,11px);line-height:1;color:var(--parch-ink);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .lbl{font-family:var(--ui);font-weight:700;font-size:clamp(8px,1vw,12px);line-height:1;color:#3a2404;margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tile.caminho .badge{background:transparent;box-shadow:none;color:#a48d5f}
 .tile.cidade{background:linear-gradient(160deg,#fff2c4,#f3cf6a 60%,#c99627);box-shadow:inset 0 -3px 0 #9a6c12,inset 0 2px 0 #fff9,0 3px 0 #5c3e06,0 0 0 2px var(--gold2),0 6px 12px rgba(0,0,0,.45)}
-.tile.cidade .badge{background:radial-gradient(circle at 35% 30%,#6a8fd8,#22468f);}
-.tile.cidade .lbl{color:#3a2404}
-.tile.fim{background:linear-gradient(160deg,#ffe28a,var(--gold) 60%,#b8770c);}
-.tile.fim .badge{background:radial-gradient(circle at 35% 30%,#ff7a6b,#b21f1f)}
-.tile.inicio .badge{background:radial-gradient(circle at 35% 30%,#6a8fd8,#22468f)}
+.tile.fim{background:linear-gradient(160deg,#ffe28a,var(--gold) 60%,#b8770c)}
+.tile.cur{box-shadow:inset 0 -3px 0 #b49c6a,0 0 0 4px var(--pc),0 0 18px 4px var(--pc)}
+.ribbon{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-family:var(--ui);font-weight:700;font-size:clamp(9px,1vw,12px);letter-spacing:.06em;color:#fff;padding:1px 8px;border-radius:5px;background:linear-gradient(180deg,#d33b2b,#9c1f16);box-shadow:0 0 0 1.5px var(--gold),0 2px 4px #0007;white-space:nowrap;z-index:2}
 .tokens{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;gap:1px;padding-bottom:6%;pointer-events:none}
-.pawn{width:clamp(12px,1.9vw,22px);height:clamp(16px,2.6vw,30px);transition:transform .2s;filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
+.pawn{width:clamp(12px,1.9vw,22px);height:clamp(16px,2.6vw,30px);filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
 .pawn.cur{transform:translateY(-4px) scale(1.15)}
-.flag{position:absolute;top:8px;font-family:var(--display);font-weight:800;font-size:clamp(13px,1.6vw,18px);color:#fff;padding:3px 14px;border-radius:6px;background:linear-gradient(180deg,#d33b2b,#9c1f16);box-shadow:0 0 0 2px var(--gold),0 3px 8px #0007;z-index:2}
-.flag.a{left:14px}.flag.b{right:14px}
+.pawn.hop{animation:hop .23s ease-out}
+@keyframes hop{0%{transform:translateY(-14px) scale(1.15)}100%{transform:translateY(-4px) scale(1.15)}}
 
-/* legend */
 .leg{display:flex;flex-direction:column}
 .leg .sec{padding:10px 12px;display:flex;flex-direction:column;gap:9px}
 .li{display:flex;gap:10px;align-items:center}
-.li .badge{width:40px;flex:none}
+.li .badge{width:40px}
 .li b{font-family:var(--ui);font-weight:700;font-size:17px;display:block;line-height:1.05}
 .li small{color:var(--muted);font-size:13px;line-height:1.2;display:block}
-.leg .ttl.mid{border-radius:0;border-top:2px solid var(--gold-dk);margin:0 -2px}
 
-/* bottom bar */
-.bar{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 16px}
+/* bar */
+.bar{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px}
 @media (max-width:900px){.bar{grid-template-columns:1fr}}
-.qbox{border-radius:14px;padding:12px 16px;background:#0a1532;box-shadow:0 0 0 2px var(--gold-dk);min-height:110px;display:flex;flex-direction:column;gap:6px;justify-content:center}
-.qbox .qh{display:flex;align-items:center;gap:8px;font-family:var(--ui);font-weight:700;font-size:20px;color:var(--gold2)}
-.qbox .qh svg{width:24px;height:24px}
-.qbox p{margin:0;font-family:var(--ui);font-weight:600;font-size:clamp(17px,1.7vw,21px);line-height:1.2;text-wrap:balance}
+.qbox{border-radius:14px;padding:10px 14px;background:var(--deep);box-shadow:0 0 0 2px var(--gold-dk);min-height:96px;display:flex;flex-direction:column;gap:5px;justify-content:center}
+.qh{display:flex;align-items:center;gap:8px;font-family:var(--ui);font-weight:700;font-size:19px;color:var(--gold2)}
+.qh svg{width:22px;height:22px;flex:none}
+.qbox p{margin:0;font-family:var(--ui);font-weight:600;font-size:clamp(17px,1.6vw,21px);line-height:1.2;text-wrap:balance}
 .qbox .expl{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted)}
 .verdict{font-family:var(--ui);font-weight:700;font-size:18px}
 .verdict.ok{color:#6fe39b}.verdict.no{color:#ff8a7d}
 .opts{display:flex;flex-direction:column;gap:6px}
-.opt{display:flex;align-items:center;gap:12px;text-align:left;padding:6px 14px 6px 8px;border-radius:999px;border:2px solid var(--gold-dk);background:linear-gradient(180deg,#14295a,#0a1532);font-family:var(--ui);font-weight:600;font-size:17px;min-height:36px}
-.opt .k{width:24px;text-align:center;font-weight:700;color:var(--gold2)}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;padding:6px 14px 6px 8px;border-radius:999px;border:2px solid var(--gold-dk);background:linear-gradient(180deg,#14295a,var(--deep));font-family:var(--ui);font-weight:600;font-size:17px;min-height:36px}
+.opt .k{width:24px;text-align:center;font-weight:700;color:var(--gold2);flex:none}
 .opt .tx{flex:1;min-width:0}
 .opt:hover:not(:disabled){border-color:var(--gold2)}
 .opt:disabled{cursor:default}
@@ -141,61 +180,38 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold2);outline-
 .opt.right .k{color:#fff}
 .opt.wrong{background:linear-gradient(180deg,#e0594b,#a62a20);border-color:#ffc4bc}
 .opt.wrong .k{color:#fff}
-.opt .ck{font-weight:700}
-.opts.empty .opt{opacity:.35}
-.diebox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
-.diewrap{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#ffe7a0 0%,#f2b632 30%,transparent 68%);}
-.die{width:70px;height:70px;border-radius:14px;background:linear-gradient(145deg,#fff,#dcdcdc);box-shadow:inset 0 -4px 0 #0002,0 6px 14px #0007;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:9px}
-.die i{width:12px;height:12px;border-radius:50%;background:#1b1b1b;place-self:center;visibility:hidden}
+.opts.empty .opt{opacity:.3}
+.diebox{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
+.diewrap{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#ffe7a0 0%,#f2b632 30%,transparent 68%)}
+.die{width:66px;height:66px;border-radius:14px;background:linear-gradient(145deg,#fff,#dcdcdc);box-shadow:inset 0 -4px 0 #0002,0 6px 14px #0007;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:9px;position:relative}
+.die i{width:11px;height:11px;border-radius:50%;background:#1b1b1b;place-self:center;visibility:hidden}
+.die.idle{opacity:.55}
+.die .qm{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:34px;color:#8a8a8a}
 .die.roll{animation:spin .55s}
 @keyframes spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(200deg) scale(.85)}100%{transform:rotate(360deg) scale(1)}}
 
-/* setup */
-.setup{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
-@media (max-width:820px){.setup{grid-template-columns:1fr}}
-.box{padding:0 0 16px}
-.box .in{padding:14px 18px;display:flex;flex-direction:column;gap:12px}
-.prow{display:flex;gap:10px;align-items:center}
-.prow input{flex:1;min-width:0;padding:10px 14px;border-radius:12px;border:2px solid var(--gold-dk);background:#0a1532;color:var(--ink);font-family:var(--ui);font-weight:600;font-size:19px}
-.stops{display:flex;flex-wrap:wrap;gap:6px}
-.stops span{font-family:var(--ui);font-weight:600;font-size:14px;padding:3px 10px;border-radius:999px;background:#0a1532;border:1px solid var(--gold-dk);color:var(--muted)}
-.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-.lead{font-size:15px;color:var(--muted);margin:0}
-
-/* log */
-.log{font-size:13px;color:var(--muted);max-height:120px;overflow:auto;display:flex;flex-direction:column;gap:3px;padding:10px 14px}
-
 /* modal */
-.overlay{position:fixed;inset:0;background:rgba(4,9,22,.7);display:grid;place-items:center;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));z-index:20}
+.overlay{position:fixed;inset:0;background:rgba(4,9,22,.72);display:grid;place-items:center;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));z-index:20}
 .card{max-width:500px;width:100%;padding:0 0 20px;max-height:calc(100vh - 40px);overflow:auto}
 .card .in{padding:16px 20px 0;display:flex;flex-direction:column;gap:12px}
-.card .kind{display:flex;align-items:center;gap:12px}
-.card .kind .badge{width:58px;flex:none}
-.card .kind small{font-family:var(--ui);color:var(--gold2);letter-spacing:.06em;text-transform:uppercase;font-size:13px}
-.card h3{margin:0;font-family:var(--display);font-weight:800;font-size:28px;line-height:1.1}
+.kind{display:flex;align-items:center;gap:12px}
+.kind .badge{width:58px}
+.kind small{font-family:var(--ui);color:var(--gold2);letter-spacing:.06em;text-transform:uppercase;font-size:13px}
+.card h3{margin:0;font-family:var(--display);font-weight:800;font-size:28px;line-height:1.1;text-wrap:balance}
 .fact{font-family:var(--display);font-style:italic;font-size:20px;margin:0;line-height:1.35}
 .eff{font-family:var(--ui);font-weight:700;font-size:18px;color:var(--gold2);margin:0}
-.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 .rank{display:flex;flex-direction:column;gap:6px}
+.turncard{text-align:center;align-items:center}
+.turncard .av{width:84px;height:84px;font-size:40px;border-width:4px}
+.turncard h3{font-size:34px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-.back{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-family:var(--ui);font-weight:700;font-size:16px;letter-spacing:.06em;color:var(--gold2);text-decoration:none;padding:6px 14px;border-radius:999px;border:2px solid var(--gold-dk);background:#0a1532}
-.back:hover{border-color:var(--gold2)}
-html{-webkit-text-size-adjust:100%}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0}
-img{max-width:100%}
-[hidden]{display:none!important}
 </style>
 </head>
 <body>
-
-<div class="wrap"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><div id="app" style="display:flex;flex-direction:column;gap:14px"></div></div>
-
+<div class="wrap"><div class="app" id="app"></div></div>
 <script>
 const LOGO="logo.png";
-const COLORS=["#2d5bd1","#d23a3a","#27a04f","#e0a41c"];
-const NOMES=["Azul","Vermelho","Verde","Amarelo"];
 const SVG={
  shell:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21c-.6 0-1.1-.3-1.4-.8L3 9.6C2.4 8.8 2.7 7.6 3.6 7.1 6 5.7 8.9 5 12 5s6 .7 8.4 2.1c.9.5 1.2 1.7.6 2.5l-7.6 10.6c-.3.5-.8.8-1.4.8z" opacity=".95"/><path d="M12 6v14M8 6.5l3.2 13M16 6.5l-3.2 13M5 8.2l6.2 11.3M19 8.2l-6.2 11.3" stroke="#0004" stroke-width="1" fill="none"/></svg>',
  pray:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 3c-.6 0-1 .5-1 1.1v7.4L6.6 15c-.4.4-.6.9-.6 1.4V21h4v-3l1.6-2.3c.2-.3.4-.7.4-1.1V4.1C12 3.5 11.6 3 11 3zm2 0c.6 0 1 .5 1 1.1v7.4l3.4 3.5c.4.4.6.9.6 1.4V21h-4v-3l-1.6-2.3c-.2-.3-.4-.7-.4-1.1V4.1C12 3.5 12.4 3 13 3z"/></svg>',
@@ -334,17 +350,39 @@ const CASAS={
   "Céu limpo, trilha seca e um café no caminho. O passo rende!",
   "Um morador indica uma trilha boa e bem sinalizada."],efeito:"Avance 2 casas.",bt:"Avançar"}
 };
+
+const KEY="rumo-ao-ceu:partida", KEY_SOM="rumo-ao-ceu:som";
+const PALETA=["#2d5bd1","#d23a3a","#27a04f","#e0a41c","#8e44c9","#e0682a"];
 const COR={oracao:"var(--t-oracao)",acao:"var(--t-acao)",reflexao:"var(--t-reflexao)",companheiro:"var(--t-companheiro)",descanso:"var(--t-descanso)",bolha:"var(--t-bolha)",atalho:"var(--t-atalho)"};
 const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const CURTO={"Saint-Jean-Pied-de-Port":"St-Jean","Roncesvalles":"Roncesv.","Cruz de Ferro":"Cruz Ferro","O Cebreiro":"Cebreiro","Águas da Prata":"Á. Prata","Inconfidentes":"Inconfid.","Borda da Mata":"Borda Mata","Paraisópolis":"Paraisóp.","Pindamonhangaba":"Pinda","Consolação":"Consolaç."};
 const L=36;
-let S={route:"santiago",players:[{n:"Jogador 1"},{n:"Jogador 2"}],screen:"setup"};
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+
+let S={route:"santiago",players:[{n:"Jogador 1",c:PALETA[0]},{n:"Jogador 2",c:PALETA[1]}],screen:"setup"};
+let SOM=lsGet(KEY_SOM)==="1", moving=-1, fresh=null;
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function el(h){const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstChild}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function badge(k,bg){return `<span class="badge" style="background:radial-gradient(circle at 35% 30%,#fff5,transparent 55%),${bg}">${SVG[k]}</span>`}
-function pawn(c){return `<svg class="pawn" viewBox="0 0 20 28"><ellipse cx="10" cy="25" rx="9" ry="3" fill="${c}"/><path d="M4 25c0-6 3-9 3-12h6c0 3 3 6 3 12z" fill="${c}"/><circle cx="10" cy="7" r="5" fill="${c}"/><circle cx="8.3" cy="5.4" r="1.6" fill="#fff8"/><path d="M7 13h6" stroke="#0003" stroke-width="2"/></svg>`}
-function dieHTML(n){const on=PIPS[n]||[];return `<div class="die" id="die" aria-label="Dado: ${n||"sem valor"}">${Array.from({length:9},(_,i)=>`<i style="${on.includes(i)?"visibility:visible":""}"></i>`).join("")}</div>`}
+function pawn(c,cls){return `<svg class="pawn ${cls||""}" viewBox="0 0 20 28"><ellipse cx="10" cy="25" rx="9" ry="3" fill="${c}"/><path d="M4 25c0-6 3-9 3-12h6c0 3 3 6 3 12z" fill="${c}"/><circle cx="10" cy="7" r="5" fill="${c}"/><circle cx="8.3" cy="5.4" r="1.6" fill="#fff8"/><path d="M7 13h6" stroke="#0003" stroke-width="2"/></svg>`}
+function dieHTML(n){const on=PIPS[n]||[];return `<div class="die ${n?"":"idle"}" id="die" aria-label="Dado: ${n||"ainda não lançado"}">${Array.from({length:9},(_,i)=>`<i style="${on.includes(i)?"visibility:visible":""}"></i>`).join("")}${n?"":'<span class="qm">?</span>'}</div>`}
+const shellGold=()=>SVG.shell.replace('fill="currentColor"','fill="#f2b632"');
+
+/* som */
+let actx=null;
+function beep(f,d,type,vol){if(!SOM)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type||"sine";o.frequency.value=f;g.gain.setValueAtTime(vol||.08,actx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+d);o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+const sStep=()=>beep(520,.08,"triangle",.06);
+const sBell=()=>{beep(880,.9,"sine",.09);setTimeout(()=>beep(1320,.7,"sine",.05),90)};
+const sOk=()=>{beep(660,.15);setTimeout(()=>beep(880,.25),120)};
+const sNo=()=>beep(220,.3,"sawtooth",.04);
+const sWin=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.5,"sine",.08),i*160));
+
+/* salvar */
+function save(){if(S.screen!=="game")return;if(S.over){lsSet(KEY,null);return}lsSet(KEY,JSON.stringify({route:S.route,players:S.players,board:S.board,deck:S.deck,cur:S.cur,die:S.die,q:S.q,log:S.log}))}
+function loadSave(){const raw=lsGet(KEY);if(!raw)return null;try{const d=JSON.parse(raw);return d&&d.players&&d.board?d:null}catch(e){return null}}
 
 function buildBoard(rk){
  const r=ROUTES[rk],b=new Array(L).fill(null),n=r.cidades.length;
@@ -354,93 +392,113 @@ function buildBoard(rk){
  return b;
 }
 
-function topBar(){
- const t=el(`<header class="top"><img class="logo" src="${LOGO}" alt="Rumo ao Céu, o jogo da peregrinação"><div class="topmid"><h2>Escolha a rota da peregrinação</h2><div class="routes"></div></div></header>`);
- const rs=t.querySelector(".routes");
- for(const k of Object.keys(ROUTES)){const r=ROUTES[k];
-  const b=el(`<button class="rbtn" aria-pressed="${S.route===k}"><span class="ic">${SVG[r.ic]}</span><span><b>${r.l1}<br><span>${r.l2}</span></b><small>${r.sub}</small></span></button>`);
-  b.onclick=()=>{if(S.screen==="game"&&k===S.route)return;S.route=k;S.screen="setup";render()};rs.appendChild(b)}
- return t;
-}
-
 function render(){
  const app=document.getElementById("app");app.innerHTML="";
- app.appendChild(topBar());
  if(S.screen==="setup") renderSetup(app); else renderGame(app);
+ save();
 }
 
-function legend(){
+function legendHTML(){
  const esp=Object.entries(CASAS).filter(([k,c])=>c.grupo==="esp"),imp=Object.entries(CASAS).filter(([k,c])=>c.grupo==="imp");
- const li=([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.curto}</small></span></div>`;
+ const li=([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`;
  return `<div class="ttl">Casas especiais</div><div class="sec">${esp.map(li).join("")}</div><div class="ttl mid">Imprevistos</div><div class="sec">${imp.map(li).join("")}</div>`;
 }
 
+/* ---------- tela inicial ---------- */
 function renderSetup(app){
- const r=ROUTES[S.route];
+ const r=ROUTES[S.route],sv=loadSave();
+ app.appendChild(el(`<div><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a></div>`));
+ app.appendChild(el(`<header class="hero"><img class="logo" src="${LOGO}" alt="Rumo ao Céu, o jogo da peregrinação" width="200" height="200"><div class="txt"><h1>Responda, caminhe e reze até o santuário</h1><p>Um tabuleiro de peregrinação para jogar em família ou na catequese, de 1 a 4 jogadores no mesmo aparelho.</p></div></header>`));
+ if(sv){
+  const rv=ROUTES[sv.route],lead=sv.players.slice().sort((a,b)=>b.pos-a.pos)[0];
+  const box=el(`<div class="resume"><span>Há uma peregrinação em andamento: <b style="color:var(--gold2)">${esc(rv.nome)}</b>, ${sv.players.length} jogador${sv.players.length>1?"es":""}. ${esc(lead.n)} está na casa ${lead.pos}.</span><button class="obtn" id="discard">Descartar</button><button class="gbtn sm" id="resume">Continuar peregrinação <span class="tri"></span></button></div>`);
+  box.querySelector("#resume").onclick=()=>{Object.assign(S,sv,{screen:"game",busy:false,over:false});render();if(!S.q)handoff(true)};
+  box.querySelector("#discard").onclick=()=>{lsSet(KEY,null);render()};
+  app.appendChild(box);
+ }
  const s=el(`<section class="setup"></section>`);
- const p=el(`<div class="frame box"><div class="ttl">Peregrinos</div><div class="in"><p class="lead">De 1 a 4 jogadores. Rota escolhida: <b style="color:var(--gold2)">${r.nome}</b>.</p><div id="plist" style="display:flex;flex-direction:column;gap:10px"></div><div class="actions" style="justify-content:space-between"><div style="display:flex;gap:8px"><button class="obtn" id="add">+ Jogador</button><button class="obtn" id="rem">− Jogador</button></div><button class="gbtn" id="start">Começar <span class="tri"></span></button></div><div class="stops">${r.cidades.map(c=>`<span>${esc(c[0])}</span>`).join("")}</div></div></div>`);
- const list=p.querySelector("#plist");
- S.players.forEach((pl,i)=>{const row=el(`<div class="prow"><span class="av" style="--pc:${COLORS[i]}">${i+1}</span><input id="pn${i}" aria-label="Nome do jogador ${i+1}" value="${esc(pl.n)}" maxlength="16"></div>`);row.querySelector("input").oninput=e=>pl.n=e.target.value;list.appendChild(row)});
- p.querySelector("#add").onclick=()=>{if(S.players.length<4){S.players.push({n:"Jogador "+(S.players.length+1)});render()}};
- p.querySelector("#rem").onclick=()=>{if(S.players.length>1){S.players.pop();render()}};
- p.querySelector("#start").onclick=startGame;
- s.appendChild(p);
- const h=el(`<div class="frame box"><div class="ttl">Como se joga</div><div class="in">
-  <div class="li">${badge("book","#22468f")}<span><b>Responda a pergunta</b><small>Acertou, joga o dado. Errou, dá um passo de fé (1 casa).</small></span></div>
-  <div class="li">${badge("pin","#22468f")}<span><b>Cidades</b><small>Carimbam a credencial e contam uma história do caminho.</small></span></div>
-  <div class="how">${Object.entries(CASAS).map(([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`).join("")}</div>
- </div></div>`);
- s.appendChild(h);
+ const left=el(`<div class="frame box"><div class="ttl"><span class="step">1</span>Escolha a rota</div><div class="in"><div class="routes"></div>
+  <p class="sub">Peregrinos</p><div id="plist" style="display:flex;flex-direction:column;gap:10px"></div><p class="hint">Toque no círculo para trocar a cor do peão.</p>
+  <div class="rowbtns"><div style="display:flex;gap:8px"><button class="obtn" id="add">+ Jogador</button><button class="obtn" id="rem">− Jogador</button></div><button class="gbtn" id="start">Começar a peregrinação <span class="tri"></span></button></div></div></div>`);
+ const rs=left.querySelector(".routes");
+ for(const k of Object.keys(ROUTES)){const x=ROUTES[k];
+  const b=el(`<button class="rcard" aria-pressed="${S.route===k}"><span class="h"><span style="width:42px;height:42px">${SVG[x.ic]}</span><span><b>${x.l1}<br><span>${x.l2}</span></b><small>${x.sub}</small></span><span class="chk">${S.route===k?"✓":""}</span></span><span class="stops">${x.cidades.map(c=>`<span>${esc(c[0])}</span>`).join("")}</span></button>`);
+  b.onclick=()=>{S.route=k;render()};rs.appendChild(b)}
+ const list=left.querySelector("#plist");
+ S.players.forEach((pl,i)=>{
+  const row=el(`<div class="prow"><button class="av" style="--pc:${pl.c}" aria-label="Trocar cor do jogador ${i+1}">${i+1}</button><input id="pn${i}" aria-label="Nome do jogador ${i+1}" value="${esc(pl.n)}" maxlength="16"></div>`);
+  row.querySelector("input").oninput=e=>pl.n=e.target.value;
+  row.querySelector(".av").onclick=()=>{const used=S.players.map(p=>p.c);let j=PALETA.indexOf(pl.c);for(let t=0;t<PALETA.length;t++){j=(j+1)%PALETA.length;if(!used.includes(PALETA[j]))break}pl.c=PALETA[j];render();document.querySelector(`#pn${i}`)?.previousElementSibling?.focus()};
+  list.appendChild(row)});
+ left.querySelector("#add").onclick=()=>{if(S.players.length<4){const used=S.players.map(p=>p.c);S.players.push({n:"Jogador "+(S.players.length+1),c:PALETA.find(c=>!used.includes(c))});render()}};
+ left.querySelector("#rem").onclick=()=>{if(S.players.length>1){S.players.pop();render()}};
+ left.querySelector("#start").onclick=()=>{if(sv){confirmBox("Começar outra peregrinação?","A partida em andamento será descartada.","Começar nova",startGame)}else startGame()};
+ s.appendChild(left);
+ s.appendChild(el(`<div class="frame box"><div class="ttl">Como se joga</div><div class="in how">
+  <div class="li">${badge("book","var(--city)")}<span><b>Responda a pergunta</b><small>Acertou, joga o dado. Errou, dá um passo de fé (1 casa).</small></span></div>
+  <div class="li">${badge("pin","var(--city)")}<span><b>Cidades</b><small>Carimbam a credencial e contam uma história do caminho.</small></span></div>
+  <div class="how2">${Object.entries(CASAS).map(([k,c])=>`<div class="li">${badge(c.ic,COR[k])}<span><b>${c.nome}</b><small>${c.efeito}</small></span></div>`).join("")}</div>
+  <p class="hint">Toque em qualquer casa do tabuleiro para ver o que ela faz. A partida fica salva neste aparelho.</p>
+ </div></div>`));
  app.appendChild(s);
 }
 
 function startGame(){
  const r=ROUTES[S.route];
- S.players=S.players.map((p,i)=>({n:(p.n||"").trim()||"Jogador "+(i+1),c:COLORS[i],pos:0,skip:false,gracas:0,stamps:[0]}));
+ S.players=S.players.map((p,i)=>({n:(p.n||"").trim()||"Jogador "+(i+1),c:p.c,pos:0,skip:false,gracas:0,stamps:[0]}));
  S.board=buildBoard(S.route);
  S.deck=shuffle(GERAIS.concat(r.perguntas,r.perguntas));
  S.cur=0;S.die=0;S.q=null;S.log=[`A peregrinação começa em ${r.cidades[0][0]}.`];S.busy=false;S.over=false;
- S.screen="game";render();
+ S.screen="game";render();handoff(true);
 }
 
+/* ---------- jogo ---------- */
 function cols(){const w=window.innerWidth;return w<520?6:w<720?7:w<1080?8:9}
 
 function renderGame(app){
  const r=ROUTES[S.route],p=S.players[S.cur];
- const g=el(`<section class="game"><div class="c-pl"></div><div class="c-board"><div class="boardbox"><span class="flag a">Início</span><span class="flag b">Chegada</span><div class="board" id="board"></div></div></div><aside class="c-leg frame leg">${legend()}</aside><div class="c-bar frame"><div class="bar"></div></div></section>`);
- // players
+ const top=el(`<header class="gtop"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><img class="logo" src="${LOGO}" alt="Rumo ao Céu" width="58" height="58"><span class="rtag">${SVG[r.ic]}<span>${r.nome} <small>· rumo a ${esc(r.meta)}</small></span></span><span class="sp"></span>
+  <span class="tools"><button class="ibtn" id="help" aria-label="Como jogar">?</button><button class="ibtn" id="som" aria-label="${SOM?"Desligar som":"Ligar som"}" title="${SOM?"Som ligado":"Som desligado"}">${SOM?'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none"/></svg>':'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2"/></svg>'}</button><button class="obtn" id="novo">Nova peregrinação</button></span></header>`);
+ app.appendChild(top);
+ top.querySelector("#help").onclick=()=>modal(`<div class="ttl">Como jogar</div><div class="leg">${legendHTML()}</div><div class="in"><p class="hint" style="margin:0">Responda certo para jogar o dado. Errou, anda 1 casa. Cidades carimbam a credencial.</p><div class="actions"><button class="gbtn sm" data-close>Entendi</button></div></div>`);
+ top.querySelector("#som").onclick=()=>{SOM=!SOM;lsSet(KEY_SOM,SOM?"1":"0");if(SOM)sOk();render()};
+ top.querySelector("#novo").onclick=()=>confirmBox("Recomeçar a peregrinação?","O progresso desta partida será perdido.","Recomeçar",()=>{lsSet(KEY,null);S.players=S.players.map(x=>({n:x.n,c:x.c}));S.screen="setup";render()});
+
+ const g=el(`<section class="game"><div class="c-pl"></div><div class="c-board"><div class="boardbox"><div class="board" id="board"><svg class="trail" id="trail" aria-hidden="true"></svg></div></div></div><aside class="c-leg frame leg">${legendHTML()}</aside><div class="c-bar frame"><div class="bar"></div></div></section>`);
  const pl=g.querySelector(".c-pl");
- S.players.forEach((x,i)=>pl.appendChild(el(`<div class="pcard ${i===S.cur&&!S.over?"on":""}" style="--pc:${x.c}"><span class="av">${esc(x.n[0]||"?").toUpperCase()}</span><span class="info"><span class="nm" style="display:block">${esc(x.n)}</span><span class="sc">${SVG.shell.replace('fill="currentColor"','fill="#f2b632"')} ${x.pos} casas · ${x.gracas} graça${x.gracas===1?"":"s"}</span>${x.skip?'<span class="st">DESCANSANDO</span>':""}</span></div>`)));
- pl.appendChild(el(`<div class="cred"><h3><span style="width:22px;height:22px;display:inline-block">${SVG.shell.replace('fill="currentColor"','fill="#f2b632"')}</span>Credencial do Peregrino</h3><div class="pages">${S.players.map(x=>`<div class="row"><b style="color:${x.c}">${esc(x.n)} · ${x.stamps.length}/${r.cidades.length}</b><div class="stamps" style="color:${x.c}">${r.cidades.map((c,ci)=>`<span class="stamp ${x.stamps.includes(ci)?"on":""}" title="${esc(c[0])}">${esc(c[0][0])}</span>`).join("")}</div></div>`).join("")}</div></div>`));
+ S.players.forEach((x,i)=>pl.appendChild(el(`<div class="pcard ${i===S.cur&&!S.over?"on":""}" style="--pc:${x.c}"><span class="av">${i+1}</span><span class="info"><span class="nm">${esc(x.n)}</span><span class="chips"><span class="chip">${shellGold()} casa ${x.pos}</span><span class="chip">✦ ${x.gracas} graça${x.gracas===1?"":"s"}</span>${x.skip?'<span class="chip warn">descansando</span>':""}</span></span></div>`)));
+ const cred=el(`<div class="cred"><h3>${shellGold()}Credencial do Peregrino</h3><div class="pages">${S.players.map((x,pi)=>`<div class="row"><b style="color:${x.c}">${esc(x.n)} · ${x.stamps.length}/${r.cidades.length} carimbos</b><div class="stamps" style="color:${x.c}">${r.cidades.map((c,ci)=>{const on=x.stamps.includes(ci),nw=fresh&&fresh.p===pi&&fresh.c===ci;return `<button class="stamp ${on?"on":""} ${nw?"new":""}" data-c="${ci}" aria-label="${esc(c[0])}${on?" (carimbado)":""}" title="${esc(c[0])}">${on?SVG.shell:ci+1}</button>`}).join("")}</div></div>`).join("")}<p class="tip">Toque num carimbo para ver a cidade.</p></div></div>`);
+ cred.querySelectorAll(".stamp").forEach(b=>b.onclick=()=>cityInfo(+b.dataset.c));
+ pl.appendChild(cred);
  pl.appendChild(el(`<div class="frame"><div class="ttl" style="font-size:17px">Diário do caminho</div><div class="log">${S.log.slice(-25).reverse().map(l=>`<div>${esc(l)}</div>`).join("")}</div></div>`));
- // board
+
  const board=g.querySelector("#board"),C=cols();
  board.style.gridTemplateColumns=`repeat(${C},minmax(0,1fr))`;
+ const curPos=S.over?-1:p.pos;
  S.board.forEach((t,i)=>{
   const row=Math.floor(i/C),col=row%2?C-1-i%C:i%C, c=CASAS[t.t], isEnd=i===L-1, isStart=i===0;
-  let inner,cls=t.t;
-  if(t.t==="cidade"){cls+=isEnd?" fim":isStart?" inicio":"";inner=badge(isEnd?"cross":"pin",isEnd?"#b21f1f":"#22468f")+`<span class="lbl">${esc(t.nome)}</span>`}
-  else if(c){inner=badge(c.ic,COR[t.t])}
+  let inner,cls=t.t,small=C<8;
+  if(t.t==="cidade"){cls+=isEnd?" fim":"";inner=badge(isEnd?"cross":"pin",isEnd?"#b21f1f":"var(--city)")+`<span class="lbl">${esc(small?(CURTO[t.nome]||t.nome):t.nome)}</span>`}
+  else if(c) inner=badge(c.ic,COR[t.t]);
   else inner=`<span class="badge">${SVG.dot}</span>`;
-  const tile=el(`<div class="tile ${cls}" style="grid-row:${row+1};grid-column:${col+1}"><span class="n">${i}</span>${inner}<div class="tokens"></div></div>`);
-  tile.title=t.t==="cidade"?t.nome:(c?c.nome+": "+c.efeito:"Caminho");
-  S.players.forEach((x,pi)=>{if(x.pos===i){const tk=el(pawn(x.c));if(pi===S.cur)tk.classList.add("cur");tile.querySelector(".tokens").appendChild(tk)}});
+  const rib=isStart?'<span class="ribbon">INÍCIO</span>':isEnd?'<span class="ribbon">CHEGADA</span>':"";
+  const tile=el(`<div class="tile ${cls} ${i===curPos?"cur":""}" style="grid-row:${row+1};grid-column:${col+1};--pc:${p.c}" data-i="${i}" role="button" tabindex="0" aria-label="Casa ${i}: ${esc(t.t==="cidade"?t.nome:(c?c.nome:"caminho"))}">${rib}<span class="n">${i}</span>${inner}<div class="tokens"></div></div>`);
+  S.players.forEach((x,pi)=>{if(x.pos===i)tile.querySelector(".tokens").appendChild(el(pawn(x.c,(pi===S.cur?"cur":"")+(pi===moving?" hop":""))))});
+  tile.onclick=()=>tileInfo(i);
+  tile.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tileInfo(i)}};
   board.appendChild(tile);
  });
- // bar
- const bar=g.querySelector(".bar");
- const q=S.q;
- let qhtml,ohtml;
- if(S.over){qhtml=`<div class="qh">${SVG.cross} Peregrinação concluída</div><p>${esc(S.players.find(x=>x.pos>=L-1)?.n||"")} chegou a ${esc(r.meta)}!</p>`;ohtml=`<div class="opts" style="justify-content:center"><button class="gbtn" id="again" style="font-size:19px">Nova peregrinação</button></div>`}
- else if(!q){qhtml=`<div class="qh">${SVG.book} Pergunta</div><p>Vez de <span style="color:${p.c};filter:brightness(1.4)">${esc(p.n)}</span>. ${p.skip?"Está descansando no albergue nesta rodada.":"Tire uma pergunta para caminhar."}</p>`;
-  ohtml=`<div class="opts empty">${["A","B","C","D"].map(k=>`<div class="opt"><span class="k">${k}</span><span class="tx">&nbsp;</span></div>`).join("")}</div>`}
+
+ const bar=g.querySelector(".bar"),q=S.q;
+ let qhtml,ohtml,btn="";
+ if(S.over){const w=S.players.find(x=>x.pos>=L-1);qhtml=`<div class="qh">${SVG.cross} Peregrinação concluída</div><p>${esc(w?w.n:"")} chegou a ${esc(r.meta)}!</p>`;ohtml=`<div class="opts" style="align-items:flex-start"><button class="gbtn sm" id="again">Nova peregrinação <span class="tri"></span></button></div>`}
+ else if(S.busy&&!q){qhtml=`<div class="qh">${SVG.book} ${esc(p.n)} está caminhando</div><p>${S.die>1?"Tirou "+S.die+" no dado.":"Um passo de cada vez."} Acompanhe o peão no tabuleiro.</p>`;ohtml=`<div class="opts empty" aria-hidden="true">${["A","B","C","D"].map(k=>`<div class="opt"><span class="k">${k}</span><span class="tx">&nbsp;</span></div>`).join("")}</div>`;btn=`<button class="gbtn" disabled>Caminhando…</button>`}
+ else if(!q){qhtml=`<div class="qh">${SVG.book} Vez de <span style="color:#fff;background:${p.c};padding:0 8px;border-radius:6px">${esc(p.n)}</span></div><p>Tire uma pergunta para caminhar.</p>`;
+  ohtml=`<div class="opts empty" aria-hidden="true">${["A","B","C","D"].map(k=>`<div class="opt"><span class="k">${k}</span><span class="tx">&nbsp;</span></div>`).join("")}</div>`;
+  btn=`<button class="gbtn" id="act" ${S.busy?"disabled":""}>Tirar<br>pergunta <span class="tri"></span></button>`}
  else{qhtml=`<div class="qh">${SVG.book} Pergunta para ${esc(p.n)}</div><p>${esc(q.q[0])}</p>${q.done?`<div class="verdict ${q.ok?"ok":"no"}">${q.ok?"Isso mesmo!":"Não foi dessa vez."}</div><div class="expl">${esc(q.q[3])}</div>`:""}`;
-  ohtml=`<div class="opts">${q.order.map((oi,j)=>{let c="";if(q.done){if(oi===q.q[2])c="right";else if(oi===q.pick)c="wrong"}return `<button class="opt ${c}" data-i="${oi}" ${q.done?"disabled":""}><span class="k">${"ABCD"[j]}</span><span class="tx">${esc(q.q[1][oi])}</span>${c==="right"?'<span class="ck">✓</span>':""}</button>`}).join("")}</div>`}
- let btn;
- if(S.over) btn="";
- else if(!q) btn=`<button class="gbtn" id="act" ${S.busy?"disabled":""}>${p.skip?"Passar a vez":"Tirar<br>pergunta"} <span class="tri"></span></button>`;
- else if(!q.done) btn=`<button class="gbtn" disabled>Responda <span class="tri"></span></button>`;
- else btn=`<button class="gbtn" id="act" ${S.busy?"disabled":""}>${q.ok?"Jogar<br>o dado":"Passo<br>de fé"} <span class="tri"></span></button>`;
+  ohtml=`<div class="opts">${q.order.map((oi,j)=>{let c="";if(q.done){if(oi===q.q[2])c="right";else if(oi===q.pick)c="wrong"}return `<button class="opt ${c}" data-i="${oi}" ${q.done?"disabled":""}><span class="k">${"ABCD"[j]}</span><span class="tx">${esc(q.q[1][oi])}</span>${c==="right"?"<b>✓</b>":""}</button>`}).join("")}</div>`;
+  btn=q.done?`<button class="gbtn" id="act" ${S.busy?"disabled":""}>${q.ok?"Jogar<br>o dado":"Passo<br>de fé"} <span class="tri"></span></button>`:`<button class="gbtn" disabled>Escolha<br>a resposta</button>`}
  bar.appendChild(el(`<div class="qbox">${qhtml}</div>`));
  bar.appendChild(el(ohtml));
  bar.appendChild(el(`<div class="diebox"><div class="diewrap">${dieHTML(S.die)}</div>${btn}</div>`));
@@ -448,54 +506,89 @@ function renderGame(app){
 
  g.querySelectorAll(".opt[data-i]").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
  const act=document.getElementById("act"); if(act) act.onclick=action;
- const ag=document.getElementById("again"); if(ag) ag.onclick=()=>{S.players=S.players.map(x=>({n:x.n}));S.screen="setup";render()};
+ const ag=document.getElementById("again"); if(ag) ag.onclick=newAfterEnd;
+ requestAnimationFrame(drawTrail);
 }
 
+function drawTrail(){
+ const board=document.getElementById("board"),svg=document.getElementById("trail");if(!board||!svg)return;
+ const br=board.getBoundingClientRect(),pts=[];
+ board.querySelectorAll(".tile").forEach(t=>{const r=t.getBoundingClientRect();pts[+t.dataset.i]=[r.left-br.left+r.width/2,r.top-br.top+r.height/2]});
+ if(pts.length<2)return;
+ svg.setAttribute("viewBox",`0 0 ${br.width} ${br.height}`);
+ const d="M"+pts.map(p=>p.join(",")).join("L");
+ let arrows="";
+ for(let i=0;i<pts.length-1;i++){const [x1,y1]=pts[i],[x2,y2]=pts[i+1],mx=(x1+x2)/2,my=(y1+y2)/2,a=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+  arrows+=`<path d="M-5,-6 L5,0 L-5,6" transform="translate(${mx},${my}) rotate(${a})" fill="none" stroke="#3a2404" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M-5,-6 L5,0 L-5,6" transform="translate(${mx},${my}) rotate(${a})" fill="none" stroke="#ffd970" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`}
+ svg.innerHTML=`<path d="${d}" fill="none" stroke="#5b3a0a" stroke-width="10" stroke-linejoin="round" stroke-linecap="round" opacity=".55"/><path d="${d}" fill="none" stroke="#f2c14e" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round" stroke-linejoin="round"/>${arrows}`;
+}
+
+function tileInfo(i){
+ if(document.getElementById("ov"))return;
+ const t=S.board[i];
+ if(t.t==="cidade") return cityInfo(t.i,i);
+ const c=CASAS[t.t];
+ if(!c) return modal(`<div class="ttl">Casa ${i}</div><div class="in"><p class="fact">Um trecho tranquilo do caminho. Nada acontece aqui.</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
+ modal(`<div class="ttl">Casa ${i}</div><div class="in"><div class="kind">${badge(c.ic,COR[t.t])}<div><small>${c.grupo==="esp"?"Casa especial":"Imprevisto"}</small><h3>${c.nome}</h3></div></div><p class="eff">${c.efeito}</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
+}
+function cityInfo(ci,i){
+ const r=ROUTES[S.route],c=r.cidades[ci];
+ if(i===undefined) i=S.board.findIndex(t=>t.t==="cidade"&&t.i===ci);
+ const quem=S.players.filter(x=>x.stamps.includes(ci)).map(x=>x.n);
+ modal(`<div class="ttl">Casa ${i} · parada ${ci+1} de ${r.cidades.length}</div><div class="in"><div class="kind">${badge(i===L-1?"cross":"pin",i===L-1?"#b21f1f":"var(--city)")}<div><small>Cidade do caminho</small><h3>${esc(c[0])}</h3></div></div><p class="fact">${esc(c[1])}</p><p class="hint" style="margin:0">${quem.length?"Carimbada por: "+esc(quem.join(", ")):"Ninguém carimbou ainda."}</p><div class="actions"><button class="gbtn sm" data-close>Fechar</button></div></div>`);
+}
+
+function modal(html){closeModal();const o=el(`<div class="overlay" id="ov"><div class="card frame" role="dialog" aria-modal="true">${html}</div></div>`);document.body.appendChild(o);
+ o.querySelectorAll("[data-close]").forEach(b=>b.onclick=closeModal);
+ o.addEventListener("click",e=>{if(e.target===o&&o.dataset.lock!=="1")closeModal()});
+ const f=o.querySelector(".gbtn")||o.querySelector("button");if(f)f.focus();return o}
+function closeModal(){const o=document.getElementById("ov");if(o)o.remove()}
+function confirmBox(t,txt,ok,fn){modal(`<div class="ttl">Confirmar</div><div class="in"><h3>${esc(t)}</h3><p style="margin:0;color:var(--muted)">${esc(txt)}</p><div class="actions"><button class="obtn" data-close>Cancelar</button><button class="gbtn sm" id="cok">${esc(ok)}</button></div></div>`);document.getElementById("cok").onclick=()=>{closeModal();fn()}}
+
 function log(t){S.log.push(t)}
+function mobile(){return window.innerWidth<=720}
+function focusBar(){if(mobile()){const b=document.querySelector(".c-bar");if(b)b.scrollIntoView({behavior:"smooth",block:"start"})}}
+
 function action(){
  const p=S.players[S.cur],q=S.q;
  if(!q){
-  if(p.skip){p.skip=false;log(`${p.n} descansou no albergue.`);return nextPlayer()}
   if(!S.deck.length) S.deck=shuffle(GERAIS.concat(ROUTES[S.route].perguntas));
-  S.q={q:S.deck.pop(),order:shuffle([0,1,2,3]),done:false};render();
-  const f=document.querySelector(".opt[data-i]");if(f)f.focus();return;
+  S.q={q:S.deck.pop(),order:shuffle([0,1,2,3]),done:false};render();focusBar();
+  document.querySelector(".opt[data-i]")?.focus({preventScroll:true});return;
  }
  if(q.done){
   S.q=null;
-  if(q.ok){const d=1+Math.floor(Math.random()*6);S.die=d;log(`${p.n} acertou e tirou ${d}.`);render();const de=document.getElementById("die");if(de)de.classList.add("roll");S.busy=true;setTimeout(()=>move(p,d,land),560)}
+  if(q.ok){const d=1+Math.floor(Math.random()*6);S.die=d;log(`${p.n} acertou e tirou ${d}.`);S.busy=true;render();document.getElementById("die")?.classList.add("roll");beep(300,.3,"square",.03);setTimeout(()=>move(p,d,land),580)}
   else{S.die=1;log(`${p.n} errou e deu um passo de fé.`);move(p,1,land)}
  }
 }
-function answer(i){const q=S.q;if(!q||q.done)return;q.done=true;q.pick=i;q.ok=i===q.q[2];render();const a=document.getElementById("act");if(a)a.focus()}
+function answer(i){const q=S.q;if(!q||q.done)return;q.done=true;q.pick=i;q.ok=i===q.q[2];q.ok?sOk():sNo();render();document.getElementById("act")?.focus({preventScroll:true})}
 
 function move(p,steps,cb){
- S.busy=true;const dir=steps<0?-1:1;let left=Math.abs(steps);
- const tick=()=>{if(left===0||(dir>0&&p.pos>=L-1)||(dir<0&&p.pos<=0)){S.busy=false;render();cb&&cb();return}
-  p.pos+=dir;left--;render();setTimeout(tick,230)};
+ S.busy=true;const dir=steps<0?-1:1;let left=Math.abs(steps);const pi=S.players.indexOf(p);
+ const tick=()=>{if(left===0||(dir>0&&p.pos>=L-1)||(dir<0&&p.pos<=0)){moving=-1;S.busy=false;render();cb&&cb();return}
+  p.pos+=dir;left--;moving=pi;sStep();render();setTimeout(tick,260)};
  tick();
 }
-function stampCity(p){const t=S.board[p.pos];if(t.t==="cidade"&&!p.stamps.includes(t.i)){p.stamps.push(t.i);return true}return false}
-
-function modal(html){closeModal();const o=el(`<div class="overlay" id="ov"><div class="card frame" role="dialog" aria-modal="true">${html}</div></div>`);document.body.appendChild(o);const f=o.querySelector("button");if(f)f.focus();return o}
-function closeModal(){const o=document.getElementById("ov");if(o)o.remove()}
+function stampCity(p){const t=S.board[p.pos];if(t.t==="cidade"&&!p.stamps.includes(t.i)){p.stamps.push(t.i);fresh={p:S.players.indexOf(p),c:t.i};return true}return false}
 
 function land(){
  const p=S.players[S.cur],t=S.board[p.pos];
  if(p.pos>=L-1){stampCity(p);return finish(p)}
  if(t.t==="cidade"){
-  const novo=stampCity(p);
-  modal(`<div class="ttl">${novo?"Carimbo na credencial":"Cidade já carimbada"}</div><div class="in"><div class="kind">${badge("pin","#22468f")}<div><small>${esc(p.n)} chegou a</small><h3>${esc(t.nome)}</h3></div></div><p class="fact">${esc(t.fact)}</p><div class="actions"><button class="gbtn" id="ok" style="font-size:19px">Seguir caminho <span class="tri"></span></button></div></div>`);
+  const novo=stampCity(p);if(novo)sBell();render();
+  modal(`<div class="ttl">${novo?"Carimbo na credencial":"Cidade já carimbada"}</div><div class="in"><div class="kind">${badge("pin","var(--city)")}<div><small>${esc(p.n)} chegou a</small><h3>${esc(t.nome)}</h3></div></div><p class="fact">${esc(t.fact)}</p><div class="actions"><button class="gbtn sm" id="ok">Seguir caminho <span class="tri"></span></button></div></div>`).dataset.lock="1";
   document.getElementById("ok").onclick=()=>{closeModal();log(`${p.n} chegou a ${t.nome}.`);nextPlayer()};return;
  }
  const c=CASAS[t.t];
  if(!c) return nextPlayer();
  const txt=c.cards[Math.floor(Math.random()*c.cards.length)];
- modal(`<div class="ttl">${c.grupo==="esp"?"Casa especial":"Imprevisto"}</div><div class="in"><div class="kind">${badge(c.ic,COR[t.t])}<div><small>${esc(p.n)} caiu em</small><h3>${c.nome}</h3></div></div><p class="fact">${esc(txt)}</p><p class="eff">${c.efeito}</p><div class="actions"><button class="gbtn" id="ok" style="font-size:19px">${c.bt} <span class="tri"></span></button></div></div>`);
+ modal(`<div class="ttl">${c.grupo==="esp"?"Casa especial":"Imprevisto"}</div><div class="in"><div class="kind">${badge(c.ic,COR[t.t])}<div><small>${esc(p.n)} caiu em</small><h3>${c.nome}</h3></div></div><p class="fact">${esc(txt)}</p><p class="eff">${c.efeito}</p><div class="actions"><button class="gbtn sm" id="ok">${c.bt} <span class="tri"></span></button></div></div>`).dataset.lock="1";
  document.getElementById("ok").onclick=()=>{closeModal();applyEffect(p,t.t)};
 }
 
 function applyEffect(p,k){
- const after=()=>{const w=S.players.find(x=>x.pos>=L-1);if(w){stampCity(w);return finish(w)}stampCity(p);nextPlayer()};
+ const after=()=>{const w=S.players.find(x=>x.pos>=L-1);if(w){stampCity(w);return finish(w)}if(stampCity(p))sBell();nextPlayer()};
  if(k==="oracao"){log(`${p.n} rezou e avançou 1.`);move(p,1,after)}
  else if(k==="acao"||k==="reflexao"){p.gracas++;log(`${p.n} ganhou 1 graça.`);nextPlayer()}
  else if(k==="descanso"){p.skip=true;log(`${p.n} vai descansar no albergue.`);nextPlayer()}
@@ -504,23 +597,39 @@ function applyEffect(p,k){
  else if(k==="companheiro"){S.players.forEach(o=>{if(o!==p&&o.pos<L-1){o.pos++;stampCity(o)}});log(`${p.n} partilhou: os outros avançaram 1.`);after()}
  else nextPlayer();
 }
-function nextPlayer(){if(S.over)return;S.cur=(S.cur+1)%S.players.length;render()}
 
-function finish(w){
- S.over=true;S.cur=S.players.indexOf(w);render();const r=ROUTES[S.route];
- const rank=S.players.slice().sort((a,b)=>b.pos-a.pos||b.gracas-a.gracas);
- log(`${w.n} chegou a ${r.meta}!`);
- modal(`<div class="ttl">Chegada</div><div class="in"><div class="kind">${badge("cross","#b21f1f")}<div><small>Peregrinação concluída</small><h3>${esc(w.n)} chegou a ${esc(r.meta)}!</h3></div></div><p class="fact">${S.route==="santiago"?"Abraço no apóstolo e Compostela na mão. Buen Camino!":"Aos pés da Mãe Aparecida, o romeiro agradece cada passo."}</p>
-  <div class="rank">${rank.map((x,i)=>`<div class="pcard" style="--pc:${x.c}"><span class="av">${i+1}</span><span class="info"><span class="nm" style="display:block">${esc(x.n)}</span><span class="sc">${x.stamps.length} carimbos · ${x.gracas} graças</span></span></div>`).join("")}</div>
-  <p style="margin:0;color:var(--muted)">Na peregrinação ninguém perde: esperem juntos os últimos chegarem e rezem uma Salve-Rainha em ação de graças.</p>
-  <div class="actions"><button class="obtn" id="ver">Ver tabuleiro</button><button class="gbtn" id="again2" style="font-size:19px">Nova peregrinação</button></div></div>`);
- document.getElementById("ver").onclick=closeModal;
- document.getElementById("again2").onclick=()=>{closeModal();S.players=S.players.map(x=>({n:x.n}));S.screen="setup";render()};
+function nextPlayer(){
+ if(S.over)return;
+ S.cur=(S.cur+1)%S.players.length;S.q=null;S.die=0;
+ render();fresh=null;handoff(false);
+}
+function handoff(first){
+ const p=S.players[S.cur];
+ if(p.skip){
+  modal(`<div class="ttl">Albergue</div><div class="in turncard"><span class="av" style="--pc:${p.c}">${S.cur+1}</span><h3>${esc(p.n)} está descansando</h3><p class="fact">Passou a noite no albergue e volta a caminhar na próxima rodada.</p><div class="actions" style="justify-content:center"><button class="gbtn sm" id="ok">Seguir <span class="tri"></span></button></div></div>`).dataset.lock="1";
+  document.getElementById("ok").onclick=()=>{closeModal();p.skip=false;log(`${p.n} descansou no albergue.`);nextPlayer()};return;
+ }
+ if(S.players.length<2&&!first)return;
+ if(S.players.length<2)return;
+ modal(`<div class="ttl">${first?"A peregrinação começa":"Próximo peregrino"}</div><div class="in turncard"><span class="av" style="--pc:${p.c}">${S.cur+1}</span><h3>Vez de ${esc(p.n)}</h3><p style="margin:0;color:var(--muted)">Passe o aparelho para ${esc(p.n)}. Peão na casa ${p.pos}.</p><div class="actions" style="justify-content:center"><button class="gbtn" id="ok">Estou pronto <span class="tri"></span></button></div></div>`).dataset.lock="1";
+ document.getElementById("ok").onclick=()=>{closeModal();action()};
 }
 
-let rz,lastC=0;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(S.screen==="game"&&cols()!==lastC){lastC=cols();render()}},150)});
-render();
-</script>
+function newAfterEnd(){closeModal();lsSet(KEY,null);S.players=S.players.map(x=>({n:x.n,c:x.c}));S.screen="setup";render()}
+function finish(w){
+ S.over=true;S.cur=S.players.indexOf(w);moving=-1;const r=ROUTES[S.route];
+ log(`${w.n} chegou a ${r.meta}!`);render();lsSet(KEY,null);sWin();
+ const rank=S.players.slice().sort((a,b)=>b.pos-a.pos||b.gracas-a.gracas);
+ modal(`<div class="ttl">Chegada</div><div class="in"><div class="kind">${badge("cross","#b21f1f")}<div><small>Peregrinação concluída</small><h3>${esc(w.n)} chegou a ${esc(r.meta)}!</h3></div></div><p class="fact">${S.route==="santiago"?"Abraço no apóstolo e Compostela na mão. Buen Camino!":"Aos pés da Mãe Aparecida, o romeiro agradece cada passo."}</p>
+  <div class="rank">${rank.map((x,i)=>`<div class="pcard" style="--pc:${x.c}"><span class="av">${i+1}</span><span class="info"><span class="nm">${esc(x.n)}</span><span class="chips"><span class="chip">${x.stamps.length} carimbos</span><span class="chip">${x.gracas} graças</span></span></span></div>`).join("")}</div>
+  <p style="margin:0;color:var(--muted)">Na peregrinação ninguém perde: esperem juntos os últimos chegarem e rezem uma Salve-Rainha em ação de graças.</p>
+  <div class="actions"><button class="obtn" data-close>Ver tabuleiro</button><button class="gbtn sm" id="again2">Nova peregrinação</button></div></div>`);
+ document.getElementById("again2").onclick=newAfterEnd;
+}
 
+let rz,lastC=cols();window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(S.screen!=="game")return;if(cols()!==lastC){lastC=cols();render()}else drawTrail()},120)});
+render();
+
+</script>
 </body>
 </html>
