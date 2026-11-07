@@ -467,6 +467,83 @@ html.isfs .bscroll{max-height:calc(100vh - 260px)}
 .nivelpick button[aria-checked="true"]{background:linear-gradient(180deg,var(--gold2),var(--gold));border-color:var(--gold2);color:#3a2404}
 .nivelpick button[aria-checked="true"] small,.nivelpick button[aria-checked="true"] .nq{color:#5a3a0a}
 .nivelpick button:disabled{cursor:default}
+
+/* convite */
+.invite{max-width:620px;margin:8px auto 0;width:100%;padding:20px;display:flex;flex-direction:column;gap:16px}
+.inv-top{display:flex;align-items:center;gap:16px}
+.inv-top .logo{width:96px;height:96px;flex:none;filter:drop-shadow(0 6px 12px #0008)}
+.inv-top small{font-family:var(--ui);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);font-size:13px}
+.inv-top h1{margin:2px 0;font-family:var(--display);font-weight:800;font-size:clamp(30px,6vw,40px);line-height:1}
+.inv-top p{margin:0;color:var(--muted);font-size:15px}
+.inv-room{display:flex;gap:14px;align-items:stretch;padding:14px;border-radius:16px;background:var(--deep);border:1.5px solid var(--gold)}
+.inv-code{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 10px;border-right:1.5px solid #c99a3a66}
+.inv-code small{color:var(--muted);font-family:var(--ui);font-weight:600}
+.inv-code b{font-family:var(--display);font-size:36px;letter-spacing:.12em;color:var(--gold2);line-height:1}
+.inv-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.inv-route{display:flex;align-items:center;gap:10px}.inv-route>svg{width:38px;height:38px;flex:none}
+.inv-route small{display:block;font-family:var(--ui);color:var(--muted);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.inv-route b{display:block;font-family:var(--ui);font-size:21px;line-height:1.05}
+.inv-route em{font-style:normal;font-family:var(--ui);font-size:14px;color:var(--gold2)}
+.inv-host{font-size:15px;color:var(--muted)}.inv-host b{color:var(--ink)}
+.inv-players{display:flex;flex-wrap:wrap;gap:6px}
+.ipl{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 3px;border-radius:999px;background:#ffffff0d;border:1px solid #c99a3a55;font-family:var(--ui);font-size:15px}
+.ipl .av{width:28px;height:28px;font-size:14px;border-width:2px}
+.ipl.empty{opacity:.45}
+.fld.big span{font-size:18px;color:var(--ink)}
+.fld.big input{font-size:22px;padding:14px 16px}
+.gbtn.big{font-size:26px;padding:16px 24px;width:100%}
+.linkbtn{align-self:center;border:0;background:none;color:var(--muted);text-decoration:underline;font-size:15px;padding:6px}
+.osteps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:15px}
+.osteps b{color:var(--ink)}
+@media (max-width:520px){.inv-room{flex-direction:column}.inv-code{border-right:0;border-bottom:1.5px solid #c99a3a66;padding:0 0 8px;flex-direction:row;gap:10px}.inv-top .logo{width:72px;height:72px}}
+
+/* celular: só o tabuleiro, ações na sua vez */
+.mobonly{display:none}
+.mpill{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:999px;background:linear-gradient(90deg,color-mix(in srgb,var(--pc) 70%,#09152f),#0b1a3cf0);border:1.5px solid var(--gold);box-shadow:0 8px 20px #000a;font-family:var(--ui);font-size:17px;max-width:100%}
+.mpill .av{width:34px;height:34px;font-size:16px;border-width:2px}
+.mpill span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpill b{color:var(--gold2)}
+.mpill>svg{width:22px;height:22px;color:var(--gold2);flex:none}
+@media (max-width:760px){
+ html.ingame,html.ingame body{height:100%;overflow:hidden;overscroll-behavior:none}
+ html.ingame body{padding:0}
+ html.ingame body::before,html.ingame body::after{display:none}
+ html.ingame .wrap,html.ingame .app{gap:0}
+ html.ingame .gtop{position:fixed;top:0;left:0;right:0;z-index:12;gap:6px;padding:calc(6px + env(safe-area-inset-top,0px)) max(8px,env(safe-area-inset-right,0px)) 18px max(8px,env(safe-area-inset-left,0px));background:linear-gradient(180deg,#09152ff2 0%,#09152fb0 60%,#09152f00 100%);flex-wrap:nowrap}
+ html.ingame .gtop .logo,html.ingame .gtop .rtag{display:none}
+ html.ingame .gtop .sp{display:block;flex:1}
+ html.ingame .gtop .back{font-size:13px;padding:5px 9px}
+ html.ingame .gtop .tools{gap:6px;margin:0}
+ html.ingame .game{display:block}
+ html.ingame .c-board{position:fixed;inset:0;z-index:1;gap:0}
+ html.ingame .bwrap{height:100%;border-radius:0;padding:0;box-shadow:none;background:#4c7a37}
+ html.ingame .bwrap::before{display:none}
+ html.ingame .b3box{height:100%;max-height:none;min-height:0;aspect-ratio:auto;border-radius:0}
+ html.ingame .bscroll{height:100%;max-height:none;min-height:0;border-radius:0}
+ html.ingame .b3hint{display:none}
+ html.ingame .status,html.ingame .credbook,html.ingame .diary,html.ingame .c-leg{display:none}
+ html.ingame .c-pl{display:block}
+ html.ingame .players{position:fixed;z-index:11;top:calc(54px + env(safe-area-inset-top,0px));left:0;right:0;padding:8px max(8px,env(safe-area-inset-left,0px)) 4px;flex-direction:row;gap:6px;overflow-x:auto;scrollbar-width:none}
+ html.ingame .players::-webkit-scrollbar{display:none}
+ html.ingame .pcard{flex:0 0 auto;max-width:170px;padding:3px 9px 3px 3px;background:linear-gradient(100deg,color-mix(in srgb,var(--pc) 75%,#000),#0b1a3ce6 80%);box-shadow:0 4px 10px #0008}
+ html.ingame .pcard .av{width:32px;height:32px;font-size:15px;border-width:2px}
+ html.ingame .pcard .nm{font-size:15px}
+ html.ingame .pcard .sub2{font-size:12px}
+ html.ingame .pcard .chip{display:none}
+ html.ingame .pcard .crown{top:-9px;left:20px;font-size:15px}
+ html.ingame .zoom{left:auto;right:max(10px,env(safe-area-inset-right,0px));top:calc(118px + env(safe-area-inset-top,0px));gap:6px}
+ html.ingame .zoom button{width:40px;height:40px}
+ html.ingame .zoom button svg{width:20px;height:20px}
+ html.ingame .mobonly{display:grid;place-items:center}
+ html.ingame .c-bar.pillmode{background:none;border:0;box-shadow:none;display:flex;justify-content:center;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none}
+ html.ingame .c-bar.pillmode .mpill{pointer-events:auto}
+ html.ingame .c-bar.myturn{grid-template-columns:minmax(0,1fr) auto;border-radius:20px 20px 0 0;animation:sheetup .35s cubic-bezier(.2,.9,.3,1.1)}
+ html.ingame .c-bar.open{border-radius:20px 20px 0 0;animation:sheetup .35s cubic-bezier(.2,.9,.3,1.1)}
+ html.ingame .c-bar.myturn .dicebox{flex-direction:column}
+ html.ingame .sbubble{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+ html.ingame .tbanner{top:42%;font-size:21px}
+}
+@keyframes sheetup{from{transform:translateY(100%)}}
 </style>
 </head>
 <body>
@@ -577,6 +654,129 @@ const CASAS={
   "Céu limpo, trilha seca e um café no caminho. O passo rende!",
   "Um morador indica uma trilha boa e bem sinalizada."],efeito:"Avance 2 casas.",bt:"Avançar"}
 };
+
+/* Cartões das casas especiais e imprevistos (sorteados sem repetir na partida) */
+CASAS.acao.cards=[
+ "Compromisso da semana: mande mensagem para alguém que você não vê há tempos.",
+ "Compromisso da semana: ajude em casa numa tarefa que normalmente não é sua.",
+ "Diga agora um elogio sincero a cada jogador da mesa.",
+ "Compromisso da semana: separe uma roupa ou um alimento para doar.",
+ "Peça perdão ou agradeça a alguém que precisa ouvir isso de você.",
+ "Compromisso: visite ou ligue para um idoso da família ou do bairro.",
+ "Compromisso: reze um terço por alguém que está doente.",
+ "Compromisso: fique um dia inteiro sem reclamar de nada.",
+ "Compromisso: ofereça ajuda a um colega da escola ou do trabalho.",
+ "Compromisso: arrume seu quarto ou sua mesa sem ninguém pedir.",
+ "Compromisso: deixe um bilhete de carinho para alguém da sua casa.",
+ "Compromisso: doe um brinquedo, uma roupa ou um livro que você não usa mais.",
+ "Compromisso: chegue mais cedo à missa de domingo e participe com atenção.",
+ "Compromisso: cumprimente pelo nome o porteiro, o motorista ou o caixa do mercado.",
+ "Compromisso: fique uma hora sem celular, dando atenção total à sua família.",
+ "Compromisso: perdoe alguém que te magoou, nem que seja primeiro no coração.",
+ "Compromisso: ofereça água ou um lanche a quem trabalha na rua.",
+ "Compromisso: lave a louça depois do almoço de domingo.",
+ "Compromisso: escreva uma oração e dê para alguém que está passando por dificuldade.",
+ "Compromisso: agradeça a um professor, chefe ou catequista pelo que ele faz.",
+ "Compromisso: separe uma parte da mesada ou do salário para uma obra de caridade.",
+ "Compromisso: convide para um café ou uma conversa alguém que anda sozinho.",
+ "Compromisso: ajude um vizinho a carregar as compras ou resolver alguma coisa.",
+ "Compromisso: passe a semana inteira sem falar mal de ninguém.",
+ "Compromisso: reze em voz alta antes das refeições, com a família.",
+ "Compromisso: ensine algo que você sabe a alguém mais novo.",
+ "Compromisso: faça uma visita ao Santíssimo e reze por quem você ama.",
+ "Compromisso: ligue para seus avós ou padrinhos só para saber como estão.",
+ "Compromisso: recolha um lixo que encontrar na rua ou na praça.",
+ "Compromisso: ceda a sua vez ou o seu lugar a alguém."];
+CASAS.reflexao.cards=[
+ "Conte um momento em que você sentiu Deus perto.",
+ "Qual santo você levaria como companheiro de caminhada? Por quê?",
+ "O que você deixaria aos pés da cruz se pudesse? (Pode responder em silêncio.)",
+ "Que pessoa foi um anjo no seu caminho?",
+ "Qual é a sua passagem favorita da Bíblia?",
+ "Qual foi a maior alegria que você teve este ano?",
+ "Que personagem da Bíblia você gostaria de conhecer? Por quê?",
+ "O que mais te ajuda a rezar?",
+ "Conte uma vez em que alguém foi bom com você sem esperar nada em troca.",
+ "Se você pudesse pedir uma graça agora, qual seria?",
+ "Qual é a sua oração preferida?",
+ "Que hábito você gostaria de mudar para ficar mais perto de Deus?",
+ "Qual santo você mais admira e o que ele te ensina?",
+ "Conte uma lembrança boa de uma missa ou festa da igreja.",
+ "Por quem você mais quer rezar nesta semana?",
+ "O que a palavra perdão significa para você?",
+ "Qual parábola de Jesus mais combina com a sua vida hoje?",
+ "O que você aprendeu sobre a fé com seus pais ou avós?",
+ "Conte um momento em que você precisou de paciência e Deus te ajudou.",
+ "Quem é um exemplo de bondade para você?",
+ "Se Jesus viesse jantar na sua casa hoje, sobre o que vocês conversariam?",
+ "Qual é o seu maior sonho, e como Deus pode fazer parte dele?",
+ "Que palavra resume o seu dia de hoje? Por quê?",
+ "O que é mais difícil para você: pedir perdão ou perdoar?",
+ "Como você pode ser luz para alguém nesta semana?",
+ "Que música religiosa toca o seu coração?",
+ "Conte um momento em que você sentiu que não estava sozinho.",
+ "Pelo que você é mais grato hoje?"];
+CASAS.oracao.cards=[
+ "Parem tudo e rezem juntos um Pai-Nosso pelo peregrino da vez.",
+ "Rezem uma Ave-Maria por alguém doente que vocês conheçam.",
+ "O peregrino escolhe uma intenção e todos rezam um Glória ao Pai.",
+ "Em silêncio por 30 segundos, agradeça por três coisas de hoje.",
+ "Façam juntos o sinal da cruz e peçam a bênção para a caminhada.",
+ "Rezem juntos uma Ave-Maria por todos os peregrinos do mundo.",
+ "Cada um diz um motivo de agradecimento, e todos respondem: Graças a Deus!",
+ "Rezem um Pai-Nosso de mãos dadas.",
+ "Rezem pelas famílias que estão passando por dificuldades.",
+ "Rezem um Santo Anjo do Senhor pelas crianças da família.",
+ "Rezem uma Salve-Rainha a Nossa Senhora, que acompanha os peregrinos.",
+ "Peçam a intercessão de São José por quem está procurando trabalho.",
+ "Rezem pelos padres e pelas vocações.",
+ "Rezem pelos que já partiram: Dai-lhes, Senhor, o descanso eterno.",
+ "Cada um faz um pedido em silêncio; depois rezem juntos um Glória.",
+ "Rezem juntos o Ângelus: O anjo do Senhor anunciou a Maria...",
+ "Rezem pela paz no mundo e nas famílias.",
+ "Rezem por quem está sozinho ou triste hoje.",
+ "Rezem juntos o Credo, professando a fé.",
+ "Rezem pelos doentes do hospital mais perto de vocês.",
+ "Peçam juntos: Vinde, Espírito Santo, enchei os corações dos vossos fiéis.",
+ "Rezem agradecendo pelo alimento de cada dia."];
+CASAS.companheiro.cards=[
+ "Você divide o lanche com outros peregrinos e todos seguem animados.",
+ "Vocês cantam juntos e a caminhada fica leve.",
+ "Vocês encontram um peregrino cansado e ajudam a levar a mochila dele.",
+ "Um grupo convida todos para rezar juntos numa capela do caminho.",
+ "Vocês param para rezar o terço juntos à sombra de uma árvore.",
+ "Você divide a sua água com quem esqueceu a garrafa.",
+ "Uma família da vila oferece pão e café a todos os peregrinos.",
+ "Você empresta seu cajado a um peregrino com dor no joelho.",
+ "Vocês combinam de caminhar juntos até a próxima cidade.",
+ "Você conta uma história engraçada e todos esquecem o cansaço."];
+CASAS.descanso.cards=[
+ "O corpo pediu pausa. Você pernoita no albergue e retoma o caminho depois.",
+ "Choveu forte e o caminho alagou. Melhor esperar no albergue.",
+ "O sol está forte demais. Você descansa à sombra até a tarde passar.",
+ "Você ficou para ajudar a cozinhar no albergue e só segue amanhã.",
+ "Uma tempestade fechou a trilha da serra por hoje.",
+ "Você foi à missa da noite e decidiu dormir na vila.",
+ "A sola do tênis descolou e você espera o conserto.",
+ "Os pés pediram descanso: hoje é dia de cuidar deles."];
+CASAS.bolha.cards=[
+ "Uma bolha no pé obriga você a voltar até a farmácia da última vila.",
+ "Você errou a seta e andou para o lado errado.",
+ "Você esqueceu a credencial no albergue e voltou para buscar.",
+ "Uma ponte está em obras e é preciso fazer um desvio.",
+ "Na neblina, você pegou a trilha errada.",
+ "A mochila estava pesada demais e você voltou para deixar coisas.",
+ "Um cachorro levou seu chapéu e você correu atrás dele!",
+ "O caminho estava alagado e foi preciso voltar."];
+CASAS.atalho.cards=[
+ "Céu limpo, trilha seca e um café no caminho. O passo rende!",
+ "Um morador indica uma trilha boa e bem sinalizada.",
+ "Você acordou cedo e aproveitou o frescor da manhã.",
+ "Um peregrino experiente te ensina a amarrar a bota do jeito certo.",
+ "A estrada está plana e bonita, cheia de flores.",
+ "Você ganhou um cajado novo e o passo ficou firme.",
+ "Uma carroça leva sua mochila até a próxima vila.",
+ "Vocês cantam e rezam enquanto andam, e o tempo voa."];
 
 /* Banco de perguntas: [pergunta, [certa, erradas...], 0, explicação, nível 1=fácil 2=médio 3=difícil] */
 const TEMAS={
@@ -1103,9 +1303,10 @@ const sstep=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-
 function b3Init(){
  const T=THREE;
  const root=document.createElement("div");root.className="b3root";
- const renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:"high-performance"});
- renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));
- renderer.outputEncoding=T.LinearEncoding;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+ const lite=window.innerWidth<=760||/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent||"");B3.lite=lite;
+ const renderer=new T.WebGLRenderer({antialias:!lite,alpha:false,powerPreference:lite?"default":"high-performance"});
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,lite?1.25:1.75));
+ renderer.outputEncoding=T.LinearEncoding;renderer.shadowMap.enabled=!lite;renderer.shadowMap.type=T.PCFSoftShadowMap;
  renderer.toneMapping=T.NoToneMapping;
  root.appendChild(renderer.domElement);
  const labels=document.createElement("div");labels.className="b3labels";root.appendChild(labels);
@@ -1236,7 +1437,7 @@ function b3Build(rk){
  const trunkM=new T.MeshStandardMaterial({color:0x6b4423,roughness:1,flatShading:true}),leafM=new T.MeshStandardMaterial({color:0xffffff,roughness:.9,flatShading:true});
  const N=200,tr=new T.InstancedMesh(trunkG,trunkM,N),cr=new T.InstancedMesh(crownG,leafM,N),pn=new T.InstancedMesh(pineG,leafM.clone(),N),pl=new T.InstancedMesh(palmG,leafM.clone(),60);
  let nt=0,nc=0,np=0,nl=0;const m=new T.Matrix4(),q=new T.Quaternion(),sv=new T.Vector3(),pv=new T.Vector3(),col=new T.Color();
- for(let k=0;k<700&&nt<N;k++){const x=(R()-.5)*140,z=-40+R()*80;if(distPath(x,z)<4.6||Math.abs(z-riverZ(x))<2.8)continue;
+ for(let k=0;k<(B3.lite?380:700)&&nt<N;k++){const x=(R()-.5)*140,z=-40+R()*80;if(distPath(x,z)<4.6||Math.abs(z-riverZ(x))<2.8)continue;
   if(vill.some(([vx,vy,n])=>{const [cx,cz]=W([vx,vy]);return Math.abs(x-cx)<n*1.8+2&&Math.abs(z-cz)<2.6}))continue;
   if(sant?(z>-4.5&&z<1.5&&x>-20&&x<18):(z>-4&&z<3&&x>-20&&x<21))continue;
   if(Math.hypot(x-DX,z-DZ)<20)continue;
@@ -1599,7 +1800,8 @@ function land(){
  if(t.t==="cidade"){const novo=stampCity(p);S.card={city:t.i,novo};S.phase="city";if(novo)ev("bell");commit();return}
  const c=CASAS[t.t];
  if(!c)return endTurn();
- S.card={k:t.t,txt:c.cards[Math.floor(Math.random()*c.cards.length)]};S.phase="card";commit();
+ S.cdeck=S.cdeck||{};if(!S.cdeck[t.t]||!S.cdeck[t.t].length)S.cdeck[t.t]=shuffle(c.cards.map((_,i)=>i));
+ S.card={k:t.t,txt:c.cards[S.cdeck[t.t].pop()]};S.phase="card";commit();
 }
 function applyEffect(pi,k){
  const p=S.players[pi];
@@ -1713,11 +1915,12 @@ function leaveRoom(keepErr){
 
 /* ================= interface ================= */
 function render(){
- if(UI.mode!=="local"&&UI.screen!=="setup")UI.screen=S.stage==="game"?"game":"lobby";
+ if(UI.mode!=="local"&&UI.screen!=="setup"&&UI.screen!=="invite")UI.screen=S.stage==="game"?"game":"lobby";
  const app=document.getElementById("app");
  const keepInfo=document.getElementById("ovi");
  app.innerHTML="";
- if(UI.screen==="setup")renderSetup(app);
+ document.documentElement.classList.toggle("ingame",UI.screen==="game");
+ if(UI.screen==="invite")renderInvite(app);else if(UI.screen==="setup")renderSetup(app);
  else if(UI.screen==="lobby")renderLobby(app);
  else renderGame(app);
  syncStateModal();
@@ -1756,6 +1959,37 @@ function nivelPicker(cur,onPick,disabled){
  Object.entries(NIVEL_Q).forEach(([k,v])=>{const n=GERAIS.concat(ROUTES[S.route].perguntas).filter(q=>v.lv.includes(q[5])).length;
   const b=el(`<button role="radio" aria-checked="${cur===k}" ${disabled?"disabled":""}><b>${v.nome}</b><small>${v.sub}</small><span class="nq">${n} perguntas</span></button>`);b.onclick=()=>onPick(k);w.appendChild(b)});
  return w}
+/* ---------- convite (link da sala) ---------- */
+function peekRoom(code){
+ UI.peek=null;UI.peekMiss=false;
+ netStart(code,["state"],(sub,m)=>{if(sub==="state"&&m.t==="state"&&m.s&&m.s.code===code){UI.peek=m.s;
+   if(m.s.stage!=="lobby"&&m.s.players&&m.s.players.some(p=>p.id===UI.myId)&&UI.nome){joinRoom(code);return}
+   if(UI.screen==="invite")render()}},()=>{});
+ clearTimeout(UI.peekT);UI.peekT=setTimeout(()=>{if(!UI.peek&&UI.screen==="invite"){UI.peekMiss=true;render()}},7000);
+}
+function renderInvite(app){
+ const code=UI.joinCode,pk=UI.peek,r=pk?ROUTES[pk.route]:null,host=pk&&pk.players&&pk.players[0];
+ app.appendChild(el(`<div class="setbar"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a></div>`));
+ const started=pk&&pk.stage&&pk.stage!=="lobby",full=pk&&pk.players&&pk.players.length>=4;
+ let info;
+ if(pk&&r){info=`<div class="inv-route">${SVG[r.ic]}<span><small>Rota</small><b>${esc(r.nome)}</b><em>Nível ${esc((NIVEL_Q[pk.nivel]||NIVEL_Q.medio).nome)}</em></span></div>
+   <div class="inv-host">Anfitrião: <b>${esc(host?host.n:"")}</b></div>
+   <div class="inv-players">${pk.players.map((p,i)=>`<span class="ipl" style="--pc:${p.c}">${avatar(p,i)}<b>${esc(p.n)}</b></span>`).join("")}${Array.from({length:Math.max(0,4-pk.players.length)},()=>`<span class="ipl empty"><span class="av" style="--pc:#33415f">?</span><b>Livre</b></span>`).join("")}</div>`}
+ else if(UI.peekMiss)info=`<p class="errmsg">Não encontramos a sala ${esc(code)}. Ela pode ter sido fechada ou o anfitrião saiu. Peça um novo link a quem te convidou.</p>`;
+ else info=`<div class="waitline"><div class="spin sm"></div><span>Procurando a sala ${esc(code)}…</span></div>`;
+ const blocked=started||full;
+ const box=el(`<section class="invite frame"><div class="inv-top"><img class="logo" src="${LOGO}" alt="Rumo ao Céu" width="120" height="120"><div><small>Você foi convidado para jogar</small><h1>Rumo ao Céu</h1><p>Uma peregrinação online: cada pessoa joga no próprio celular ou computador.</p></div></div>
+  <div class="inv-room"><div class="inv-code"><small>Sala</small><b>${esc(code)}</b></div><div class="inv-info">${info}</div></div>
+  ${blocked?`<p class="errmsg">${started?"Essa partida já começou. Peça ao anfitrião para encerrar e abrir uma nova sala.":"A sala está cheia (máximo de 4 peregrinos)."}</p>`:`
+  <label class="fld big"><span>Como você quer ser chamado?</span><input id="nome" maxlength="16" value="${esc(UI.nome)}" placeholder="Digite seu nome" autocomplete="nickname"></label>
+  ${UI.err?`<p class="errmsg">${esc(UI.err)}</p>`:""}
+  <button class="gbtn big" id="entrar" ${pk?"":"disabled"}>Entrar na sala <span class="tri"></span></button>`}
+  <button class="linkbtn" id="outro">Prefiro criar o meu próprio jogo</button></section>`);
+ const n=box.querySelector("#nome");if(n){n.oninput=e=>{UI.nome=e.target.value;lsSet(KEY_NOME,UI.nome)};n.onkeydown=e=>{if(e.key==="Enter")box.querySelector("#entrar").click()};if(!UI.nome&&!isMobile())setTimeout(()=>n.focus(),50)}
+ const en=box.querySelector("#entrar");if(en)en.onclick=()=>{if(!(UI.nome||"").trim()){UI.err="Escreva seu nome para entrar.";render();return}UI.err="";joinRoom(code)};
+ box.querySelector("#outro").onclick=()=>{netStop();clearTimeout(UI.peekT);UI.screen="setup";UI.tab="local";UI.err="";history.replaceState(null,"",location.pathname);render()};
+ app.appendChild(box);
+}
 /* ---------- tela inicial ---------- */
 function renderSetup(app){
  const sv=loadSave();
@@ -1813,6 +2047,7 @@ function setupOnline(inn){
  const qs=new URLSearchParams(location.search).get("sala");
  if(qs&&!UI.joinCode)UI.joinCode=qs.toUpperCase();
  const box=el(`<div class="online">
+  <ol class="osteps"><li><b>Uma pessoa cria a sala</b> e escolhe a rota e o nível.</li><li><b>Ela envia o link</b> (ou o código de 4 letras) pelo WhatsApp.</li><li><b>Os outros abrem o link</b>, escrevem o nome e entram.</li></ol>
   <label class="fld"><span>Seu nome</span><input id="nome" maxlength="16" value="${esc(UI.nome)}" placeholder="Como os outros vão te ver" autocomplete="nickname"></label>
   <div class="ogrid">
    <div class="ocard"><b>Criar uma sala</b><small>Você escolhe a rota, recebe um código e envia o link para os amigos. Dá para completar com robôs.</small><button class="gbtn sm" id="criar">Criar sala <span class="tri"></span></button></div>
@@ -1923,12 +2158,12 @@ function renderGame(app){
  /* tabuleiro */
  const cb=g.querySelector(".c-board");
  const use3d=want3d();let bw;
- if(use3d){bw=el(`<div class="bwrap b3wrap"><div class="b3box" id="b3box"></div><div class="zoom"><button id="zout" aria-label="Afastar">−</button><button id="zin" aria-label="Aproximar">+</button><button id="zme" aria-label="Seguir o jogador da vez" title="Seguir o jogador da vez">◎</button><button id="zall" aria-label="Ver o tabuleiro inteiro" title="Ver o tabuleiro inteiro">⤢</button><button id="vbtn" class="vtog" aria-label="Trocar para 2D" title="Trocar para 2D">2D</button></div><span class="b3hint">Arraste para girar · role ou pince para aproximar · toque numa casa</span></div>`)}
+ if(use3d){bw=el(`<div class="bwrap b3wrap"><div class="b3box" id="b3box"></div><div class="zoom"><button id="zout" aria-label="Afastar">−</button><button id="zin" aria-label="Aproximar">+</button><button id="zme" aria-label="Seguir o jogador da vez" title="Seguir o jogador da vez">◎</button><button id="zall" aria-label="Ver o tabuleiro inteiro" title="Ver o tabuleiro inteiro">⤢</button><button id="zcred" class="mobonly" aria-label="Abrir a credencial" title="Credencial">${SVG.book}</button><button id="vbtn" class="vtog" aria-label="Trocar para 2D" title="Trocar para 2D">2D</button></div><span class="b3hint">Arraste para girar · role ou pince para aproximar · toque numa casa</span></div>`)}
  else{
  bw=el(`<div class="bwrap ${UI.zoom<=1?"fitw":""}"><div class="bscroll" id="bscroll"><div class="bstage ${UI.zoom<=1?"fit":""}" id="bstage" style="${UI.zoom>1?"width:"+(UI.zoom*100).toFixed(0)+"%":""}">${scene(S.route)}<div class="tiles"></div><div class="pawns"></div>
   <span class="flag start" style="left:${(TILE_POS[0].x/10+5).toFixed(2)}%;top:${(TILE_POS[0].y/6.4-13).toFixed(2)}%">Início</span>
   <span class="flag end" style="left:${(TILE_POS[35].x/10-6).toFixed(2)}%;top:${(TILE_POS[35].y/6.4-11).toFixed(2)}%">Chegada</span></div></div>
-  <div class="zoom"><button id="zout" aria-label="Afastar" ${UI.zoom<=1?"disabled":""}>−</button><button id="zin" aria-label="Aproximar" ${UI.zoom>=3?"disabled":""}>+</button><button id="zme" aria-label="Centralizar no jogador da vez" title="Centralizar">◎</button>${webglOK()?`<button id="vbtn" class="vtog" aria-label="Trocar para 3D" title="Trocar para 3D">${UI.loading3d&&UI.view==="3d"?"…":"3D"}</button>`:""}</div></div>`);
+  <div class="zoom"><button id="zout" aria-label="Afastar" ${UI.zoom<=1?"disabled":""}>−</button><button id="zin" aria-label="Aproximar" ${UI.zoom>=3?"disabled":""}>+</button><button id="zme" aria-label="Centralizar no jogador da vez" title="Centralizar">◎</button><button id="zcred" class="mobonly" aria-label="Abrir a credencial" title="Credencial">${SVG.book}</button>${webglOK()?`<button id="vbtn" class="vtog" aria-label="Trocar para 3D" title="Trocar para 3D">${UI.loading3d&&UI.view==="3d"?"…":"3D"}</button>`:""}</div></div>`);
  const tiles=bw.querySelector(".tiles"),curPos=S.over?-1:p.pos;
  S.board.forEach((t,i)=>{
   const pos=TILE_POS[i],c=CASAS[t.t],isEnd=i===L-1;
@@ -1980,7 +2215,13 @@ function renderGame(app){
   btn=mine?(q.done?`<button class="gbtn ${q.ok?"pulse":""}" id="act">${q.ok?"Jogar<br>o dado":"Passar<br>a vez"} <span class="tri"></span></button>`:`<button class="gbtn" disabled>Escolha a<br>resposta</button>`):wait(isBot?(q.done?"Robô seguindo…":"Robô pensando…"):(q.done?"Aguardando "+who:who+" está respondendo"))}
  bar.appendChild(el(`<div class="qcard ${expanded?"open":""}"><div class="scroll"><span class="sic">${SVG.cross}</span><div class="qhead">${head}</div></div>${body}</div>`));
  bar.appendChild(el(`<div class="dicebox"><div class="diewrap">${dieHTML(S.die,S.rolling)}</div>${btn}</div>`));
- if(expanded&&isMobile())bar.classList.add(mine?"open":"peek");
+ if(isMobile()&&!S.over){
+  const busy=S.phase==="moving";
+  if(!mine||busy){bar.innerHTML="";bar.classList.add("pillmode");
+   const st=busy?(S.die>1&&S.q==null?`tirou ${S.die} e está caminhando…`:"está caminhando…"):q?(q.done?(q.ok?"acertou!":"errou a pergunta"):"está respondendo…"):isBot?"está pensando…":"vai tirar a pergunta…";
+   bar.appendChild(el(`<div class="mpill" style="--pc:${p.c}">${avatar(p,S.cur)}<span><b>${who}</b> ${st}</span>${isBot?SVG.robot:'<div class="spin sm"></div>'}</div>`))}
+  else if(expanded)bar.classList.add("open");else bar.classList.add("myturn");
+ }
  app.appendChild(g);
 
  g.querySelectorAll(".opt[data-i]:not([disabled])").forEach(b=>b.onclick=()=>act("answer",+b.dataset.i));
@@ -1990,10 +2231,12 @@ function renderGame(app){
  /* zoom, câmera e troca 2D/3D */
  const vb=bw.querySelector("#vbtn");if(vb)vb.onclick=()=>{UI.view=UI.view==="3d"?"2d":"3d";lsSet(KEY_VIEW,UI.view);render()};
  if(use3d){
+  {const zc=bw.querySelector("#zcred");if(zc)zc.onclick=()=>credModal(S.cur)}
   bw.querySelector("#zin").onclick=()=>b3Zoom(.8);bw.querySelector("#zout").onclick=()=>b3Zoom(1.25);
   bw.querySelector("#zme").onclick=b3Center;bw.querySelector("#zall").onclick=b3Overview;
   b3Mount(document.getElementById("b3box"));
  } else {
+  {const zc=bw.querySelector("#zcred");if(zc)zc.onclick=()=>credModal(S.cur)}
  const sc=document.getElementById("bscroll");
  const setZ=z=>{UI.zoom=Math.max(1,Math.min(3,z));UI.followCur=true;render()};
  bw.querySelector("#zin").onclick=()=>setZ(UI.zoom+.5);
@@ -2005,7 +2248,7 @@ function renderGame(app){
  /* faixa de troca de vez */
  if(UI.bannerFor!==S.cur+"|"+(S.log.length>1?S.log.length:0)&&S.phase==="turn"&&!S.over&&S.players.length>1){UI.bannerFor=S.cur+"|"+S.log.length;turnBanner(p)}
  if(expanded&&!isMobile()&&UI.qSeen!==q.q[0]){UI.qSeen=q.q[0];requestAnimationFrame(()=>bar.scrollIntoView({block:"nearest",behavior:"smooth"}))}
- if(isMobile())document.body.style.paddingBottom=(bar.offsetHeight+12)+"px";else document.body.style.paddingBottom="";
+ document.body.style.paddingBottom="";
 }
 function pawnSVG(c,robo){return `<svg viewBox="0 0 30 42"><ellipse cx="15" cy="39" rx="12" ry="3" fill="#0006"/><path d="M6,38 C6,29 10,25 11,20 H19 C20,25 24,29 24,38Z" fill="${c}"/><path d="M6,38 C6,29 10,25 11,20 H14 C13,26 10,30 10,38Z" fill="#fff3"/><circle cx="15" cy="12" r="8" fill="${c}"/><circle cx="12" cy="9" r="2.6" fill="#fff8"/><rect x="9" y="19" width="12" height="3" rx="1.5" fill="#0003"/>${robo?'<rect x="10.5" y="10" width="9" height="5" rx="2" fill="#0b1733"/><circle cx="13" cy="12.5" r="1.1" fill="#9ff"/><circle cx="17" cy="12.5" r="1.1" fill="#9ff"/>':""}<path d="M6,38 C6,29 10,25 11,20 H19 C20,25 24,29 24,38Z M7,12 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0" fill="none" stroke="#0005" stroke-width="1"/></svg>`}
 function centerOn(posI,smooth){
@@ -2123,7 +2366,7 @@ function mobile(){return window.innerWidth<=720}
 (function boot(){
  const qs=new URLSearchParams(location.search).get("sala");
  const sv=loadSave();
- if(qs&&!(sv&&sv.mode==="host"&&sv.code===qs.toUpperCase())){UI.tab="online";UI.joinCode=qs.toUpperCase();if(UI.nome)return joinRoom(UI.joinCode)}
+ if(qs&&!(sv&&sv.mode==="host"&&sv.code===qs.toUpperCase())){UI.tab="online";UI.joinCode=qs.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,4);UI.screen="invite";render();peekRoom(UI.joinCode);return}
  render();
 })();
 let rz,lastW=window.innerWidth;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(UI.screen!=="game")return;const w=window.innerWidth;if((w<=760)!==(lastW<=760)){UI.zoom=defaultZoom();lastW=w;render()}lastW=w},150)});
