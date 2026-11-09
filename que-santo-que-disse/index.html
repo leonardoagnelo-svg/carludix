@@ -85,6 +85,8 @@ button{font:inherit;color:inherit}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;position:relative;z-index:1}
 .modes{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:rgba(6,13,34,.7)}
 .mode{background:transparent;border:0;color:var(--muted);font-weight:700;font-size:15px;padding:7px 16px;border-radius:999px;cursor:pointer;min-height:38px;transition:background .2s,color .2s}
+.suggest{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 6px;font-size:14px;font-weight:700;color:var(--muted);text-decoration:none;border-radius:8px}
+.suggest:hover{color:var(--gold-hi);text-decoration:underline}
 .mode[aria-selected="true"]{background:var(--metal);color:#2b1900;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
 
 .game{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 340px;grid-template-areas:"play side" "act side";gap:14px 20px;align-items:start}
@@ -291,6 +293,7 @@ footer b{color:var(--gold-hi)}
   .back{font-size:11px;padding:5px 10px}
   .board{padding:12px 10px 12px;border-radius:20px}
   .modes{width:100%}.mode{flex:1;padding:7px 8px}
+  .bar .suggest{margin-left:auto;min-height:32px}
   .opts{grid-template-columns:1fr;gap:9px}
   .opt{min-height:64px;padding:8px 12px 8px 8px;gap:10px}
   .med{width:44px;height:44px}
@@ -340,6 +343,7 @@ footer b{color:var(--gold-hi)}
         <button class="mode" role="tab" id="m-dia" aria-selected="true">Desafio do dia</button>
         <button class="mode" role="tab" id="m-livre" aria-selected="false">Partida livre</button>
       </div>
+      <a class="suggest" href="https://carludix.com/contato/?jogo=Que%20santo%20que%20disse%3F" target="_blank" rel="noopener">💡 Enviar sugestão</a>
     </div>
     <div class="game" id="game"></div>
   </main>
@@ -1030,6 +1034,7 @@ function end(fromSave) {
       <button class="ghost" id="cp">Copiar resultado</button>
     </div>
     <p class="legend">🟩 acerto · 🟨 acerto com dica · 🟥 erro</p>
+    <a class="suggest" href="https://carludix.com/contato/?jogo=Que%20santo%20que%20disse%3F" target="_blank" rel="noopener">💡 Enviar sugestão</a>
     <ul class="review">${log.map((l, k) => { const q = Q[deck[k].qi]; return `<li><span class="m ${cls(l)}" aria-label="${l.ok ? "acerto" : "erro"}">${l.ok ? "✓" : "✕"}</span><span><i>“${esc(q.t)}”</i> <span class="a">— ${A[q.a].n} · ${esc(q.s)}</span>${l.ok ? "" : `<span class="y">Você marcou: ${esc(A[l.p].n)}</span>`}</span></li>`; }).join("")}</ul>
   </div>`;
   $("again").addEventListener("click", () => setMode("livre"));
