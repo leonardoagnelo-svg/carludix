@@ -115,6 +115,9 @@ input:focus-visible{outline:none}
 .stats b{display:block;font:800 22px var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
 .stats span{font-size:12px;color:var(--muted);line-height:1.2;display:block}
 .muted{color:var(--muted);font-size:15px;margin:0}
+.sugestao{color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.sugestao:hover{color:var(--gold)}
+.result-sug{display:flex;justify-content:center}
 footer{color:var(--muted);font-size:14px;text-align:center;text-wrap:balance}
 footer strong{color:var(--gold);letter-spacing:.08em}
 
@@ -163,7 +166,7 @@ footer strong{color:var(--gold);letter-spacing:.08em}
   <div class="bar" id="bar"></div>
   <div class="moldura"><ol class="vitral" id="vitral"></ol></div>
   <section class="card" id="play" aria-live="polite"></section>
-  <footer><strong>CARLUDIX PLAY</strong> · 36 passagens bíblicas</footer>
+  <footer><strong>CARLUDIX PLAY</strong> · 36 passagens bíblicas<br><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></footer>
 </div>
 
 <div class="overlay" id="ajuda" hidden>
@@ -305,8 +308,8 @@ function render(){
         <div><b>${s.jogos}</b><span>jogos</span></div><div><b>${s.pct}%</b><span>acertos</span></div>
         <div><b>${s.seq}</b><span>sequência</span></div><div><b>${s.melhor}</b><span>melhor sequência</span></div></div>
         <div class="row">${dots()}<button class="btn" type="button" id="share">Copiar resultado</button></div>
-        <p class="muted" id="copied" hidden></p><p class="muted" id="cd"></p>`}
-    else{const last=pos>=deck.length-1;html+=`<div class="row">${dots()}<button class="btn" type="button" id="next">${last?'Ver placar':'Próximo enigma'}</button></div>`}
+        <p class="muted" id="copied" hidden></p><p class="muted" id="cd"></p><p class="result-sug"><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>`}
+    else{const last=pos>=deck.length-1;html+=`<div class="row">${dots()}<button class="btn" type="button" id="next">${last?'Ver placar':'Próximo enigma'}</button></div><p class="result-sug"><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>`}
   }
   $('play').innerHTML=html;
   if(!cur.done){
@@ -337,7 +340,7 @@ function next(){if(pos<deck.length-1){pos++;newRound(deck[pos]);render();window.
   pos=deck.length;renderBar();renderVitral(['🏆','📖','✨']);
   const max=deck.length*MAX;
   $('play').innerHTML=`<div class="result won"><span class="tag">Placar final · ${LEVELS[level]}</span><h2>${total} de ${max} pontos</h2><p>${total>=deck.length*3?'Você conhece bem essas histórias.':total>=deck.length*2?'Bom resultado. Mais uma rodada e você fecha o nível.':'Vale ler essas passagens de novo e tentar outra vez.'}</p></div>
-  <div class="row"><span></span><button class="btn" type="button" id="again">Jogar de novo</button></div>`;
+  <div class="row"><span></span><button class="btn" type="button" id="again">Jogar de novo</button></div><p class="result-sug"><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>`;
   $('again').onclick=startTreino}
 
 /* ---------- estatísticas do desafio diário ---------- */
