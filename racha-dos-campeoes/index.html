@@ -356,6 +356,7 @@ body.lv-on{overflow:hidden}
 .card .ci{width:64px;height:64px;color:var(--k,var(--gold));filter:drop-shadow(0 0 10px color-mix(in srgb,var(--k,#D4AF37) 60%,transparent));flex:none}
 .card.mini .ci{width:36px;height:36px}
 .btn.big::before{content:none}
+a.linkbtn.sug{display:inline-flex;align-items:center;text-decoration:underline;text-underline-offset:3px}
 .sitelinks{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:28px 0 0;font-size:13px;font-weight:700}.sitelinks a{color:var(--chalk);text-decoration:underline;text-underline-offset:3px}.sitelinks a:hover{color:var(--gold)}.sitelinks+.ver{margin-top:8px}
 .carlrow{display:flex;justify-content:flex-start}
 .carl{flex:none;font-size:12px;font-weight:900;letter-spacing:.1em;color:var(--chalk);text-decoration:none;border:1px solid var(--slate);border-radius:999px;padding:6px 12px;background:rgba(7,9,12,.6);white-space:nowrap}.carl:hover{border-color:var(--gold);color:var(--gold)}.carl.push{margin-left:auto}
@@ -1014,7 +1015,7 @@ function home(){
   <button class="mbtn" data-act="toJoin" ${off?"disabled":""}><span class="mi">${ICON.join}</span><span><b>Entrar numa sala</b><small>Recebeu um código? Entre por aqui</small></span></button>
   <button class="mbtn" data-play="local"><span class="mi">${ICON.local}</span><span><b>Na mesma tela</b><small>Os dois times passando o celular</small></span></button>
   <button class="mbtn" data-act="mural"><span class="mi">${ICON.mural}</span><span><b>Mural de votação</b><small>Rachas publicados nas últimas 24 horas</small></span></button>
-  <div class="row" style="justify-content:center"><button class="linkbtn" data-act="howto">Como jogar</button><button class="linkbtn" data-act="sound">Som: ${SND.on?"ligado":"desligado"}</button></div>
+  <div class="row" style="justify-content:center"><button class="linkbtn" data-act="howto">Como jogar</button><button class="linkbtn" data-act="sound">Som: ${SND.on?"ligado":"desligado"}</button><a class="linkbtn sug" href="https://carludix.com/contato/?jogo=Racha%20dos%20Campe%C3%B5es" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>
  </nav>
  ${saved&&!off?`<div class="panel row" style="justify-content:space-between"><span>Você estava na sala <b class="codetxt">${esc(saved.code)}</b></span><button class="btn small" data-act="rejoin">Voltar para a sala</button></div>`:""}
  ${off?`<p class="note" style="text-align:center">${STANDALONE?"Não consegui carregar o modo online. Verifique a internet e recarregue a página.":"O modo online precisa que você esteja na sua conta do Claude e com acesso de Contribuidor a este jogo."}</p>`:""}`;
@@ -1287,7 +1288,7 @@ function vote(){
  const canPub=!on||S.seat==="A";
  const primary=on?(S.seat==="A"?`<button class="btn" data-act="again">Novo racha</button>`:""):`<button class="btn" data-act="again">Jogar de novo</button>`;
  const links=[canPub?`<button class="linkbtn" data-act="publish">${S.publishedId?"Ver no mural":"Publicar no mural (24h)"}</button>`:"",
-  `<button class="linkbtn" data-act="replay">Ver o jogo de novo</button>`,on?`<button class="linkbtn" data-act="leave">Sair da sala</button>`:`<button class="linkbtn" data-act="backDraft">Voltar à escolha</button>`].join("");
+  `<button class="linkbtn" data-act="replay">Ver o jogo de novo</button>`,on?`<button class="linkbtn" data-act="leave">Sair da sala</button>`:`<button class="linkbtn" data-act="backDraft">Voltar à escolha</button>`,`<a class="linkbtn sug" href="https://carludix.com/contato/?jogo=Racha%20dos%20Campe%C3%B5es" target="_blank" rel="noopener">💡 Enviar sugestão</a>`].join("");
  return `${scoreboard()}${sim}
  <div class="endact">${primary}<div class="links">${links}</div></div>
  ${voting}${reacts()}
