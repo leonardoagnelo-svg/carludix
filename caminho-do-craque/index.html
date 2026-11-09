@@ -197,6 +197,9 @@ form.guess .send:disabled{opacity:.4;cursor:not-allowed}
 .recap li b{color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
 .recap li b.op{color:var(--opp)}
 .recap li.miss b{color:var(--muted)}
+.tiplink{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem;text-decoration:none;padding:6px 4px;border-radius:8px}
+.tiplink:hover{color:var(--gold-hi);text-decoration:underline}
+.how .tiplink{margin-top:10px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* Sugestões de nomes */
 .gwrap{position:relative;width:min(560px,100%)}
@@ -296,6 +299,7 @@ form.guess .send:disabled{opacity:.4;cursor:not-allowed}
       <p class="pts"><strong>Pontuação:</strong> 1.000 pts acertando só com o primeiro clube, caindo até 200 no último. Cada chute errado tira 100 e a dica de nacionalidade tira 150; um acerto vale no mínimo 50. Desistir dá 0. Nos duelos os clubes aparecem sozinhos e só quem acerta primeiro pontua.</p>
       <div class="best"><span>Seu recorde sozinho</span><b id="best">—</b></div>
       <div class="best" id="botWinsRow" hidden><span>Vitórias contra o robô</span><b id="botWins" style="font-size:1rem"></b></div>
+      <a class="tiplink" href="https://carludix.com/contato/?jogo=Caminho%20do%20Craque" target="_blank" rel="noopener">💡 Enviar sugestão</a>
     </aside>
   </section>
 
@@ -343,6 +347,7 @@ form.guess .send:disabled{opacity:.4;cursor:not-allowed}
       <button class="btn" type="button" id="copy">Compartilhar resultado</button>
       <button class="btn ghost" type="button" data-home>Menu</button>
     </div>
+    <a class="tiplink" href="https://carludix.com/contato/?jogo=Caminho%20do%20Craque" target="_blank" rel="noopener">💡 Enviar sugestão</a>
   </section>
 
   <!-- ROBÔ: configuração -->
@@ -431,6 +436,7 @@ form.guess .send:disabled{opacity:.4;cursor:not-allowed}
       <button class="btn ghost" type="button" data-home>Menu</button>
     </div>
     <p class="muted" id="dWait" hidden style="margin:0">Aguardando o anfitrião começar a revanche…</p>
+    <a class="tiplink" href="https://carludix.com/contato/?jogo=Caminho%20do%20Craque" target="_blank" rel="noopener">💡 Enviar sugestão</a>
   </section>
 </div>
 
