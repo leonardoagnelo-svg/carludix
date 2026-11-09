@@ -3124,7 +3124,7 @@ function vHomeInvite(){
     </div>
     ${rulesHTML()}
   </div>
-  <footer class="sitefoot"><a href="https://carludix.com/">CARLUDIX</a><span aria-hidden="true">·</span><a href="https://carludix.com/privacidade/">Privacidade</a><span aria-hidden="true">·</span><a href="https://carludix.com/contato/">Contato</a></footer>`;
+  <footer class="sitefoot"><a href="https://carludix.com/contato/?jogo=Artilhetra" target="_blank" rel="noopener">💡 Enviar sugestão</a><span aria-hidden="true">·</span><a href="https://carludix.com/">CARLUDIX</a><span aria-hidden="true">·</span><a href="https://carludix.com/privacidade/">Privacidade</a><span aria-hidden="true">·</span><a href="https://carludix.com/contato/">Contato</a></footer>`;
 }
 function vHome(){
   if(S.ui.invite) return vHomeInvite();
@@ -3148,7 +3148,7 @@ function vHome(){
     </div>
     ${rulesHTML()}
   </div>
-  <footer class="sitefoot"><a href="https://carludix.com/">CARLUDIX</a><span aria-hidden="true">·</span><a href="https://carludix.com/privacidade/">Privacidade</a><span aria-hidden="true">·</span><a href="https://carludix.com/contato/">Contato</a></footer>`;
+  <footer class="sitefoot"><a href="https://carludix.com/contato/?jogo=Artilhetra" target="_blank" rel="noopener">💡 Enviar sugestão</a><span aria-hidden="true">·</span><a href="https://carludix.com/">CARLUDIX</a><span aria-hidden="true">·</span><a href="https://carludix.com/privacidade/">Privacidade</a><span aria-hidden="true">·</span><a href="https://carludix.com/contato/">Contato</a></footer>`;
 }
 function vBot(){
   const lvl=S.ui.botLevel||"medio", n=S.ui.botCount||1, h=S.ui.hints||"auto";
@@ -3383,7 +3383,8 @@ function vDone(){
     ${online && id!==S.me ? `<button class="btn ${myVote===id?"gold":""}" data-act="vote" data-id="${id}">${myVote===id?"Seu voto":"Votar neste time"}</button>`:""}</div>`;}).join("")}</div>
   <div class="panel stack" style="margin-top:16px"><span class="lbl">Posição por posição</span><p class="note" style="margin:0">Em destaque, quem tem o maior overall em cada posição. Adaptado perde 3 pontos e fora de posição perde 8.</p><div class="cmpwrap"><table class="cmp"><thead><tr><th>Posição</th>${r.order.map(id=>`<th>${esc(r.players[id].name)}</th>`).join("")}</tr></thead><tbody>${KEYS.map(k=>{const pos=POS.find(x=>x.id===k);return `<tr><th>${pos.l}</th>${r.order.map(id=>{const t=r.players[id].team?.[k], v=slotOvr(t);return `<td class="${t&&t.ok===false?"offp":""} ${t&&v===best[k]?"win":""}">${t?`<span class="ovrb ${ovrTier(v)}">${v}</span> ${esc(t.n)}`:"—"}${t&&t.ok===false?(t.a?" <small>adaptado</small>":" <small>fora</small>"):""}${t&&t.inj?" <small>lesão</small>":""}</td>`;}).join("")}</tr>`;}).join("")}</tbody></table></div></div>
   <div class="row" style="margin-top:16px">${r.published ? `<button class="btn gold" data-act="muralOpen" data-id="${r.published}">Ver no mural</button><button class="btn" data-act="muralCopy" data-id="${r.published}">Copiar link da votação</button>` : `<button class="btn gold" data-act="muralPublish">Publicar no mural (24h)</button>`}${host ? `<button class="btn" data-act="rematch">Jogar de novo</button>` : ""}</div>
-  <p class="note" style="margin:8px 0 0">${r.published ? "Os times estão no mural por 24 horas. Mande o link para a galera votar." : "Publique os times para qualquer pessoa que abrir o site votar no melhor. Fica no ar por 24 horas."}</p>`;
+  <p class="note" style="margin:8px 0 0">${r.published ? "Os times estão no mural por 24 horas. Mande o link para a galera votar." : "Publique os times para qualquer pessoa que abrir o site votar no melhor. Fica no ar por 24 horas."}</p>
+  <footer class="sitefoot"><a href="https://carludix.com/contato/?jogo=Artilhetra" target="_blank" rel="noopener">💡 Enviar sugestão</a></footer>`;
 }
 
 /* ---------- events ---------- */
