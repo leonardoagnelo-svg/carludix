@@ -112,6 +112,8 @@ button.btn:focus-visible,.cell:focus-visible{outline:3px solid var(--gold-hi);ou
 .reports pre{font-family:var(--mono);font-size:.78rem;white-space:pre-wrap;margin:10px 0}
 .portal{align-self:flex-start;font-family:var(--display);font-style:italic;font-weight:800;letter-spacing:.06em;color:var(--gold);text-decoration:none;border:1.5px solid rgba(242,182,50,.45);border-radius:999px;padding:6px 14px;font-size:.9rem}
 .portal:hover,.portal:focus-visible{border-color:var(--gold);outline:none;background:rgba(242,182,50,.1)}
+.sugestao{align-self:flex-start;font-size:.82rem;color:var(--muted);text-decoration:none;border-bottom:1px dashed rgba(142,138,128,.5);padding-bottom:1px}
+.sugestao:hover,.sugestao:focus-visible{color:var(--gold);border-bottom-color:var(--gold);outline:none}
 .stack{display:flex;flex-direction:column;gap:12px}
 .small{font-size:.85rem;color:var(--muted);margin:0;line-height:1.45}
 .modes,.levels{display:flex;gap:6px;flex-wrap:wrap}
@@ -181,6 +183,7 @@ footer{font-size:.75rem;color:var(--muted);line-height:1.5}
       <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="#f2b632" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Compartilhe com os amigos</div>
       <div class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="#f2b632" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="#f2b632"/></svg>Desafio diário</div>
     </div>
+    <a class="sugestao" href="https://carludix.com/contato/?jogo=Grade%20dos%20Craques" target="_blank" rel="noopener">💡 Enviar sugestão</a>
   </aside>
   <div class="main">
     <div class="boardwrap"><div class="board" id="board"></div></div>
@@ -513,13 +516,13 @@ function renderEnd(){
   if(isDuel()){
     const w=state.winner,h=w==="empate"?"Empate":w===me?"Você venceu!":`${sideName(w)} venceu`;
     const a=state.cells.filter(x=>x&&x.by==="A").length,b=state.cells.filter(x=>x&&x.by==="B").length;
-    box.innerHTML=`<div class="end"><h2>${h}</h2><p>${state.line?"Fechou 3 em linha.":"Placar de casas"}: ${sideName("A")} ${a} × ${b} ${sideName("B")}</p><div class="btns"><button class="btn solid" id="again">${mode==="bot"?"Jogar de novo":"Nova partida"}</button></div></div>`;
+    box.innerHTML=`<div class="end"><h2>${h}</h2><p>${state.line?"Fechou 3 em linha.":"Placar de casas"}: ${sideName("A")} ${a} × ${b} ${sideName("B")}</p><div class="btns"><button class="btn solid" id="again">${mode==="bot"?"Jogar de novo":"Nova partida"}</button></div><a class="sugestao fim" href="https://carludix.com/contato/?jogo=Grade%20dos%20Craques" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>`;
     $("again").onclick=()=>mode==="bot"?start("bot"):createMatch();
     return;
   }
   const sc=state.cells.filter(x=>x!==null).length;
   const h=sc===9?"Grade completa!":sc>=6?"Quase lá":sc>=3?"Faltou craque":"Dia de banco";
-  box.innerHTML=`<div class="end"><h2>${h}</h2><pre>${shareText().split("\n").slice(1).join("\n")}</pre><p>${sc} de 9. ${mode==="daily"?"Amanhã tem grade nova.":""}</p><div class="btns"><button class="btn solid" id="share">Copiar resultado</button><button class="btn" id="again">Jogar uma de treino</button></div></div>`;
+  box.innerHTML=`<div class="end"><h2>${h}</h2><pre>${shareText().split("\n").slice(1).join("\n")}</pre><p>${sc} de 9. ${mode==="daily"?"Amanhã tem grade nova.":""}</p><div class="btns"><button class="btn solid" id="share">Copiar resultado</button><button class="btn" id="again">Jogar uma de treino</button></div><a class="sugestao fim" href="https://carludix.com/contato/?jogo=Grade%20dos%20Craques" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>`;
   $("share").onclick=()=>navigator.clipboard.writeText(shareText()).then(()=>toast("Resultado copiado")).catch(()=>{const p=box.querySelector("pre"),s=getSelection(),r=document.createRange();r.selectNodeContents(p);s.removeAllRanges();s.addRange(r);toast("Selecionado, use Ctrl+C")});
   $("again").onclick=()=>start("practice");
 }
