@@ -210,6 +210,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[t
 @keyframes medalpop{0%{transform:scale(.2) rotate(-30deg)}100%{transform:none}}
 .wa{background:linear-gradient(180deg,#2bd16a,#13914a)!important;border-color:#8ff0b2!important;color:#fff!important}
 .cdx-ad{margin-top:14px}
+.sugw{text-align:center;margin-top:10px}
+.sug{font-size:13px;color:var(--muted);text-decoration:none;border-bottom:1px dashed currentColor;padding:2px 0}
+.sug:hover,.sug:focus-visible{color:var(--gold2)}
 
 /* diálogos */
 dialog{max-width:min(620px,calc(100vw - 24px));width:100%;max-height:calc(100dvh - 40px);padding:0;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,#0f2250,#09152F);color:var(--warm);box-shadow:0 30px 90px rgba(0,0,0,.6)}
@@ -334,6 +337,7 @@ body.rm *{animation-duration:.01ms!important;animation-iteration-count:1!importa
         <button class="btn sm ghost" data-act="settings">Configurações</button>
       </div>
       <div class="record" id="record"></div>
+      <div class="sugw"><a class="sug" href="https://carludix.com/contato/?jogo=Degraus%20da%20Sabedoria" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>
     </div>
   </section>
 
@@ -1378,6 +1382,7 @@ function endGame(how){
       <button class="btn ghost" id="toHome">Início</button>
     </div>
     <p style="font-size:13px;color:var(--muted);margin:12px 0 0">Os pontos e títulos são do jogo e representam conhecimento — não concedem graças nem méritos espirituais.</p>
+    <div class="sugw"><a class="sug" href="https://carludix.com/contato/?jogo=Degraus%20da%20Sabedoria" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>
     <div class="cdx-ad" data-ad="jogo-resultado"></div>`;
   $('#share').addEventListener('click',()=>share(step,title));
   $('#again').addEventListener('click',startGame);
