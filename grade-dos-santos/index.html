@@ -224,6 +224,9 @@ a{color:var(--gold-hi)}
 .hcard.main b{font-size:1.8rem}
 .hcard .go{position:absolute;right:14px;top:14px;font-family:var(--display);font-weight:800;color:var(--ink);background:linear-gradient(180deg,var(--gold-hi),var(--gold));border-radius:999px;padding:6px 14px;font-size:1.05rem}
 .hfoot{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.sugg{display:inline-flex;align-items:center;min-height:44px;padding:0 6px;font-size:.92rem;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.sugg:hover,.sugg:focus-visible{color:var(--gold-hi);outline:none}
+.end .sugg{align-self:center}
 .hstats{color:var(--muted);text-align:center;margin:0}
 .hstats b{color:var(--gold-hi)}
 /* sorteio e marcas da velha */
@@ -317,6 +320,7 @@ a{color:var(--gold-hi)}
   </div>
   <p class="hstats" id="hStats"></p>
   <div class="hfoot"><button class="btn" id="hHelp">Como jogar</button></div>
+  <a class="sugg" href="https://carludix.com/contato/?jogo=Grade%20dos%20Santos" target="_blank" rel="noopener">💡 Enviar sugestão</a>
 </section>
 
 <div class="app" id="app">
@@ -940,7 +944,7 @@ function renderEnd(){
   if(isDuel()){
     const w=state.winner,h=w==="empate"?"Empate":w===me?"Você venceu!":`${esc(sideName(w))} venceu`;
     const a=state.cells.filter(x=>x&&x.by==="A").length,b=state.cells.filter(x=>x&&x.by==="B").length;
-    box.innerHTML=`<div class="end pill"><h3>${h}</h3><p class="sum">${state.line?"Fechou 3 em linha. ":""}Placar de casas: ${esc(sideName("A"))} <b>${a}</b> × <b>${b}</b> ${esc(sideName("B"))}</p>${mode==="online"&&state.again&&state.again!==me?`<p class="okmsg">${esc(sideName(state.again))} quer jogar de novo!</p>`:""}<div class="row"><button class="btn solid big" id="again">${mode==="bot"?"Jogar de novo":(state.again===me?"Esperando o amigo…":"Jogar de novo")}</button>${mode==="online"?`<button class="btn big" id="leaveEnd">Sair da sala</button>`:""}</div></div>`;
+    box.innerHTML=`<div class="end pill"><h3>${h}</h3><p class="sum">${state.line?"Fechou 3 em linha. ":""}Placar de casas: ${esc(sideName("A"))} <b>${a}</b> × <b>${b}</b> ${esc(sideName("B"))}</p>${mode==="online"&&state.again&&state.again!==me?`<p class="okmsg">${esc(sideName(state.again))} quer jogar de novo!</p>`:""}<div class="row"><button class="btn solid big" id="again">${mode==="bot"?"Jogar de novo":(state.again===me?"Esperando o amigo…":"Jogar de novo")}</button>${mode==="online"?`<button class="btn big" id="leaveEnd">Sair da sala</button>`:""}</div><a class="sugg" href="https://carludix.com/contato/?jogo=Grade%20dos%20Santos" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>`;
     $("again").onclick=()=>mode==="bot"?start("bot"):askRematch();
     if($("leaveEnd"))$("leaveEnd").onclick=()=>{leaveRoom();renderSalas()};
     return;
@@ -952,7 +956,7 @@ function renderEnd(){
     <p class="sum">${sc} de 9 casas · acertos <b>${hitPts(state)}</b> + velas <b>${bonus}</b> = <b>${scoreOf(state)} pontos</b>${state.easy?" (modo fácil)":""}</p>
     <div class="shares"><a class="btn wa" id="waEnd" href="https://wa.me/?text=${encodeURIComponent(shareText())}" target="_blank" rel="noopener">${WAICON}Enviar no WhatsApp</a><button class="btn big" id="copyEnd">Copiar resultado</button></div>
     ${daily?`<p class="next">Próxima grade em <span id="cd">${nextGridIn()}</span></p>`:""}
-    <div class="more"><p>Jogue também:</p><div class="row"><a class="btn" href="../que-santo-que-disse/">Que santo que disse?</a><a class="btn" href="https://carludix.com/catolicos/">Mais jogos católicos</a>${daily?`<button class="btn" id="trainEnd">Grade de treino</button>`:`<button class="btn solid" id="trainEnd">Outra grade de treino</button>`}</div></div></div>`;
+    <div class="more"><p>Jogue também:</p><div class="row"><a class="btn" href="../que-santo-que-disse/">Que santo que disse?</a><a class="btn" href="https://carludix.com/catolicos/">Mais jogos católicos</a>${daily?`<button class="btn" id="trainEnd">Grade de treino</button>`:`<button class="btn solid" id="trainEnd">Outra grade de treino</button>`}</div></div><a class="sugg" href="https://carludix.com/contato/?jogo=Grade%20dos%20Santos" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>`;
   $("copyEnd").onclick=copyShare;$("trainEnd").onclick=()=>start("practice");
   if(daily)cdTimer=setInterval(()=>{const e=$("cd");if(e)e.textContent=nextGridIn();else clearInterval(cdTimer)},1000);
 }
