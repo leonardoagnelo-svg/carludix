@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<title>Contato | CARLUDIX Play</title>
+<title>Contato e sugestões | CARLUDIX Play</title>
 <meta name="description" content="Fale com a CARLUDIX Play: sugestões de jogos, problemas técnicos, parcerias e privacidade.">
 <meta name="google-adsense-account" content="ca-pub-1981456165037413">
 <link rel="canonical" href="https://carludix.com/contato/">
@@ -33,7 +33,24 @@ p{color:var(--muted)}
 .item p{margin:0;font-size:14px}
 footer{border-top:1px solid var(--line);padding:24px 0 36px;color:#6c7891;font-size:13px}
 footer a{color:#9aa6bd}
-@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.form{margin:8px 0 36px;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.form h2{margin:0 0 4px;font-size:20px}
+.form .sub{margin:0 0 18px;font-size:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form label{display:block;font-size:13px;font-weight:600;color:#d5dbe8;margin:0 0 6px}
+.form .f{margin-bottom:14px}
+.form input,.form select,.form textarea{width:100%;font:inherit;font-size:15px;color:var(--text);background:#0d1424;border:1px solid #2c3955;border-radius:10px;padding:11px 12px}
+.form textarea{min-height:130px;resize:vertical}
+.form input:focus,.form select:focus,.form textarea:focus{outline:2px solid #fff;outline-offset:1px;border-color:transparent}
+.form small{display:block;color:#7f8ba3;font-size:12px;margin-top:4px}
+.form button{font:inherit;font-weight:700;cursor:pointer;background:var(--red);color:#fff;border:0;border-radius:10px;height:46px;padding:0 22px}
+.form button:hover{background:#c41d26}.form button[disabled]{opacity:.6;cursor:wait}
+.hp{position:absolute;left:-9999px}
+.msg{margin:14px 0 0;padding:12px 14px;border-radius:10px;font-size:14px;display:none}
+.msg.ok{display:block;background:rgba(46,180,110,.12);border:1px solid rgba(46,180,110,.4);color:#bff0d3}
+.msg.err{display:block;background:rgba(227,38,47,.12);border:1px solid rgba(227,38,47,.4);color:#ffd0d3}
+.alt{font-size:14px}
+@media(max-width:560px){.grid,.row{grid-template-columns:1fr}.form{padding:18px}}
 </style>
 </head>
 <body>
@@ -41,8 +58,30 @@ footer a{color:#9aa6bd}
 <main class="wrap">
   <span class="label">Contato</span>
   <h1>Fale com a CARLUDIX</h1>
-  <p>A CARLUDIX Play reúne jogos gratuitos de futebol, conhecimento e estratégia para jogar no navegador. Encontrou um erro, tem uma ideia de jogo ou quer propor uma parceria? Escreva para a gente.</p>
-  <a class="mail" href="mailto:contato@carludix.com">✉ contato@carludix.com</a>
+  <p>A CARLUDIX Play reúne jogos gratuitos de futebol e de fé católica para jogar no navegador. Encontrou um erro, tem uma ideia de jogo ou quer propor uma parceria? Escreva para a gente.</p>
+  <form class="form" id="sugestoes" novalidate>
+    <h2>Envie sua sugestão</h2>
+    <p class="sub">Ideia de jogo, melhoria ou erro encontrado: a mensagem chega direto para a equipe.</p>
+    <div class="row">
+      <div class="f"><label for="tipo">Assunto</label>
+        <select id="tipo" name="Assunto"><option>Sugestão de melhoria</option><option>Ideia de jogo novo</option><option>Erro ou problema</option><option>Pergunta ou resposta errada</option><option>Parceria</option><option>Outro</option></select></div>
+      <div class="f"><label for="jogo">Jogo</label>
+        <select id="jogo" name="Jogo"><option>Site em geral</option><option>Artilhetra</option><option>Caminho do Craque</option><option>Mais ou Menos</option><option>Grade dos Craques</option><option>Quem é o Jogador?</option><option>Racha dos Campeões</option><option>Quem é o Santo?</option><option>Grade dos Santos</option><option>Que santo que disse?</option><option>Bíblia em Emojis</option><option>Onde fica?</option><option>Rumo ao Céu</option><option>Degraus da Sabedoria</option><option>Outro / jogo novo</option></select></div>
+    </div>
+    <div class="f"><label for="mensagem">Mensagem</label>
+      <textarea id="mensagem" name="Mensagem" required maxlength="3000" placeholder="Conte sua ideia ou o que aconteceu. Se for um erro, diga se foi no celular ou no computador."></textarea></div>
+    <div class="row">
+      <div class="f"><label for="nome">Nome <span style="font-weight:400;color:#7f8ba3">(opcional)</span></label>
+        <input id="nome" name="Nome" maxlength="80" autocomplete="name"></div>
+      <div class="f"><label for="email">E-mail <span style="font-weight:400;color:#7f8ba3">(opcional)</span></label>
+        <input id="email" name="email" type="email" maxlength="120" autocomplete="email"><small>Só se quiser receber resposta.</small></div>
+    </div>
+    <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button type="submit" id="enviar">Enviar sugestão</button>
+    <p class="msg" id="msg" role="status"></p>
+    <p class="alt" style="margin:14px 0 0">Ao enviar, você concorda com o uso dos dados conforme a <a href="/privacidade/">Política de Privacidade</a>.</p>
+  </form>
+  <p class="alt">Prefere e-mail? Escreva para <a href="mailto:contato@carludix.com">contato@carludix.com</a>.</p>
   <div class="grid">
     <div class="item"><h2>Problemas nos jogos</h2><p>Conte qual jogo, o que aconteceu e se foi no celular ou no computador.</p></div>
     <div class="item"><h2>Sugestões</h2><p>Ideias de jogos novos, modos ou melhorias são muito bem-vindas.</p></div>
@@ -51,7 +90,31 @@ footer a{color:#9aa6bd}
   </div>
   <p style="margin-top:28px">Respondemos em até 5 dias úteis.</p>
 </main>
-<footer><div class="wrap">© <span id="y">2026</span> CARLUDIX · <a href="/">Início</a> · <a href="/sobre/">Sobre</a> · <a href="/contato/">Contato</a> · <a href="/privacidade/">Privacidade</a></div></footer>
+<footer><div class="wrap">© <span id="y">2026</span> CARLUDIX · <a href="/">Início</a> · <a href="/sobre/">Sobre</a> · <a href="/contato/#sugestoes">Sugestões</a> · <a href="/contato/">Contato</a> · <a href="/privacidade/">Privacidade</a></div></footer>
+<script>
+(function(){
+  var f=document.getElementById('sugestoes'),b=document.getElementById('enviar'),m=document.getElementById('msg');
+  var q=new URLSearchParams(location.search).get('jogo');
+  if(q){var o=[].find.call(f.Jogo.options,function(x){return x.text===q});if(o)o.selected=true;}
+  function show(c,t){m.className='msg '+c;m.textContent=t;}
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var txt=f.Mensagem.value.trim();
+    if(txt.length<5){show('err','Escreva sua mensagem antes de enviar.');f.Mensagem.focus();return;}
+    if(f.email.value&&!f.email.checkValidity()){show('err','Confira o e-mail ou deixe em branco.');f.email.focus();return;}
+    if(f._honey.value)return;
+    var d={Assunto:f.Assunto.value,Jogo:f.Jogo.value,Mensagem:txt,Nome:f.Nome.value.trim()||'(não informado)',
+      _subject:'CARLUDIX · '+f.Assunto.value+' · '+f.Jogo.value,_template:'table',_captcha:'false'};
+    if(f.email.value){d.email=f.email.value.trim();d._replyto=d.email;}
+    b.disabled=true;b.textContent='Enviando…';m.className='msg';
+    fetch('https://formsubmit.co/ajax/contato@carludix.com',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(d)})
+      .then(function(r){return r.json().then(function(j){if(!r.ok||String(j.success)!=='true')throw 0;});})
+      .then(function(){f.reset();show('ok','Obrigado! Sua mensagem foi enviada para a equipe da CARLUDIX.');})
+      .catch(function(){show('err','Não foi possível enviar agora. Tente de novo em instantes ou escreva para contato@carludix.com.');})
+      .finally(function(){b.disabled=false;b.textContent='Enviar sugestão';});
+  });
+})();
+</script>
 <script src="/cookies.js" defer></script>
 <script>document.getElementById('y').textContent=new Date().getFullYear();</script>
 </body>
