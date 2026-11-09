@@ -544,6 +544,12 @@ html.isfs .bscroll{max-height:calc(100vh - 260px)}
  html.ingame .tbanner{top:42%;font-size:21px}
 }
 @keyframes sheetup{from{transform:translateY(100%)}}
+
+/* link de sugestão */
+.setr{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.sugest{font-family:var(--ui);font-weight:600;font-size:15px;color:var(--muted);text-decoration:none;border-bottom:1px dashed #b8c3db88;padding:2px 0;white-space:nowrap}
+.sugest:hover{color:var(--gold2);border-bottom-color:var(--gold2)}
+.arr-body .actions .sugest{margin-right:auto}
 </style>
 </head>
 <body>
@@ -1993,7 +1999,7 @@ function renderInvite(app){
 /* ---------- tela inicial ---------- */
 function renderSetup(app){
  const sv=loadSave();
- app.appendChild(el(`<div class="setbar"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a>${fsCan()?`<button class="obtn" id="fs">${fsOn()?"Sair da tela cheia":"⛶ Jogar em tela cheia"}</button>`:""}</div>`));
+ app.appendChild(el(`<div class="setbar"><a class="back" href="https://carludix.com/catolicos/">← CARLUDIX</a><span class="setr"><a class="sugest" href="https://carludix.com/contato/?jogo=Rumo%20ao%20C%C3%A9u" target="_blank" rel="noopener">💡 Enviar sugestão</a>${fsCan()?`<button class="obtn" id="fs">${fsOn()?"Sair da tela cheia":"⛶ Jogar em tela cheia"}</button>`:""}</span></div>`));
  {const f=app.querySelector("#fs");if(f)f.onclick=fsToggle}
  app.appendChild(el(`<header class="hero"><img class="logo" src="${LOGO}" alt="Rumo ao Céu, o jogo da peregrinação" width="200" height="200"><div class="txt"><h1>Responda, caminhe e reze até o santuário</h1><p>Um tabuleiro de peregrinação para jogar em família, na catequese, contra robôs ou online com amigos.</p></div></header>`));
  if(sv){
@@ -2317,7 +2323,7 @@ function arrival(){
    ${(S.shares&&S.shares.length)?`<h4>Mural das partilhas</h4><div class="mural">${S.shares.map(sh=>`<div class="mpost" style="--pc:${sh.c}"><span class="mk">${esc(CASAS[sh.k].nome)}</span><p>“${esc(sh.t)}”</p><small>${esc(sh.n)}</small></div>`).join("")}</div>`:""}
    <div class="pray"><p class="inv">Na peregrinação ninguém fica para trás. Esperem juntos os últimos peregrinos chegarem e rezem em ação de graças:</p>
     <p class="salve"><b>Salve, Rainha,</b> Mãe de misericórdia, vida, doçura e esperança nossa, salve! A vós bradamos, os degredados filhos de Eva; a vós suspiramos, gemendo e chorando neste vale de lágrimas. Eia, pois, advogada nossa, esses vossos olhos misericordiosos a nós volvei; e, depois deste desterro, mostrai-nos Jesus, bendito fruto do vosso ventre. Ó clemente, ó piedosa, ó doce sempre Virgem Maria. Rogai por nós, santa Mãe de Deus, para que sejamos dignos das promessas de Cristo. Amém.</p></div>
-   <div class="actions"><button class="obtn" id="ver">Ver o tabuleiro</button>${UI.mode==="guest"?"":'<button class="gbtn sm" id="again2">Nova partida <span class="tri"></span></button>'}</div>
+   <div class="actions"><a class="sugest" href="https://carludix.com/contato/?jogo=Rumo%20ao%20C%C3%A9u" target="_blank" rel="noopener">💡 Enviar sugestão</a><button class="obtn" id="ver">Ver o tabuleiro</button>${UI.mode==="guest"?"":'<button class="gbtn sm" id="again2">Nova partida <span class="tri"></span></button>'}</div>
   </div></div>`;
  const o=el(`<div class="overlay celebrate" id="ovs">${html}</div>`);o.dataset.key="over";document.body.appendChild(o);
  o.querySelector("#ver").onclick=()=>{UI.overSeen=true;closeStateModal()};
