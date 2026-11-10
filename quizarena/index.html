@@ -75,7 +75,7 @@ a{color:var(--cyan)}
 
 /* Início */
 .hero{text-align:center;padding-top:4px}
-.hero .marca{width:min(440px,92%);filter:drop-shadow(0 12px 30px rgba(0,0,0,.5))}
+.hero .marca{width:min(440px,92%);max-height:32vh;object-fit:contain;filter:drop-shadow(0 12px 30px rgba(0,0,0,.5))}
 .hero p{color:var(--muted);font-size:17px;margin:4px auto 22px;max-width:420px}
 .joinbox{padding:20px;display:grid;gap:12px}
 .field{width:100%;height:60px;border-radius:14px;border:2px solid var(--line);background:#020823;color:#fff;font-size:24px;font-weight:800;text-align:center;letter-spacing:.12em;outline:none}
@@ -385,7 +385,7 @@ const BUILTIN=[
 /* ---------- estado global ---------- */
 let uid=null, unsub=[];
 function clearSubs(){unsub.forEach(f=>{try{f()}catch{}});unsub=[];stopTimer()}
-let timerRAF=0; function stopTimer(){cancelAnimationFrame(timerRAF);timerRAF=0}
+let timerRAF=0,revealTO=0; function stopTimer(){cancelAnimationFrame(timerRAF);timerRAF=0;clearTimeout(revealTO)}
 let myQuizzes={};
 
 /* ---------- roteamento ---------- */
@@ -756,7 +756,7 @@ function hostTimer(st,q){
     if(left<=0){reveal();return}
     timerRAF=requestAnimationFrame(tick);
   };
-  if(st.startedAt) tick(); // aguarda o horário do servidor
+  if(st.startedAt){tick();revealTO=setTimeout(reveal,Math.max(0,ends-now())+400)} // garante a revelação mesmo com a aba em segundo plano
 }
 let revealing=false;
 async function reveal(){
