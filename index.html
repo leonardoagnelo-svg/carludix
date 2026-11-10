@@ -184,7 +184,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 .home-hero{padding:64px 0 24px}
 .home-hero h1{font-size:clamp(34px,5vw,56px);line-height:1.06;letter-spacing:-.035em;margin:0 0 14px;font-weight:800}
 .home-hero p{font-size:clamp(16px,1.8vw,18px);color:var(--muted);margin:0;max-width:560px}
-.worlds{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:32px 0 64px}
+.worlds{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:32px 0 20px}
 .world{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:300px;padding:30px;border-radius:18px;border:1px solid var(--line);background:var(--panel);transition:transform .2s,border-color .2s}
 .world:hover{transform:translateY(-3px)}
 .world .wk{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
@@ -202,6 +202,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 .w-cat:hover{border-color:rgba(224,176,74,.75)}
 .w-cat .wk{color:#e0b04a}
 .w-cat .go{background:#e0b04a;color:#0a0f1c}.w-cat .go:hover{background:#c99a35}
+.group{padding:0 0 64px}
+.g-card{display:flex;align-items:center;gap:24px;padding:24px 28px;border-radius:18px;border:1px solid rgba(90,140,255,.35);background:linear-gradient(120deg,rgba(60,110,255,.12),var(--panel) 60%);transition:transform .2s,border-color .2s}
+.g-card:hover{transform:translateY(-3px);border-color:rgba(90,140,255,.75)}
+.g-card img{width:84px;height:84px;border-radius:18px;flex:none}
+.g-card .wk{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7ea6ff}
+.g-card h2{font-size:clamp(22px,2.6vw,28px);letter-spacing:-.02em;margin:6px 0 4px}
+.g-card p{color:var(--muted);margin:0}
+.g-card .go{margin-left:auto;flex:none;background:#3f74ff;color:#fff}.g-card:hover .go{background:#2f5fe0}
+@media(max-width:640px){.g-card{flex-wrap:wrap;padding:22px}.g-card img{width:64px;height:64px}.g-card .go{margin-left:0;width:100%;justify-content:center}}
 .home-about{padding:8px 0 56px;border-top:1px solid var(--line);padding-top:48px}
 .home-about h2{font-size:clamp(24px,3vw,30px);letter-spacing:-.02em;margin:0 0 16px}
 .ha-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
@@ -246,11 +255,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
       <span class="btn go">Entrar na Fé Católica →</span>
     </a>
   </section>
+  <section class="wrap group" aria-label="Jogos para grupos">
+    <a class="g-card" href="/quizarena/">
+      <img src="/quizarena/logo.png" alt="" width="84" height="84" loading="lazy">
+      <div>
+        <span class="wk">👥 Para jogar em grupo</span>
+        <h2>QuizArena</h2>
+        <p>Quiz ao vivo: o apresentador projeta as perguntas na TV e todo mundo responde pelo celular. Bom para festas, aulas, catequese e encontros.</p>
+      </div>
+      <span class="btn go">Criar ou entrar numa sala →</span>
+    </a>
+  </section>
   <section class="wrap home-about" aria-labelledby="sobre-t">
     <h2 id="sobre-t">Sobre a CARLUDIX</h2>
     <div class="ha-grid">
       <p>A CARLUDIX Play reúne jogos curtos e gratuitos que funcionam direto no navegador, no celular ou no computador. Não é preciso baixar nada nem criar conta: escolha um universo, abra um jogo e comece. Vários desafios mudam todos os dias e são iguais para todo mundo, para você comparar o resultado com a família e os amigos.</p>
-      <p>No universo <strong>Futebol</strong>, você adivinha jogadores pela carreira e pelas pistas, completa grades de craques e monta times campeões. No universo <strong>Fé Católica</strong>, conhece santos, passagens da Bíblia e lugares da história da Igreja de um jeito leve, bom para a família e para a catequese.</p>
+      <p>No universo <strong>Futebol</strong>, você adivinha jogadores pela carreira e pelas pistas, completa grades de craques e monta times campeões. No universo <strong>Fé Católica</strong>, conhece santos, passagens da Bíblia e lugares da história da Igreja de um jeito leve, bom para a família e para a catequese. E com o <strong>QuizArena</strong>, você monta um quiz ao vivo para jogar em grupo, com cada pessoa respondendo pelo celular.</p>
     </div>
     <p class="ha-more"><a href="/sobre/">Conheça a história do nome →</a></p>
   </section>
