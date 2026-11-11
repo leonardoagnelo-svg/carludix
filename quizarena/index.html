@@ -233,6 +233,46 @@ textarea.inp{resize:vertical;min-height:64px}
 .dialog p,.dialog li{color:var(--muted)}
 .dialog .actions{justify-content:flex-end}
 
+/* ===== ANIMAÇÕES ===== */
+@keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.025)}}
+@keyframes drop{0%{transform:translateY(-140px) scale(.6);opacity:0}60%{transform:translateY(10px) scale(1.06);opacity:1}80%{transform:translateY(-4px)}100%{transform:none}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes slidedown{from{transform:translateY(-70px);opacity:0}to{transform:none;opacity:1}}
+@keyframes ansin{0%{transform:translateY(50px) scale(.8);opacity:0}70%{transform:translateY(-6px) scale(1.03);opacity:1}100%{transform:none;opacity:1}}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-6px) rotate(-3deg)}40%{transform:translateX(6px) rotate(3deg)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 16px #fff) drop-shadow(0 0 24px var(--c))}50%{filter:drop-shadow(0 0 30px #fff) drop-shadow(0 0 48px var(--c))}}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes hop{0%,100%{transform:translateY(0)}35%,55%{transform:translateY(-20px)}}
+@keyframes jump{0%{transform:none}30%{transform:translateY(-44px) scale(1.08)}55%{transform:translateY(0) scale(1.06,.94)}72%{transform:translateY(-12px)}100%{transform:none}}
+@keyframes wobble{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(3deg)}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.code{animation:pulse 2.2s ease-in-out infinite}
+.chip{animation:none}
+.chip.novo{animation:drop .75s cubic-bezier(.3,1.4,.5,1)}
+.chip .face,.rrow .face{animation:breathe 2.8s ease-in-out infinite}
+.bigav{animation:pop .45s ease-out,breathe 2.6s .45s ease-in-out infinite}
+.bigav.jump{animation:jump .9s ease-out,breathe 2.6s .9s ease-in-out infinite}
+.bigav.wobble{animation:wobble .9s ease-in-out,breathe 2.6s .9s ease-in-out infinite}
+.result.shake{animation:shake .5s}
+.qcard.in{animation:slidedown .55s cubic-bezier(.2,1.3,.5,1)}
+.answers.in .ans{animation:ansin .5s cubic-bezier(.3,1.4,.5,1) both}
+.answers.in .ans:nth-child(2){animation-delay:.1s}.answers.in .ans:nth-child(3){animation-delay:.2s}.answers.in .ans:nth-child(4){animation-delay:.3s}
+.timer.low{animation:shake .5s infinite}
+.ans.right{animation:glow 1.2s ease-in-out infinite}
+.ans.wrong{transform:scale(.95)}
+.bars{display:flex;justify-content:center;align-items:flex-end;gap:clamp(12px,2vw,30px);height:clamp(80px,15vh,170px)}
+.bar{width:clamp(56px,7vw,110px);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar i{display:block;width:100%;border-radius:10px 10px 0 0;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#fff),var(--c));transform-origin:bottom;animation:grow .9s cubic-bezier(.2,1.2,.4,1) both;min-height:6px;box-shadow:0 0 16px color-mix(in srgb,var(--c) 60%,transparent)}
+.bar b{font-family:"Exo 2";font-style:italic;font-size:clamp(20px,2.4vw,34px);line-height:1;margin-bottom:4px;animation:fadein .4s .7s both}
+.bar span{font-size:clamp(18px,2vw,28px);color:#fff;margin-top:4px;display:flex;gap:6px;align-items:center;font-weight:900}
+.bar.wrong{opacity:.35}
+.rrow{animation:fadein .35s both;position:relative}
+.pcol{animation:none;opacity:0}
+.pcol.up{animation:rise .9s cubic-bezier(.2,1.3,.5,1) both!important;animation-delay:0s!important}
+.pcol .pav{animation:hop 1.5s 1s ease-in-out infinite}
+.pbtn.chosen{transform:scale(1.06);transition:transform .2s}
+.pbtn.gone{opacity:0;transform:scale(.85);transition:all .25s}
+.badge.pop{animation:pop .5s .35s cubic-bezier(.3,1.6,.5,1) both}
 /* ===== PERSONAGENS ===== */
 .avi{display:block;object-fit:contain}
 .face{width:44px;height:44px;border-radius:50%;background:#071245;border:2px solid #2c55d6;flex:none;overflow:hidden;display:grid;place-items:center}
@@ -281,7 +321,7 @@ textarea.inp{resize:vertical;min-height:64px}
   .podium{gap:6px}.pcol{width:31%}
   .rrow{grid-template-columns:40px 42px 1fr auto;padding:10px 12px;gap:10px}.rrow .face{width:42px;height:42px}.rrow .dl{display:none}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.pcol{opacity:1!important}}
 :focus-visible{outline:3px solid #fff;outline-offset:3px}
 </style>
 </head>
@@ -438,7 +478,7 @@ const BUILTIN=[
 
 /* ---------- estado global ---------- */
 let uid=null, unsub=[];
-function clearSubs(){unsub.forEach(f=>{try{f()}catch{}});unsub=[];stopTimer()}
+function clearSubs(){unsub.forEach(f=>{try{f()}catch{}});unsub=[];stopTimer();musica(null)}
 let timerRAF=0,revealTO=0; function stopTimer(){cancelAnimationFrame(timerRAF);timerRAF=0;clearTimeout(revealTO)}
 let myQuizzes={};
 
@@ -693,14 +733,14 @@ async function createRoom(quiz,btn,mode="geral"){
   btn&&(btn.disabled=false);toast("Não foi possível criar a sala. Verifique a internet.");
 }
 
-const H={code:null,quiz:null,room:null,players:{},scores:{},answers:{},prevRank:{},handled:null};
+const H={seen:new Set(),code:null,quiz:null,room:null,players:{},scores:{},answers:{},prevRank:{},handled:null};
 async function hostOpen(code){
   await ready;
   $app.innerHTML=`<div class="wrap"><div class="spin" style="margin:30vh auto 0"></div></div>`;
   let hd;
   try{hd=(await get(R(`hostdata/${code}`))).val()}catch{hd=null}
   if(!hd){$app.innerHTML=`<div class="top">${BACK}</div><div class="wrap hero"><h1 class="disp">Sala não encontrada</h1><p>Ela pode ter sido encerrada.</p><a class="btn btn-gold" href="#biblioteca">Criar outra sala</a></div>`;return}
-  Object.assign(H,{code,quiz:hd.quiz,room:null,players:{},scores:{},answers:{},handled:null});
+  Object.assign(H,{code,quiz:hd.quiz,room:null,players:{},scores:{},answers:{},handled:null,seen:new Set(),anim:null});
   try{H.mode=(await get(R(`rooms/${code}/mode`))).val()||"geral"}catch{H.mode="geral"}
   H.room={state:null};
   let loaded={st:false,pl:false};
@@ -730,13 +770,14 @@ function hostBar(){
     <div class="r">${st.i!=null&&st.phase!=="lobby"&&st.phase!=="final"?`<span class="pill">Pergunta ${st.i+1} de ${H.quiz.questions.length}</span>`:""}${sndBtn()}<button class="iconbtn" data-act="full" aria-label="Tela cheia" title="Tela cheia">${IC.full}</button></div>
   </div>`;
 }
-function ansHTML(opts,st,counts){
-  return `<div class="answers ${opts.length===2?"two":""}">${opts.map((o,j)=>{
+function ansHTML(opts,st,counts,anim){
+  return `<div class="answers ${opts.length===2?"two":""} ${anim?"in":""}">${opts.map((o,j)=>{
     const cls=st.phase==="reveal"?(j===st.correct?"right":"wrong"):"";
     return `<div class="ans c${j} ${cls}"><div class="in"><span class="ic">${ICONS[j]}</span><span class="lt disp">${LETTERS[j]}</span><span class="tx">${esc(o)}</span>${counts?`<span class="cnt disp">${counts[j]||0}</span>`:""}</div></div>`}).join("")}</div>`;
 }
 function hostRender(){
   const st=hostState();stopTimer();
+  musica(st.phase==="lobby"?"lobby":(st.phase==="question"?"pergunta":null));
   const url=joinURL(H.code);
   if(st.phase==="lobby"){
     const names=Object.entries(H.players).sort((a,b)=>(a[1].joinedAt||0)-(b[1].joinedAt||0));
@@ -751,13 +792,14 @@ function hostRender(){
         </div>
         <div class="panel players">
           <h2 class="disp"><span>Jogadores</span><span style="color:var(--gold)">${names.length}</span></h2>
-          <div class="chips">${names.length?names.map(([id,p])=>`<button class="chip" data-kick="${esc(id)}" title="Remover ${esc(p.name)}">${avFace(p.av)}${esc(p.name)}</button>`).join(""):`<p class="empty">Aguardando os jogadores entrarem...</p>`}</div>
+          <div class="chips">${names.length?names.map(([id,p])=>`<button class="chip ${H.seen.has(id)?"":"novo"}" data-kick="${esc(id)}" title="Remover ${esc(p.name)}">${avFace(p.av)}${esc(p.name)}</button>`).join(""):`<p class="empty">Aguardando os jogadores entrarem...</p>`}</div>
           <p class="small">Clique num nome para remover o jogador.</p>
           <div class="actions"><button class="btn btn-gold disp" data-hact="start" ${names.length?"":"disabled"}>Começar ▶</button></div>
         </div>
       </div>
       <p class="small" style="text-align:center;margin:0">Quiz: <b>${esc(H.quiz.title)}</b> · ${H.quiz.questions.length} perguntas · ${H.mode==="catolica"?"Sala católica":"Sala geral"}</p>
     </div>`;
+    names.forEach(([id])=>H.seen.add(id));
   }
   else if(st.phase==="countdown"){
     $app.innerHTML=`<div class="stage">${hostBar()}<div class="cd"><div><div class="cdn disp" id="cdn"></div><p>Prepare-se!</p></div></div></div>`;
@@ -769,7 +811,7 @@ function hostRender(){
     const ms=Math.max(0,st.readEnds-now());
     $app.innerHTML=`<div class="stage">${hostBar()}
       <div class="reading">
-        <div class="panel qcard"><span class="qtag disp">Pergunta ${st.i+1}</span><h1 class="qtext disp">${esc(q.text)}</h1>${q.img?`<img class="qimg" src="${esc(q.img)}" alt="">`:""}</div>
+        <div class="panel qcard in"><span class="qtag disp">Pergunta ${st.i+1}</span><h1 class="qtext disp">${esc(q.text)}</h1>${q.img?`<img class="qimg" src="${esc(q.img)}" alt="">`:""}</div>
         <div class="readbar"><i style="animation-duration:${ms}ms"></i></div>
       </div></div>`;
     const qk=st.qk;
@@ -784,22 +826,24 @@ function hostRender(){
         <div class="panel qcard"><span class="qtag disp">Pergunta ${st.i+1}</span><h1 class="qtext disp">${esc(q.text)}</h1>${q.img?`<img class="qimg" src="${esc(q.img)}" alt="">`:""}</div>
         <div class="panel sideqr"><b class="disp">Entre pelo celular!</b><div class="qr">${qrSVG(url)}</div><div class="code2 disp">${H.code}</div></div>
       </div>
-      ${ansHTML(q.opts,{...st,correct:q.correct},reveal?st.counts:null)}
+      ${reveal?barsHTML(q.opts,st.counts||[],q.correct):""}
+      ${ansHTML(q.opts,{...st,correct:q.correct},reveal?st.counts:null,!reveal&&H.anim!==st.qk)}
       <div class="status">
         ${reveal?`<button class="btn btn-gold disp" data-hact="ranking">Ver ranking ▶</button>`
         :`<span class="pill"><span class="dot">✓</span>${IC.users}<span id="nAns">${st.answered||0}</span>&nbsp;de <span id="nTot">${pcount()}</span> responderam</span><button class="btn btn-ghost btn-sm" data-hact="skip">Encerrar tempo</button>`}
       </div>
     </div>`;
-    if(!reveal) hostTimer(st,q);
+    if(!reveal){hostTimer(st,q);H.anim=st.qk}
   }
   else if(st.phase==="ranking"){
     const list=ranked().slice(0,5);
     const last=st.i>=H.quiz.questions.length-1;
     $app.innerHTML=`<div class="stage">${hostBar()}
       <div class="rank"><h2 class="disp">Ranking</h2>
-        ${list.length?list.map((p,k)=>`<div class="panel rrow" style="animation-delay:${k*.08}s"><span class="pos">${k+1}º</span>${avFace(p.av)}<span class="nm">${esc(p.name)}${p.prev&&p.rank<p.prev?`<span class="up">▲</span>`:""}</span><span class="dl">${p.last?.pts?"+"+p.last.pts:""}</span><span>${p.score}</span></div>`).join(""):`<p class="empty">Ninguém pontuou ainda.</p>`}
+        ${list.length?list.map((p,k)=>`<div class="panel rrow" data-k="${k}" data-prev="${p.prev||k+1}" data-from="${p.score-(p.last&&p.last.q===st.i?p.last.pts:0)}" data-to="${p.score}" style="animation-delay:${k*.06}s"><span class="pos">${k+1}º</span>${avFace(p.av)}<span class="nm">${esc(p.name)}${p.prev&&p.rank<p.prev?`<span class="up">▲</span>`:""}</span><span class="dl">${p.last?.pts?"+"+p.last.pts:""}</span><span class="sc">${p.score}</span></div>`).join(""):`<p class="empty">Ninguém pontuou ainda.</p>`}
         <div class="actions"><button class="btn btn-gold disp" data-hact="next">${last?"Ver o pódio 🏆":"Próxima pergunta ▶"}</button></div>
       </div></div>`;
+    animRanking();
   }
   else if(st.phase==="final"){
     const list=ranked();
@@ -810,7 +854,13 @@ function hostRender(){
       <div class="actions"><button class="btn btn-gold disp" data-hact="again">Jogar de novo</button><button class="btn btn-ghost" data-hact="close">Encerrar sala</button></div>
       <div class="foot">${SUG}</div>
     </div>`;
-    if(H.handled!=="final"){H.handled="final";sfx.win();confetti()}
+    const cols=["p3","p2","p1"].map(c=>document.querySelector(".podium ."+c));
+    if(H.handled!=="final"){
+      H.handled="final";
+      [300,1500,3000].forEach((t,i)=>setTimeout(()=>{cols[i]?.classList.add("up");beep([523,659,880][i],.3,"triangle",.15)},t));
+      for(let t=2000;t<2950;t+=60) setTimeout(()=>beep(120+Math.random()*40,.05,"square",.05),t);
+      setTimeout(()=>{sfx.win();confetti()},3200);
+    }else cols.forEach(el=>el?.classList.add("up"));
   }
   $app.onclick=hostClick;
 }
@@ -838,6 +888,50 @@ function hostTimer(st,q){
     timerRAF=requestAnimationFrame(tick);
   };
   if(st.startedAt){tick();revealTO=setTimeout(reveal,Math.max(0,ends-now())+400)} // garante a revelação mesmo com a aba em segundo plano
+}
+function barsHTML(opts,counts,correct){
+  const mx=Math.max(1,...opts.map((_,j)=>counts[j]||0));
+  return `<div class="bars">${opts.map((o,j)=>`<div class="bar c${j} ${j===correct?"":"wrong"}"><b>${counts[j]||0}</b><i style="height:${Math.max(5,78*(counts[j]||0)/mx)}%;animation-delay:${j*.09}s"></i><span>${ICONS[j]}${j===correct?"✓":""}</span></div>`).join("")}</div>`;
+}
+function countUp(el,from,to,ms=900){
+  const t0=performance.now();
+  const f=t=>{const k=Math.min(1,(t-t0)/ms);el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-k,3)));if(k<1) requestAnimationFrame(f)};
+  requestAnimationFrame(f);
+}
+// ranking: cada um começa na posição anterior e desliza para a nova
+function animRanking(){
+  const rows=[...document.querySelectorAll(".rrow[data-k]")];if(!rows.length) return;
+  const step=rows.length>1?rows[1].offsetTop-rows[0].offsetTop:rows[0].offsetHeight+12;
+  rows.forEach(r=>{
+    const k=+r.dataset.k,from=Math.min(+r.dataset.prev-1,rows.length);
+    r.style.zIndex=from>k?2:1;
+    r.style.transition="none";r.style.transform=`translateY(${(from-k)*step}px)`;
+    const sc=r.querySelector(".sc");if(sc) sc.textContent=r.dataset.from;
+  });
+  void document.body.offsetHeight;
+  setTimeout(()=>{
+    let mexeu=false;
+    rows.forEach(r=>{
+      if(r.style.transform!=="translateY(0px)") mexeu=true;
+      r.style.transition="transform .9s cubic-bezier(.3,1.3,.5,1)";r.style.transform="none";
+      const sc=r.querySelector(".sc");if(sc) countUp(sc,+r.dataset.from,+r.dataset.to,1100);
+    });
+    if(mexeu){beep(300,.25,"sine",.06);beep(600,.25,"sine",.05,.12)}
+  },800);
+}
+// música de fundo (só na tela do apresentador)
+const MUS={tipo:null,id:0,step:0};
+const MEL=[[523,659],[0],[784],[659],[587,698],[0],[880],[698],[523,659],[0],[784],[1047],[784],[659],[587],[0]];
+function musica(tipo){
+  if(MUS.tipo===tipo) return;
+  MUS.tipo=tipo;clearInterval(MUS.id);MUS.step=0;
+  if(!tipo) return;
+  const dt=60000/(tipo==="lobby"?118:150)/2;
+  MUS.id=setInterval(()=>{
+    const s=MUS.step++;
+    if(tipo==="lobby"){MEL[s%MEL.length].forEach(f=>f&&beep(f,.18,"triangle",.03));if(s%4===0) beep(131,.3,"sine",.06);if(s%8===4) beep(196,.3,"sine",.05)}
+    else{beep([110,110,131,110,98,98,123,98][s%8],.12,"square",.025);if(s%2===0) beep(1760,.03,"square",.01)}
+  },dt);
 }
 // contagem 3-2-1 (apresentador e jogador)
 function contagem(ends){
@@ -974,11 +1068,12 @@ function playerRender(){
     if(!l||l.q!==st.i){body=`<div class="pmain"><div class="spin"></div></div>`}
     else{
       const ok=l.ok;
-      if(P.handled!==st.qk+"r"){P.handled=st.qk+"r";ok?sfx.ok():sfx.bad()}
-      body=`<div class="result ${ok?"ok":"no"}">${avImg(P.me.av,ok?"feliz":"triste","bigav sm")}
+      const first=P.handled!==st.qk+"r";
+      if(first){P.handled=st.qk+"r";ok?sfx.ok():sfx.bad()}
+      body=`<div class="result ${ok?"ok":"no"} ${first&&!ok?"shake":""}">${avImg(P.me.av,ok?"feliz":"triste","bigav sm "+(first?(ok?"jump":"wobble"):""))}
         <h2 class="disp">${ok?"Acertou!":l.c<0?"Acabou o tempo":"Errou"}</h2>
-        ${ok?`<div class="badge">+${l.pts} pontos</div>`:""}
-        ${P.score.streak>1?`<div class="badge">🔥 ${P.score.streak} acertos seguidos</div>`:""}
+        ${ok?`<div class="badge ${first?"pop":""}">+<span ${first?`data-count="${l.pts}"`:""}>${l.pts}</span> pontos</div>`:""}
+        ${P.score.streak>1?`<div class="badge ${first?"pop":""}">🔥 ${P.score.streak} acertos seguidos</div>`:""}
         <p>Você está em <b style="color:#fff">${P.score.rank}º lugar</b></p></div>`;
     }
   }
@@ -992,6 +1087,7 @@ function playerRender(){
       <div class="foot">${SUG}</div></div>`;
   }
   $app.innerHTML=`<div class="pl">${pbar()}${body}</div>`;
+  document.querySelectorAll("[data-count]").forEach(e=>countUp(e,0,+e.dataset.count));
   if(st.phase==="countdown") contagem(st.ends);
   if(st.phase==="question"&&!st.reading&&P.answered[st.qk]==null&&st.startedAt){
     const ends=st.startedAt+st.time*1000;
@@ -1002,7 +1098,9 @@ function playerRender(){
     const b=e.target.closest("[data-ans]");if(!b) return;
     const c=+b.dataset.ans,qk=P.state.qk;
     if(P.answered[qk]!=null) return;
-    P.answered[qk]=c;navigator.vibrate?.(30);playerRender();
+    P.answered[qk]=c;navigator.vibrate?.(30);
+    b.classList.add("chosen");document.querySelectorAll("[data-ans]").forEach(x=>x!==b&&x.classList.add("gone"));
+    setTimeout(()=>{if(P.state?.qk===qk) playerRender()},260);
     try{await set(R(`rooms/${P.code}/answers/${qk}/${uid}`),{c,t:serverTimestamp()})}
     catch(x){console.error(x);if(P.state.qk===qk&&P.state.phase==="question"){delete P.answered[qk];playerRender();toast("Não foi possível enviar. Toque de novo.")}}
   };
