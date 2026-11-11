@@ -316,6 +316,8 @@ textarea.inp{resize:vertical;min-height:64px}
 .pav{height:clamp(90px,19vh,220px);width:auto;max-width:100%;margin-bottom:-4px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5))}
 .p1 .pav{height:clamp(110px,25vh,270px)}
 .picker .opt[hidden]{display:none}
+@keyframes respira{0%,100%{transform:scale(1)}50%{transform:scale(1.012,1.02)}}
+.bigav.anim{animation:pop .45s ease-out,respira 2.8s .45s ease-in-out infinite}.pcol .pav.anim{animation:respira 2.8s ease-in-out infinite}
 .bigav{height:auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}
 .cd{flex:1;display:grid;place-items:center;text-align:center}
 .cdn{font-size:clamp(120px,30vh,280px);line-height:1;color:var(--gold);text-shadow:0 0 40px rgba(255,170,0,.6),0 8px 0 #a65c00;animation:cdpop 1.2s ease-out}
@@ -398,12 +400,16 @@ const IC={
 const BACK=`<a class="back" href="https://carludix.com/">← CARLUDIX</a>`;
 const SUG=`<a class="linkbtn" href="https://carludix.com/contato/?jogo=QuizArena" target="_blank" rel="noopener">💡 Enviar sugestão</a>`;
 /* ---------- personagens ---------- */
-const SANTOS=[["jp2","São João Paulo II"],["pedro","São Pedro"],["teresinha","Santa Teresinha"],["francisco","São Francisco de Assis"],["antonio","Santo Antônio"],["jose","São José"],["aparecida","N. Sra. Aparecida"],["carlo","São Carlo Acutis"],["rita","Santa Rita"],["bento","São Bento"],["clara","Santa Clara"],["miguel","São Miguel"],["cristorei","Cristo Rei"],["expedito","Santo Expedito"],["guadalupe","N. Sra. de Guadalupe"],["isabel","Santa Isabel de Portugal"],["luisgonzaga","São Luís Gonzaga"],["franciscopaula","São Francisco de Paula"],["paulo","São Paulo"],["padrepio","São Padre Pio"],["fatima","N. Sra. de Fátima"],["teresaavila","Santa Teresa de Ávila"],["joaodacruz","São João da Cruz"],["gracas","N. Sra. das Graças"],["jorge","São Jorge"],["gabriel","São Gabriel"],["rafael","São Rafael"],["joaobatista","São João Batista"],["agostinho","Santo Agostinho"],["monica","Santa Mônica"],["tomas","São Tomás de Aquino"],["catarina","Santa Catarina de Sena"],["joana","Santa Joana d’Arc"],["cecilia","Santa Cecília"],["dombosco","São João Bosco"],["dulce","Santa Dulce dos Pobres"],["freigalvao","Frei Galvão"],["anchieta","São José de Anchieta"],["felipeneri","São Felipe Néri"],["vianney","São João Maria Vianney"],["juandiego","São Juan Diego"],["joaquimana","São Joaquim e Sant’Ana"],["martin","São Luís e Santa Zélia Martin"],["gianna","Santa Gianna Beretta Molla"],["piergiorgio","São Pier Giorgio Frassati"],["goretti","Santa Maria Goretti"],["fultonsheen","Beato Fulton Sheen"],["padreleo","Servo de Deus Padre Léo"],["chiaraluce","Beata Chiara Luce Badano"],["chiaracorbella","Serva de Deus Chiara Corbella"],["chantal","Santa Joana Francisca de Chantal"]];
+const SANTOS=[["jp2","São João Paulo II"],["pedro","São Pedro"],["teresinha","Santa Teresinha"],["francisco","São Francisco de Assis"],["antonio","Santo Antônio"],["jose","São José"],["aparecida","N. Sra. Aparecida"],["carlo","São Carlo Acutis"],["rita","Santa Rita"],["bento","São Bento"],["clara","Santa Clara"],["miguel","São Miguel"],["cristorei","Cristo Rei"],["expedito","Santo Expedito"],["guadalupe","N. Sra. de Guadalupe"],["isabel","Santa Isabel de Portugal"],["luisgonzaga","São Luís Gonzaga"],["franciscopaula","São Francisco de Paula"],["paulo","São Paulo"],["padrepio","São Padre Pio"],["fatima","N. Sra. de Fátima"],["teresaavila","Santa Teresa de Ávila"],["joaodacruz","São João da Cruz"],["gracas","N. Sra. das Graças"],["jorge","São Jorge"],["gabriel","São Gabriel"],["rafael","São Rafael"],["joaobatista","São João Batista"],["agostinho","Santo Agostinho"],["monica","Santa Mônica"],["tomas","São Tomás de Aquino"],["catarina","Santa Catarina de Sena"],["joana","Santa Joana d’Arc"],["cecilia","Santa Cecília"],["dombosco","São João Bosco"],["dulce","Santa Dulce dos Pobres"],["freigalvao","Frei Galvão"],["anchieta","São José de Anchieta"],["felipeneri","São Felipe Néri"],["vianney","São João Maria Vianney"],["juandiego","São Juan Diego"],["joaquimana","São Joaquim e Sant’Ana"],["martin","São Luís e Santa Zélia Martin"],["gianna","Santa Gianna Beretta Molla"],["piergiorgio","São Pier Giorgio Frassati"],["goretti","Santa Maria Goretti"],["fultonsheen","Beato Fulton Sheen"],["padreleo","Servo de Deus Padre Léo"],["chiaraluce","Beata Chiara Luce Badano"],["chiaracorbella","Serva de Deus Chiara Corbella"],["chantal","Santa Joana Francisca de Chantal"],["escriva","São Josemaria Escrivá"]];
 const SNOME=Object.fromEntries(SANTOS);
+const REDUZ=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const POSES=["parado","feliz","triste","pensando","podio","rezando"];
 const isSanto=av=>typeof av==="string"&&av.startsWith("s.")&&!!SNOME[av.slice(2)];
-function avImg(av,pose="parado",cls="bigav"){
-  if(isSanto(av)) return `<img class="avi ${cls}" src="santos/${av.slice(2)}-${pose}.webp" alt="${esc(SNOME[av.slice(2)])}">`;
+/* animações quadro a quadro (WebP animado) por santo */
+const ANIM={carlo:["acenar","comemorar","podio","palmas","errou"]};
+function avImg(av,pose="parado",cls="bigav",anim=""){
+  if(isSanto(av)){const id=av.slice(2),a=anim&&ANIM[id]&&ANIM[id].includes(anim)&&!REDUZ;
+    return `<img class="avi ${cls}${a?" anim":""}" src="santos/${a?id+"-anim-"+anim:id+"-"+pose}.webp" alt="${esc(SNOME[id])}">`;}
   return B.svg(av,pose,"avi "+cls);
 }
 function avFace(av){
@@ -905,7 +911,7 @@ function hostRender(){
   }
   else if(st.phase==="final"){
     const list=ranked();
-    const P=k=>list[k]?`<div class="pcol p${k+1}">${k===0?`<div class="crown">👑</div>`:""}${avImg(list[k].av,"podio","pav")}<div class="who disp">${esc(list[k].name)}</div><div class="pts">${list[k].score} pts</div><div class="blk disp">${k+1}</div></div>`:`<div class="pcol p${k+1}" style="visibility:hidden"><div class="blk"></div></div>`;
+    const P=k=>list[k]?`<div class="pcol p${k+1}">${k===0?`<div class="crown">👑</div>`:""}${avImg(list[k].av,"podio","pav",k===0?"podio":"palmas")}<div class="who disp">${esc(list[k].name)}</div><div class="pts">${list[k].score} pts</div><div class="blk disp">${k+1}</div></div>`:`<div class="pcol p${k+1}" style="visibility:hidden"><div class="blk"></div></div>`;
     $app.innerHTML=`<div class="stage">${hostBar()}
       <div class="podium">${P(1)}${P(0)}${P(2)}</div>
       ${list.length>3?`<p class="small" style="text-align:center;margin:0">${list.slice(3,10).map((p,k)=>`${k+4}º ${esc(p.name)} (${p.score})`).join(" · ")}</p>`:""}
@@ -1108,7 +1114,7 @@ function playerRender(){
   const st=P.state;stopTimer();
   let body="";
   if(st.phase==="lobby"){
-    body=`<div class="pmain">${avImg(P.me.av,"parado")}<h2 class="disp">Você está dentro!</h2><p>${isSanto(P.me.av)?esc(SNOME[P.me.av.slice(2)])+" · veja":"Veja"} seu nome na tela do apresentador.</p><button class="btn btn-blue btn-sm" data-troca>${P.mode==="catolica"?"Trocar de santo":"Montar meu boneco"}</button></div>`;
+    body=`<div class="pmain">${avImg(P.me.av,"parado","bigav","acenar")}<h2 class="disp">Você está dentro!</h2><p>${isSanto(P.me.av)?esc(SNOME[P.me.av.slice(2)])+" · veja":"Veja"} seu nome na tela do apresentador.</p><button class="btn btn-blue btn-sm" data-troca>${P.mode==="catolica"?"Trocar de santo":"Montar meu boneco"}</button></div>`;
   }
   else if(st.phase==="countdown"){
     body=`<div class="cd"><div><div class="cdn disp" id="cdn"></div><p>Prepare-se!</p></div></div>`;
@@ -1136,7 +1142,7 @@ function playerRender(){
       const ok=l.ok;
       const first=P.handled!==st.qk+"r";
       if(first){P.handled=st.qk+"r";ok?sfx.ok():sfx.bad()}
-      body=`<div class="result ${ok?"ok":"no"} ${first&&!ok?"shake":""}">${avImg(P.me.av,ok?"feliz":"triste","bigav sm "+(first?(ok?"jump":"wobble"):""))}
+      body=`<div class="result ${ok?"ok":"no"} ${first&&!ok?"shake":""}">${avImg(P.me.av,ok?"feliz":"triste","bigav sm "+(first?(ok?"jump":"wobble"):""),ok?"comemorar":"errou")}
         <h2 class="disp">${ok?"Acertou!":l.c<0?"Acabou o tempo":"Errou"}</h2>
         ${ok?`<div class="badge ${first?"pop":""}">+<span ${first?`data-count="${l.pts}"`:""}>${l.pts}</span> pontos</div>`:""}
         ${P.score.streak>1?`<div class="badge ${first?"pop":""}">🔥 ${P.score.streak} acertos seguidos</div>`:""}
@@ -1146,7 +1152,7 @@ function playerRender(){
   else if(st.phase==="final"){
     const r=P.score?.rank;
     if(P.handled!=="final"){P.handled="final";if(r&&r<=3){sfx.win();confetti(3500)}}
-    body=`<div class="pmain">${avImg(P.me.av,r&&r<=3?"podio":"feliz","bigav sm")}<div class="big">${r===1?"🏆":r===2?"🥈":r===3?"🥉":"🎯"}</div>
+    body=`<div class="pmain">${avImg(P.me.av,r&&r<=3?"podio":"feliz","bigav sm",r===1?"podio":r&&r<=3?"palmas":"acenar")}<div class="big">${r===1?"🏆":r===2?"🥈":r===3?"🥉":"🎯"}</div>
       <h2 class="disp">${r?`${r}º lugar`:"Fim de jogo"}</h2>
       <p>${P.score?.score||0} pontos</p>
       <p class="small">Fique na sala: o apresentador pode começar outra partida.</p>
