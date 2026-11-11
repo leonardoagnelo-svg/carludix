@@ -155,7 +155,7 @@ a{color:var(--cyan)}
 /* Ranking */
 .rank{flex:1;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.4vh,16px)}
 .rank h2{font-size:clamp(34px,5vw,70px);margin:0;color:var(--gold);text-shadow:0 0 24px rgba(255,170,0,.5)}
-.rrow{width:min(900px,100%);display:grid;grid-template-columns:70px 1fr auto auto;align-items:center;gap:16px;padding:12px 22px;font-size:clamp(20px,2.4vw,34px);font-weight:800;animation:slide .45s both}
+.rrow{width:min(900px,100%);display:grid;grid-template-columns:70px 52px 1fr auto auto;align-items:center;gap:16px;padding:12px 22px;font-size:clamp(20px,2.4vw,34px);font-weight:800;animation:slide .45s both}
 .rrow .pos{font-family:"Exo 2";font-style:italic;font-weight:900;color:var(--gold);font-size:1.2em}
 .rrow .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rrow .dl{color:var(--ok);font-size:.7em}
@@ -233,6 +233,41 @@ textarea.inp{resize:vertical;min-height:64px}
 .dialog p,.dialog li{color:var(--muted)}
 .dialog .actions{justify-content:flex-end}
 
+/* ===== PERSONAGENS ===== */
+.avi{display:block;object-fit:contain}
+.face{width:44px;height:44px;border-radius:50%;background:#071245;border:2px solid #2c55d6;flex:none;overflow:hidden;display:grid;place-items:center}
+.face img{width:100%;height:100%;object-fit:cover}
+.face svg{width:100%;height:100%;transform:scale(1.55) translateY(16%)}
+.chip{display:inline-flex;align-items:center;gap:10px;padding:5px 16px 5px 5px}
+.rrow .face{width:52px;height:52px}
+.up{color:var(--ok);font-size:.7em;margin-left:8px}
+.pav{width:clamp(110px,14vw,220px);height:auto;margin-bottom:-4px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.5))}
+.p1 .pav{width:clamp(140px,18vw,280px)}
+.bigav{width:min(60vw,250px);height:auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45));animation:pop .45s ease-out}
+.bigav.sm{width:min(42vw,170px)}
+.cd{flex:1;display:grid;place-items:center;text-align:center}
+.cdn{font-size:clamp(120px,30vh,280px);line-height:1;color:var(--gold);text-shadow:0 0 40px rgba(255,170,0,.6),0 8px 0 #a65c00;animation:cdpop 1.2s ease-out}
+.cd p{color:var(--muted);font-size:clamp(18px,2.4vw,30px);font-weight:700;margin:10px 0 0}
+@keyframes cdpop{0%{transform:scale(1.7);opacity:0}25%{transform:scale(1);opacity:1}100%{transform:scale(.92)}}
+.readbar{height:12px;border-radius:6px;background:#0f2a8f;overflow:hidden;width:min(700px,90%);margin:0 auto}
+.readbar i{display:block;height:100%;background:var(--gold);width:0;animation:readfill linear forwards}
+@keyframes readfill{to{width:100%}}
+.reading{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(16px,3vh,34px)}
+.reading .qcard{max-width:1100px;width:100%;margin:0 auto}
+.dialog.picker{max-width:640px}
+.picker .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;max-height:52vh;overflow:auto;padding:4px;margin-top:10px}
+.picker .opt{background:#071245;border:2px solid #1f3ea8;border-radius:12px;padding:6px 4px;color:#fff;font-size:11.5px;font-weight:700;line-height:1.15;display:flex;flex-direction:column;align-items:center;gap:4px}
+.picker .opt img{width:58px;height:58px;border-radius:50%}
+.picker .opt.on{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.pprev{display:grid;place-items:center}.pprev svg{width:150px;height:175px}
+.prow{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.prow b{text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}
+.prow .sw{width:18px;height:18px;border-radius:50%;display:inline-block;border:2px solid #fff}
+.mode{display:grid;gap:10px;margin-top:6px}
+.mode button{text-align:left;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:#071245;color:#fff;display:flex;gap:12px;align-items:center}
+.mode button:hover{border-color:var(--gold)}
+.mode b{display:block;font-size:18px}.mode span span{color:var(--muted);font-size:14px}
+.mode .face{width:52px;height:52px}
 @media (max-width:900px){
   .lobby{grid-template-columns:1fr}
   .qrow{grid-template-columns:auto 1fr}
@@ -243,7 +278,7 @@ textarea.inp{resize:vertical;min-height:64px}
 @media (max-width:640px){
   .answers{grid-template-columns:1fr}
   .podium{gap:6px}.pcol{width:31%}
-  .rrow{grid-template-columns:44px 1fr auto;padding:10px 14px}.rrow .dl{display:none}
+  .rrow{grid-template-columns:40px 42px 1fr auto;padding:10px 12px;gap:10px}.rrow .face{width:42px;height:42px}.rrow .dl{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 :focus-visible{outline:3px solid #fff;outline-offset:3px}
@@ -258,6 +293,7 @@ textarea.inp{resize:vertical;min-height:64px}
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,signInAnonymously,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {getDatabase,ref,get,set,update,remove,onValue,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import * as B from "./bonecos.js";
 
 const fb=initializeApp({
   apiKey:"AIzaSyDmgYvZko7-jwMVEKbrwMuyFIA4Iz0gnK8",
@@ -289,6 +325,23 @@ const IC={
 };
 const BACK=`<a class="back" href="https://carludix.com/">← CARLUDIX</a>`;
 const SUG=`<a class="linkbtn" href="https://carludix.com/contato/?jogo=QuizArena" target="_blank" rel="noopener">💡 Enviar sugestão</a>`;
+/* ---------- personagens ---------- */
+const SANTOS=[["jp2","São João Paulo II"],["pedro","São Pedro"],["teresinha","Santa Teresinha"],["francisco","São Francisco de Assis"],["antonio","Santo Antônio"],["jose","São José"],["aparecida","N. Sra. Aparecida"],["carlo","São Carlo Acutis"],["rita","Santa Rita"],["bento","São Bento"],["clara","Santa Clara"],["miguel","São Miguel"],["cristorei","Cristo Rei"],["expedito","Santo Expedito"],["guadalupe","N. Sra. de Guadalupe"],["isabel","Santa Isabel de Portugal"],["luisgonzaga","São Luís Gonzaga"],["franciscopaula","São Francisco de Paula"],["paulo","São Paulo"],["padrepio","São Padre Pio"],["fatima","N. Sra. de Fátima"],["teresaavila","Santa Teresa de Ávila"],["joaodacruz","São João da Cruz"],["gracas","N. Sra. das Graças"],["jorge","São Jorge"],["gabriel","São Gabriel"],["rafael","São Rafael"],["joaobatista","São João Batista"],["agostinho","Santo Agostinho"],["monica","Santa Mônica"],["tomas","São Tomás de Aquino"],["catarina","Santa Catarina de Sena"],["joana","Santa Joana d’Arc"],["cecilia","Santa Cecília"],["dombosco","São João Bosco"],["dulce","Santa Dulce dos Pobres"],["freigalvao","Frei Galvão"],["anchieta","São José de Anchieta"],["felipeneri","São Felipe Néri"],["vianney","São João Maria Vianney"],["juandiego","São Juan Diego"],["joaquimana","São Joaquim e Sant’Ana"],["martin","São Luís e Santa Zélia Martin"],["gianna","Santa Gianna Beretta Molla"],["piergiorgio","São Pier Giorgio Frassati"],["goretti","Santa Maria Goretti"],["fultonsheen","Beato Fulton Sheen"],["padreleo","Servo de Deus Padre Léo"],["chiaraluce","Beata Chiara Luce Badano"],["chiaracorbella","Serva de Deus Chiara Corbella"]];
+const SNOME=Object.fromEntries(SANTOS);
+const POSES=["parado","feliz","triste","pensando","podio","rezando"];
+const isSanto=av=>typeof av==="string"&&av.startsWith("s.")&&!!SNOME[av.slice(2)];
+function avImg(av,pose="parado",cls="bigav"){
+  if(isSanto(av)) return `<img class="avi ${cls}" src="santos/${av.slice(2)}-${pose}.webp" alt="${esc(SNOME[av.slice(2)])}">`;
+  return B.svg(av,pose,"avi "+cls);
+}
+function avFace(av){
+  if(isSanto(av)) return `<span class="face"><img src="santos/${av.slice(2)}-rosto.webp" alt=""></span>`;
+  return `<span class="face">${B.svg(av,"parado")}</span>`;
+}
+const sortearAv=mode=>mode==="catolica"?"s."+SANTOS[Math.floor(Math.random()*SANTOS.length)][0]:B.sortear();
+const avValido=(av,mode)=>mode==="catolica"?isSanto(av):(typeof av==="string"&&av.startsWith("g."));
+function preload(av){if(isSanto(av)) POSES.forEach(p=>{const i=new Image();i.src=`santos/${av.slice(2)}-${p}.webp`})}
+const semAcento=t=>t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 const LEGAL=`<a class="linkbtn" href="https://carludix.com/">carludix.com</a><a class="linkbtn" href="https://carludix.com/privacidade/">Privacidade</a>`;
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
 function toast(msg,ms=2600){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),ms)}
@@ -433,7 +486,10 @@ function viewHome(pre){
       await ready;
       const h=await get(R(`rooms/${c}/host`));
       if(!h.exists()){err.textContent="Sala não encontrada. Confira o código.";return}
-      await set(R(`rooms/${c}/players/${uid}`),{name:n,joinedAt:serverTimestamp()});
+      const mode=(await get(R(`rooms/${c}/mode`))).val()||"geral";
+      let av=ls.get("quizarena:av:"+mode,null);
+      if(!avValido(av,mode)) av=sortearAv(mode);
+      await set(R(`rooms/${c}/players/${uid}`),{name:n,joinedAt:serverTimestamp(),av});
       ls.set("quizarena:apelido",n);
       location.hash="sala/"+c;
     }catch(x){console.error(x);err.textContent="Não foi possível entrar. Verifique a internet e tente de novo."}
@@ -506,7 +562,7 @@ async function viewLibrary(){
     const t=e.target.closest("button");if(!t) return;
     if(t.hasAttribute("data-new")) location.hash="editar/novo";
     if(t.dataset.edit) location.hash="editar/"+t.dataset.edit;
-    if(t.dataset.play) createRoom(findQuiz(t.dataset.play),t);
+    if(t.dataset.play){const m=await escolherModo();if(m) createRoom(findQuiz(t.dataset.play),t,m)}
     if(t.dataset.dup){const q=structuredClone(findQuiz(t.dataset.dup));q.id=newId();q.title=q.title+" (cópia)";delete q.builtin;await saveQuiz(q);location.hash="editar/"+q.id}
     if(t.dataset.del){if(await confirmBox(`Excluir “${esc(findQuiz(t.dataset.del).title)}”?`,"Excluir")){await remove(R(`quizzes/${uid}/${t.dataset.del}`));viewLibrary()}}
     if(t.hasAttribute("data-imp")) document.getElementById("fImp").click();
@@ -612,7 +668,14 @@ async function viewEditor(id){
 }
 
 /* ---------- APRESENTADOR ---------- */
-async function createRoom(quiz,btn){
+function escolherModo(){
+  return modal(`<h3 class="disp">Tipo de sala</h3><p>Cada jogador entra com um personagem, que aparece na sala, no ranking e no pódio.</p>
+  <div class="mode">
+    <button data-v="geral">${avFace("g.0.5.2.2")}<span><b>Sala geral</b><span>Cada um monta o seu boneco</span></span></button>
+    <button data-v="catolica">${avFace("s.teresinha")}<span><b>Sala católica</b><span>Cada um escolhe um santo entre ${SANTOS.length}</span></span></button>
+  </div>`,`<button class="btn btn-ghost btn-sm" data-close>Cancelar</button>`);
+}
+async function createRoom(quiz,btn,mode="geral"){
   if(!quiz) return;
   btn&&(btn.disabled=true);
   await ready;
@@ -620,7 +683,7 @@ async function createRoom(quiz,btn){
   for(let k=0;k<6;k++){
     const code=String(100000+Math.floor(Math.random()*900000));
     try{
-      await set(R(`rooms/${code}`),{host:uid,createdAt:serverTimestamp(),quiz:pub,state:{phase:"lobby"}});
+      await set(R(`rooms/${code}`),{host:uid,createdAt:serverTimestamp(),quiz:pub,mode,state:{phase:"lobby"}});
       await set(R(`hostdata/${code}`),{quiz:{title:quiz.title,questions:quiz.questions}});
       ls.set("quizarena:sala",code);
       location.hash="host/"+code;return;
@@ -637,6 +700,7 @@ async function hostOpen(code){
   try{hd=(await get(R(`hostdata/${code}`))).val()}catch{hd=null}
   if(!hd){$app.innerHTML=`<div class="top">${BACK}</div><div class="wrap hero"><h1 class="disp">Sala não encontrada</h1><p>Ela pode ter sido encerrada.</p><a class="btn btn-gold" href="#biblioteca">Criar outra sala</a></div>`;return}
   Object.assign(H,{code,quiz:hd.quiz,room:null,players:{},scores:{},answers:{},handled:null});
+  try{H.mode=(await get(R(`rooms/${code}/mode`))).val()||"geral"}catch{H.mode="geral"}
   H.room={state:null};
   let loaded={st:false,pl:false};
   unsub.push(onValue(R(`rooms/${code}/state`),s=>{
@@ -662,7 +726,7 @@ function hostBar(){
   return `<div class="hbar">
     <div class="l">${st.phase==="lobby"?`<a class="back" href="#biblioteca" data-hact="close">← Sair</a>`:""}<span class="pill">${IC.users}<span>Sala ${H.code}<small>● ${n} ${n===1?"participante":"participantes"}</small></span></span></div>
     <img class="marca mid" src="marca.webp" alt="QuizArena">
-    <div class="r">${st.phase!=="lobby"&&st.phase!=="final"?`<span class="pill">Pergunta ${st.i+1} de ${H.quiz.questions.length}</span>`:""}${sndBtn()}<button class="iconbtn" data-act="full" aria-label="Tela cheia" title="Tela cheia">${IC.full}</button></div>
+    <div class="r">${st.i!=null&&st.phase!=="lobby"&&st.phase!=="final"?`<span class="pill">Pergunta ${st.i+1} de ${H.quiz.questions.length}</span>`:""}${sndBtn()}<button class="iconbtn" data-act="full" aria-label="Tela cheia" title="Tela cheia">${IC.full}</button></div>
   </div>`;
 }
 function ansHTML(opts,st,counts){
@@ -686,13 +750,29 @@ function hostRender(){
         </div>
         <div class="panel players">
           <h2 class="disp"><span>Jogadores</span><span style="color:var(--gold)">${names.length}</span></h2>
-          <div class="chips">${names.length?names.map(([id,p])=>`<button class="chip" data-kick="${esc(id)}" title="Remover ${esc(p.name)}">${esc(p.name)}</button>`).join(""):`<p class="empty">Aguardando os jogadores entrarem...</p>`}</div>
+          <div class="chips">${names.length?names.map(([id,p])=>`<button class="chip" data-kick="${esc(id)}" title="Remover ${esc(p.name)}">${avFace(p.av)}${esc(p.name)}</button>`).join(""):`<p class="empty">Aguardando os jogadores entrarem...</p>`}</div>
           <p class="small">Clique num nome para remover o jogador.</p>
           <div class="actions"><button class="btn btn-gold disp" data-hact="start" ${names.length?"":"disabled"}>Começar ▶</button></div>
         </div>
       </div>
-      <p class="small" style="text-align:center;margin:0">Quiz: <b>${esc(H.quiz.title)}</b> · ${H.quiz.questions.length} perguntas</p>
+      <p class="small" style="text-align:center;margin:0">Quiz: <b>${esc(H.quiz.title)}</b> · ${H.quiz.questions.length} perguntas · ${H.mode==="catolica"?"Sala católica":"Sala geral"}</p>
     </div>`;
+  }
+  else if(st.phase==="countdown"){
+    $app.innerHTML=`<div class="stage">${hostBar()}<div class="cd"><div><div class="cdn disp" id="cdn"></div><p>Prepare-se!</p></div></div></div>`;
+    contagem(st.ends);
+    revealTO=setTimeout(()=>{if(hostState().phase==="countdown") startQuestion(0)},Math.max(0,st.ends-now()));
+  }
+  else if(st.phase==="question"&&st.reading){
+    const q=H.quiz.questions[st.i];
+    const ms=Math.max(0,st.readEnds-now());
+    $app.innerHTML=`<div class="stage">${hostBar()}
+      <div class="reading">
+        <div class="panel qcard"><span class="qtag disp">Pergunta ${st.i+1}</span><h1 class="qtext disp">${esc(q.text)}</h1>${q.img?`<img class="qimg" src="${esc(q.img)}" alt="">`:""}</div>
+        <div class="readbar"><i style="animation-duration:${ms}ms"></i></div>
+      </div></div>`;
+    const qk=st.qk;
+    revealTO=setTimeout(()=>{const s=hostState();if(s.phase==="question"&&s.reading&&s.qk===qk) update(R(`rooms/${H.code}/state`),{reading:null,readEnds:null,startedAt:serverTimestamp()})},ms);
   }
   else if(st.phase==="question"||st.phase==="reveal"){
     const q=H.quiz.questions[st.i];
@@ -716,13 +796,13 @@ function hostRender(){
     const last=st.i>=H.quiz.questions.length-1;
     $app.innerHTML=`<div class="stage">${hostBar()}
       <div class="rank"><h2 class="disp">Ranking</h2>
-        ${list.length?list.map((p,k)=>`<div class="panel rrow" style="animation-delay:${k*.08}s"><span class="pos">${k+1}º</span><span class="nm">${esc(p.name)}</span><span class="dl">${p.last?.pts?"+"+p.last.pts:""}</span><span>${p.score}</span></div>`).join(""):`<p class="empty">Ninguém pontuou ainda.</p>`}
+        ${list.length?list.map((p,k)=>`<div class="panel rrow" style="animation-delay:${k*.08}s"><span class="pos">${k+1}º</span>${avFace(p.av)}<span class="nm">${esc(p.name)}${p.prev&&p.rank<p.prev?`<span class="up">▲</span>`:""}</span><span class="dl">${p.last?.pts?"+"+p.last.pts:""}</span><span>${p.score}</span></div>`).join(""):`<p class="empty">Ninguém pontuou ainda.</p>`}
         <div class="actions"><button class="btn btn-gold disp" data-hact="next">${last?"Ver o pódio 🏆":"Próxima pergunta ▶"}</button></div>
       </div></div>`;
   }
   else if(st.phase==="final"){
     const list=ranked();
-    const P=k=>list[k]?`<div class="pcol p${k+1}">${k===0?`<div class="crown">👑</div>`:""}<div class="who disp">${esc(list[k].name)}</div><div class="pts">${list[k].score} pts</div><div class="blk disp">${k+1}</div></div>`:`<div class="pcol p${k+1}" style="visibility:hidden"><div class="blk"></div></div>`;
+    const P=k=>list[k]?`<div class="pcol p${k+1}">${k===0?`<div class="crown">👑</div>`:""}${avImg(list[k].av,"podio","pav")}<div class="who disp">${esc(list[k].name)}</div><div class="pts">${list[k].score} pts</div><div class="blk disp">${k+1}</div></div>`:`<div class="pcol p${k+1}" style="visibility:hidden"><div class="blk"></div></div>`;
     $app.innerHTML=`<div class="stage">${hostBar()}
       <div class="podium">${P(1)}${P(0)}${P(2)}</div>
       ${list.length>3?`<p class="small" style="text-align:center;margin:0">${list.slice(3,10).map((p,k)=>`${k+4}º ${esc(p.name)} (${p.score})`).join(" · ")}</p>`:""}
@@ -734,7 +814,7 @@ function hostRender(){
   $app.onclick=hostClick;
 }
 function ranked(){
-  return Object.entries(H.players).map(([id,p])=>({id,name:p.name,...(H.scores[id]||{score:0})})).map(p=>({...p,score:p.score||0})).sort((a,b)=>b.score-a.score||(a.name>b.name?1:-1));
+  return Object.entries(H.players).map(([id,p])=>({id,name:p.name,av:p.av,...(H.scores[id]||{score:0})})).map(p=>({...p,score:p.score||0})).sort((a,b)=>b.score-a.score||(a.name>b.name?1:-1));
 }
 let ansUnsub=null;
 function hostTimer(st,q){
@@ -758,6 +838,16 @@ function hostTimer(st,q){
   };
   if(st.startedAt){tick();revealTO=setTimeout(reveal,Math.max(0,ends-now())+400)} // garante a revelação mesmo com a aba em segundo plano
 }
+// contagem 3-2-1 (apresentador e jogador)
+function contagem(ends){
+  let last=0;
+  const tick=()=>{
+    const el=document.getElementById("cdn");if(!el) return;
+    const left=ends-now(),n=Math.max(1,Math.ceil(left/1200));
+    if(n!==last){last=n;el.textContent=n;el.style.animation="none";void el.offsetWidth;el.style.animation="";sfx.tick()}
+    if(left>0) timerRAF=requestAnimationFrame(tick);
+  };tick();
+}
 let revealing=false;
 async function reveal(){
   const st=hostState();
@@ -775,7 +865,7 @@ async function reveal(){
       const ok=!!a&&a.c===q.correct;
       const streak=ok?(prev.streak||0)+1:0;
       const pts=ok?points(true,(a.t||0)-st.startedAt,q.time,streak):0;
-      upd[`scores/${id}`]={score:(prev.score||0)+pts,streak,last:{q:st.i,ok,pts,c:a?a.c:-1}};
+      upd[`scores/${id}`]={score:(prev.score||0)+pts,streak,prev:prev.rank||null,last:{q:st.i,ok,pts,c:a?a.c:-1}};
     }
     // posições
     const arr=Object.keys(upd).map(k=>({id:k.slice(7),s:upd[k].score,n:H.players[k.slice(7)].name})).sort((a,b)=>b.s-a.s||(a.n>b.n?1:-1));
@@ -786,16 +876,17 @@ async function reveal(){
   }catch(e){console.error(e);toast("Falha ao revelar a resposta. Tentando de novo...");setTimeout(()=>{revealing=false;reveal()},1500);return}
   revealing=false;
 }
+const READMS=4500; // tempo de leitura antes das alternativas
 async function startQuestion(i){
   const q=H.quiz.questions[i];
-  await update(R(`rooms/${H.code}`),{state:{phase:"question",i,qk:"q"+i,total:H.quiz.questions.length,text:q.text,opts:q.opts,time:q.time,img:q.img||null,startedAt:serverTimestamp(),answered:0}});
+  await update(R(`rooms/${H.code}`),{state:{phase:"question",i,qk:"q"+i,total:H.quiz.questions.length,text:q.text,opts:q.opts,time:q.time,img:q.img||null,reading:true,readEnds:now()+READMS,answered:0}});
 }
 async function hostClick(e){
   const k=e.target.closest("[data-kick]");
   if(k){const p=H.players[k.dataset.kick];if(p&&await confirmBox(`Remover ${esc(p.name)} da sala?`,"Remover")) remove(R(`rooms/${H.code}/players/${k.dataset.kick}`));return}
   const b=e.target.closest("[data-hact]");if(!b) return;
   const a=b.dataset.hact,st=hostState();
-  if(a==="start"){b.disabled=true;H.handled=null;await startQuestion(0)}
+  if(a==="start"){b.disabled=true;H.handled=null;await update(R(`rooms/${H.code}`),{state:{phase:"countdown",ends:now()+3600}})}
   if(a==="skip") reveal();
   if(a==="ranking") await update(R(`rooms/${H.code}/state`),{phase:"ranking"});
   if(a==="next"){b.disabled=true;if(st.i+1<H.quiz.questions.length) await startQuestion(st.i+1); else await update(R(`rooms/${H.code}/state`),{phase:"final"})}
@@ -812,10 +903,11 @@ async function hostClick(e){
 }
 
 /* ---------- JOGADOR ---------- */
-const P={code:null,me:null,score:null,state:null,answered:{},handled:null};
+const P={code:null,me:null,score:null,state:null,answered:{},handled:null,mode:"geral"};
 async function playerOpen(code){
   await ready;
   Object.assign(P,{code,me:null,score:null,state:null,answered:{},handled:null});
+  try{P.mode=(await get(R(`rooms/${code}/mode`))).val()||"geral"}catch{P.mode="geral"}
   $app.innerHTML=`<div class="pl"><div class="pmain"><div class="spin"></div></div></div>`;
   let roomGone=false;
   unsub.push(onValue(R(`rooms/${code}/players/${uid}`),s=>{
@@ -828,6 +920,7 @@ async function playerOpen(code){
       });
       return;
     }
+    preload(P.me.av);
     playerRender();
   }));
   unsub.push(onValue(R(`rooms/${code}/state`),s=>{
@@ -854,12 +947,21 @@ function playerRender(){
   const st=P.state;stopTimer();
   let body="";
   if(st.phase==="lobby"){
-    body=`<div class="pmain"><div class="big">✅</div><h2 class="disp">Você está dentro!</h2><p>Veja seu nome na tela do apresentador.<br>O jogo já vai começar.</p><div class="spin"></div></div>`;
+    body=`<div class="pmain">${avImg(P.me.av,"parado")}<h2 class="disp">Você está dentro!</h2><p>${isSanto(P.me.av)?esc(SNOME[P.me.av.slice(2)])+" · ":""}veja seu nome na tela do apresentador.</p><button class="btn btn-blue btn-sm" data-troca>${P.mode==="catolica"?"Trocar de santo":"Montar meu boneco"}</button></div>`;
+  }
+  else if(st.phase==="countdown"){
+    body=`<div class="cd"><div><div class="cdn disp" id="cdn"></div><p>Prepare-se!</p></div></div>`;
+  }
+  else if(st.phase==="question"&&st.reading){
+    const ms=Math.max(0,st.readEnds-now());
+    body=`<div class="pmain">${avImg(P.me.av,"pensando","bigav sm")}<p>Pergunta ${st.i+1} de ${st.total}</p><h2 class="disp" style="font-size:clamp(22px,6vw,30px)">${esc(st.text)}</h2><div class="readbar"><i style="animation-duration:${ms}ms"></i></div></div>`;
   }
   else if(st.phase==="question"){
     const mine=P.answered[st.qk];
     if(mine!=null){
-      body=`<div class="pmain"><div class="pbtn c${mine}" style="width:120px;min-height:120px;pointer-events:none"><span class="ic">${ICONS[mine]}</span></div><h2 class="disp">Resposta enviada!</h2><p>Aguardando os outros jogadores...</p><div class="spin"></div></div>`;
+      body=`<div class="pmain">${avImg(P.me.av,"rezando","bigav sm")}<div class="pbtn c${mine}" style="width:72px;min-height:72px;padding:6px;pointer-events:none"><span class="ic" style="font-size:40px">${ICONS[mine]}</span></div><h2 class="disp">Resposta enviada!</h2><p>Aguardando os outros jogadores...</p><div class="spin"></div></div>`;
+    }else if(!st.startedAt){
+      body=`<div class="pmain"><div class="spin"></div></div>`;
     }else{
       body=`<div class="pq">Pergunta ${st.i+1} de ${st.total}: ${esc(st.text)}</div>
       <div class="ptime"><i id="pt"></i></div>
@@ -872,7 +974,7 @@ function playerRender(){
     else{
       const ok=l.ok;
       if(P.handled!==st.qk+"r"){P.handled=st.qk+"r";ok?sfx.ok():sfx.bad()}
-      body=`<div class="result ${ok?"ok":"no"}"><div class="big">${ok?"🎉":l.c<0?"⏰":"❌"}</div>
+      body=`<div class="result ${ok?"ok":"no"}">${avImg(P.me.av,ok?"feliz":"triste","bigav sm")}
         <h2 class="disp">${ok?"Acertou!":l.c<0?"Acabou o tempo":"Errou"}</h2>
         ${ok?`<div class="badge">+${l.pts} pontos</div>`:""}
         ${P.score.streak>1?`<div class="badge">🔥 ${P.score.streak} acertos seguidos</div>`:""}
@@ -882,18 +984,20 @@ function playerRender(){
   else if(st.phase==="final"){
     const r=P.score?.rank;
     if(P.handled!=="final"){P.handled="final";if(r&&r<=3){sfx.win();confetti(3500)}}
-    body=`<div class="pmain"><div class="big">${r===1?"🏆":r===2?"🥈":r===3?"🥉":"🎯"}</div>
+    body=`<div class="pmain">${avImg(P.me.av,r&&r<=3?"podio":"feliz","bigav sm")}<div class="big">${r===1?"🏆":r===2?"🥈":r===3?"🥉":"🎯"}</div>
       <h2 class="disp">${r?`${r}º lugar`:"Fim de jogo"}</h2>
       <p>${P.score?.score||0} pontos</p>
       <p class="small">Fique na sala: o apresentador pode começar outra partida.</p>
       <div class="foot">${SUG}</div></div>`;
   }
   $app.innerHTML=`<div class="pl">${pbar()}${body}</div>`;
-  if(st.phase==="question"&&P.answered[st.qk]==null&&st.startedAt){
+  if(st.phase==="countdown") contagem(st.ends);
+  if(st.phase==="question"&&!st.reading&&P.answered[st.qk]==null&&st.startedAt){
     const ends=st.startedAt+st.time*1000;
     const t=()=>{const el=document.getElementById("pt");if(!el) return;const left=Math.max(0,ends-now());el.style.width=(100*left/(st.time*1000))+"%";if(left>0) timerRAF=requestAnimationFrame(t)};t();
   }
   $app.onclick=async e=>{
+    if(e.target.closest("[data-troca]")) return abrirPicker();
     const b=e.target.closest("[data-ans]");if(!b) return;
     const c=+b.dataset.ans,qk=P.state.qk;
     if(P.answered[qk]!=null) return;
@@ -901,6 +1005,46 @@ function playerRender(){
     try{await set(R(`rooms/${P.code}/answers/${qk}/${uid}`),{c,t:serverTimestamp()})}
     catch(x){console.error(x);if(P.state.qk===qk&&P.state.phase==="question"){delete P.answered[qk];playerRender();toast("Não foi possível enviar. Toque de novo.")}}
   };
+}
+
+/* ---------- seletor de personagem ---------- */
+async function salvarAv(av){
+  ls.set("quizarena:av:"+P.mode,av);preload(av);
+  try{await update(R(`rooms/${P.code}/players/${uid}`),{av})}catch(x){console.error(x);toast("Não foi possível trocar. Tente de novo.")}
+}
+function abrirPicker(){
+  const m=document.createElement("div");m.className="modal";
+  const fechar=()=>m.remove();
+  if(P.mode==="catolica"){
+    const cur=P.me?.av;
+    m.innerHTML=`<div class="panel dialog picker" role="dialog" aria-modal="true"><h3 class="disp">Escolha seu santo</h3>
+      <input class="inp" id="pk" placeholder="Buscar pelo nome" autocomplete="off">
+      <div class="grid">${SANTOS.map(([id,n])=>`<button class="opt ${cur==="s."+id?"on":""}" data-s="${id}" data-n="${esc(semAcento(n))}"><img src="santos/${id}-rosto.webp" alt="" loading="lazy">${esc(n)}</button>`).join("")}</div>
+      <div class="actions"><button class="btn btn-ghost btn-sm" data-x>Fechar</button></div></div>`;
+    m.addEventListener("input",e=>{const q=semAcento(e.target.value.trim());m.querySelectorAll(".opt").forEach(o=>o.hidden=q&&!o.dataset.n.includes(q))});
+    m.addEventListener("click",e=>{
+      const o=e.target.closest("[data-s]");if(o){salvarAv("s."+o.dataset.s);fechar();return}
+      if(e.target.closest("[data-x]")||e.target===m) fechar();
+    });
+  }else{
+    let v=B.ler(P.me?.av);
+    const LIM={c:B.CORPOS.length,k:B.CORES.length,o:B.OLHOS.length,a:B.ACESSORIOS.length};
+    const draw=()=>{
+      m.innerHTML=`<div class="panel dialog picker" role="dialog" aria-modal="true"><h3 class="disp">Monte seu boneco</h3>
+        <div class="pprev">${B.svg(B.montar(v),"feliz")}</div>
+        ${[["c","Corpo",B.CORPOS[v.c]],["k","Cor",`<span class="sw" style="background:${B.CORES[v.k][0]}"></span>`],["o","Olhos",B.OLHOS[v.o]],["a","Acessório",B.ACESSORIOS[v.a]]].map(([k,l,val])=>`<div class="prow"><button class="btn btn-ghost btn-sm" data-d="${k}:-1" aria-label="${l} anterior">◀</button><b>${l}: ${val}</b><button class="btn btn-ghost btn-sm" data-d="${k}:1" aria-label="Próximo ${l}">▶</button></div>`).join("")}
+        <div class="actions"><button class="btn btn-ghost btn-sm" data-r>🎲 Sortear</button><button class="btn btn-gold btn-sm" data-ok>Pronto</button></div></div>`;
+    };
+    draw();
+    m.addEventListener("click",e=>{
+      const d=e.target.closest("[data-d]");
+      if(d){const [k,s]=d.dataset.d.split(":");v[k]=(v[k]+ +s+LIM[k])%LIM[k];draw();return}
+      if(e.target.closest("[data-r]")){v=B.ler(B.sortear());draw();return}
+      if(e.target.closest("[data-ok]")){salvarAv(B.montar(v));fechar();return}
+      if(e.target===m) fechar();
+    });
+  }
+  document.body.appendChild(m);
 }
 
 /* ---------- inicialização ---------- */
