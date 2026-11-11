@@ -260,8 +260,8 @@ textarea.inp{resize:vertical;min-height:64px}
 .timer.low{animation:shake .5s infinite}
 .ans.right{animation:glow 1.2s ease-in-out infinite}
 .ans.wrong{transform:scale(.95)}
-.bars{display:flex;justify-content:center;align-items:flex-end;gap:clamp(12px,2vw,30px);height:clamp(80px,15vh,170px)}
-.bar{width:clamp(56px,7vw,110px);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bars{display:flex;justify-content:center;align-items:flex-end;gap:clamp(12px,2vw,30px);margin:-6px 0}
+.bar{width:clamp(56px,7vw,110px);display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 .bar i{display:block;width:100%;border-radius:10px 10px 0 0;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#fff),var(--c));transform-origin:bottom;animation:grow .9s cubic-bezier(.2,1.2,.4,1) both;min-height:6px;box-shadow:0 0 16px color-mix(in srgb,var(--c) 60%,transparent)}
 .bar b{font-family:"Exo 2";font-style:italic;font-size:clamp(20px,2.4vw,34px);line-height:1;margin-bottom:4px;animation:fadein .4s .7s both}
 .bar span{font-size:clamp(18px,2vw,28px);color:#fff;margin-top:4px;display:flex;gap:6px;align-items:center;font-weight:900}
@@ -891,7 +891,7 @@ function hostTimer(st,q){
 }
 function barsHTML(opts,counts,correct){
   const mx=Math.max(1,...opts.map((_,j)=>counts[j]||0));
-  return `<div class="bars">${opts.map((o,j)=>`<div class="bar c${j} ${j===correct?"":"wrong"}"><b>${counts[j]||0}</b><i style="height:${Math.max(5,78*(counts[j]||0)/mx)}%;animation-delay:${j*.09}s"></i><span>${ICONS[j]}${j===correct?"✓":""}</span></div>`).join("")}</div>`;
+  return `<div class="bars">${opts.map((o,j)=>`<div class="bar c${j} ${j===correct?"":"wrong"}"><b>${counts[j]||0}</b><i style="height:calc(${((counts[j]||0)/mx).toFixed(3)} * clamp(36px,9vh,110px) + 6px);animation-delay:${j*.09}s"></i><span>${ICONS[j]}${j===correct?"✓":""}</span></div>`).join("")}</div>`;
 }
 function countUp(el,from,to,ms=900){
   const t0=performance.now();
