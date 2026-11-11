@@ -406,7 +406,7 @@ const REDUZ=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const POSES=["parado","feliz","triste","pensando","podio","rezando"];
 const isSanto=av=>typeof av==="string"&&av.startsWith("s.")&&!!SNOME[av.slice(2)];
 /* animações quadro a quadro (WebP animado) por santo */
-const ANIM={carlo:["acenar","comemorar","podio","palmas","errou"]};
+const ANIM_IDS=["carlo", "jp2", "pedro", "teresinha"];const ANIM=Object.fromEntries(ANIM_IDS.map(i=>[i,["acenar","comemorar","podio","palmas","errou"]]));
 function avImg(av,pose="parado",cls="bigav",anim=""){
   if(isSanto(av)){const id=av.slice(2),a=anim&&ANIM[id]&&ANIM[id].includes(anim)&&!REDUZ;
     return `<img class="avi ${cls}${a?" anim":""}" src="santos/${a?id+"-anim-"+anim:id+"-"+pose}.webp" alt="${esc(SNOME[id])}">`;}
