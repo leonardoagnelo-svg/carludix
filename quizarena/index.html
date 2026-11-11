@@ -948,7 +948,7 @@ function playerRender(){
   const st=P.state;stopTimer();
   let body="";
   if(st.phase==="lobby"){
-    body=`<div class="pmain">${avImg(P.me.av,"parado")}<h2 class="disp">Você está dentro!</h2><p>${isSanto(P.me.av)?esc(SNOME[P.me.av.slice(2)])+" · ":""}veja seu nome na tela do apresentador.</p><button class="btn btn-blue btn-sm" data-troca>${P.mode==="catolica"?"Trocar de santo":"Montar meu boneco"}</button></div>`;
+    body=`<div class="pmain">${avImg(P.me.av,"parado")}<h2 class="disp">Você está dentro!</h2><p>${isSanto(P.me.av)?esc(SNOME[P.me.av.slice(2)])+" · veja":"Veja"} seu nome na tela do apresentador.</p><button class="btn btn-blue btn-sm" data-troca>${P.mode==="catolica"?"Trocar de santo":"Montar meu boneco"}</button></div>`;
   }
   else if(st.phase==="countdown"){
     body=`<div class="cd"><div><div class="cdn disp" id="cdn"></div><p>Prepare-se!</p></div></div>`;
