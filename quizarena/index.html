@@ -829,7 +829,7 @@ function hostRender(){
       ${reveal?barsHTML(q.opts,st.counts||[],q.correct):""}
       ${ansHTML(q.opts,{...st,correct:q.correct},reveal?st.counts:null,!reveal&&H.anim!==st.qk)}
       <div class="status">
-        ${reveal?`<button class="btn btn-gold disp" data-hact="ranking">Ver ranking ▶</button>`
+        ${reveal?(st.i>=H.quiz.questions.length-1?`<button class="btn btn-gold disp" data-hact="podio">Ver o pódio 🏆</button>`:`<button class="btn btn-gold disp" data-hact="ranking">Ver ranking ▶</button>`)
         :`<span class="pill"><span class="dot">✓</span>${IC.users}<span id="nAns">${st.answered||0}</span>&nbsp;de <span id="nTot">${pcount()}</span> responderam</span><button class="btn btn-ghost btn-sm" data-hact="skip">Encerrar tempo</button>`}
       </div>
     </div>`;
@@ -984,6 +984,7 @@ async function hostClick(e){
   if(a==="start"){b.disabled=true;H.handled=null;await update(R(`rooms/${H.code}`),{state:{phase:"countdown",ends:now()+3600}})}
   if(a==="skip") reveal();
   if(a==="ranking") await update(R(`rooms/${H.code}/state`),{phase:"ranking"});
+  if(a==="podio"){b.disabled=true;await update(R(`rooms/${H.code}/state`),{phase:"final"})}
   if(a==="next"){b.disabled=true;if(st.i+1<H.quiz.questions.length) await startQuestion(st.i+1); else await update(R(`rooms/${H.code}/state`),{phase:"final"})}
   if(a==="again"){
     H.handled=null;
