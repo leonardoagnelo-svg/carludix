@@ -911,7 +911,7 @@ function hostRender(){
   }
   else if(st.phase==="final"){
     const list=ranked();
-    const P=k=>list[k]?`<div class="pcol p${k+1}">${k===0?`<div class="crown">👑</div>`:""}${avImg(list[k].av,"podio","pav",k===0?"podio":"palmas")}<div class="who disp">${esc(list[k].name)}</div><div class="pts">${list[k].score} pts</div><div class="blk disp">${k+1}</div></div>`:`<div class="pcol p${k+1}" style="visibility:hidden"><div class="blk"></div></div>`;
+    const P=k=>list[k]?`<div class="pcol p${k+1}">${avImg(list[k].av,"podio","pav",k===0?"podio":"palmas")}<div class="who disp">${esc(list[k].name)}</div><div class="pts">${list[k].score} pts</div><div class="blk disp">${k+1}</div></div>`:`<div class="pcol p${k+1}" style="visibility:hidden"><div class="blk"></div></div>`;
     $app.innerHTML=`<div class="stage">${hostBar()}
       <div class="podium">${P(1)}${P(0)}${P(2)}</div>
       ${list.length>3?`<p class="small" style="text-align:center;margin:0">${list.slice(3,10).map((p,k)=>`${k+4}º ${esc(p.name)} (${p.score})`).join(" · ")}</p>`:""}
