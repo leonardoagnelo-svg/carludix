@@ -319,6 +319,7 @@ textarea.inp{resize:vertical;min-height:64px}
 @keyframes respira{0%,100%{transform:scale(1)}50%{transform:scale(1.012,1.02)}}
 .bigav.anim{animation:pop .45s ease-out,respira 2.8s .45s ease-in-out infinite}.pcol .pav.anim{animation:respira 2.8s ease-in-out infinite}
 .bigav{height:auto;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}
+qa-vid{display:block;aspect-ratio:1/1;height:auto}qa-vid>img,qa-vid>canvas{display:block;width:100%;height:100%;object-fit:contain}.pcol qa-vid.pav{width:auto;aspect-ratio:1/1}.bigav.vanim,.pcol .pav.vanim{animation:pop .45s ease-out}
 .cd{flex:1;display:grid;place-items:center;text-align:center}
 .cdn{font-size:clamp(120px,30vh,280px);line-height:1;color:var(--gold);text-shadow:0 0 40px rgba(255,170,0,.6),0 8px 0 #a65c00;animation:cdpop 1.2s ease-out}
 .cd p{color:var(--muted);font-size:clamp(18px,2.4vw,30px);font-weight:700;margin:10px 0 0}
@@ -407,7 +408,31 @@ const POSES=["parado","feliz","triste","pensando","podio","rezando"];
 const isSanto=av=>typeof av==="string"&&av.startsWith("s.")&&!!SNOME[av.slice(2)];
 /* animações quadro a quadro (WebP animado) por santo */
 const ANIM={"antonio":["acenar","comemorar","errou","palmas","podio"],"aparecida":["acenar","comemorar","errou","palmas","podio"],"bento":["acenar","comemorar","errou","palmas","podio"],"carlo":["acenar","comemorar","errou","palmas","podio"],"clara":["acenar","comemorar","errou","palmas","podio"],"cristorei":["acenar","comemorar","errou","palmas","podio"],"expedito":["acenar","comemorar","errou","palmas","podio"],"fatima":["acenar","comemorar","errou","palmas","podio"],"francisco":["acenar","comemorar","errou","palmas","podio"],"franciscopaula":["acenar","comemorar","errou","palmas","podio"],"gabriel":["acenar","comemorar","errou","palmas"],"gracas":["acenar","comemorar","errou","palmas","podio"],"guadalupe":["acenar","comemorar","errou","palmas","podio"],"isabel":["acenar","comemorar","errou","palmas","podio"],"joaobatista":["acenar"],"joaodacruz":["acenar","comemorar","errou","palmas","podio"],"jorge":["acenar","comemorar","errou","palmas","podio"],"jose":["acenar","comemorar","errou","palmas","podio"],"jp2":["acenar","comemorar","errou","palmas","podio"],"luisgonzaga":["acenar","comemorar","errou","palmas","podio"],"miguel":["acenar","comemorar","errou","palmas","podio"],"padrepio":["acenar","comemorar","errou","palmas","podio"],"paulo":["acenar","comemorar","errou","palmas","podio"],"pedro":["acenar","comemorar","errou","palmas","podio"],"rafael":["acenar","comemorar","errou","palmas"],"rita":["acenar","comemorar","errou","palmas","podio"],"teresaavila":["acenar","comemorar","errou","palmas","podio"],"teresinha":["acenar","comemorar","errou","palmas","podio"]};
+/* animações em vídeo (Gemini): MP4 com transparência empilhada (cor em cima, alfa embaixo), desenhado em WebGL */
+const VID={"miguel":["acenar","comemorar","errou","palmas","podio"]};
+if(!customElements.get("qa-vid"))customElements.define("qa-vid",class extends HTMLElement{
+  connectedCallback(){if(this._on)return;this._on=1;
+    const poster=document.createElement("img");poster.src=this.dataset.poster;poster.alt=this.getAttribute("aria-label")||"";this.append(poster);
+    const cv=document.createElement("canvas");cv.width=300;cv.height=300;
+    const gl=cv.getContext("webgl",{premultipliedAlpha:true,alpha:true});if(!gl)return;
+    const v=document.createElement("video");Object.assign(v,{muted:true,loop:true,playsInline:true,autoplay:true,preload:"auto"});v.setAttribute("playsinline","");v.setAttribute("muted","");v.src=this.dataset.src;
+    const sh=(t,c)=>{const o=gl.createShader(t);gl.shaderSource(o,c);gl.compileShader(o);return o};
+    const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,"attribute vec2 p;varying vec2 u;void main(){u=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0,1);}"));
+    gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,"precision mediump float;varying vec2 u;uniform sampler2D t;void main(){vec3 c=texture2D(t,vec2(u.x,u.y*.5)).rgb;float a=texture2D(t,vec2(u.x,.5+u.y*.5)).r;gl_FragColor=vec4(min(c,vec3(a)),a);}"));
+    gl.linkProgram(pr);gl.useProgram(pr);
+    const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    const l=gl.getAttribLocation(pr,"p");gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+    const tx=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tx);
+    for(const[k,val]of[[gl.TEXTURE_MIN_FILTER,gl.LINEAR],[gl.TEXTURE_MAG_FILTER,gl.LINEAR],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]])gl.texParameteri(gl.TEXTURE_2D,k,val);
+    const draw=()=>{if(!this.isConnected){v.pause();v.removeAttribute("src");v.load();return}
+      if(v.readyState>=2){gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,v);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+        if(!this._shown){this._shown=1;poster.replaceWith(cv)}}
+      v.requestVideoFrameCallback?v.requestVideoFrameCallback(draw):requestAnimationFrame(draw)};
+    v.addEventListener("loadeddata",draw,{once:true});v.play().catch(()=>{});
+  }});
 function avImg(av,pose="parado",cls="bigav",anim=""){
+  if(isSanto(av)&&anim&&!REDUZ&&VID[av.slice(2)]&&VID[av.slice(2)].includes(anim)){const id=av.slice(2);
+    return `<qa-vid class="avi ${cls} vanim" role="img" aria-label="${esc(SNOME[id])}" data-src="santos/${id}-v-${anim}.mp4" data-poster="santos/${id}-${pose}.webp"></qa-vid>`;}
   if(isSanto(av)){const id=av.slice(2),a=anim&&ANIM[id]&&ANIM[id].includes(anim)&&!REDUZ;
     return `<img class="avi ${cls}${a?" anim":""}" src="santos/${a?id+"-anim-"+anim:id+"-"+pose}.webp" alt="${esc(SNOME[id])}">`;}
   return B.svg(av,pose,"avi "+cls);
