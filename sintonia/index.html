@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sintonia — dê a dica, ache o ponto | CARLUDIX</title>
+<meta name="description" content="Sintonia: jogo de grupo para toda a família. Um dá a dica, o grupo tenta achar o ponto escondido na régua entre dois extremos.">
+<meta name="theme-color" content="#16123a">
+<meta property="og:title" content="Sintonia — CARLUDIX">
+<meta property="og:description" content="Um dá a dica, o grupo acha o ponto na régua. Jogo de grupo para toda a família.">
+<meta property="og:image" content="https://carludix.com/sintonia/logo.png">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- INÍCIO -->
+  <section class="tela ativa" id="tela-inicio">
+    <nav class="topo"><a class="voltar" href="https://carludix.com/">← CARLUDIX</a></nav>
+    <div class="capa">
+      <img class="logo" src="logo.png" alt="" width="132" height="132">
+      <h1 class="titulo">Sintonia</h1>
+      <p class="sub">Um dá a dica. O grupo acha o ponto.</p>
+      <div class="regua-demo" aria-hidden="true">
+        <span class="demo-esq">Frio</span>
+        <div class="demo-trilho"><i class="demo-alvo"></i><i class="demo-pino"></i></div>
+        <span class="demo-dir">Quente</span>
+      </div>
+      <button class="btn grande" data-ir="config">Jogar</button>
+      <button class="btn fantasma" data-acao="regras">Como se joga</button>
+    </div>
+    <footer class="rodape">
+      <a href="https://carludix.com/privacidade/">Privacidade</a>
+      <a href="https://carludix.com/contato/?jogo=Sintonia" target="_blank" rel="noopener">💡 Enviar sugestão</a>
+    </footer>
+  </section>
+
+  <!-- CONFIGURAÇÃO -->
+  <section class="tela" id="tela-config">
+    <nav class="topo"><button class="voltar" data-ir="inicio">← Voltar</button></nav>
+    <h2>Monte a partida</h2>
+
+    <div class="bloco">
+      <h3>Modo</h3>
+      <div class="opcoes" id="op-modo">
+        <button class="op" data-modo="equipes"><b>👥 Equipes</b><small>2 times, quem chegar na meta vence</small></button>
+        <button class="op" data-modo="coop"><b>🤝 Cooperativo</b><small>Todos juntos, 10 rodadas</small></button>
+      </div>
+    </div>
+
+    <div class="bloco" id="bloco-times">
+      <h3>Times</h3>
+      <div class="times-nomes">
+        <label class="time-input t0"><span>☀️</span><input id="nome-0" maxlength="16" value="Time Sol" aria-label="Nome do time 1"></label>
+        <label class="time-input t1"><span>🌙</span><input id="nome-1" maxlength="16" value="Time Lua" aria-label="Nome do time 2"></label>
+      </div>
+      <h3>Meta de pontos</h3>
+      <div class="chips" id="op-meta">
+        <button class="chip" data-meta="20">20</button>
+        <button class="chip" data-meta="30">30</button>
+        <button class="chip" data-meta="50">50</button>
+      </div>
+    </div>
+
+    <div class="bloco" id="bloco-recorde" hidden>
+      <p class="recorde-info">🏆 Recorde do grupo neste aparelho: <b id="recorde-config">—</b></p>
+    </div>
+
+    <div class="bloco">
+      <h3>Pacotes de cartas <small>(escolha um ou mais)</small></h3>
+      <div class="pacotes" id="op-pacotes"></div>
+    </div>
+
+    <button class="btn grande" id="btn-comecar">Começar</button>
+  </section>
+
+  <!-- PASSE O APARELHO -->
+  <section class="tela centro" id="tela-passe">
+    <div class="placar" data-placar></div>
+    <p class="rodada-info" data-rodada></p>
+    <div class="cartao-aviso">
+      <div class="aviso-ico">📱</div>
+      <h2>Passe para o Sintonizador</h2>
+      <p id="passe-quem"></p>
+      <p class="dica-suave">Os outros: fechem os olhos ou virem o rosto 🙈</p>
+    </div>
+    <button class="btn grande" data-acao="sou-sintonizador">Sou o Sintonizador</button>
+    <button class="btn fantasma pequeno" data-acao="sair">Encerrar partida</button>
+  </section>
+
+  <!-- SINTONIZADOR -->
+  <section class="tela" id="tela-sintonizador">
+    <div class="placar" data-placar></div>
+    <p class="instrucao">Só você olha! Veja onde está o alvo e pense em <b>uma dica</b>.</p>
+    <div class="carta" data-carta></div>
+    <div class="regua" id="regua-sint">
+      <div class="trilho"><div class="zona" id="zona-sint"></div><div class="marcas"></div></div>
+      <div class="extremos" data-extremos></div>
+    </div>
+    <button class="btn segurar" id="btn-segurar" aria-label="Toque e segure para ver o alvo">
+      <span class="seg-ico">👁️</span> Toque e segure para ver o alvo
+    </button>
+    <p class="exemplo">Ex.: régua “Frio ⟷ Quente”, alvo perto do quente → dica “café”.</p>
+    <div class="linha-botoes">
+      <button class="btn fantasma" data-acao="trocar-carta">🔄 Trocar carta</button>
+      <button class="btn" id="btn-pronto" data-acao="pronto" disabled>Tenho a dica →</button>
+    </div>
+  </section>
+
+  <!-- PALPITE DO GRUPO -->
+  <section class="tela" id="tela-palpite">
+    <div class="placar" data-placar></div>
+    <p class="instrucao">Sintonizador: fale sua dica em voz alta! <br>Grupo: conversem e arrastem o marcador.</p>
+    <div class="carta" data-carta></div>
+    <div class="regua" id="regua-palpite">
+      <div class="trilho" id="trilho-palpite">
+        <div class="marcas"></div>
+        <div class="pino" id="pino" role="slider" tabindex="0" aria-label="Palpite" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
+      </div>
+      <div class="extremos" data-extremos></div>
+    </div>
+    <p class="dica-suave">Arraste o marcador (ou toque na régua)</p>
+    <button class="btn grande" data-acao="travar">🔒 Travar palpite</button>
+  </section>
+
+  <!-- REVELAÇÃO -->
+  <section class="tela" id="tela-revelacao">
+    <div class="placar" data-placar></div>
+    <div class="carta" data-carta></div>
+    <div class="regua" id="regua-rev">
+      <div class="trilho">
+        <div class="zona" id="zona-rev"></div>
+        <div class="marcas"></div>
+        <div class="pino fixo" id="pino-rev"><i></i></div>
+      </div>
+      <div class="extremos" data-extremos></div>
+    </div>
+    <div class="resultado" id="resultado">
+      <div class="res-rotulo" id="res-rotulo"></div>
+      <div class="res-pontos" id="res-pontos"></div>
+      <div class="res-dist" id="res-dist"></div>
+    </div>
+    <button class="btn grande" data-acao="proximo" id="btn-proximo">Próxima rodada →</button>
+  </section>
+
+  <!-- FIM -->
+  <section class="tela centro" id="tela-fim">
+    <div class="fim-ico" id="fim-ico">🏆</div>
+    <h2 id="fim-titulo"></h2>
+    <p id="fim-texto" class="fim-texto"></p>
+    <div class="placar grande-placar" data-placar></div>
+    <ol class="historico" id="historico"></ol>
+    <button class="btn grande" data-acao="revanche">Jogar de novo</button>
+    <button class="btn fantasma" data-ir="config">Mudar a partida</button>
+    <button class="btn fantasma" data-acao="compartilhar">📤 Chamar mais gente</button>
+    <footer class="rodape">
+      <a href="https://carludix.com/">← CARLUDIX</a>
+      <a href="https://carludix.com/contato/?jogo=Sintonia" target="_blank" rel="noopener">💡 Enviar sugestão</a>
+    </footer>
+  </section>
+
+  <!-- COMO SE JOGA -->
+  <div class="modal" id="modal-regras" hidden>
+    <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="regras-titulo">
+      <h2 id="regras-titulo">Como se joga</h2>
+      <ol class="regras">
+        <li>Aparece uma carta com dois extremos, um em cada ponta da régua (ex.: <b>Frio ⟷ Quente</b>).</li>
+        <li>O <b>Sintonizador</b> da vez segura o botão e vê, só ele, onde está o alvo escondido.</li>
+        <li>Ele fala <b>uma dica</b> (uma palavra ou frase curta) que fique naquele ponto da régua.</li>
+        <li>O grupo conversa, arrasta o marcador e toca em <b>Travar palpite</b>.</li>
+        <li>O alvo aparece e vocês ganham pontos pela distância:</li>
+      </ol>
+      <table class="tabela-pontos">
+        <tr><td>até 3</td><td><b>10 pontos</b> — Na mosca!</td></tr>
+        <tr><td>até 8</td><td><b>6 pontos</b> — Quase!</td></tr>
+        <tr><td>até 15</td><td><b>3 pontos</b> — Perto</td></tr>
+        <tr><td>mais de 15</td><td>0 ponto</td></tr>
+      </table>
+      <p><b>Equipes:</b> a vez alterna entre os times; vence quem chegar primeiro na meta.<br>
+         <b>Cooperativo:</b> todos juntos, 10 rodadas, tentem bater o recorde.</p>
+      <p class="dica-suave">Vale tudo na dica, menos números, gestos e falar os extremos da carta!</p>
+      <button class="btn grande" data-acao="fechar-regras">Entendi</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+</main>
+<script src="cartas.js"></script>
+<script src="motor.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>
