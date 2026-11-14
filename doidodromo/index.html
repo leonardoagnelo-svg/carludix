@@ -2390,11 +2390,11 @@
     try {
       T = (await getTransportKind()) === 'room' ? await roomTransport(code) : await fbTransport(code);
       if (T && T.kind === 'fb' && host && await T.exists()) { code = makeCode(); T.leave(); T = await fbTransport(code); }
-    } catch (e) { console.error(e); T = null; }
+    } catch (e) { console.error(e); T = null; if (/permission/i.test(String(e && e.message))) { netMsg('O online deste jogo ainda não foi liberado no servidor. Enquanto isso, jogue no mesmo aparelho ou com o dado de verdade.'); return; } }
     if (!T) { netMsg('Não deu para conectar ao servidor do jogo. Confira a internet e tente de novo.'); return; }
     Object.assign(NET, { on: true, T, code, host, seq: 0, log: [], buf: {}, started: false, startMsg: null, hostPeer: null, myPeer: T.me(), bots: 0, players: [] });
     try { await T.setMe({ name: NET.name, host, v: 1 }); }
-    catch (e) { console.error(e); netLeave(); netMsg('O servidor recusou a sala. O online deste jogo ainda precisa ser liberado no Firebase.'); return; }
+    catch (e) { console.error(e); netLeave(); netMsg('O online deste jogo ainda não foi liberado no servidor. Enquanto isso, jogue no mesmo aparelho ou com o dado de verdade.'); return; }
     T.onPlayers(list => { NET.players = list; NET.myPeer = NET.myPeer || T.me(); if (!NET.started) renderLobby(); else if (NET.host && T.kind === 'room') netResendStart(); });
     T.onStart((d, hp) => { if (NET.host || NET.started) return; NET.hostPeer = hp; NET.myPeer = NET.myPeer || T.me(); netStart(d); });
     T.onAct((seq, a, peer) => { if (NET.host) return; if (T.kind === 'room' && peer !== NET.hostPeer) return; netReceive({ seq, a }); });
