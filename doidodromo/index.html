@@ -84,6 +84,8 @@
   /* números */
   .nums { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
   .num { width:64px; height:64px; font-size:32px; border-radius:16px; }
+  .two-steps { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:8px; }
+  .two-steps .lbl { font-family:var(--display); font-weight:800; font-size:20px; margin-bottom:6px; }
   .stepper { display:flex; align-items:center; justify-content:center; gap:10px; }
   .stepper .val { width:70px; height:56px; border-radius:12px; background:#0a1f66; border:3px solid var(--line); font-family:var(--display); font-weight:800; font-size:30px; display:grid; place-items:center; }
   .stepper .btn { width:56px; height:56px; padding:0; font-size:30px; }
@@ -128,7 +130,7 @@
   .draftwrap .cards { grid-template-columns: repeat(3, 1fr); }
   @media (max-width:480px) { .draftwrap .cards { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width:760px) { .draftwrap { grid-template-columns: 1fr; } }
-  .team { background:#0a1f66; border:3px solid var(--line); border-radius:18px; padding:12px; text-align:center; }
+  .team { position:sticky; top:8px; background:#0a1f66; border:3px solid var(--line); border-radius:18px; padding:12px; text-align:center; }
   .team .slots { display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin:10px 0; }
   .team .slot { aspect-ratio:1; border-radius:14px; background:#ffffff14; border:2px dashed #ffffff55; display:grid; place-items:center; font-size:40px; }
   .team .slot.full { background:#fff; border:3px solid var(--gold2); }
@@ -242,6 +244,59 @@
   .cdx { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
   .cdx a { color:#fff; font-weight:800; font-size:14px; text-decoration:none; background:#0a1f66b3; border:2px solid #ffffff40; padding:5px 12px; border-radius:99px; }
   .cdx a:hover { background:#0a1f66; }
+  .ntag { display:inline-flex; align-items:center; gap:6px; font-weight:800; color:#fff; background:#0a1f66; border-radius:99px; padding:2px 10px 2px 4px; vertical-align:middle; }
+  .ntag .dot { width:14px; height:14px; }
+  .cover { text-align:center; background:#0a1f66; border:3px dashed #ffffff55; border-radius:20px; padding:22px 14px; margin:8px auto; max-width:520px; }
+  .cover p { font-weight:700; }
+  .cards.choose { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .confirmbar { position:sticky; bottom:8px; margin-top:12px; z-index:3; }
+  .rc.rev { position:relative; }
+  .rc .order { position:absolute; left:8px; top:28px; width:44px; height:44px; border-radius:50%; background: linear-gradient(180deg, var(--gold1), var(--gold2)); color:var(--brown); font-family:var(--display); font-weight:800; font-size:20px; display:grid; place-items:center; border:3px solid #fff; box-shadow:0 3px 0 #0003; }
+  .rc .who { margin:0 8px 10px; }
+  .rc .who .ntag { font-size:13px; }
+  .team .tt { font-size:24px; }
+  @media (max-width:760px) {
+    .team { position:sticky; top:auto; bottom:8px; z-index:3; display:grid; grid-template-columns: 1fr auto; align-items:center; gap:8px; padding:8px; box-shadow:0 -6px 20px #0008; }
+    .team .tt { display:none; }
+    .team .slots { grid-template-columns: repeat(4, 46px); margin:0; gap:6px; }
+    .team .slot { width:46px; height:46px; aspect-ratio:auto; font-size:24px; }
+    .team .btn { width:auto; font-size:16px; padding:8px 12px; }
+    .cards.choose { grid-template-columns: repeat(2, 1fr); }
+    .rc p { font-size:14px; }
+    .rc .band { font-size:13px; }
+  }
+  .stage { user-select:none; -webkit-user-select:none; }
+  .stage .place { font:inherit; color:#fff; text-align:left; display:flex; align-items:center; }
+  .stage .place .face { position:relative; overflow:visible; }
+  .stage .place .face img { border-radius:50%; }
+  .pdot { position:absolute; right:-3px; bottom:-3px; width:14px; height:14px; border-radius:50%; border:2px solid #fff; }
+  .mini-casa { display:none; }
+  .stage.tall .place { flex-direction:column; gap:2px; padding:4px 6px; }
+  .stage.tall .place .pos { width:auto; font-size:13px; }
+  .stage.tall .mini-casa { display:block; font-size:11px; font-weight:800; background:#0006; border-radius:99px; padding:0 6px; }
+  .dk-info .who { color:#fff; }
+  .lp { margin-top:4px; font-size:13px; font-weight:800; color:var(--gold1); min-height:1.2em; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+  .react { position:absolute; left:50%; top:62px; transform:translateX(-50%); display:flex; gap:10px; align-items:center; background: linear-gradient(180deg, #8f5cff, #5a2bc4); border:3px solid #e0ccff; border-radius:18px; padding:6px 14px 6px 6px; z-index:5; max-width:92%; box-shadow:0 8px 20px #0008; animation: pop .25s; transition: opacity .25s; font-weight:700; }
+  .react img { width:54px; height:54px; object-fit:contain; flex:none; }
+  .hist .hlist { max-height:50vh; overflow:auto; display:flex; flex-direction:column; gap:4px; font-size:14px; }
+  .hist .hlist div:first-child { color:var(--gold1); font-weight:800; }
+  .stage.short .dock { left:auto; right:8px; top:8px; bottom:8px; transform:none; width:270px; flex-direction:column; align-items:stretch; gap:6px; overflow:auto; border-left:3px solid var(--line); border-top:6px solid var(--pc); padding:8px; }
+  .stage.short .dk-por { width:56px; height:56px; margin:0 auto; }
+  .stage.short .dk-info { text-align:center; }
+  .stage.short .dk-info h3 { font-size:17px; }
+  .stage.short .dk-info p { font-size:12px; }
+  .stage.short .dk-act { width:100%; }
+  .stage.short .dk-act .numpad { grid-template-columns: repeat(3, 1fr); }
+  .stage.short .dk-act .btn.big { font-size:18px; padding:8px 10px; }
+  .stage.short .hud-top { right:290px; }
+  .stage.short .places { top:54px; width:150px; }
+  .stage.short .place .sc { display:none; }
+  .stage.short .react { top:54px; left:calc(50% - 140px); }
+  .intro .ico { font-size: min(110px, 18vh); }
+  .intro .bigt { font-size: clamp(36px, min(9vw, 13vh), 92px); }
+  .intro { min-height: min(70vh, 560px); }
+  @media (max-width:600px) { .hud-btns { gap:4px; } .hud-btns .iconbtn { width:34px; height:34px; font-size:16px; border-radius:10px; } .chip { flex:none; font-size:13px; padding:5px 10px; }
+    .dk-info p { font-size:13.5px; } .stage .place .sc { font-size:13px; } .pk-card .muted { font-size:13px; } }
   /* pódio e placar */
   .overlay { position:fixed; inset:0; background:#061450cc; display:flex; align-items:center; justify-content:center; padding:16px; z-index:10; animation: fade .25s; }
   @keyframes fade { from { opacity:0; } }
@@ -259,6 +314,8 @@
   .ptable td { background:#0a1f66; padding:8px 10px; font-weight:800; }
   .ptable td:first-child { border-radius:12px 0 0 12px; width:44px; font-family:var(--display); font-size:20px; color:var(--gold1); }
   .ptable td:last-child { border-radius:0 12px 12px 0; text-align:right; font-family:var(--display); font-size:20px; }
+  .ptable.race td.gain { text-align:right; font-family:var(--display); font-size:18px; color:var(--gold1); }
+  .ptable.race tr.lead td.gain { color:var(--brown); }
   .ptable tr.lead td { background: linear-gradient(180deg, #ffe36e, #ffb400); color:var(--brown); }
   .ptable tr.lead td:first-child { color:var(--brown); }
   .x2 { display:inline-flex; align-items:center; gap:8px; background: linear-gradient(180deg, #ffe36e, #ffb400); color:var(--brown); border-radius:99px; padding:4px 16px 4px 4px; font-weight:800; margin:10px 0; }
@@ -1406,13 +1463,14 @@
         if (here.length) {
           const n = Math.min(2, here.length);
           here.forEach(o => setPos(g, o, o.pos - 1, 'back'));
+          ev(g, { t: 'react', pid: r.pid, rid: r.rid, text: 'Empurrou quem estava na casa e avançou!' });
           log(g, `${rname(r.rid)} empurrou ${here.map(o => rname(o.rid)).join(', ')} e anda +${n}`);
           moveBy(g, r, n);
         }
       }
       if (r.rid === 'ventilador') {
         const hit = g.racers.filter(o => o !== r && !o.done && o.rid !== 'camaleao' && (o.pos === r.pos || o.pos === r.pos - 1));
-        if (hit.length) { fx(g, r, '🌬️', 'whoosh'); hit.forEach(o => setPos(g, o, o.pos - 2, 'back')); log(g, `${rname(r.rid)} soprou ${hit.map(o => rname(o.rid)).join(', ')} 2 casas para trás`); }
+        if (hit.length) { fx(g, r, '🌬️', 'whoosh'); ev(g, { t: 'react', pid: r.pid, rid: r.rid, text: 'Soprou quem estava perto 2 casas para trás!' }); hit.forEach(o => setPos(g, o, o.pos - 2, 'back')); log(g, `${rname(r.rid)} soprou ${hit.map(o => rname(o.rid)).join(', ')} 2 casas para trás`); }
       }
     }
     // reações dos outros, na ordem de jogo a partir do seguinte
@@ -1422,9 +1480,9 @@
       const o = g.racers[(start + k) % n];
       if (o.done || o.reactRound === g.round) continue;
       const before = o.pos;
-      if (o.rid === 'tatu' && old < o.pos && target > o.pos) { log(g, `${rname(o.rid)} foi chutado e rolou +1`); moveBy(g, o, 1); }
-      else if (o.rid === 'fofoqueira' && six) { log(g, `${rname(o.rid)} viu o 6 e saiu contando (+1)`); moveBy(g, o, 1); }
-      else if (o.rid === 'ima' && !r.done && r.pos - o.pos >= 1 && r.pos - o.pos <= 2) { log(g, `${rname(o.rid)} foi puxado até ${rname(r.rid)}`); setPos(g, o, r.pos, 'fly'); }
+      if (o.rid === 'tatu' && old < o.pos && target > o.pos) { log(g, `${rname(o.rid)} foi chutado e rolou +1`); ev(g, { t: 'react', pid: o.pid, rid: o.rid, text: 'Foi chutado e rolou +1!' }); moveBy(g, o, 1); }
+      else if (o.rid === 'fofoqueira' && six) { log(g, `${rname(o.rid)} viu o 6 e saiu contando (+1)`); ev(g, { t: 'react', pid: o.pid, rid: o.rid, text: 'Viu o 6 e saiu contando! +1' }); moveBy(g, o, 1); }
+      else if (o.rid === 'ima' && !r.done && r.pos - o.pos >= 1 && r.pos - o.pos <= 2) { log(g, `${rname(o.rid)} foi puxado até ${rname(r.rid)}`); ev(g, { t: 'react', pid: o.pid, rid: o.rid, text: 'Foi puxado até ' + BY_ID[r.rid].nome + '!' }); setPos(g, o, r.pos, 'fly'); }
       if (o.pos !== before || o.done) o.reactRound = g.round;
     }
     endTurn(g);
@@ -1543,7 +1601,10 @@
   const S = { speed: store.get('velocidade', 'normal'), sound: store.get('som', '1') === '1', light: store.get('leve', '0') === '1', art: store.get('bonecos', 'arte') === 'arte' };
   const ART = rid => 'img/c/' + rid + '.webp';
   const face = (rid, cls = '') => `<img class="art ${cls}" src="${ART(rid)}" alt="${esc(C.BY_ID[rid].nome)}" draggable="false">`;
-  const SPD = () => FAST_URL ? 0.02 : S.speed === 'rapido' ? 0.45 : 1;
+  const IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  document.addEventListener('keydown', e => { const t = e.target; if ((e.key === 'Enter' || e.key === ' ') && t && t.getAttribute && t.getAttribute('role') === 'button') { e.preventDefault(); t.click(); } });
+  const REDUCED = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const SPD = () => FAST_URL ? 0.02 : REDUCED ? 0.3 : S.speed === 'rapido' ? 0.45 : 1;
   const wait = ms => new Promise(r => setTimeout(r, ms * SPD()));
 
   // ---------- Som ----------
@@ -1612,7 +1673,7 @@
 
   // ---------- Estado ----------
   let g = null, busy = false, evi = 0, view = null, shownPid = null, botTimer = null, gate = null;
-  const flow = { mode: 'local', n: 4, bots: 3, names: ['Você', 'Jogador 2', 'Jogador 3', 'Jogador 4', 'Jogador 5', 'Jogador 6'] };
+  const flow = { mode: 'local', people: 1, bots: 3, names: ['Jogador 1', 'Jogador 2', 'Jogador 3', 'Jogador 4', 'Jogador 5', 'Jogador 6'] };
   const NET = { on: false, room: null, nr: null, code: null, host: false, myPeer: null, hostPeer: null, seq: 0, log: [], buf: {}, started: false, startMsg: null, name: store.get('nome', '') };
 
   const isMine = pid => NET.on ? g.players[pid].peer === NET.myPeer : !g.players[pid].bot;
@@ -1650,29 +1711,35 @@
     screen(`<div class="panel narrow" style="max-width:900px">${backBtn}
       <h2 class="scrtitle stroke">Escolha o modo de jogo</h2>
       <div class="modes" style="margin-top:12px">
-        <div class="mode m1" data-m="local"><div class="ic">👥</div><h3 class="stroke">No mesmo aparelho</h3><p>Joguem passando a vez no celular, no computador ou na TV.</p></div>
-        <div class="mode m2" data-m="dado"><div class="ic">🎲</div><h3 class="stroke">Eu tenho o dado</h3><p>Cada um rola o seu dado de verdade e toca o número na tela.</p></div>
-        <div class="mode m3" data-m="online"><div class="ic">📶</div><h3 class="stroke">Online</h3><p>Cada um no seu celular, numa sala com código.</p></div>
+        <div class="mode m1" data-m="local" role="button" tabindex="0"><div class="ic">👥</div><h3 class="stroke">No mesmo aparelho</h3><p>Joguem passando a vez no celular, no computador ou na TV.</p></div>
+        <div class="mode m2" data-m="dado" role="button" tabindex="0"><div class="ic">🎲</div><h3 class="stroke">Eu tenho o dado</h3><p>Cada um rola o seu dado de verdade e toca o número na tela.</p></div>
+        <div class="mode m3" data-m="online" role="button" tabindex="0"><div class="ic">📶</div><h3 class="stroke">Online</h3><p>Cada um no seu celular, numa sala com código.</p></div>
       </div></div>`, goMenu);
     app.querySelectorAll('.mode').forEach(el => el.onclick = () => { flow.mode = el.dataset.m; el.dataset.m === 'online' ? showOnline() : showPlayers(); });
   }
 
   function showPlayers() {
-    flow.bots = Math.min(flow.bots, flow.n - 1);
-    const humans = flow.n - flow.bots;
+    flow.people = Math.max(1, Math.min(6, flow.people || 1));
+    flow.bots = Math.max(0, Math.min(6 - flow.people, flow.bots));
+    if (flow.people + flow.bots < 2) flow.bots = 2 - flow.people;
+    const total = flow.people + flow.bots;
     screen(`<div class="panel narrow">${backBtn}
-      <h2 class="scrtitle stroke">Quantos jogadores?</h2>
-      <div class="nums" style="margin:10px 0 16px">${[2, 3, 4, 5, 6].map(n => `<button class="btn num ${n === flow.n ? 'gold' : 'blue'}" data-n="${n}">${n}</button>`).join('')}</div>
-      <div class="center"><div style="font-weight:800;margin-bottom:6px">Bots (opcional)</div>
-      <div class="stepper"><button class="btn blue" id="bm">−</button><div class="val">${flow.bots}</div><button class="btn blue" id="bp">+</button></div></div>
-      <div class="names">${Array.from({ length: humans }, (_, i) => `<div class="nm"><span class="dot" style="background:${COLORS[i]}"></span><input class="txt" data-i="${i}" maxlength="12" value="${esc(flow.names[i])}" aria-label="Nome do jogador ${i + 1}"></div>`).join('')}</div>
-      ${physical() ? '<p class="note" style="margin-top:12px">🎲 Cada jogador rola o próprio dado na mesa e toca o número na tela. Os bots rolam o dado deles aqui no jogo.</p>' : ''}
-      <div class="center" style="margin-top:16px"><button class="btn gold big" id="go">Continuar ›</button></div></div>`, showModes);
-    app.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { flow.n = +b.dataset.n; showPlayers(); });
-    app.querySelector('#bm').onclick = () => { flow.bots = Math.max(0, flow.bots - 1); showPlayers(); };
-    app.querySelector('#bp').onclick = () => { flow.bots = Math.min(flow.n - 1, flow.bots + 1); showPlayers(); };
+      <h2 class="scrtitle stroke">Quem vai correr?</h2>
+      <div class="two-steps">
+        <div class="center"><div class="lbl">👥 Pessoas</div><div class="stepper"><button class="btn blue" id="pm" aria-label="Menos uma pessoa">−</button><div class="val" aria-live="polite">${flow.people}</div><button class="btn blue" id="pp" aria-label="Mais uma pessoa">+</button></div></div>
+        <div class="center"><div class="lbl">🤖 Bots</div><div class="stepper"><button class="btn blue" id="bm" aria-label="Menos um bot">−</button><div class="val" aria-live="polite">${flow.bots}</div><button class="btn blue" id="bp" aria-label="Mais um bot">+</button></div></div>
+      </div>
+      <p class="center" style="font-weight:800;margin:10px 0 0">${total} corredores na pista <span class="muted">(de 2 a 6)</span></p>
+      <div class="names">${Array.from({ length: flow.people }, (_, i) => `<div class="nm"><span class="dot" style="background:${COLORS[i]}"></span><input class="txt" data-i="${i}" maxlength="12" value="${esc(flow.names[i])}" aria-label="Nome do jogador ${i + 1}"></div>`).join('')}</div>
+      ${physical() ? '<p class="note" style="margin-top:12px">🎲 Cada pessoa rola o próprio dado na mesa e toca o número na tela. Os bots rolam o dado deles aqui no jogo.</p>' : ''}
+      <div class="center" style="margin-top:16px"><button class="btn gold big" id="go">Começar ›</button></div></div>`, showModes);
+    const set = (p, b) => { flow.people = p; flow.bots = b; showPlayers(); };
+    app.querySelector('#pm').onclick = () => set(Math.max(1, flow.people - 1), flow.bots);
+    app.querySelector('#pp').onclick = () => { if (flow.people + flow.bots < 6) set(flow.people + 1, flow.bots); else if (flow.bots > 0) set(flow.people + 1, flow.bots - 1); };
+    app.querySelector('#bm').onclick = () => set(flow.people, Math.max(0, flow.bots - 1));
+    app.querySelector('#bp').onclick = () => set(flow.people, Math.min(6 - flow.people, flow.bots + 1));
     app.querySelectorAll('input.txt').forEach(el => el.oninput = () => { flow.names[+el.dataset.i] = el.value; });
-    app.querySelector('#go').onclick = () => showTracks(() => startLocal());
+    app.querySelector('#go').onclick = () => startLocal();
   }
 
   function showTracks(onGo, back = showPlayers) {
@@ -1688,9 +1755,9 @@
   }
 
   function startLocal() {
-    const humans = flow.n - flow.bots;
+    const humans = flow.people;
     const ps = [];
-    for (let i = 0; i < flow.n; i++) {
+    for (let i = 0; i < humans + flow.bots; i++) {
       const bot = i >= humans;
       ps.push({ name: bot ? ['Bot Ana', 'Bot Beto', 'Bot Caio', 'Bot Duda', 'Bot Edu'][i - humans] : ((flow.names[i] || '').trim() || 'Jogador ' + (i + 1)), bot, level: 'esperto', color: COLORS[i] });
     }
@@ -1758,58 +1825,62 @@
     const tcls = r.tipo.startsWith('Dado') ? 't-dado' : r.tipo.startsWith('Reação') ? 't-reacao' : r.tipo.startsWith('Passivo') ? 't-passivo' : 't-antes';
     const m = r.tipo.match(/\((\dx)\)/);
     const tname = { 't-dado': 'Mexe no dado', 't-reacao': 'Reage aos outros', 't-passivo': 'Sempre ativo', 't-antes': 'Poder especial' }[tcls] + (m ? ' · ' + m[1] : '');
-    return `<div class="rc ${tcls} ${opts.cls || ''}" data-rid="${rid}" style="animation-delay:${(opts.i || 0) * 50}ms">
+    const isPick = /\bpick\b/.test(opts.cls || '');
+    return `<div class="rc ${tcls} ${opts.cls || ''}" data-rid="${rid}" style="animation-delay:${(opts.i || 0) * 50}ms"${isPick ? ` role="button" tabindex="0" aria-pressed="false" aria-label="${esc(r.nome)}: ${esc(r.poder)}"` : ''}>
       <div class="band">${tname}</div><div class="por">${face(rid)}</div>
       <h3>${esc(r.nome)}</h3><p>${esc(r.poder)}</p>${opts.extra || ''}</div>`;
   }
   const humansHere = () => g.players.filter(p => isMine(p.id)).length;
-  function gateScreen(pid, what, onOpen) {
-    const p = g.players[pid];
-    screen(`<div class="panel narrow center" style="max-width:480px;margin-top:40px">
-      <div style="font-size:64px">🙈</div>
-      <h2 class="scrtitle stroke">Vez de <span style="color:${p.color}">${esc(p.name)}</span></h2>
-      <p class="scrsub">${what}<br>Os outros não olham!</p>
-      <button class="btn gold big" id="open">Sou eu, mostrar</button></div>`);
-    app.querySelector('#open').onclick = () => { gate = pid; onOpen(); };
-  }
+  const nameTag = p => `<span class="ntag"><span class="dot" style="background:${p.color}"></span>${esc(p.name)}</span>`;
+  const botName = p => esc(p.name) + (p.bot ? ' 🤖' : '');
   function waitingScreen(title, who) {
     screen(`<div class="panel narrow center" style="max-width:520px;margin-top:40px">
       <div style="font-size:60px">⏳</div><h2 class="scrtitle stroke">${title}</h2>
-      <p class="scrsub">Esperando: ${who.map(p => `<b style="color:${p.color}">${esc(p.name)}</b>`).join(', ')}</p></div>`);
+      <p class="scrsub">Faltam: ${who.map(nameTag).join(' ')}</p></div>`);
+  }
+  // capa "os outros não olham" dentro da própria tela
+  function coverHTML(p, what, left) {
+    return `<div class="cover"><div style="font-size:60px">🙈</div><h3 class="stroke" style="font-size:26px">Vez de ${nameTag(p)}</h3>
+      <p>${what} Os outros não olham!</p>
+      <button class="btn gold big" id="reveal">Mostrar minhas cartas</button>
+      ${left.length > 1 ? `<p class="muted" style="font-size:14px;margin-top:10px">Depois: ${left.filter(x => x.id !== p.id).map(nameTag).join(' ')}</p>` : ''}</div>`;
   }
   let draftFor = null;
   function showDraftStep() {
     botTick();
     const mine = g.players.filter(p => isMine(p.id) && !p.hand);
-    if (!mine.length) { draftFor = null; return waitingScreen('Montando as mãos...', g.players.filter(p => !p.hand)); }
+    if (!mine.length) { draftFor = null; return waitingScreen('Montando os times...', g.players.filter(p => !p.hand)); }
     const h = mine[0];
     if (draftFor === h.id) return;
-    if (humansHere() > 1 && gate !== h.id) { draftFor = null; return gateScreen(h.id, 'Escolha os 4 corredores do seu time.', () => { draftFor = null; showDraftStep(); }); }
     draftFor = h.id;
-    renderDraft(h.id);
+    renderDraft(h.id, humansHere() > 1 && gate !== h.id, mine);
   }
-  function renderDraft(pid) {
+  function renderDraft(pid, locked, left) {
     const p = g.players[pid];
     const sel = [];
     screen(`<div class="panel" style="margin-top:6px">
-      <h2 class="scrtitle stroke">Escolha seus corredores</h2>
-      <p class="scrsub"><b style="color:${p.color}">${esc(p.name)}</b>, você recebeu ${C.HAND_OFFER} corredores. Escolha ${C.HAND_KEEP} para o seu time: cada um corre uma das 4 corridas.</p>
-      <div class="draftwrap">
+      <h2 class="scrtitle stroke">Monte seu time</h2>
+      <p class="scrsub">${nameTag(p)} recebeu ${C.HAND_OFFER} corredores. Escolha ${C.HAND_KEEP}: cada um corre uma das 4 corridas.</p>
+      ${locked ? coverHTML(p, 'Escolha os 4 corredores do seu time.', left) : `<div class="draftwrap">
         <div class="cards">${p.offer.map((rid, i) => cardHTML(rid, { i, cls: 'pick' })).join('')}</div>
-        <div class="team"><h3 class="stroke" style="font-size:24px">Seu time (<span id="cnt">0</span>/${C.HAND_KEEP})</h3>
+        <div class="team"><h3 class="stroke tt">Seu time (<span id="cnt">0</span>/${C.HAND_KEEP})</h3>
           <div class="slots">${Array.from({ length: C.HAND_KEEP }, () => '<div class="slot"></div>').join('')}</div>
-          <button class="btn green wide" id="ok" disabled>Confirmar</button></div>
-      </div></div>`);
+          <button class="btn green wide" id="ok" disabled>Confirmar time</button></div>
+      </div>`}</div>`);
+    if (locked) { app.querySelector('#reveal').onclick = () => { gate = pid; draftFor = null; showDraftStep(); }; return; }
     const ok = app.querySelector('#ok');
     const paint = () => {
       app.querySelector('#cnt').textContent = sel.length;
       app.querySelectorAll('.slot').forEach((s, i) => { s.innerHTML = sel[i] ? face(sel[i]) : ''; s.classList.toggle('full', !!sel[i]); });
       ok.disabled = sel.length !== C.HAND_KEEP;
+      ok.textContent = sel.length === C.HAND_KEEP ? 'Confirmar time ✔' : `Escolha mais ${C.HAND_KEEP - sel.length}`;
     };
+    paint();
     app.querySelectorAll('.rc').forEach(el => el.onclick = () => {
       const rid = el.dataset.rid, k = sel.indexOf(rid);
-      if (k >= 0) { sel.splice(k, 1); el.classList.remove('sel'); }
-      else if (sel.length < C.HAND_KEEP) { sel.push(rid); el.classList.add('sel'); sfx('pick'); }
+      if (k >= 0) { sel.splice(k, 1); el.classList.remove('sel'); el.setAttribute('aria-pressed', 'false'); }
+      else if (sel.length < C.HAND_KEEP) { sel.push(rid); el.classList.add('sel'); el.setAttribute('aria-pressed', 'true'); sfx('pick'); }
+      else toast('Seu time já tem 4. Toque num escolhido para trocar.');
       paint();
     });
     ok.onclick = () => { ok.disabled = true; gate = null; draftFor = null; submit({ k: 'keep', pid, ids: sel.slice() }); };
@@ -1824,25 +1895,30 @@
     if (!mine.length) { chooseFor = null; return waitingScreen('Todos escolhendo em segredo...', g.players.filter(p => !g.picks[p.id])); }
     const h = mine[0];
     if (chooseFor === h.id) return;
-    if (humansHere() > 1 && gate !== h.id) { chooseFor = null; return gateScreen(h.id, `Escolha em segredo quem corre na corrida ${g.raceIdx + 1}.`, () => { chooseFor = null; showChooseStep(); }); }
     chooseFor = h.id;
-    renderChoose(h.id);
+    renderChoose(h.id, humansHere() > 1 && gate !== h.id, mine);
   }
-  function renderChoose(pid) {
+  function renderChoose(pid, locked, left) {
     const p = g.players[pid];
     const t = C.TRACKS[g.track];
+    let pick = null;
     screen(`<div class="panel" style="margin-top:6px">
-      <div class="center"><div class="ribbon">${g.raceIdx === 3 ? 'Grande Final' : 'Corrida ' + (g.raceIdx + 1) + ' de 4'}<small>${t.nome}${g.raceIdx === 3 ? ', pontos em dobro' : ''}</small></div></div>
-      <p class="scrsub" style="margin-top:12px"><b style="color:${p.color}">${esc(p.name)}</b>, quem do seu time corre agora? Todos revelam juntos.</p>
-      <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(170px, 1fr))">${p.hand.map((rid, i) => { const used = p.used.includes(rid); return cardHTML(rid, { i, cls: used ? 'used' : 'pick', extra: used ? '<p><i>Já correu</i></p>' : '' }); }).join('')}</div>
-      <div class="row" style="justify-content:center;margin-top:14px">${g.players.map(x => `<span class="pill" style="font-size:14px"><span class="dot" style="background:${x.color};display:inline-block;vertical-align:middle"></span> ${esc(x.name)} <b>${x.score}</b> ${x.hand ? x.hand.map(r => `<span class="mini" style="opacity:${x.used.includes(r) ? .3 : 1}">${face(r)}</span>`).join('') : ''}</span>`).join('')}</div>
+      <div class="center"><div class="ribbon">${g.raceIdx === 3 ? 'Grande Final' : 'Corrida ' + (g.raceIdx + 1) + ' de 4'}<small>${g.track === 'sol' ? '☀️' : '🌙'} ${t.nome}${g.raceIdx === 3 ? ', pontos em dobro' : ''}</small></div></div>
+      <p class="scrsub" style="margin-top:12px">${nameTag(p)}, quem do seu time corre agora? Todos revelam juntos.</p>
+      ${locked ? coverHTML(p, `Escolha em segredo quem corre na corrida ${g.raceIdx + 1}.`, left) : `
+      <div class="cards choose">${p.hand.map((rid, i) => { const used = p.used.includes(rid); return cardHTML(rid, { i, cls: used ? 'used' : 'pick', extra: used ? '<p><i>Já correu</i></p>' : '' }); }).join('')}</div>
+      <div class="confirmbar"><button class="btn green big wide" id="ok" disabled>Toque num corredor</button></div>`}
+      <div class="row" style="justify-content:center;margin-top:14px">${g.players.map(x => `<span class="pill" style="font-size:14px">${nameTag(x)} <b>${x.score} pts</b> ${x.hand ? x.hand.map(r => `<span class="mini" style="opacity:${x.used.includes(r) ? .3 : 1}">${face(r)}</span>`).join('') : ''}</span>`).join('')}</div>
     </div>`);
-    app.querySelectorAll('.rc.pick').forEach(el => el.onclick = async () => {
-      if (busy) return; busy = true;
-      el.classList.add('sel'); sfx('pick'); await wait(350); busy = false;
-      gate = null; chooseFor = null;
-      submit({ k: 'choose', pid, rid: el.dataset.rid });
+    if (locked) { app.querySelector('#reveal').onclick = () => { gate = pid; chooseFor = null; showChooseStep(); }; return; }
+    const ok = app.querySelector('#ok');
+    app.querySelectorAll('.rc.pick').forEach(el => el.onclick = () => {
+      app.querySelectorAll('.rc.pick').forEach(x => { x.classList.remove('sel'); x.setAttribute('aria-pressed', 'false'); });
+      el.classList.add('sel'); el.setAttribute('aria-pressed', 'true'); sfx('pick');
+      pick = el.dataset.rid;
+      ok.disabled = false; ok.textContent = `Correr com ${C.BY_ID[pick].nome} ›`;
     });
+    ok.onclick = () => { if (!pick) return; ok.disabled = true; gate = null; chooseFor = null; submit({ k: 'choose', pid, rid: pick }); };
   }
 
   // ---------- Revelação e largada ----------
@@ -1853,17 +1929,17 @@
     evi = k + 1;
     screen(`<div class="panel" style="margin-top:6px">
       <h2 class="scrtitle stroke">Revelando os corredores!</h2>
-      <p class="scrsub">Ordem de largada, da esquerda para a direita.</p>
-      <div class="cards">${g.order.map((pid, i) => cardHTML(g.picks[pid], { i: i * 3, extra: `<p style="color:${g.players[pid].color};font-size:14px">${i + 1}º · ${esc(g.players[pid].name)}</p>` })).join('')}</div></div>`);
+      <p class="scrsub">Os números mostram a ordem de largada.</p>
+      <div class="cards">${g.order.map((pid, i) => cardHTML(g.picks[pid], { i: i * 3, cls: 'rev', extra: `<div class="order">${i + 1}º</div><p class="who">${nameTag(g.players[pid])}</p>` })).join('')}</div></div>`);
     g.order.forEach((_, i) => setTimeout(() => sfx('pick'), i * 150 * SPD()));
-    await wait(1800);
+    await wait(2000);
     if (!g || g.phase !== 'race') return;
     const t = C.TRACKS[g.track];
     screen(`<div class="intro center">
       <div class="ribbon">${g.raceIdx === 3 ? 'Grande Final' : 'Corrida ' + (g.raceIdx + 1) + ' de 4'}</div>
       <div class="ico">${g.track === 'sol' ? '☀️' : '🌙'}</div>
       <div class="bigt stroke">${t.nome}</div>
-      <div class="pill">🏁 Largada em instantes!</div></div>`);
+      <div class="pill">${g.track === 'sol' ? 'Pista tranquila' : 'Pista noturna, cheia de imprevistos'} · 🏁 Largada em instantes!</div></div>`);
     await wait(1600);
     if (!g) return;
     startRaceView();
@@ -1894,25 +1970,26 @@
     clearScreen(); top.style.display = 'none';
     app.className = 'racing';
     const vertical = window.innerHeight > window.innerWidth * 1.05;
+    const short = !vertical && window.innerHeight < 520;
     const G = makeGeom(vertical);
     const t = C.TRACKS[g.track], lua = g.track === 'lua';
     app.innerHTML = `
-      <div class="stage ${vertical ? 'tall' : 'wide'}" id="stage">
+      <div class="stage ${vertical ? 'tall' : 'wide'} ${short ? 'short' : ''}" id="stage">
         <div id="b3"></div>
         <div class="fxl" id="fxl"></div>
         <div id="dice"></div>
         <div class="hud-top">
           <div class="chip" id="sub3d"></div>
           <div class="hud-btns">
-            <button class="iconbtn" id="hHelp" title="Casas especiais">❔</button>
-            <button class="iconbtn" id="hFull" title="Tela cheia">⛶</button>
+            <button class="iconbtn" id="hHist" title="Histórico da corrida" aria-label="Histórico da corrida">📜</button>
+            <button class="iconbtn" id="hHelp" title="Casas especiais" aria-label="Casas especiais">❔</button>
+            ${IOS ? '' : '<button class="iconbtn" id="hFull" title="Tela cheia" aria-label="Tela cheia">⛶</button>'}
             <button class="iconbtn" id="hSnd" title="Som"></button>
             <button class="iconbtn" id="hCfg" title="Configurações">⚙️</button>
             <button class="iconbtn" id="hHome" title="Menu">🏠</button>
           </div>
         </div>
         <div class="places" id="places"></div>
-        <div class="caption" id="caption"></div>
         <div class="dock" id="turn"></div>
       </div>`;
     view = { G, disp: {}, mode: '3d', reserve: 0 };
@@ -1924,7 +2001,8 @@
     app.querySelector('#hCfg').onclick = () => showSettings(true);
     app.querySelector('#hHome').onclick = () => { if (confirmLeave()) goMenu(); };
     app.querySelector('#hHelp').onclick = showLegend;
-    app.querySelector('#hFull').onclick = () => {
+    app.querySelector('#hHist').onclick = showHistory;
+    if (app.querySelector('#hFull')) app.querySelector('#hFull').onclick = () => {
       try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => toast('Seu navegador não deixou abrir em tela cheia')); } catch (e) { toast('Seu navegador não deixou abrir em tela cheia'); }
     };
     if (!(window.THREE && window.Board3D && Board3D.webglOK())) {
@@ -1942,14 +2020,16 @@
   // espaço que os painéis ocupam por cima do tabuleiro
   function safeArea() {
     const st = document.getElementById('stage'); if (!st) return { top: 0, right: 0, bottom: 0, left: 0 };
-    const tall = st.classList.contains('tall');
-    const hud = st.querySelector('.hud-top'), pl = st.querySelector('.places');
+    const tall = st.classList.contains('tall'), short = st.classList.contains('short');
+    const hud = st.querySelector('.hud-top'), pl = st.querySelector('.places'), dk = st.querySelector('.dock');
     const topH = (hud ? hud.offsetHeight + 10 : 50) + (tall && pl ? pl.offsetHeight + 6 : 0);
+    if (short) return { top: topH + 4, bottom: 6, left: pl ? pl.offsetWidth + 14 : 6, right: (dk ? dk.offsetWidth : 270) + 16 };
     const bottom = Math.max(view ? view.reserve : 0, tall ? 210 : 150);
     return { top: topH + 6, bottom: bottom + 10, left: !tall && pl ? pl.offsetWidth + 18 : 6, right: 6 };
   }
   function checkReserve() {
     const d = document.getElementById('turn'); if (!d || !view || !view.b3) return;
+    if (document.getElementById('stage').classList.contains('short')) return;
     const h = d.offsetHeight;
     if (h > view.reserve + 30) { view.reserve = h; view.b3.refit(); }
   }
@@ -1962,6 +2042,15 @@
     d.onclick = () => d.remove();
     st.appendChild(d); sfx('pick');
     setTimeout(() => d.remove(), 6000);
+  }
+  function showHistory() {
+    const st = document.getElementById('stage'); if (!st) return;
+    st.querySelectorAll('.peek').forEach(x => x.remove());
+    const items = g.log.filter(l => l.race === g.raceIdx && !l.msg.startsWith('—')).slice(-40).reverse();
+    const d = document.createElement('div'); d.className = 'peek';
+    d.innerHTML = `<div class="pk-card legend hist"><h3 class="stroke" style="font-size:24px">📜 O que aconteceu</h3><div class="hlist">${items.map(l => `<div>${esc(l.msg)}</div>`).join('') || '<div class="muted">Nada ainda.</div>'}</div><p class="muted" style="font-size:13px;margin:8px 0 0">Toque para fechar</p></div>`;
+    d.onclick = () => d.remove();
+    st.appendChild(d);
   }
   function showLegend() {
     const st = document.getElementById('stage'); if (!st) return;
@@ -1978,7 +2067,7 @@
     const pos = view.disp[pid];
     const same = g.racers.filter(r => view.disp[r.pid] === pos).map(r => r.pid);
     let [x, y] = view.G.sq(pos);
-    if (same.length > 1) { const k = same.indexOf(pid), a = (k / same.length) * 2 * Math.PI - Math.PI / 2; x += Math.cos(a) * 19; y += Math.sin(a) * 19; }
+    if (same.length > 1) { const k = same.indexOf(pid), a = (k / same.length) * 2 * Math.PI - Math.PI / 2, rad = (pos === 0 || pos === C.FIN) ? 34 : 19; x += Math.cos(a) * rad; y += Math.sin(a) * rad; }
     return [x, y];
   }
   const cur = {};
@@ -2020,6 +2109,7 @@
       if (kind === 'walk') sfx('land');
     }
     view.disp[pid] = to;
+    if (kind === 'walk' && to > from) floatText(pid, `+${to - from} casas`);
     refreshPlaces();
     await layoutPieces(160);
   }
@@ -2044,6 +2134,7 @@
     const [ic, h, p] = CASA_TXT[e.kind](e);
     const d = document.createElement('div'); d.className = 'casa';
     d.innerHTML = `<div class="ttl">Casa especial!</div><div class="ic">${ic}</div><h3 class="stroke">${h}</h3><div style="display:flex;justify-content:center">${face(e.rid, 'cfa')}</div><p>${esc(p)}</p>`;
+    const sa = safeArea(); d.style.left = (sa.left + (wrap.clientWidth - sa.left - sa.right) / 2) + 'px'; d.style.top = (sa.top + (wrap.clientHeight - sa.top - sa.bottom) / 2) + 'px';
     wrap.appendChild(d);
     await wait(1100);
     d.style.transition = 'opacity .2s'; d.style.opacity = 0; setTimeout(() => d.remove(), 220);
@@ -2056,6 +2147,7 @@
     if (e.physical) { box.innerHTML = `<div class="fixedmove">🎲 ${e.dice.join(' + ')}</div>`; sfx('land'); await wait(450); return; }
     box.innerHTML = '';
     sfx('rattle');
+    if (REDUCED) { box.innerHTML = `<div class="fixedmove">🎲 ${e.dice.join(' + ')}</div>`; await wait(500); return; }
     if (view.b3) {
       const p = view.b3.throwDice(e.dice);
       [0.45, 0.72, 0.88].forEach((k, i) => setTimeout(() => sfx(i === 0 ? 'land' : 'step'), k * 1100 * SPD()));
@@ -2065,11 +2157,18 @@
     await wait(350);
   }
 
-  function caption(text) { const c = document.getElementById('caption'); if (c) c.textContent = text || ''; }
+  let lastLine = '';
+  function caption(text) { lastLine = text || ''; const c = document.getElementById('lp'); if (c) c.textContent = lastLine; }
+  function reactBanner(e) {
+    const st = document.getElementById('stage'); if (!st) return;
+    const d = document.createElement('div'); d.className = 'react';
+    d.innerHTML = `${face(e.rid)}<div><b>${esc(C.BY_ID[e.rid].nome)}</b> <span class="muted">(${esc(g.players[e.pid].name)})</span><div>${esc(e.text)}</div></div>`;
+    st.appendChild(d); setTimeout(() => { d.style.opacity = 0; setTimeout(() => d.remove(), 250); }, 1500 * Math.max(.5, SPD()));
+  }
   let playing = false;
   async function play() {
     if (playing) return;
-    playing = true; busy = true; caption(''); refreshPanel();
+    playing = true; busy = true; refreshPanel();
     while (view && g && evi < g.events.length) {
       const e = g.events[evi++];
       if (e.t === 'log') {
@@ -2078,8 +2177,9 @@
       } else if (e.t === 'move') await animMove(e);
       else if (e.t === 'dice') { if (lastPhysical) { e.physical = true; lastPhysical = false; } await animDice(e); }
       else if (e.t === 'casa') await casaPopup(e);
+      else if (e.t === 'react') { reactBanner(e); sfx('whoosh'); await wait(600); }
       else if (e.t === 'fx') { floatText(e.pid, e.text); sfx(e.sound); await wait(e.sound === 'finish' ? 650 : e.sound === 'skip' ? 600 : 380); }
-      else if (e.t === 'turn') { const box = document.getElementById('dice'); if (box) box.innerHTML = ''; if (view.b3) view.b3.clearDice(); setRing(e.pid); sfx('turn'); refreshPanel(e.pid); await wait(160); }
+      else if (e.t === 'turn') { diceInput = []; diceConfirm = null; const box = document.getElementById('dice'); if (box) box.innerHTML = ''; if (view.b3) view.b3.clearDice(); setRing(e.pid); sfx('turn'); refreshPanel(e.pid); await wait(160); }
     }
     playing = false; busy = false;
     if (view) { refreshSquares(); refreshBadges(); refreshPlaces(); }
@@ -2102,9 +2202,14 @@
       const pb = b.done ? 100 - (b.place || 50) : (view.disp[b.pid] >= 0 ? view.disp[b.pid] : b.pos);
       return pb - pa;
     });
+    const keyOf = r => r.done ? 1000 - (r.place || 50) : (view.disp[r.pid] >= 0 ? view.disp[r.pid] : r.pos);
+    let rank = 0, prevKey = null;
     el.innerHTML = ord.map((r, i) => {
-      const p = g.players[r.pid];
-      return `<div class="place" data-pid="${r.pid}" style="--pc:${p.color}"><div class="pos stroke">${i + 1}º</div><div class="face" style="border-color:${p.color}">${face(r.rid)}</div><div class="pt"><div class="nm">${esc(p.name)}</div><div class="sc">${r.done && r.place ? '🏁 chegou' : 'casa ' + (view.disp[r.pid] >= 0 ? view.disp[r.pid] : r.pos)} · ${p.score} pts</div></div></div>`;
+      const p = g.players[r.pid], k = keyOf(r);
+      if (k !== prevKey) { rank = i + 1; prevKey = k; }
+      const allStart = ord.every(x => keyOf(x) === 0);
+      const casa = r.done && r.place ? '🏁' : 'casa ' + (view.disp[r.pid] >= 0 ? view.disp[r.pid] : r.pos);
+      return `<button class="place" data-pid="${r.pid}" style="--pc:${p.color}" aria-label="${esc(p.name)}, ${esc(C.BY_ID[r.rid].nome)}, ${casa}"><div class="pos stroke">${allStart ? '–' : rank + 'º'}</div><div class="face" style="border-color:${p.color}">${face(r.rid)}<span class="pdot" style="background:${p.color}"></span></div><div class="pt"><div class="nm">${esc(p.name)}</div><div class="sc">${r.done && r.place ? '🏁 chegou' : casa} · ${p.score} pts</div></div><div class="mini-casa">${r.done && r.place ? '🏁' : (view.disp[r.pid] >= 0 ? view.disp[r.pid] : r.pos)}</div></button>`;
     }).join('');
     el.querySelectorAll('.place').forEach(x => x.onclick = () => peek(+x.dataset.pid));
   }
@@ -2117,8 +2222,7 @@
     if (g.pending) {
       setRing(g.pending.pid);
       const p = g.players[g.pending.pid];
-      if (isMine(p.id)) caption(humansHere() > 1 ? `Vez de ${p.name}, passe o aparelho` : 'Sua vez!');
-      else caption(p.bot ? '' : `Vez de ${p.name}`);
+      if (isMine(p.id)) caption(humansHere() > 1 ? `📱 Passe o aparelho para ${p.name}` : 'Sua vez! ' + lastLine.replace(/^Sua vez! /, ''));
     }
     botTick();
   }
@@ -2136,7 +2240,7 @@
   }
 
   // painel da vez
-  let diceInput = [];
+  let diceInput = [], diceConfirm = null;
   function refreshPanel(forcePid) {
     if (!view || !g || g.phase !== 'race') return;
     const pend = g.pending;
@@ -2152,9 +2256,14 @@
       if (pend.stage === 'pre') {
         const need = C.diceNeeded(g);
         if (physical() && need.count > 0) {
-          const k = diceInput.length;
-          actions += `<div class="center" style="font-weight:800">${need.count === 2 ? `Role os 2 dados e toque o ${k === 0 ? '1º' : '2º'} número` : k > 0 ? `Saiu 6! Role de novo (${diceInput.join(' + ')})` : 'Role o seu dado e toque o número'}</div>
-            <div class="numpad">${[1, 2, 3, 4, 5, 6].map(v => `<button class="btn ${v === 6 ? 'gold' : 'blue'}" data-a="num" data-v="${v}">${v}</button>`).join('')}</div>`;
+          if (diceConfirm) {
+            actions += `<div class="center" style="font-weight:800">Saiu ${diceConfirm.join(' + ')}. Está certo?</div>
+              <div class="row"><button class="btn green big" data-a="numok">Confirmar ✔</button><button class="btn blue" data-a="numfix">↩ Corrigir</button></div>`;
+          } else {
+            const k = diceInput.length;
+            actions += `<div class="center" style="font-weight:800">${need.count === 2 ? `Quanto saiu no ${k === 0 ? '1º' : '2º'} dado?` : k > 0 ? `Saiu 6! Role de novo (já tem ${diceInput.join(' + ')})` : 'Quanto saiu no seu dado?'}</div>
+              <div class="numpad">${[1, 2, 3, 4, 5, 6].map(v => `<button class="btn blue" data-a="num" data-v="${v}" aria-label="Saiu ${v}">${v}</button>`).join('')}</div>`;
+          }
         } else {
           const label = r.rid === 'balao' ? 'Andar 4 🎈' : (r.rid === 'foguete' && r.moves === 0) ? 'Decolar! 🚀' : need.count === 2 ? 'Rolar 2 dados 🎲🎲' : 'Rolar o dado 🎲';
           actions += `<button class="btn gold big wide" data-a="roll">${label}</button>`;
@@ -2176,8 +2285,9 @@
     }
     const tb = document.getElementById('turn');
     tb.style.setProperty('--pc', p ? p.color : '#fff');
-    tb.innerHTML = r ? `<div class="dk-por" title="Ver detalhes">${face(r.rid)}</div>
-      <div class="dk-info"><div class="who" style="color:${p.color}">Vez de ${esc(p.name)}${p.bot ? ' (bot)' : ''}</div><h3>${esc(info.nome)}</h3><p>${esc(info.poder)}</p></div>
+    const solo = humansHere() === 1 && isMine(r ? r.pid : -1);
+    tb.innerHTML = r ? `<div class="dk-por" title="Ver detalhes" role="button" tabindex="0" aria-label="Ver detalhes de ${esc(info.nome)}">${face(r.rid)}</div>
+      <div class="dk-info"><div class="who" aria-live="polite">${solo ? '⭐ Sua vez' : 'Vez de ' + nameTag(p) + (p.bot ? ' 🤖' : '')}</div><h3>${esc(info.nome)}</h3><p>${esc(info.poder)}</p><div class="lp" id="lp" aria-live="polite">${esc(lastLine)}</div></div>
       <div class="dk-act">${actions || `<div class="center muted" style="font-weight:800">${p.bot ? 'Pensando...' : isMine(p.id) ? '' : 'Esperando ' + esc(p.name) + '...'}</div>`}</div>` : '';
     const por = tb.querySelector('.dk-por'); if (por) por.onclick = () => peek(r.pid);
     tb.querySelectorAll('[data-a]').forEach(b => {
@@ -2194,13 +2304,15 @@
           const v = +b.dataset.v, need = C.diceNeeded(g);
           diceInput.push(v);
           const done = need.count === 2 ? diceInput.length >= 2 : !(need.chainOnSix && v === 6 && diceInput.length < 10);
-          if (done) { const d = diceInput.slice(); diceInput = []; lastPhysical = true; doAct({ type: 'roll', dice: d }); }
-          else refreshPanel();
+          if (done) { diceConfirm = diceInput.slice(); diceInput = []; }
+          refreshPanel();
         }
+        if (a === 'numfix') { diceConfirm = null; diceInput = []; refreshPanel(); }
+        if (a === 'numok') { const d = diceConfirm; diceConfirm = null; lastPhysical = true; doAct({ type: 'roll', dice: d }); }
       };
     });
     const sub = document.getElementById('sub3d');
-    if (sub) sub.textContent = window.innerWidth < 520 ? `${g.raceIdx === 3 ? 'Final' : (g.raceIdx + 1) + '/4'} · ${g.track === 'sol' ? '☀️' : '🌙'} · rodada ${g.round}` : `${g.raceIdx === 3 ? 'Grande Final' : 'Corrida ' + (g.raceIdx + 1) + '/4'} · ${C.TRACKS[g.track].nome} · rodada ${g.round}`;
+    if (sub) sub.textContent = window.innerWidth < 520 ? `${g.raceIdx === 3 ? 'Final' : (g.raceIdx + 1) + '/4'} ${g.track === 'sol' ? '☀️' : '🌙'} R${g.round}` : `${g.raceIdx === 3 ? 'Grande Final' : 'Corrida ' + (g.raceIdx + 1) + '/4'} · ${C.TRACKS[g.track].nome} · rodada ${g.round}`;
     refreshPlaces();
     requestAnimationFrame(checkReserve);
   }
@@ -2242,11 +2354,21 @@
     const nextFinal = lr.idx === 2;
     const ov = overlay(`<div class="ribbon" style="white-space:nowrap">Fim da corrida!</div>
       <div class="podium">${order.map(i => { const x = lr.results[i]; return `<div class="${cls[i]}"><div class="em">${face(x.rid)}</div><div class="nm">${esc(g.players[x.pid].name)}</div><div class="blk">${x.place}</div></div>`; }).join('')}</div>
-      <h3 class="stroke" style="font-size:22px">Pontuação da corrida</h3>
-      <table class="ptable">${lr.results.map(x => `<tr><td>${x.place}º</td><td style="text-align:left"><span class="mini">${face(x.rid)}</span> ${esc(g.players[x.pid].name)}</td><td>+${x.pts}</td></tr>`).join('')}</table>
+      <h3 class="stroke" style="font-size:22px">Pontos desta corrida</h3>
+      <table class="ptable race">${raceRows(lr)}</table>
+      <p class="muted" style="font-size:13px;margin:6px 0 0">Pódio + 🪙 moedas = ganho na corrida. À direita, o total.</p>
       <div style="margin-top:12px">${iControlGame() ? `<button class="btn gold big" id="next">${nextFinal ? 'Ver placar ›' : 'Próxima corrida ›'}</button>` : waitHost()}</div>`);
     const nx = ov.querySelector('#next');
     if (nx) nx.onclick = () => { ov.remove(); nextFinal ? showFinalIntro() : submit({ k: 'next' }); };
+  }
+  function raceRows(lr) {
+    const rows = g.players.map(p => {
+      const h = p.history[p.history.length - 1] || {};
+      const res = lr.results.find(x => x.pid === p.id);
+      const r = C.racerOf(g, p.id);
+      return { p, rid: h.rid, place: res ? res.place : 0, pod: res ? res.pts : 0, coins: h.coins || 0, pos: r ? r.pos : 0 };
+    }).sort((a, b) => (a.place || 99) - (b.place || 99) || b.pos - a.pos);
+    return rows.map(x => `<tr class="${x.place === 1 ? 'lead' : ''}"><td>${x.place ? x.place + 'º' : '–'}</td><td style="text-align:left"><span class="mini">${face(x.rid)}</span> ${esc(x.p.name)}</td><td class="gain">+${x.pod}${x.coins ? ` <small>+${x.coins}🪙</small>` : ''}</td><td>${x.p.score}</td></tr>`).join('');
   }
   function showFinalIntro() {
     const ov = overlay(`<div class="ribbon" style="white-space:nowrap">Grande Final<small>Corrida 4 de 4</small></div>
@@ -2261,7 +2383,7 @@
     confetti();
     const ov = overlay(`<div class="ribbon">Campeão!</div>
       <div class="champ"><div class="em">${face(last.rid)}</div></div>
-      <h2 class="stroke" style="font-size:40px;color:${w.color}">${esc(w.name)}</h2>
+      <h2 class="stroke" style="font-size:40px"><span class="dot" style="background:${w.color};display:inline-block;width:22px;height:22px;vertical-align:middle;margin-right:8px"></span>${esc(w.name)}</h2>
       <p style="font-weight:800;margin:4px 0 10px">🏆 ${w.score} pontos</p>
       ${scoreTable()}
       <img src="img/logo.webp" alt="" style="width:200px;margin:10px auto 0;display:block">
