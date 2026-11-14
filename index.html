@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0f1c">
 <title>CARLUDIX Play | Jogos de futebol e jogos católicos</title>
-<meta name="description" content="CARLUDIX Play: jogos grátis no navegador. Escolha seu universo: Futebol ou Fé Católica.">
+<meta name="description" content="CARLUDIX Play: jogos grátis no navegador. Escolha seu universo: Futebol, Fé Católica ou Diversão.">
 <meta name="google-adsense-account" content="ca-pub-1981456165037413">
 <link rel="canonical" href="https://carludix.com/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://carludix.com/">
 <meta property="og:title" content="CARLUDIX Play">
-<meta property="og:description" content="Jogos grátis no navegador: Futebol e Fé Católica.">
+<meta property="og:description" content="Jogos grátis no navegador: Futebol, Fé Católica e Diversão.">
 <meta property="og:image" content="https://carludix.com/og/carludix-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -173,7 +173,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 @media (max-width:560px){
   .nav{height:60px;gap:12px}.brand img{height:40px}
   .nav > .btn{display:none}
-  .links{gap:16px;font-size:13px}
+  .links{gap:14px;font-size:13px}
+  .links a[href="/"]{display:none}
   .hero{padding:48px 0}
   .section{padding:52px 0}
   .grid{grid-template-columns:1fr}
@@ -184,12 +185,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 .home-hero{padding:64px 0 24px}
 .home-hero h1{font-size:clamp(34px,5vw,56px);line-height:1.06;letter-spacing:-.035em;margin:0 0 14px;font-weight:800}
 .home-hero p{font-size:clamp(16px,1.8vw,18px);color:var(--muted);margin:0;max-width:560px}
-.worlds{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:32px 0 20px}
+.worlds{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:32px 0 64px}
 .world{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:300px;padding:30px;border-radius:18px;border:1px solid var(--line);background:var(--panel);transition:transform .2s,border-color .2s}
 .world:hover{transform:translateY(-3px)}
 .world .wk{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
 .world h2{font-size:clamp(28px,3.4vw,38px);letter-spacing:-.03em;margin:10px 0 10px}
 .world p{color:var(--muted);margin:0 0 22px;max-width:420px}
+.w-div{border-color:rgba(63,116,255,.4);background:linear-gradient(150deg,rgba(63,116,255,.12),var(--panel) 55%)}
+.w-div:hover{border-color:rgba(90,140,255,.8)}
+.w-div .wk{color:#7ea6ff}
+.w-div .go{background:#3f74ff;color:#fff}.w-div .go:hover{background:#2f5fe0}
 .world ul{list-style:none;padding:0;margin:0 0 26px;display:flex;flex-wrap:wrap;gap:8px}
 .world li{font-size:13px;padding:6px 10px;border-radius:8px;background:rgba(255,255,255,.05);color:#d5dbe8}
 .world .go{margin-top:auto;align-self:flex-start}
@@ -217,6 +222,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 .home-about p{color:var(--muted);margin:0}
 .home-about strong{color:var(--text)}
 .ha-more{margin-top:20px!important}.ha-more a{color:#fff;font-weight:700;text-underline-offset:3px}
+@media(max-width:1000px){.worlds{grid-template-columns:1fr}}
 @media(max-width:820px){.worlds{grid-template-columns:1fr}.world{min-height:0}.ha-grid{grid-template-columns:1fr;gap:14px}}
 </style>
 </head>
@@ -228,6 +234,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
       <a href="/" class="active">Início</a>
       <a href="/futebol/">Futebol</a>
       <a href="/catolicos/">Fé Católica</a>
+      <a href="/diversao/">Diversão</a>
     </div>
     <a class="btn btn-red btn-sm" href="#universos">Jogar agora</a>
   </nav>
@@ -254,32 +261,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
       <ul><li>Quem é o Santo?</li><li>Grade dos Santos</li><li>Bíblia em Emojis</li><li>Rumo ao Céu</li><li>e mais</li></ul>
       <span class="btn go">Entrar na Fé Católica →</span>
     </a>
-  </section>
-  <section class="wrap group" aria-label="Jogos para grupos">
-    <a class="g-card" href="/quizarena/">
-      <img src="/quizarena/logo.png" alt="" width="84" height="84" loading="lazy">
-      <div>
-        <span class="wk">👥 Para jogar em grupo</span>
-        <h2>QuizArena</h2>
-        <p>Quiz ao vivo: o apresentador projeta as perguntas na TV e todo mundo responde pelo celular. Bom para festas, aulas, catequese e encontros.</p>
-      </div>
-      <span class="btn go">Criar ou entrar numa sala →</span>
-    </a>
-    <a class="g-card" href="/sintonia/">
-      <img src="/sintonia/logo.png" alt="" width="84" height="84" loading="lazy">
-      <div>
-        <span class="wk">👥 Para jogar em grupo</span>
-        <h2>Sintonia</h2>
-        <p>Um dá a dica, o grupo acha o ponto certo entre dois extremos. Futebol, fé, Brasil e mais, no mesmo celular passando de mão em mão.</p>
-      </div>
-      <span class="btn go">Jogar Sintonia →</span>
+    <a class="world w-div" href="/diversao/">
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.2" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 20c0-3.3 2.7-5 6-5s6 1.7 6 5M12 20c0-3.3 2.7-5 6-5s4 1 4 3"/></svg>
+      <span class="wk">🎉 Universo</span>
+      <h2>Diversão</h2>
+      <p>Jogos para jogar junto: quiz ao vivo na TV, dicas com a turma e corrida maluca.</p>
+      <ul><li>QuizArena</li><li>Sintonia</li><li>Doidódromo (em breve)</li></ul>
+      <span class="btn go">Entrar na Diversão →</span>
     </a>
   </section>
   <section class="wrap home-about" aria-labelledby="sobre-t">
     <h2 id="sobre-t">Sobre a CARLUDIX</h2>
     <div class="ha-grid">
       <p>A CARLUDIX Play reúne jogos curtos e gratuitos que funcionam direto no navegador, no celular ou no computador. Não é preciso baixar nada nem criar conta: escolha um universo, abra um jogo e comece. Vários desafios mudam todos os dias e são iguais para todo mundo, para você comparar o resultado com a família e os amigos.</p>
-      <p>No universo <strong>Futebol</strong>, você adivinha jogadores pela carreira e pelas pistas, completa grades de craques e monta times campeões. No universo <strong>Fé Católica</strong>, conhece santos, passagens da Bíblia e lugares da história da Igreja de um jeito leve, bom para a família e para a catequese. E para jogar em grupo tem o <strong>QuizArena</strong>, um quiz ao vivo com cada pessoa respondendo pelo celular, e o <strong>Sintonia</strong>, em que um dá a dica e o grupo acha o ponto certo.</p>
+      <p>No universo <strong>Futebol</strong>, você adivinha jogadores pela carreira e pelas pistas, completa grades de craques e monta times campeões. No universo <strong>Fé Católica</strong>, conhece santos, passagens da Bíblia e lugares da história da Igreja de um jeito leve, bom para a família e para a catequese. E no universo <strong>Diversão</strong> ficam os jogos para jogar junto, como o <strong>QuizArena</strong>, um quiz ao vivo com cada pessoa respondendo pelo celular, e o <strong>Sintonia</strong>, em que um dá a dica e o grupo acha o ponto certo.</p>
     </div>
     <p class="ha-more"><a href="/sobre/">Conheça a história do nome →</a></p>
   </section>
