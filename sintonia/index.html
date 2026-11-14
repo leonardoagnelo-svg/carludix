@@ -18,22 +18,35 @@
 
   <!-- INÍCIO -->
   <section class="tela ativa" id="tela-inicio">
-    <nav class="topo"><a class="voltar" href="https://carludix.com/">← CARLUDIX</a></nav>
+    <nav class="topo"><a class="voltar pilula" href="https://carludix.com/">← CARLUDIX</a></nav>
     <div class="capa">
+      <div class="faixa-cores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <h1 class="titulo"><img class="logo-texto" src="logo-texto.png" alt="Sintonia" width="1000" height="341"></h1>
-      <p class="sub">Um dá a dica. O grupo acha o ponto.</p>
-      <div class="regua-demo" aria-hidden="true">
-        <span class="demo-esq">Frio</span>
-        <div class="demo-trilho"><i class="demo-alvo"></i><i class="demo-pino"></i></div>
-        <span class="demo-dir">Quente</span>
+      <div class="cards-menu">
+        <div class="card-menu verde">
+          <div class="cm-ico">👥</div>
+          <h2>JOGAR</h2>
+          <p>Partidas na mesma tela, com amigos ou em família.</p>
+          <button class="btn-card" data-ir="config">▶ Iniciar</button>
+        </div>
+        <div class="card-menu azul">
+          <div class="cm-ico">📖</div>
+          <h2>COMO JOGAR</h2>
+          <p>Aprenda as regras em 1 minuto.</p>
+          <button class="btn-card" data-acao="regras">Ver regras</button>
+        </div>
       </div>
-      <button class="btn grande" data-ir="config">Jogar</button>
-      <button class="btn fantasma" data-acao="regras">Como se joga</button>
     </div>
-    <footer class="rodape">
-      <a href="https://carludix.com/privacidade/">Privacidade</a>
-      <a href="https://carludix.com/contato/?jogo=Sintonia" target="_blank" rel="noopener">💡 Enviar sugestão</a>
-    </footer>
+    <nav class="doca">
+      <button data-acao="regras"><span>📖</span>Como jogar</button>
+      <button data-acao="compartilhar"><span>📤</span>Chamar amigos</button>
+      <a href="https://carludix.com/contato/?jogo=Sintonia" target="_blank" rel="noopener"><span>💡</span>Enviar sugestão</a>
+      <a href="https://carludix.com/privacidade/"><span>🔒</span>Privacidade</a>
+    </nav>
+    <div class="rodape-capa">
+      <span class="versao">⚡ Versão 1.0</span>
+      <span class="slogan">A diversão está na sua sintonia!</span>
+    </div>
   </section>
 
   <!-- CONFIGURAÇÃO -->
