@@ -11,26 +11,51 @@
 <meta property="og:image" content="https://carludix.com/sintonia/capa.jpg">
 <link rel="icon" href="logo.png">
 <link rel="apple-touch-icon" href="logo.png">
+<link rel="preload" href="fontes/nunito-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
+<!-- Ícones (SVG próprios) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-grupo" viewBox="0 0 64 64"><circle cx="20" cy="22" r="9" fill="#ffd36b"/><circle cx="44" cy="22" r="9" fill="#ff9b6b"/><circle cx="32" cy="18" r="10" fill="#fff"/><path d="M6 52c0-9 6-15 14-15s14 6 14 15z" fill="#ffd36b"/><path d="M30 52c0-9 6-15 14-15s14 6 14 15z" fill="#ff9b6b"/><path d="M16 54c0-11 7-18 16-18s16 7 16 18z" fill="#fff"/></symbol>
+  <symbol id="i-livro" viewBox="0 0 64 64"><path d="M6 14c9-3 18-2 26 4v36c-8-6-17-7-26-4z" fill="#fff"/><path d="M58 14c-9-3-18-2-26 4v36c8-6 17-7 26-4z" fill="#cfe3ff"/><path d="M32 18v36" stroke="#1f5bff" stroke-width="3"/><path d="M12 24c5-1 10 0 14 2M12 31c5-1 10 0 14 2M38 26c4-2 9-3 14-2M38 33c4-2 9-3 14-2" stroke="#7aa6e8" stroke-width="2.5" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-sol" viewBox="0 0 32 32"><circle cx="16" cy="16" r="7" fill="#ffc72c"/><g stroke="#ffc72c" stroke-width="3" stroke-linecap="round"><path d="M16 2v4M16 26v4M2 16h4M26 16h4M6 6l3 3M23 23l3 3M6 26l3-3M23 9l3-3"/></g></symbol>
+  <symbol id="i-lua" viewBox="0 0 32 32"><path d="M20 3a13 13 0 1 0 9 22A11 11 0 0 1 20 3z" fill="#4ea8ff"/></symbol>
+  <symbol id="i-som" viewBox="0 0 32 32"><path d="M5 12h6l8-6v20l-8-6H5z" fill="currentColor"/><path d="M23 11c2 3 2 7 0 10M26 8c4 5 4 11 0 16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-mudo" viewBox="0 0 32 32"><path d="M5 12h6l8-6v20l-8-6H5z" fill="currentColor"/><path d="M23 12l7 8M30 12l-7 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-tela" viewBox="0 0 32 32"><path d="M4 11V4h7M21 4h7v7M28 21v7h-7M11 28H4v-7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
 <main id="app">
 
   <!-- INÍCIO -->
   <section class="tela ativa" id="tela-inicio">
-    <nav class="topo"><a class="voltar pilula" href="https://carludix.com/">← CARLUDIX</a></nav>
+    <nav class="topo">
+      <a class="voltar pilula" href="https://carludix.com/">← CARLUDIX</a>
+      <div class="topo-acoes">
+        <button class="redondo" data-acao="som" aria-label="Ligar ou desligar o som"><svg><use href="#i-som"/></svg></button>
+        <button class="redondo so-grande" data-acao="tela-cheia" aria-label="Tela cheia"><svg><use href="#i-tela"/></svg></button>
+      </div>
+    </nav>
     <div class="capa">
       <div class="faixa-cores" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <h1 class="titulo"><img class="logo-texto" src="logo-texto.png" alt="Sintonia" width="1000" height="341"></h1>
+      <div class="continuar" id="continuar" hidden>
+        <p><b>Tem uma partida em andamento.</b> <span id="continuar-info"></span></p>
+        <div class="linha-botoes">
+          <button class="btn" data-acao="continuar">▶ Continuar</button>
+          <button class="btn fantasma" data-acao="descartar">Começar outra</button>
+        </div>
+      </div>
       <div class="cards-menu">
         <div class="card-menu verde">
-          <div class="cm-ico">👥</div>
+          <svg class="cm-ico"><use href="#i-grupo"/></svg>
           <h2>JOGAR</h2>
           <p>Partidas na mesma tela, com amigos ou em família.</p>
           <button class="btn-card" data-ir="config">▶ Iniciar</button>
         </div>
         <div class="card-menu azul">
-          <div class="cm-ico">📖</div>
+          <svg class="cm-ico"><use href="#i-livro"/></svg>
           <h2>COMO JOGAR</h2>
           <p>Aprenda as regras em 1 minuto.</p>
           <button class="btn-card" data-acao="regras">Ver regras</button>
@@ -44,20 +69,20 @@
       <a href="https://carludix.com/privacidade/"><span>🔒</span>Privacidade</a>
     </nav>
     <div class="rodape-capa">
-      <span class="versao">⚡ Versão 1.0</span>
+      <span class="versao">⚡ Versão 1.1</span>
       <span class="slogan">A diversão está na sua sintonia!</span>
     </div>
   </section>
 
   <!-- CONFIGURAÇÃO -->
   <section class="tela" id="tela-config">
-    <nav class="topo"><button class="voltar" data-ir="inicio">← Voltar</button></nav>
-    <h2>Monte a partida</h2>
+    <nav class="topo"><button class="voltar pilula" data-ir="inicio">← Voltar</button></nav>
+    <h2 class="titulo-tela">Monte a partida</h2>
 
     <div class="bloco">
       <h3>Modo</h3>
       <div class="opcoes" id="op-modo">
-        <button class="op" data-modo="equipes"><b>👥 Equipes</b><small>2 times, quem chegar na meta vence</small></button>
+        <button class="op" data-modo="equipes"><b>👥 Equipes</b><small>2 times; quem chegar na meta vence</small></button>
         <button class="op" data-modo="coop"><b>🤝 Cooperativo</b><small>Todos juntos, 10 rodadas</small></button>
       </div>
     </div>
@@ -65,8 +90,8 @@
     <div class="bloco" id="bloco-times">
       <h3>Times</h3>
       <div class="times-nomes">
-        <label class="time-input t0"><span>☀️</span><input id="nome-0" maxlength="16" value="Time Sol" aria-label="Nome do time 1"></label>
-        <label class="time-input t1"><span>🌙</span><input id="nome-1" maxlength="16" value="Time Lua" aria-label="Nome do time 2"></label>
+        <label class="time-input t0"><svg class="ico-time"><use href="#i-sol"/></svg><input id="nome-0" maxlength="14" value="Time Sol" aria-label="Nome do time 1"></label>
+        <label class="time-input t1"><svg class="ico-time"><use href="#i-lua"/></svg><input id="nome-1" maxlength="14" value="Time Lua" aria-label="Nome do time 2"></label>
       </div>
       <h3>Meta de pontos</h3>
       <div class="chips" id="op-meta">
@@ -83,7 +108,11 @@
     <div class="bloco">
       <h3>Pacotes de cartas <small>(escolha um ou mais)</small></h3>
       <div class="pacotes" id="op-pacotes"></div>
+      <p class="dica-suave dica-pacotes">Vai jogar com crianças? Marque <b>Família e Crianças</b>.</p>
+      <p class="aviso-erro" id="aviso-pacotes" hidden>Escolha pelo menos um pacote para começar.</p>
     </div>
+
+    <p class="dica-suave aviso-tv">📺 Jogando na TV ou no computador? Na hora de ver o alvo, todo mundo vira de costas — menos o Sintonizador.</p>
 
     <button class="btn grande" id="btn-comecar">Começar</button>
   </section>
@@ -92,6 +121,7 @@
   <section class="tela centro" id="tela-passe">
     <div class="placar" data-placar></div>
     <p class="rodada-info" data-rodada></p>
+    <div class="faixa-aviso" id="aviso-ultima" hidden></div>
     <div class="cartao-aviso">
       <div class="aviso-ico">📱</div>
       <h2>Passe para o Sintonizador</h2>
@@ -103,54 +133,53 @@
   </section>
 
   <!-- SINTONIZADOR -->
-  <section class="tela" id="tela-sintonizador">
+  <section class="tela jogo" id="tela-sintonizador">
     <div class="placar" data-placar></div>
     <p class="instrucao">Só você olha! Veja onde está o alvo e pense em <b>uma dica</b>.</p>
     <div class="carta" data-carta></div>
     <div class="regua" id="regua-sint">
-      <div class="trilho"><div class="zona" id="zona-sint"></div><div class="marcas"></div></div>
-      <div class="extremos" data-extremos></div>
+      <div class="trilho"><div class="marcas"></div><div class="zona" id="zona-sint"></div></div>
     </div>
-    <button class="btn segurar" id="btn-segurar" aria-label="Toque e segure para ver o alvo">
-      <span class="seg-ico">👁️</span> Toque e segure para ver o alvo
+    <button class="btn segurar" id="btn-segurar">
+      <span class="seg-ico">👁️</span> Segure para ver o alvo
     </button>
-    <p class="exemplo">Ex.: régua “Frio ⟷ Quente”, alvo perto do quente → dica “café”.</p>
+    <p class="exemplo">Ex.: “Frio ⟷ Quente”, alvo perto do quente → dica “café”.</p>
     <div class="linha-botoes">
-      <button class="btn fantasma" data-acao="trocar-carta">🔄 Trocar carta</button>
-      <button class="btn" id="btn-pronto" data-acao="pronto" disabled>Tenho a dica →</button>
+      <button class="btn fantasma" id="btn-trocar" data-acao="trocar-carta">🔄 Trocar carta</button>
+      <button class="btn" id="btn-pronto" data-acao="pronto" disabled>Veja o alvo antes</button>
     </div>
   </section>
 
   <!-- PALPITE DO GRUPO -->
-  <section class="tela" id="tela-palpite">
+  <section class="tela jogo" id="tela-palpite">
     <div class="placar" data-placar></div>
-    <p class="instrucao">Sintonizador: fale sua dica em voz alta! <br>Grupo: conversem e arrastem o marcador.</p>
+    <p class="instrucao">Sintonizador: fale sua dica em voz alta!<br>Grupo: conversem e arrastem o marcador.</p>
     <div class="carta" data-carta></div>
     <div class="regua" id="regua-palpite">
       <div class="trilho" id="trilho-palpite">
         <div class="marcas"></div>
         <div class="pino" id="pino" role="slider" tabindex="0" aria-label="Palpite" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
       </div>
-      <div class="extremos" data-extremos></div>
     </div>
-    <p class="dica-suave">Arraste o marcador (ou toque na régua)</p>
-    <button class="btn grande" data-acao="travar">🔒 Travar palpite</button>
+    <button class="btn grande segurar-travar" id="btn-travar">
+      <span class="progresso"></span><span class="rotulo">🔒 Segure para travar o palpite</span>
+    </button>
   </section>
 
   <!-- REVELAÇÃO -->
-  <section class="tela" id="tela-revelacao">
+  <section class="tela jogo" id="tela-revelacao">
     <div class="placar" data-placar></div>
     <div class="carta" data-carta></div>
     <div class="regua" id="regua-rev">
       <div class="trilho">
-        <div class="zona" id="zona-rev"></div>
         <div class="marcas"></div>
+        <div class="zona" id="zona-rev"></div>
         <div class="pino fixo" id="pino-rev"><i></i></div>
       </div>
-      <div class="extremos" data-extremos></div>
     </div>
-    <div class="resultado" id="resultado">
+    <div class="resultado" id="resultado" aria-live="polite">
       <div class="res-rotulo" id="res-rotulo"></div>
+      <div class="res-frase" id="res-frase"></div>
       <div class="res-pontos" id="res-pontos"></div>
       <div class="res-dist" id="res-dist"></div>
     </div>
@@ -160,13 +189,15 @@
   <!-- FIM -->
   <section class="tela centro" id="tela-fim">
     <div class="fim-ico" id="fim-ico">🏆</div>
-    <h2 id="fim-titulo"></h2>
+    <h2 id="fim-titulo" class="fim-titulo"></h2>
     <p id="fim-texto" class="fim-texto"></p>
     <div class="placar grande-placar" data-placar></div>
     <ol class="historico" id="historico"></ol>
     <button class="btn grande" data-acao="revanche">Jogar de novo</button>
-    <button class="btn fantasma" data-ir="config">Mudar a partida</button>
-    <button class="btn fantasma" data-acao="compartilhar">📤 Chamar mais gente</button>
+    <div class="linha-botoes">
+      <button class="btn fantasma" data-ir="config">Mudar a partida</button>
+      <button class="btn fantasma" data-acao="compartilhar">📤 Chamar amigos</button>
+    </div>
     <footer class="rodape">
       <a href="https://carludix.com/">← CARLUDIX</a>
       <a href="https://carludix.com/contato/?jogo=Sintonia" target="_blank" rel="noopener">💡 Enviar sugestão</a>
@@ -179,9 +210,9 @@
       <h2 id="regras-titulo">Como se joga</h2>
       <ol class="regras">
         <li>Aparece uma carta com dois extremos, um em cada ponta da régua (ex.: <b>Frio ⟷ Quente</b>).</li>
-        <li>O <b>Sintonizador</b> da vez segura o botão e vê, só ele, onde está o alvo escondido.</li>
+        <li>O <b>Sintonizador</b> da vez segura o botão e vê, só ele, onde está o alvo escondido. Se não gostar da carta, pode trocar <b>uma vez</b>, antes de olhar.</li>
         <li>Ele fala <b>uma dica</b> (uma palavra ou frase curta) que fique naquele ponto da régua.</li>
-        <li>O grupo conversa, arrasta o marcador e toca em <b>Travar palpite</b>.</li>
+        <li>O grupo conversa, arrasta o marcador e <b>segura</b> o botão para travar o palpite.</li>
         <li>O alvo aparece e vocês ganham pontos pela distância:</li>
       </ol>
       <table class="tabela-pontos">
@@ -190,14 +221,15 @@
         <tr><td>até 15</td><td><b>3 pontos</b> — Perto</td></tr>
         <tr><td>mais de 15</td><td>0 ponto</td></tr>
       </table>
-      <p><b>Equipes:</b> a vez alterna entre os times; vence quem chegar primeiro na meta.<br>
+      <p><b>Equipes:</b> a vez alterna entre os times. Quando um time chega na meta, o outro ainda tem a <b>última chance</b> de empatar ou virar. Empatou? Morte súbita!<br>
          <b>Cooperativo:</b> todos juntos, 10 rodadas, tentem bater o recorde.</p>
-      <p class="dica-suave">Vale tudo na dica, menos números, gestos e falar os extremos da carta!</p>
-      <button class="btn grande" data-acao="fechar-regras">Entendi</button>
+      <p class="dica-suave">Vale tudo na dica, menos números, gestos e falar os extremos da carta!<br>📺 Na TV ou no computador, todos viram de costas enquanto o Sintonizador olha o alvo.</p>
+      <div class="modal-rodape"><button class="btn grande" data-acao="fechar-regras">Entendi</button></div>
     </div>
   </div>
 
-  <div class="toast" id="toast" hidden></div>
+  <div class="confete" id="confete" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status" hidden></div>
 </main>
 <script src="cartas.js"></script>
 <script src="motor.js"></script>

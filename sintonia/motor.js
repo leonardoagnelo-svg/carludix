@@ -51,6 +51,10 @@
         ? [{ nome: config.nomes[0] || "Time Sol", pontos: 0 }, { nome: config.nomes[1] || "Time Lua", pontos: 0 }]
         : [{ nome: "Grupo", pontos: 0 }],
       vez: 0,              // índice do time da vez
+      turnos: equipes ? [0, 0] : [0],   // quantas vezes cada time já jogou
+      ultimaChance: false, // true quando um time bateu a meta e o outro ainda tem a última vez
+      trocasRestantes: 1,  // o Sintonizador pode trocar a carta 1 vez por rodada, antes de ver o alvo
+      viuAlvo: false,
       rodada: 0,           // rodadas já iniciadas
       pacotes: config.pacotes.slice(),
       baralho: montarBaralho(pacotes, config.pacotes, rng),
@@ -82,14 +86,25 @@
     estado.alvo = Math.round(rng() * 100);
     estado.palpite = null;
     estado.resultado = null;
+    estado.trocasRestantes = 1;
+    estado.viuAlvo = false;
     estado.fase = "passe";
+    return estado;
+  }
+
+  /* Chamado quando o Sintonizador olha o alvo pela primeira vez: a partir daí não pode mais trocar a carta. */
+  function marcarAlvoVisto(estado) {
+    estado.viuAlvo = true;
+    estado.trocasRestantes = 0;
     return estado;
   }
 
   /* O Sintonizador pode trocar a carta antes de dar a dica (o alvo continua). */
   function trocarCarta(estado, rng) {
+    if (estado.trocasRestantes <= 0 || estado.viuAlvo) return false;
+    estado.trocasRestantes -= 1;
     puxarCarta(estado, rng || Math.random);
-    return estado;
+    return true;
   }
 
   function travarPalpite(estado, valor) {
@@ -99,6 +114,7 @@
     estado.palpite = v;
     estado.resultado = { distancia: dist, pontos: p.pontos, rotulo: p.rotulo };
     estado.times[estado.vez].pontos += p.pontos;
+    estado.turnos[estado.vez] += 1;
     estado.historico.push({
       rodada: estado.rodada, time: estado.vez, carta: estado.carta,
       alvo: estado.alvo, palpite: v, distancia: dist, pontos: p.pontos
@@ -107,13 +123,29 @@
     return estado;
   }
 
+  /* Equipes: a partida só termina com os dois times tendo jogado o mesmo número de vezes.
+     Se um time bate a meta, o outro ainda joga a sua vez ("última chance").
+     Empate acima da meta: segue em morte súbita, uma rodada para cada time. */
   function verificarFim(estado) {
     if (estado.modo === "equipes") {
-      var t = estado.times[estado.vez];
-      if (t.pontos >= estado.meta) { estado.vencedor = estado.vez; return true; }
+      var a = estado.times[0].pontos, b = estado.times[1].pontos;
+      var alguemNaMeta = a >= estado.meta || b >= estado.meta;
+      var mesmasVezes = estado.turnos[0] === estado.turnos[1];
+      estado.ultimaChance = alguemNaMeta && !mesmasVezes;
+      if (alguemNaMeta && mesmasVezes && a !== b) {
+        estado.vencedor = a > b ? 0 : 1;
+        estado.ultimaChance = false;
+        return true;
+      }
       return false;
     }
     return estado.rodada >= estado.totalRodadas;
+  }
+
+  /* Situação depois da rodada atual, para a tela mostrar o texto certo no botão. */
+  function vaiTerminar(estado) {
+    var copia = JSON.parse(JSON.stringify(estado));
+    return verificarFim(copia);
   }
 
   /* Depois da revelação: termina ou passa a vez. */
@@ -126,6 +158,7 @@
   window.SintoniaMotor = {
     FAIXAS: FAIXAS, METAS: METAS, RODADAS_COOP: RODADAS_COOP,
     pontuar: pontuar, criarPartida: criarPartida, trocarCarta: trocarCarta,
-    travarPalpite: travarPalpite, avancar: avancar
+    marcarAlvoVisto: marcarAlvoVisto, travarPalpite: travarPalpite, avancar: avancar,
+    vaiTerminar: vaiTerminar
   };
 })();
