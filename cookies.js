@@ -12,6 +12,7 @@
 (function () {
   var ADSENSE_CLIENT = 'ca-pub-1981456165037413'; // ex.: 'ca-pub-0000000000000000' (deixe vazio até a aprovação)
   var KEY = 'carludix-consent';
+  var GA_ID = 'G-66RV021VV6'; // Google Analytics 4 (propriedade "carludix")
 
   function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
   function set(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
@@ -103,8 +104,31 @@
 
   function close() { var el = document.getElementById('cdx-cookies'); if (el) el.remove(); }
 
+  /* ===== Google Analytics =====
+     Carrega depois que a pessoa responde ao aviso.
+     "aceito"   → estatísticas completas (com cookies de análise).
+     "recusado" → sem cookies: o Google recebe só sinais anônimos de visita (modo de consentimento negado). */
+  function loadAnalytics(status) {
+    if (!GA_ID) return;
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = window.gtag || gtag;
+    var ok = status === 'aceito' ? 'granted' : 'denied';
+    if (!document.getElementById('carludix-ga')) {
+      gtag('consent', 'default', { analytics_storage: ok, ad_storage: ok, ad_user_data: ok, ad_personalization: ok });
+      var s = document.createElement('script');
+      s.id = 'carludix-ga'; s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+    } else {
+      gtag('consent', 'update', { analytics_storage: ok, ad_storage: ok, ad_user_data: ok, ad_personalization: ok });
+    }
+  }
+
   function decide(v) {
-    set(v); close(); loadAds(v);
+    set(v); close(); loadAnalytics(v); loadAds(v);
     try { window.dispatchEvent(new CustomEvent('carludix:consent', { detail: v })); } catch (e) {}
   }
 
@@ -120,7 +144,7 @@
     box.setAttribute('aria-label', 'Aviso de cookies');
     box.innerHTML =
       '<p><b>Cookies</b> · Usamos o armazenamento do navegador para salvar seu progresso nos jogos e, se você permitir, ' +
-      'cookies de anúncios para manter a CARLUDIX gratuita. <a href="/privacidade/">Saiba mais</a>.</p>' +
+      'cookies de estatística e de anúncios para melhorar e manter a CARLUDIX gratuita. <a href="/privacidade/">Saiba mais</a>.</p>' +
       '<div class="cdx-row"><button type="button" class="cdx-no">Recusar</button>' +
       '<button type="button" class="cdx-yes">Aceitar</button></div>';
     box.querySelector('.cdx-no').onclick = function () { decide('recusado'); };
@@ -136,7 +160,7 @@
       document.head.appendChild(st);
     }
     var s = get();
-    if (s) loadAds(s); else open();
+    if (s) { loadAnalytics(s); loadAds(s); } else open();
     // links com data-cookies abrem o aviso (ex.: rodapé)
     document.addEventListener('click', function (e) {
       var a = e.target.closest && e.target.closest('[data-cookies]');
