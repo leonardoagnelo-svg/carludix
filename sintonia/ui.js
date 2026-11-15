@@ -21,9 +21,12 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
   var config = Object.assign(
-    { modo: "equipes", meta: 30, nomes: ["Time Sol", "Time Lua"], pacotes: ["geral"] },
+    { modo: "equipes", meta: 30, nomes: ["Time Ouro", "Time Azul"], pacotes: ["geral"] },
     ler(CH_CONFIG, {})
   );
+  // troca os nomes antigos (Sol/Lua) pelos novos, se o jogador não tinha personalizado
+  if (config.nomes && config.nomes[0] === "Time Sol") config.nomes[0] = "Time Ouro";
+  if (config.nomes && config.nomes[1] === "Time Lua") config.nomes[1] = "Time Azul";
   config.pacotes = (config.pacotes || []).filter(function (id) { return PACOTES.some(function (p) { return p.id === id; }); });
   if (!config.pacotes.length) config.pacotes = ["geral"];
 
@@ -176,7 +179,7 @@
 
   /* ================= Partida ================= */
   function comecar() {
-    config.nomes = [$("#nome-0").value.trim() || "Time Sol", $("#nome-1").value.trim() || "Time Lua"];
+    config.nomes = [$("#nome-0").value.trim() || "Time Ouro", $("#nome-1").value.trim() || "Time Azul"];
     gravar(CH_CONFIG, config);
     estado = M.criarPartida(config, PACOTES);
     irPasse();
@@ -377,7 +380,7 @@
     }
     $("#historico").innerHTML = estado.historico.map(function (h) {
       return "<li><span>" + h.rodada + ". " + esc(h.carta.esq) + " ⟷ " + esc(h.carta.dir) + "</span><b>" +
-        (h.pontos ? "+" + h.pontos : "0") + (estado.modo === "equipes" ? " " + (h.time ? "🌙" : "☀️") : "") + "</b></li>";
+        (h.pontos ? "+" + h.pontos : "0") + (estado.modo === "equipes" ? " " + (h.time ? "🔵" : "🟡") : "") + "</b></li>";
     }).join("");
     mostrar("fim");
   }

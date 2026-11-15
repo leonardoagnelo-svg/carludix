@@ -48,7 +48,7 @@
       meta: equipes ? (METAS.indexOf(config.meta) >= 0 ? config.meta : 30) : null,
       totalRodadas: equipes ? null : RODADAS_COOP,
       times: equipes
-        ? [{ nome: config.nomes[0] || "Time Sol", pontos: 0 }, { nome: config.nomes[1] || "Time Lua", pontos: 0 }]
+        ? [{ nome: config.nomes[0] || "Time Ouro", pontos: 0 }, { nome: config.nomes[1] || "Time Azul", pontos: 0 }]
         : [{ nome: "Grupo", pontos: 0 }],
       vez: 0,              // índice do time da vez
       turnos: equipes ? [0, 0] : [0],   // quantas vezes cada time já jogou
