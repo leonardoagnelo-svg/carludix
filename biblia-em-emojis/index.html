@@ -29,6 +29,8 @@ html{background:var(--night);padding-top:env(safe-area-inset-top,0px);padding-bo
 body{margin:0;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;min-height:100vh;background:transparent}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(110% 60% at 50% 0%,#2450B8 0%,var(--night2) 45%,var(--night) 100%)}
+body.santos::before{background:radial-gradient(110% 60% at 50% 0%,#B5651D 0%,#3A1E3F 45%,var(--night) 100%)}
+body.santos .faixa{background:linear-gradient(180deg,#E8962A,#B5651D)}
 body.musica::before{background:radial-gradient(110% 60% at 50% 0%,#5B2FB0 0%,#1A1450 45%,var(--night) 100%)}
 [hidden]{display:none!important}
 button{font-family:inherit;color:inherit}
@@ -53,6 +55,10 @@ h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .tema span{font-size:34px;line-height:1}
 .tema.b{background:linear-gradient(180deg,#3E86FF,var(--bible))}
 .tema.m{background:linear-gradient(180deg,#A866F0,var(--music))}
+.tema.s{background:linear-gradient(180deg,#F6B23C,#D9821A)}
+.temas.tres{grid-template-columns:repeat(3,1fr)}
+.temas.tres .tema{font-size:19px;padding:10px 4px}
+.temas.tres .tema span{font-size:30px}
 .tema[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 -6px 0 rgba(0,0,0,.25),0 0 0 3px rgba(255,201,60,.35),0 0 22px rgba(255,201,60,.35)}
 .tema[aria-pressed="false"]{opacity:.7}
 .temas.compacto .tema{flex-direction:row;justify-content:center;gap:8px;font-size:18px;padding:8px}
@@ -71,7 +77,7 @@ h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 /* faixa de título */
 .faixa{align-self:center;display:flex;align-items:center;gap:8px;padding:6px 18px;border-radius:999px;border:2px solid var(--gold);
   background:linear-gradient(180deg,#7A3FD0,#5326A3);font:800 18px var(--display);text-align:center}
-body:not(.musica) .faixa{background:linear-gradient(180deg,#3E6FE0,#2448A8)}
+body:not(.musica):not(.santos) .faixa{background:linear-gradient(180deg,#3E6FE0,#2448A8)}
 .linha-info{display:flex;justify-content:space-between;gap:10px;font-weight:800;color:var(--soft);font-variant-numeric:tabular-nums}
 .data{text-align:center;font-weight:800;color:var(--soft);margin:-4px 0 0}
 
@@ -173,11 +179,11 @@ input::placeholder{color:#7A86AA}
 .fechar{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:2px solid var(--soft);background:transparent;font:800 18px var(--body);cursor:pointer}
 .regras{list-style:none;margin:0;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--card);color:var(--card-ink);border-radius:16px;font-weight:700;font-size:15px}
 .regras li{display:flex;gap:8px}
-.temas-ajuda{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.temas-ajuda{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .temas-ajuda div{border-radius:16px;padding:10px;text-align:center;color:var(--card-ink);font-weight:700;font-size:14px}
 .temas-ajuda div b{display:block;font:800 20px var(--display)}
-.temas-ajuda .tb{background:#DCE8FF}.temas-ajuda .tm{background:#EBDDFF}
-.exemplos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.temas-ajuda .tb{background:#DCE8FF}.temas-ajuda .tm{background:#EBDDFF}.temas-ajuda .ts{background:#FFE9C7}
+.exemplos{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .exemplo{background:var(--parch);color:#3A2A10;border-radius:14px;padding:8px;text-align:center;font-weight:800;font-size:14px}
 .exemplo div{font-size:24px}
 .dica-box{display:flex;gap:12px;align-items:center;background:var(--card);color:var(--card-ink);border-radius:16px;padding:14px}
@@ -210,10 +216,11 @@ footer strong{color:var(--gold);letter-spacing:.06em}
       <button class="icone-btn" type="button" id="ajuda-topo" aria-label="Como jogar">?</button>
     </div>
     <img class="logo" src="emojiceleste.webp" alt="EmojiCeleste" width="720" height="453">
-    <p class="sub">Adivinhe passagens bíblicas e músicas católicas pelos emojis!</p>
-    <div class="temas" role="group" aria-label="Tema">
+    <p class="sub">Adivinhe passagens bíblicas, músicas católicas e santos pelos emojis!</p>
+    <div class="temas tres" role="group" aria-label="Tema">
       <button class="tema b" type="button" data-tema="biblia" aria-pressed="true"><span>📖</span>Bíblia</button>
       <button class="tema m" type="button" data-tema="musica" aria-pressed="false"><span>🎵</span>Músicas</button>
+      <button class="tema s" type="button" data-tema="santos" aria-pressed="false"><span>😇</span>Santos</button>
     </div>
     <ul class="menu">
       <li id="item-dia"><button class="item" type="button" data-ir="dia"><span class="ic">📅</span><span class="tx">Desafio do Dia<small>Um enigma por dia, igual para todos</small></span><span class="badge" id="badge-dia">Hoje</span></button></li>
@@ -221,7 +228,7 @@ footer strong{color:var(--gold);letter-spacing:.06em}
       <li><button class="item" type="button" data-ir="stats"><span class="ic">📊</span><span class="tx">Estatísticas</span></button></li>
       <li><button class="item" type="button" data-ir="ajuda"><span class="ic">❓</span><span class="tx">Como Jogar</span></button></li>
     </ul>
-    <p class="nota" id="nota-musica" hidden>O Desafio do Dia é só do tema Bíblia.</p>
+    <p class="nota" id="nota-musica" hidden>O Desafio do Dia é só do tema Bíblia. Aqui você joga por nível.</p>
   </section>
 
   <!-- NÍVEIS -->
@@ -243,9 +250,10 @@ footer strong{color:var(--gold);letter-spacing:.06em}
   <section class="tela" id="t-stats" hidden>
     <div class="topo"><button class="voltar" type="button" data-ir="menu">← Menu</button></div>
     <div class="faixa">📊 Estatísticas</div>
-    <div class="temas compacto" role="group" aria-label="Tema das estatísticas">
+    <div class="temas compacto tres" role="group" aria-label="Tema das estatísticas">
       <button class="tema b" type="button" data-stats="biblia" aria-pressed="true"><span>📖</span>Bíblia</button>
       <button class="tema m" type="button" data-stats="musica" aria-pressed="false"><span>🎵</span>Músicas</button>
+      <button class="tema s" type="button" data-stats="santos" aria-pressed="false"><span>😇</span>Santos</button>
     </div>
     <div id="stats"></div>
   </section>
@@ -259,23 +267,26 @@ footer strong{color:var(--gold);letter-spacing:.06em}
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ajuda-t">
     <button class="fechar" type="button" data-fechar aria-label="Fechar">✕</button>
     <h2 id="ajuda-t">📖 Como Jogar</h2>
-    <p class="sub">O EmojiCeleste tem dois temas:</p>
+    <p class="sub">O EmojiCeleste tem três temas:</p>
     <div class="temas-ajuda">
       <div class="tb"><b>📖 Bíblia</b>Adivinhe a passagem bíblica pelos emojis.</div>
       <div class="tm"><b>🎵 Músicas</b>Adivinhe o título da música e depois quem canta.</div>
+      <div class="ts"><b>😇 Santos</b>Descubra o santo pelos seus símbolos e história.</div>
     </div>
     <ul class="regras">
       <li>🎯 Você tem 4 tentativas.</li>
       <li>⭐ Acertar de primeira vale 4 pontos. Em Músicas, acertar quem canta vale +1.</li>
       <li>➖ Cada erro ou dica pedida tira 1 ponto.</li>
       <li>💡 As dicas são liberadas em ordem. A primeira vem de presente.</li>
+      <li>😇 Em Santos, os emojis mostram os símbolos e a história do santo.</li>
       <li>✍️ Enquanto você digita aparecem sugestões. A partir do segundo erro surgem 4 alternativas.</li>
       <li>✅ A resposta aceita variações e dispensa acento.</li>
-      <li>📅 O Desafio do Dia é da Bíblia: só o sábado é difícil.</li>
+      <li>📅 O Desafio do Dia é da Bíblia: só o sábado é difícil. Músicas e Santos ficam no treino por nível.</li>
     </ul>
     <div class="exemplos">
       <div class="exemplo"><div>🌧️🌊🛶🌈</div>📖 Arca de Noé</div>
       <div class="exemplo"><div>🔥🔁🆕</div>🎵 Queima de Novo · Colo de Deus</div>
+      <div class="exemplo"><div>🐺🐦🕊️🤎</div>😇 São Francisco de Assis</div>
     </div>
     <button class="btn" type="button" data-fechar>▶ Começar a jogar</button>
   </div>
@@ -532,12 +543,68 @@ const M=M_RAW.map(([l,b,a,e,m,al=[],c=''])=>({l,b,a,e,m,al,c}));
 
 M.forEach(p=>{const w=p.a.replace(/[,?]/g,'').split(/\s+/);p.t=`${w.length} ${w.length===1?'palavra':'palavras'} no título`;
   p.d='Iniciais: '+w.map(x=>x[0].toUpperCase()).join(' ');p.f=`Primeira palavra: “${w[0]}”`;p.ref=p.b});
+/* Santos: [nível, nome, emojis, significados, época, origem, pista, festa, curiosidade, respostas extras] */
+const S_RAW=[
+// ---------- FÁCIL ----------
+[1,'São Francisco de Assis',['🐺','🐦','🕊️','🤎','🌿'],['o lobo de Gubbio','pregou aos pássaros','a paz','o hábito marrom','a criação'],'Século XIII','Itália (Assis)','Fundou os franciscanos e é padroeiro da ecologia.','4 de outubro','Montou o primeiro presépio de que se tem notícia, em Greccio, no Natal de 1223.',['francisco de assis','sao francisco']],
+[1,'São Pedro',['🎣','🔑','🔑','🐓','⛪'],['o pescador','as chaves do Reino','as chaves do Reino','o galo da negação','a Igreja (a pedra)'],'Século I','Galileia','Foi o primeiro papa.','29 de junho','Segundo a tradição, pediu para ser crucificado de cabeça para baixo, por não se achar digno de morrer como Jesus.',['pedro','sao pedro apostolo']],
+[1,'Santo Antônio',['👶','📖','🤍','💒','🍞'],['o Menino Jesus no colo','o livro','o lírio','o santo casamenteiro','o pão dos pobres'],'Século XIII','Portugal (Lisboa)','É chamado de santo casamenteiro e é Doutor da Igreja.','13 de junho','Nasceu em Lisboa, mas ficou conhecido como Santo Antônio de Pádua, a cidade italiana onde morreu.',['antonio','santo antonio de padua','santo antonio de lisboa']],
+[1,'São José',['🪚','🪵','👶','🌸','💤'],['o carpinteiro','a madeira','o Menino Jesus','o bastão florido','os sonhos em que o anjo falou'],'Século I','Nazaré','Pai adotivo de Jesus e padroeiro da Igreja universal.','19 de março','Não há nenhuma frase dita por ele nos Evangelhos.',['jose','sao jose operario']],
+[1,'São Jorge',['🐴','⚔️','🐉','🛡️','🌙'],['o cavalo','a lança','o dragão','o escudo','a Lua da tradição popular'],'Século IV','Capadócia (atual Turquia)','Soldado romano que morreu mártir.','23 de abril','No Brasil, a tradição popular diz que dá para vê-lo montado no cavalo nas manchas da Lua.',['jorge','sao jorge guerreiro']],
+[1,'São Sebastião',['🏹','🏹','🌳','⚔️'],['as flechas','as flechas','a árvore onde foi amarrado','o soldado'],'Século III','Império Romano','Padroeiro da cidade do Rio de Janeiro.','20 de janeiro','Sobreviveu às flechas e foi martirizado depois, por continuar anunciando a fé.',['sebastiao']],
+[1,'São João Batista',['🏜️','🦗','🍯','🌊','🐑'],['o deserto','os gafanhotos','o mel silvestre','o batismo no Jordão','o Cordeiro de Deus que ele anunciou'],'Século I','Judeia','Primo de Jesus, batizou-o no rio Jordão.','24 de junho','É o único santo, além de Maria, cujo nascimento a Igreja celebra. Daí vêm as festas juninas.',['joao batista']],
+[1,'Santa Rita de Cássia',['🌹','❄️','🌵','🐝'],['a rosa','que floresceu no inverno','o espinho na testa','as abelhas do seu berço'],'Século XV','Itália (Cássia)','É a santa das causas impossíveis.','22 de maio','Já doente, pediu uma rosa do jardim em pleno inverno, e uma rosa foi encontrada.',['santa rita','rita de cassia']],
+[1,'Santa Luzia',['👀','🍽️','🕯️'],['os olhos','no prato','a luz (seu nome)'],'Século IV','Itália (Siracusa, Sicília)','Padroeira dos olhos e da visão.','13 de dezembro','O nome Luzia vem de luz, por isso ela é invocada pela visão.',['luzia','santa lucia']],
+[1,'São Miguel Arcanjo',['👼','⚔️','⚖️','🐉'],['o anjo','a espada','a balança das almas','o dragão vencido'],'Bíblia (arcanjo)','Céu','Chefe dos exércitos celestes, citado no Apocalipse.','29 de setembro','O nome Miguel quer dizer “Quem é como Deus?”.',['miguel','sao miguel','miguel arcanjo']],
+[1,'Santa Teresa de Calcutá',['🤍','💙','🇮🇳','🤲'],['o sári branco','com as listras azuis','a Índia','o cuidado com os pobres'],'Século XX','Nasceu em Skopje e viveu na Índia','Fundou as Missionárias da Caridade.','5 de setembro','Recebeu o Prêmio Nobel da Paz em 1979.',['madre teresa','madre teresa de calcuta','teresa de calcuta']],
+[1,'São Cosme e São Damião',['👬','💊','🍬'],['os irmãos gêmeos','os médicos','os doces da festa no Brasil'],'Século III','Oriente Médio','Irmãos médicos que atendiam sem cobrar.','26 de setembro','No Brasil, a festa popular com distribuição de doces acontece em 27 de setembro.',['cosme e damiao','sao cosme e damiao','cosme damiao']],
+// ---------- MÉDIO ----------
+[2,'Santa Teresinha do Menino Jesus',['🌹','🌹','🏠','👧','📜'],['as rosas','a chuva de rosas','o Carmelo','a jovem freira','a História de uma Alma'],'Século XIX','França (Lisieux)','Padroeira das missões, mesmo sem sair do convento.','1º de outubro','Morreu aos 24 anos e foi declarada Doutora da Igreja em 1997.',['santa teresinha','teresinha','teresinha do menino jesus','santa teresa de lisieux']],
+[2,'São Paulo',['💡','😵','🙈','✉️','⚔️'],['a luz na estrada de Damasco','a queda','a cegueira por três dias','as cartas','a espada do martírio'],'Século I','Tarso (atual Turquia)','Chamado de apóstolo dos gentios.','29 de junho','Escreveu 13 das cartas do Novo Testamento, segundo a tradição.',['paulo','sao paulo apostolo','saulo']],
+[2,'Santo Expedito',['🐦','⏳','✝️','⚡'],['o corvo que grita “amanhã”','o adiamento vencido','a cruz que diz “hoje”','a urgência'],'Século IV','Armênia (Melitene)','Santo das causas urgentes.','19 de abril','Na imagem, ele pisa num corvo que diz “cras” (amanhã, em latim) e ergue uma cruz com “hodie” (hoje).',['expedito']],
+[2,'São Judas Tadeu',['🔥','🖼️','🪓'],['a chama sobre a cabeça','o medalhão com o rosto de Jesus','o instrumento do martírio'],'Século I','Galileia','Apóstolo, santo das causas desesperadas.','28 de outubro','A chama na cabeça lembra Pentecostes, quando ele recebeu o Espírito Santo com os outros apóstolos.',['judas tadeu','sao judas']],
+[2,'Santa Clara de Assis',['👩','🌟','📺'],['a jovem de Assis','o ostensório que ela ergueu','a padroeira da televisão'],'Século XIII','Itália (Assis)','Fundou as clarissas, inspirada por São Francisco.','11 de agosto','Foi declarada padroeira da televisão em 1958, porque, doente, “via” a Missa projetada na parede.',['santa clara','clara de assis']],
+[2,'São Nicolau',['🎅','🎁','⛵','👦'],['a origem do Papai Noel','os presentes escondidos','os marinheiros','as crianças'],'Século IV','Mira (atual Turquia)','Bispo, padroeiro dos marinheiros e das crianças.','6 de dezembro','A figura do Papai Noel nasceu das histórias dos presentes que ele dava em segredo.',['nicolau','sao nicolau de mira']],
+[2,'São Patrício',['☘️','🐍','🇮🇪'],['o trevo da Santíssima Trindade','as serpentes expulsas','a Irlanda'],'Século V','Britânia','Padroeiro da Irlanda.','17 de março','Segundo a tradição, explicava a Santíssima Trindade com um trevo de três folhas.',['patricio','sao patrick']],
+[2,'São Valentim',['❤️','💌','💑'],['o amor','o bilhete','os namorados'],'Século III','Roma','Padroeiro dos namorados em vários países.','14 de fevereiro','O Dia dos Namorados no dia 14 de fevereiro, comum em outros países, vem da festa dele.',['valentim','sao valentino']],
+[2,'Santo Agostinho',['❤️','🔥','📚','👩'],['o coração','em chamas','os livros (Confissões)','a mãe que rezou por ele'],'Século V','Norte da África (Tagaste)','Bispo de Hipona e Doutor da Igreja.','28 de agosto','Antes da conversão, levou uma vida longe da fé, contada no livro Confissões.',['agostinho','agostinho de hipona']],
+[2,'Santa Mônica',['😢','🙏','👦'],['as lágrimas','as orações','pelo filho Agostinho'],'Século IV','Norte da África (Tagaste)','Mãe de Santo Agostinho, padroeira das mães.','27 de agosto','Rezou cerca de 17 anos pela conversão do filho. A festa dela é na véspera da dele.',['monica']],
+[2,'São Lourenço',['🔥','🥩','👥'],['o fogo','a grelha do martírio','os pobres, “tesouros da Igreja”'],'Século III','Roma','Diácono mártir, padroeiro dos cozinheiros.','10 de agosto','Quando mandaram entregar os tesouros da Igreja, ele apresentou os pobres.',['lourenco']],
+[2,'Santa Bárbara',['🗼','⚡','🌩️'],['a torre onde foi presa','o raio','as tempestades'],'Século III','Oriente','Protetora contra raios e tempestades.','4 de dezembro','Segundo a tradição, o pai que a condenou foi atingido por um raio.',['barbara']],
+[2,'São João Paulo II',['🇵🇱','⛷️','👥','🙏'],['a Polônia','o esqui que ele praticava','os jovens da JMJ','o papa'],'Século XX','Polônia (Wadowice)','Papa de 1978 a 2005, criou a Jornada Mundial da Juventude.','22 de outubro','Foi canonizado em 2014, junto com São João XXIII.',['joao paulo ii','joao paulo 2','papa joao paulo ii','joao paulo segundo']],
+[2,'Santa Dulce dos Pobres',['🇧🇷','👵','🤲','🏥'],['o Brasil','a freira','o cuidado com os pobres','o hospital em Salvador'],'Século XX','Brasil (Salvador, Bahia)','Primeira santa nascida no Brasil.','13 de agosto','Começou cuidando de doentes num galinheiro, que virou um dos maiores hospitais da Bahia.',['irma dulce','dulce dos pobres','santa dulce']],
+[2,'São Carlo Acutis',['🧑','💻','🍞','⚽'],['o adolescente','a internet','a Eucaristia','a vida de jovem comum'],'Século XXI','Itália (nasceu em Londres)','Criou um site sobre os milagres eucarísticos.','12 de outubro','Morreu aos 15 anos, em 2006, e foi canonizado em 2025.',['carlo acutis','carlos acutis']],
+[2,'São Padre Pio',['✋','🩸','🧔','⛪'],['as mãos','com os estigmas','o frade capuchinho','a confissão e a Missa'],'Século XX','Itália (Pietrelcina)','Frade com estigmas, famoso pelas longas filas de confissão.','23 de setembro','Foi canonizado em 2002 por São João Paulo II.',['padre pio','pio de pietrelcina']],
+// ---------- DIFÍCIL ----------
+[3,'São Bento',['✝️','🍞','🐦','📖'],['a cruz da medalha','o pão envenenado','o corvo que levou o pão','a Regra dos monges'],'Século VI','Itália (Núrsia)','Padroeiro da Europa, lema “Ora et labora”.','11 de julho','Segundo a tradição, um corvo levou embora um pão envenenado que tinham dado a ele.',['bento','sao bento de nursia']],
+[3,'Santa Catarina de Alexandria',['🛞','⚔️','📚','👑'],['a roda do martírio','a espada','o debate com os filósofos','a princesa'],'Século IV','Egito (Alexandria)','Padroeira dos estudantes e filósofos.','25 de novembro','A roda em que ia ser martirizada se quebrou, segundo a tradição.',['catarina de alexandria']],
+[3,'Santa Joana d’Arc',['👧','🛡️','🇫🇷','🔥'],['a jovem camponesa','a armadura','a França','a fogueira'],'Século XV','França','Liderou o exército francês aos 17 anos.','30 de maio','Foi condenada à fogueira aos 19 anos e canonizada em 1920.',['joana darc','joana d arc','santa joana']],
+[3,'São Cristóvão',['🧔','👶','🌊','🚗'],['o gigante','o Menino que ele carregou','a travessia do rio','os motoristas'],'Século III','Oriente (tradição)','Padroeiro dos motoristas e viajantes.','25 de julho','O nome Cristóvão quer dizer “aquele que carrega Cristo”.',['cristovao']],
+[3,'Santo Frei Galvão',['💊','📜','🇧🇷'],['as pílulas','de papel com uma oração','o Brasil'],'Século XVIII','Brasil (Guaratinguetá)','Primeiro santo nascido no Brasil a ser canonizado.','','As famosas “pílulas” são papeizinhos com uma oração a Nossa Senhora.',['frei galvao','sao frei galvao']],
+[3,'São José de Anchieta',['✍️','🏖️','📝','🇧🇷'],['o poeta','a praia','o poema escrito na areia','o Brasil'],'Século XVI','Nasceu em Tenerife e viveu no Brasil','Jesuíta chamado de Apóstolo do Brasil.','9 de junho','Escreveu na areia da praia um longo poema a Nossa Senhora. Foi canonizado em 2014.',['anchieta','jose de anchieta','padre anchieta']],
+[3,'Santa Edwiges',['👑','👟','💰'],['a duquesa','os sapatos que ela carregava na mão','os endividados'],'Século XIII','Silésia (atual Polônia)','Padroeira dos endividados no Brasil.','16 de outubro','Andava descalça por penitência e levava os sapatos na mão.',['edwiges','santa edviges']],
+[3,'São Benedito',['👨🏿‍🍳','🍲','🌹'],['o frade cozinheiro','a comida para os pobres','as flores do milagre'],'Século XVI','Itália (Sicília)','Padroeiro dos cozinheiros, filho de africanos escravizados.','','Segundo a tradição, a comida que levava escondida aos pobres virou flores.',['benedito']],
+[3,'São Martinho de Tours',['🐴','⚔️','🧥','✂️'],['o cavaleiro','o soldado','a capa','cortada ao meio para um pobre'],'Século IV','Panônia (atual Hungria)','Soldado que virou bispo de Tours.','11 de novembro','Dividiu a capa com um mendigo e depois sonhou com Jesus vestido com ela.',['martinho','sao martinho']],
+[3,'Santa Isabel da Hungria',['👸','🍞','🌹'],['a princesa','os pães para os pobres','que viraram rosas'],'Século XIII','Hungria','Princesa que dedicou a vida aos pobres.','17 de novembro','Segundo a tradição, os pães que levava escondidos viraram rosas.',['isabel da hungria','santa isabel']],
+[3,'São Tomás de Aquino',['📚','☀️','🐂'],['os livros','o sol no peito','o “boi mudo”, apelido de estudante'],'Século XIII','Itália','Doutor Angélico, autor da Suma Teológica.','28 de janeiro','Os colegas o chamavam de “boi mudo” por ser grande e calado.',['tomas de aquino','sao tomas']],
+[3,'Santa Faustina',['✝️','❤️','💙','🇵🇱'],['Jesus Misericordioso','o raio vermelho','o raio azul','a Polônia'],'Século XX','Polônia','Apóstola da Divina Misericórdia.','5 de outubro','A imagem “Jesus, eu confio em Vós” nasceu das visões que ela teve.',['faustina','santa faustina kowalska']],
+[3,'Santo Inácio de Loyola',['🛡️','🤕','📖','✝️'],['o soldado','ferido em batalha','a leitura que o converteu','a Companhia de Jesus'],'Século XVI','Espanha (Loyola)','Fundou os jesuítas.','31 de julho','Converteu-se lendo a vida dos santos enquanto se recuperava de um ferimento de guerra.',['inacio de loyola','santo inacio']],
+[3,'São Domingos',['📿','🐕','🔥'],['o rosário','o cão do sonho da mãe','a tocha na boca do cão'],'Século XIII','Espanha (Caleruega)','Fundou os dominicanos.','8 de agosto','A mãe sonhou com um cão levando uma tocha acesa, sinal de que ele iria incendiar o mundo com a pregação.',['domingos','sao domingos de gusmao']],
+[3,'São Francisco Xavier',['⛵','🌏','✝️'],['as viagens','a Índia e o Japão','a missão'],'Século XVI','Espanha (Navarra)','Padroeiro das missões, junto com Santa Teresinha.','3 de dezembro','Foi um dos primeiros companheiros de Santo Inácio na Companhia de Jesus.',['francisco xavier']],
+[3,'São Vicente de Paulo',['🤲','🍞','👥'],['a caridade','o pão','os pobres'],'Século XVII','França','Padroeiro das obras de caridade.','27 de setembro','Fundou, com Santa Luísa de Marillac, as Filhas da Caridade.',['vicente de paulo']],
+[3,'São Tomé',['👆','🩹','🇮🇳'],['o dedo','nas chagas de Jesus','a Índia'],'Século I','Galileia','Apóstolo do “ver para crer”.','3 de julho','Segundo a tradição, levou o Evangelho até a Índia.',['tome','sao tome apostolo']]
+];
+const S=S_RAW.map(([l,a,e,m,t,b,d,festa,c,al=[]])=>({l,a,e,m,t,b,d,festa,c,al,ref:b}));
+
+S.forEach(p=>{const curto=p.a.replace(/^(São|Santo|Santa) /,'');if(!p.al.includes(curto.toLowerCase()))p.al.push(curto)});
 const ARTISTAS=[...new Set(M.map(p=>p.b))];
 const TEMAS={
   biblia:{dados:P_B,nome:'Bíblia',icone:'📖',pergunta:'Qual é a passagem bíblica?',ph:'Digite sua resposta…',
     dicas:[['Testamento','t','📜'],['Livro','b','📖'],['Pista','d','🔍']]},
   musica:{dados:M,nome:'Músicas',icone:'🎵',pergunta:'Qual é o título da música?',ph:'Digite o título da música…',
-    dicas:[['Tamanho','t','🔢'],['Iniciais','d','🔤'],['Começo','f','✍️']]}
+    dicas:[['Tamanho','t','🔢'],['Iniciais','d','🔤'],['Começo','f','✍️']]},
+  santos:{dados:S,nome:'Santos',icone:'😇',pergunta:'Qual é o santo?',ph:'Digite o nome do santo…',
+    dicas:[['Época','t','⏳'],['Origem','b','🌍'],['Pista','d','🔍']]}
 };
 const LEVELS={1:'Fácil',2:'Médio',3:'Difícil'}, ESTRELAS={1:'⭐',2:'⭐⭐',3:'⭐⭐⭐'};
 const MAX=4, KEY='biblia-em-emojis:';
@@ -600,8 +667,8 @@ let voltarFoco=null;
 function abrir(id){voltarFoco=document.activeElement;$(id).hidden=false;$(id).querySelector('[data-fechar].btn').focus()}
 function fechar(id){$(id).hidden=true;if(id==='ajuda')store.set('visto',1);const g=$('g');if(g&&tela==='jogo')g.focus();else if(voltarFoco&&voltarFoco.focus)voltarFoco.focus()}
 
-function setTema(t){tema=t;P=TEMAS[t].dados;document.body.classList.toggle('musica',t==='musica');store.set('tema',t);
-  try{history.replaceState(null,'',location.pathname+location.search+(t==='musica'?'#musica':''))}catch(e){}
+function setTema(t){tema=t;P=TEMAS[t].dados;document.body.classList.toggle('musica',t==='musica');document.body.classList.toggle('santos',t==='santos');store.set('tema',t);
+  try{history.replaceState(null,'',location.pathname+location.search+(t==='biblia'?'':'#'+t))}catch(e){}
   document.querySelectorAll('[data-tema]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tema===t));
   renderMenu();if(tela!=='menu')mostrar('menu')}
 
@@ -617,7 +684,7 @@ function renderMenu(){
 /* ---------- níveis ---------- */
 function renderNiveis(){
   $('niveis-titulo').textContent=`${T().icone} ${T().nome} – Treino`;
-  const un=tema==='musica'?['música','músicas']:['passagem','passagens'];
+  const un={musica:['música','músicas'],santos:['santo','santos'],biblia:['passagem','passagens']}[tema];
   $('lista-niveis').innerHTML=[1,2,3].map(l=>{const n=P.filter(p=>p.l===l).length;
     return `<button class="nivel n${l}" type="button" data-nivel="${l}"><span class="est" aria-hidden="true">${ESTRELAS[l]}</span><span><b>${LEVELS[l]}</b><small>${n} ${n===1?un[0]:un[1]}${n>24?' · rodadas de 24':''}</small></span></button>`}).join('');
   $('lista-niveis').querySelectorAll('[data-nivel]').forEach(b=>b.onclick=()=>{level=+b.dataset.nivel;mode='treino';startTreino()});
@@ -688,6 +755,9 @@ function renderResultado(){const p=cur.p,pts=pontosRodada(),mus=tema==='musica';
   if(mus){card=`<div class="cartao"><div class="resp"><div class="capa" aria-hidden="true">${p.e.slice(0,4).join('')}</div>
       <div><p class="tt">${esc(p.a)}</p><p class="meta">👤 ${esc(p.b)}</p>${p.c?`<p class="meta">💿 ${esc(p.c)}</p>`:''}</div></div>
       <a class="yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.a+' '+p.b)}" target="_blank" rel="noopener">▶ Ouvir no YouTube</a></div>`}
+  else if(tema==='santos'){card=`<div class="cartao"><div class="resp"><div class="capa" aria-hidden="true" style="background:linear-gradient(160deg,#B5651D,#F6B23C)">😇</div>
+      <div><p class="tt">${esc(p.a)}</p><p class="meta">🌍 ${esc(p.b)} · ${esc(p.t)}</p>${p.festa?`<p class="meta">🗓️ Festa: ${esc(p.festa)}</p>`:''}</div></div></div>
+      <div class="cartao"><h3>ℹ️ Curiosidade</h3><p>${esc(p.c)}</p></div>`}
   else{card=`<div class="cartao"><div class="resp"><div class="capa" aria-hidden="true" style="background:linear-gradient(160deg,#173A8C,#2F6FE4)">📖</div>
       <div><p class="tt">${esc(p.a)}</p><p class="meta">📖 ${esc(p.ref)}</p></div></div></div>
       <div class="cartao"><h3>ℹ️ Curiosidade</h3><p>${esc(p.c)}</p></div>`}
@@ -750,6 +820,7 @@ function renderStats(){const t=statsTema,s=store.get('stats:'+t)||{jogos:0,acert
   const pct=s.jogos?Math.round(s.acertos/s.jogos*100):0;
   let tiles=`<div class="tile"><div class="i">🎮</div><span>Jogos</span><b>${s.jogos}</b></div><div class="tile"><div class="i">🎯</div><span>Acertos</span><b>${pct}%</b></div>`;
   if(t==='biblia'){const q=sequencias();tiles+=`<div class="tile"><div class="i">📅</div><span>Sequência atual</span><b>${q.seq} ${q.seq===1?'dia':'dias'}</b></div><div class="tile"><div class="i">🔥</div><span>Melhor sequência</span><b>${q.melhor} ${q.melhor===1?'dia':'dias'}</b></div>`}
+  else if(t==='santos'){tiles+=`<div class="tile"><div class="i">😇</div><span>Santos descobertos</span><b>${res.length}</b></div><div class="tile"><div class="i">📚</div><span>No jogo</span><b>${dados.length}</b></div>`}
   else{const pa=s.acertos?Math.round(s.artistas/s.acertos*100):0;tiles+=`<div class="tile"><div class="i">🎤</div><span>Acertou quem canta</span><b>${pa}%</b></div><div class="tile"><div class="i">🎵</div><span>Músicas descobertas</span><b>${res.length}</b></div>`}
   const cores={1:'linear-gradient(90deg,#2FBF6A,#1E8A4B)',2:'linear-gradient(90deg,#4C8BFF,#2558C8)',3:'linear-gradient(90deg,#F05B6E,#B32237)'};
   const barras=[1,2,3].map(l=>{const tot=dados.filter(p=>p.l===l),ok=tot.filter(p=>res.includes(p.a)).length,pc=tot.length?ok/tot.length*100:0;
@@ -767,11 +838,12 @@ let cdTimer;function countdown(){clearInterval(cdTimer);const tick=()=>{const el
   const h=Math.floor(ms/36e5),mi=Math.floor(ms%36e5/6e4);el.textContent=`Próximo desafio em ${h}h ${String(mi).padStart(2,'0')}min · amanhã: ${LEVELS[dailyPuzzle(dayNum+1).l]}.`};tick();cdTimer=setInterval(tick,30000)}
 
 /* ---------- início ---------- */
-$('contagem').textContent=`${P_B.length} passagens bíblicas · ${M.length} músicas católicas`;
+$('contagem').textContent=`${P_B.length} passagens bíblicas · ${M.length} músicas · ${S.length} santos`;
 $('ajuda-topo').onclick=()=>abrir('ajuda');
 let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(layoutEnigma,100)});
-addEventListener('hashchange',()=>{const t=location.hash==='#musica'?'musica':'biblia';if(t!==tema)setTema(t)});
-setTema(location.hash==='#musica'?'musica':(location.hash==='#biblia'?'biblia':(store.get('tema')||'biblia')));
+const temaHash=()=>({'#musica':'musica','#santos':'santos','#biblia':'biblia'})[location.hash];
+addEventListener('hashchange',()=>{const t=temaHash()||'biblia';if(t!==tema)setTema(t)});
+setTema(temaHash()||(TEMAS[store.get('tema')]?store.get('tema'):'biblia'));
 mostrar('menu');
 if(!store.get('visto'))abrir('ajuda');
 </script>
