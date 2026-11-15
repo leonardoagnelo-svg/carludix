@@ -3,192 +3,298 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Bíblia em Emojis</title>
+<title>EmojiCeleste</title>
 <link rel="icon" type="image/png" href="logo.png">
-<meta name="description" content="Adivinhe a passagem bíblica contada em emojis. Um desafio novo por dia.">
-<meta property="og:title" content="Bíblia em Emojis">
-<meta property="og:description" content="Adivinhe a passagem bíblica contada em emojis. Um desafio novo por dia.">
+<meta name="description" content="Adivinhe passagens bíblicas e músicas católicas contadas em emojis. Um desafio novo por dia.">
+<meta property="og:title" content="EmojiCeleste">
+<meta property="og:description" content="Adivinhe passagens bíblicas e músicas católicas contadas em emojis. Um desafio novo por dia.">
 <meta property="og:image" content="https://carludix.com/biblia-em-emojis/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,700;0,800;1,700&family=Alegreya+Sans:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;700;800&display=swap">
 <style>
-/* Layout: uma coluna; no celular o enigma e o campo de resposta cabem na primeira tela. Azul-noite, dourado e vitral. */
+/* Layout: telas em coluna única (menu, níveis, partida, estatísticas), cartões azul-noite com bordas douradas; Músicas usa roxo como cor de tema */
 :root{
-  --night:#070C22; --night2:#0B1433; --panel:#0F1A3F; --panel2:#132250; --glow:#1B2C6B;
-  --gold:#F2C14E; --gold-deep:#C68E26; --ink:#F5EEDB; --muted:#A8B2D8; --line:#2B3A73;
-  --parch:#F2E4C4; --parch-ink:#3A2A10;
-  --right:#45D282; --wrong:#FF6F86;
-  --j1:#2F5FD0; --j2:#C8322F; --j3:#E3A21A; --j4:#2A9D6A; --j5:#7A3FB8;
-  --display:"Alegreya",Georgia,"Times New Roman",serif;
-  --body:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+  --night:#06102E; --night2:#0B1A4A; --panel:#10215A; --panel2:#17307A; --line:#2D4A9E;
+  --gold:#FFC93C; --gold-deep:#E09A12; --ink:#FFFFFF; --muted:#B9C6EE; --soft:#E8EEFF;
+  --card:#EEF3FF; --card-ink:#14204A; --parch:#FFF6E0;
+  --right:#2FBF6A; --right-deep:#1E8A4B; --wrong:#FF5A6E; --wrong-deep:#C9324A;
+  --bible:#2F6FE4; --music:#8B45D6; --music-deep:#5E2AA6;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{background:var(--night);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:transparent;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;min-height:100vh}
+body{margin:0;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;min-height:100vh;background:transparent}
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:radial-gradient(120% 70% at 50% 0%,var(--glow) 0%,var(--night2) 45%,var(--night) 100%)}
+  background:radial-gradient(110% 60% at 50% 0%,#2450B8 0%,var(--night2) 45%,var(--night) 100%)}
+body.musica::before{background:radial-gradient(110% 60% at 50% 0%,#5B2FB0 0%,#1A1450 45%,var(--night) 100%)}
 [hidden]{display:none!important}
-button{font-family:inherit}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
-.wrap{max-width:640px;margin:0 auto;padding-block:12px 40px;
+.wrap{max-width:560px;margin:0 auto;padding-block:10px 36px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   display:flex;flex-direction:column;gap:14px}
-.topo{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.voltar,.ajuda{color:var(--gold);font:700 14px var(--body);letter-spacing:.06em;text-decoration:none;border:1.5px solid var(--gold-deep);border-radius:999px;padding:5px 14px;background:var(--panel);cursor:pointer;line-height:1.3}
-.ajuda{letter-spacing:0;font-weight:700}
-.voltar:hover,.ajuda:hover{background:var(--panel2)}
-header{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
-header img{width:200px;height:auto;filter:drop-shadow(0 6px 22px rgba(242,193,78,.28))}
+.topo{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:36px}
+.voltar{color:var(--ink);font:800 14px var(--body);letter-spacing:.04em;text-decoration:none;border:1.5px solid var(--line);border-radius:999px;padding:5px 14px;background:rgba(6,16,46,.6);cursor:pointer}
+.icone-btn{width:36px;height:36px;border-radius:50%;border:2px solid var(--soft);background:rgba(6,16,46,.6);font:800 18px var(--body);cursor:pointer;display:grid;place-items:center}
+.logo{display:block;margin:0 auto;width:min(320px,82%);height:auto;filter:drop-shadow(0 8px 24px rgba(0,0,0,.45))}
+.logo.mini{width:min(220px,60%)}
 h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.pergunta{font-family:var(--display);font-style:italic;font-weight:700;font-size:22px;margin:0;line-height:1.2;text-wrap:balance}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
-.tabs button{display:flex;flex-direction:column;align-items:flex-start;gap:0;text-align:left;border:1.5px solid var(--line);background:var(--panel);color:var(--muted);font:500 13px var(--body);padding:8px 12px;border-radius:14px;cursor:pointer;min-width:0}
-.tabs button strong{font:700 16px var(--body);color:var(--ink);white-space:nowrap}
-.tabs button[aria-pressed="true"]{border-color:var(--gold);background:linear-gradient(180deg,#232846,var(--panel));box-shadow:0 0 0 1px var(--gold-deep),0 0 18px rgba(242,193,78,.2)}
-.tabs button[aria-pressed="true"] strong{color:var(--gold)}
+.sub{margin:0;text-align:center;font-weight:700;color:var(--soft);text-wrap:balance}
+.tela{display:flex;flex-direction:column;gap:12px}
 
-.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:15px;font-variant-numeric:tabular-nums}
-.pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.pill{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 12px;color:var(--ink);white-space:nowrap}
-.pill.gold{border-color:var(--gold-deep);color:var(--gold);font-weight:700}
-.levels{display:flex;gap:6px}
-.levels button{border:1.5px solid var(--line);background:var(--panel);color:var(--muted);font:600 14px var(--body);padding:4px 12px;border-radius:999px;cursor:pointer}
-.levels button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+/* cartões de tema */
+.temas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tema{display:flex;flex-direction:column;align-items:center;gap:2px;border:3px solid transparent;border-radius:18px;padding:12px 8px;cursor:pointer;font:800 22px var(--display);color:#fff;
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.25)}
+.tema span{font-size:34px;line-height:1}
+.tema.b{background:linear-gradient(180deg,#3E86FF,var(--bible))}
+.tema.m{background:linear-gradient(180deg,#A866F0,var(--music))}
+.tema[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 -6px 0 rgba(0,0,0,.25),0 0 0 3px rgba(255,201,60,.35),0 0 22px rgba(255,201,60,.35)}
+.tema[aria-pressed="false"]{opacity:.7}
+.temas.compacto .tema{flex-direction:row;justify-content:center;gap:8px;font-size:18px;padding:8px}
+.temas.compacto .tema span{font-size:20px}
 
-.moldura{padding:8px;border-radius:20px;border:2px solid var(--gold);
-  background:conic-gradient(from 20deg,var(--j1),var(--j2),var(--j3),var(--j4),var(--j5),var(--j1),var(--j3),var(--j2),var(--j1));
-  box-shadow:0 0 24px rgba(242,193,78,.22),inset 0 0 0 3px #111}
-.vitral{background:radial-gradient(ellipse at center,#FFF6DE 0%,var(--parch) 70%,#E2CC9C 100%);border:3px solid #141414;border-radius:12px;padding:10px 6px;
-  display:grid;gap:4px;justify-content:center;margin:0;list-style:none}
-.vitral li{width:52px;height:52px;display:grid;place-items:center;font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px rgba(58,42,16,.35));animation:luz .45s both}
-.vitral li.multi{width:auto;padding:0 4px;font-size:22px}
-@keyframes luz{from{transform:scale(.8)}to{transform:none}}
+/* menu */
+.menu{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.item{width:100%;display:flex;align-items:center;gap:12px;text-align:left;border:2px solid var(--line);background:linear-gradient(180deg,var(--panel2),var(--panel));border-radius:16px;padding:12px 14px;cursor:pointer;font:800 18px var(--body)}
+.item:hover{border-color:var(--gold)}
+.item .ic{font-size:22px;width:28px;text-align:center}
+.item .tx{flex:1;min-width:0}
+.item small{display:block;font:600 13px var(--body);color:var(--muted)}
+.badge{font:800 12px var(--body);padding:3px 10px;border-radius:999px;background:var(--wrong);color:#fff}
+.badge.ok{background:var(--right)}
 
-.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1.5px solid var(--gold-deep);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.msg{margin:0;font-weight:700;min-height:0}
-.msg.erro{color:var(--wrong)}
+/* faixa de título */
+.faixa{align-self:center;display:flex;align-items:center;gap:8px;padding:6px 18px;border-radius:999px;border:2px solid var(--gold);
+  background:linear-gradient(180deg,#7A3FD0,#5326A3);font:800 18px var(--display);text-align:center}
+body:not(.musica) .faixa{background:linear-gradient(180deg,#3E6FE0,#2448A8)}
+.linha-info{display:flex;justify-content:space-between;gap:10px;font-weight:800;color:var(--soft);font-variant-numeric:tabular-nums}
+.data{text-align:center;font-weight:800;color:var(--soft);margin:-4px 0 0}
+
+/* níveis */
+.niveis{display:flex;flex-direction:column;gap:12px}
+.nivel{display:flex;align-items:center;gap:14px;border:3px solid var(--gold);border-radius:16px;padding:12px 16px;cursor:pointer;text-align:left;color:#fff;box-shadow:inset 0 -5px 0 rgba(0,0,0,.25)}
+.nivel b{font:800 24px var(--display);display:block;line-height:1.1}
+.nivel small{font:700 14px var(--body);opacity:.9}
+.nivel .est{font-size:22px;letter-spacing:-2px;min-width:70px}
+.n1{background:linear-gradient(180deg,#3BC46E,#1F8A47)}
+.n2{background:linear-gradient(180deg,#3B7BEA,#2453B8)}
+.n3{background:linear-gradient(180deg,#E8455B,#B32237)}
+
+/* partida */
+.enigma{background:var(--parch);border:4px solid var(--gold);border-radius:20px;padding:14px 8px;display:grid;gap:4px;justify-content:center;margin:0;list-style:none;
+  box-shadow:0 0 0 3px rgba(0,0,0,.25),0 10px 30px rgba(0,0,0,.35)}
+.enigma li{width:52px;height:52px;display:grid;place-items:center;font-size:36px;line-height:1;animation:pop .4s both}
+.enigma li.multi{width:auto;padding:0 4px;font-size:22px}
+@keyframes pop{from{transform:scale(.7);opacity:.3}to{transform:none;opacity:1}}
+.pergunta{margin:0;text-align:center;font:800 21px var(--display)}
+.msg{margin:0;text-align:center;font-weight:800;color:var(--wrong)}
 .msg:empty{display:none}
-form{display:flex;gap:8px}
-input{flex:1 1 auto;min-width:0;font:500 17px var(--body);color:var(--ink);background:#0A1230;border:1.5px solid var(--line);border-radius:999px;padding:11px 16px}
-input::placeholder{color:var(--muted)}
-input:focus{outline:none;border-color:var(--gold)}
-.btn{flex:0 0 auto;font:800 16px var(--body);border-radius:999px;padding:11px 20px;cursor:pointer;border:0;background:linear-gradient(180deg,#FFD873,var(--gold) 55%,var(--gold-deep));color:#1A1405;box-shadow:0 4px 14px rgba(242,193,78,.3);white-space:nowrap}
-.btn.ghost{background:transparent;color:var(--gold);border:1.5px solid var(--gold-deep);box-shadow:none;font-weight:700;padding:8px 14px;font-size:15px}
-.btn.link{background:none;border:0;box-shadow:none;color:var(--muted);font-weight:500;font-size:14px;padding:8px 4px;text-decoration:underline;text-underline-offset:3px}
-.btn.link.confirmar{color:var(--wrong);font-weight:700}
-.btn:disabled{opacity:.4;cursor:default}
-:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-input:focus-visible{outline:none}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-.acoes{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-.tent{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
-.dots{display:flex;gap:6px}.dots i{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;color:#0A1230}
-.dots i.x{background:var(--wrong);border-color:var(--wrong)}.dots i.x::after{content:"✕"}
-.dots i.ok{background:var(--right);border-color:var(--right)}.dots i.ok::after{content:"✓"}
+.msg.info{color:var(--gold)}
+form{display:flex;align-items:center;background:#fff;border-radius:14px;padding:4px 4px 4px 14px;border:3px solid transparent}
+form:focus-within{border-color:var(--gold)}
+input{flex:1;min-width:0;border:0;background:transparent;font:700 17px var(--body);color:var(--card-ink);padding:9px 0;outline:none}
+input::placeholder{color:#7A86AA}
+.enviar{flex:0 0 auto;border:0;background:var(--gold);color:#1A1405;font:800 15px var(--body);border-radius:10px;padding:9px 14px;cursor:pointer}
+.sug{display:flex;flex-wrap:wrap;gap:6px}.sug:empty{display:none}
+.chip{border:2px solid var(--gold);background:rgba(255,201,60,.12);font:700 14px var(--body);border-radius:999px;padding:4px 12px;cursor:pointer}
+.opcoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opcao{border:2px solid var(--gold);background:var(--panel);font:800 15px var(--body);border-radius:14px;padding:12px 8px;cursor:pointer;line-height:1.25}
+.opcao:disabled{opacity:.45;text-decoration:line-through;border-color:var(--wrong);cursor:default}
+.tent{display:flex;justify-content:space-between;align-items:center;font-weight:800;color:var(--soft)}
+.dots{display:flex;gap:6px}.dots i{width:18px;height:18px;border-radius:50%;background:#C9D2EE;display:block}
+.dots i.x{background:var(--wrong)}.dots i.ok{background:var(--right)}
+.acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acao{display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:10px 8px;cursor:pointer;font:800 15px var(--body);line-height:1.15;background:var(--card);color:var(--card-ink);box-shadow:inset 0 -4px 0 rgba(0,0,0,.15)}
+.acao small{display:block;font-weight:700;font-size:12px}
+.acao:disabled{opacity:.45;cursor:default}
+.acao.confirmar{background:#FFE1E5;color:var(--wrong-deep)}
+.liberadas{display:flex;flex-direction:column;gap:6px}
+.liberada{display:grid;grid-template-columns:26px 1fr;gap:8px;align-items:center;background:rgba(255,255,255,.08);border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;font-weight:700}
+.liberada b{display:block;font-size:12px;color:var(--gold);letter-spacing:.04em;text-transform:uppercase}
+.liberada.nova{animation:brilho 1.2s ease-out}
+@keyframes brilho{0%{box-shadow:0 0 0 0 rgba(255,201,60,.9);background:rgba(255,201,60,.3)}100%{box-shadow:0 0 0 10px rgba(255,201,60,0)}}
 .tried{display:flex;gap:6px;flex-wrap:wrap;margin:0;padding:0;list-style:none}
 .tried li{font-size:14px;color:var(--wrong);border:1px solid var(--wrong);border-radius:999px;padding:1px 10px;text-decoration:line-through}
 
-.dicas h2{margin:0 0 8px;font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
-.hints{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.hints li{border:1.5px solid var(--line);border-radius:12px;background:rgba(0,0,0,.18);min-width:0}
-.hints li.locked{padding:4px 12px;border-radius:999px;color:var(--muted);font-size:14px}
-.hints li.open{flex:1 1 100%;display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:center;padding:8px 12px;border-color:var(--gold-deep)}
-.hints li.open b{display:block;font-size:13px;color:var(--gold)}
-.hints li.nova{animation:nova 1.2s ease-out}
-@keyframes nova{0%{box-shadow:0 0 0 0 rgba(242,193,78,.8);background:rgba(242,193,78,.25)}100%{box-shadow:0 0 0 10px rgba(242,193,78,0);background:rgba(0,0,0,.18)}}
-.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+/* faixas de resultado */
+.banner{display:flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;padding:8px 16px;font:800 22px var(--display);border:2px solid #7CF0A6;
+  background:linear-gradient(180deg,#2FBF6A,#1E8A4B)}
+.banner.perdeu{border-color:#FFB3BD;background:linear-gradient(180deg,#F05B6E,#B32237)}
+.cartao{background:var(--card);color:var(--card-ink);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.cartao h3{margin:0;font:800 17px var(--display);display:flex;align-items:center;gap:6px}
+.cartao p{margin:0}
+.resp{display:flex;gap:12px;align-items:center}
+.resp .capa{flex:0 0 auto;width:84px;height:84px;border-radius:14px;background:linear-gradient(160deg,#2A1458,#5E2AA6);display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:2px;font-size:24px;padding:6px}
+.resp .tt{font:800 24px var(--display);line-height:1.1;margin:0}
+.resp .meta{font-weight:700;color:#3A4A7A}
+.yt{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;background:linear-gradient(180deg,#FF3B3B,#D20F0F);color:#fff;border-radius:14px;padding:10px;font:800 17px var(--body);border:2px solid #FFD0D0}
+.legenda{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.legenda li{display:flex;gap:10px;align-items:baseline}
+.legenda li span:first-child{font-size:20px;flex:0 0 auto}
+.legenda b{font-weight:800}
+.botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:14px;padding:12px 10px;cursor:pointer;font:800 16px var(--body);text-decoration:none;
+  background:linear-gradient(180deg,#FFD866,var(--gold) 60%,var(--gold-deep));color:#1A1405;box-shadow:inset 0 -4px 0 rgba(0,0,0,.15)}
+.btn.azul{background:linear-gradient(180deg,#4C8BFF,#2558C8);color:#fff}
+.btn.cheio{grid-column:1/-1}
+.btn:disabled{opacity:.45;cursor:default}
+.nota{margin:0;text-align:center;color:var(--muted);font-size:15px}
 
-.result{display:flex;flex-direction:column;gap:4px}
-.result h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0;line-height:1.15;text-wrap:balance;color:var(--gold)}
-.result .tag{font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:800}
-.result.won .tag{color:var(--right)}.result.lost .tag{color:var(--wrong)}
-.ref{color:var(--ink);font-weight:700;margin:0}
-.result p{margin:0;max-width:62ch}
-.legenda h3{margin:0 0 6px;font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
-.legenda ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:4px 12px}
-.legenda li{display:flex;gap:8px;align-items:baseline;min-width:0;font-size:15px}
-.legenda li span:first-child{flex:0 0 auto;font-size:20px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
-.stats div{border:1.5px solid var(--line);border-radius:12px;padding:6px 2px;background:rgba(0,0,0,.18)}
-.stats b{display:block;font:800 22px var(--display);color:var(--gold);font-variant-numeric:tabular-nums}
-.stats span{font-size:12px;color:var(--muted);line-height:1.2;display:block}
-.muted{color:var(--muted);font-size:15px;margin:0}
+/* artista */
+.alternativa{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);color:var(--card-ink);border:3px solid transparent;border-radius:14px;padding:8px 12px;cursor:pointer;font:800 17px var(--body)}
+.alternativa .letra{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--bible);color:#fff;display:grid;place-items:center;font-size:15px}
+.alternativa[aria-pressed="true"]{border-color:var(--right);background:#DFF7E8}
+.alternativa[aria-pressed="true"] .letra{background:var(--right-deep)}
+.alternativa.certa{border-color:var(--right);background:#DFF7E8}
+.alternativa.errada{border-color:var(--wrong);background:#FFE1E5}
+.titulo-certo{background:var(--card);color:var(--card-ink);border-radius:14px;padding:10px 14px;font:800 19px var(--display);display:flex;gap:8px;align-items:center}
+
+/* estatísticas */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--card);color:var(--card-ink);border-radius:16px;padding:10px;text-align:center}
+.tile .i{font-size:22px}
+.tile span{display:block;font-weight:800;font-size:14px;color:#3A4A7A}
+.tile b{display:block;font:800 30px var(--display);line-height:1.1;font-variant-numeric:tabular-nums}
+.barra{display:grid;grid-template-columns:62px 1fr 64px;gap:10px;align-items:center;font-weight:800}
+.barra .trilho{height:14px;border-radius:999px;background:#D5DCF2;overflow:hidden}
+.barra .trilho i{display:block;height:100%;border-radius:999px}
+.barra .v{text-align:right;font-variant-numeric:tabular-nums;font-size:14px}
+
+/* janelas */
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(3,8,26,.72);display:grid;place-items:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{position:relative;max-width:440px;width:100%;max-height:100%;overflow:auto;background:linear-gradient(180deg,var(--panel2),var(--panel));border:3px solid var(--gold);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.modal h2{margin:0;font:800 26px var(--display);text-align:center;display:flex;justify-content:center;gap:8px;align-items:center}
+.fechar{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:2px solid var(--soft);background:transparent;font:800 18px var(--body);cursor:pointer}
+.regras{list-style:none;margin:0;padding:12px;display:flex;flex-direction:column;gap:6px;background:var(--card);color:var(--card-ink);border-radius:16px;font-weight:700;font-size:15px}
+.regras li{display:flex;gap:8px}
+.temas-ajuda{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.temas-ajuda div{border-radius:16px;padding:10px;text-align:center;color:var(--card-ink);font-weight:700;font-size:14px}
+.temas-ajuda div b{display:block;font:800 20px var(--display)}
+.temas-ajuda .tb{background:#DCE8FF}.temas-ajuda .tm{background:#EBDDFF}
+.exemplos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.exemplo{background:var(--parch);color:#3A2A10;border-radius:14px;padding:8px;text-align:center;font-weight:800;font-size:14px}
+.exemplo div{font-size:24px}
+.dica-box{display:flex;gap:12px;align-items:center;background:var(--card);color:var(--card-ink);border-radius:16px;padding:14px}
+.dica-box .i{font-size:34px}
+.dica-box b{display:block;font-size:14px;color:#3A4A7A}
+.dica-box span{font:800 20px var(--display);line-height:1.15}
+footer{text-align:center;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:2px}
+footer strong{color:var(--gold);letter-spacing:.06em}
 .sugestao{color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:3px}
 .sugestao:hover{color:var(--gold)}
-.result-sug{display:flex;justify-content:center}
-footer{color:var(--muted);font-size:14px;text-align:center;text-wrap:balance}
-footer strong{color:var(--gold);letter-spacing:.08em}
-
-.overlay{position:fixed;inset:0;z-index:20;background:rgba(3,6,18,.78);display:grid;place-items:center;
-  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.modal{max-width:440px;width:100%;max-height:100%;overflow:auto;background:linear-gradient(180deg,var(--panel2),var(--panel));border:2px solid var(--gold);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px}
-.modal h2{font:800 26px var(--display);color:var(--gold);margin:0}
-.modal ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
-.exemplo{background:var(--parch);color:var(--parch-ink);border-radius:12px;padding:10px;text-align:center}
-.exemplo div{font-size:28px;letter-spacing:4px}
-.exemplo p{margin:4px 0 0;font-weight:700}
-
-@media (max-width:520px){
-  .wrap{gap:10px;padding-block:8px 32px}
-  header{gap:6px}
-  header img{width:104px}
-  .pergunta{font-size:17px}
-  .tabs{gap:8px}
-  .tabs button{padding:6px 10px}
-  .tabs button strong{font-size:15px}
-  .tabs button span{font-size:12px}
-  .vitral li{width:46px;height:46px;font-size:30px}
-  .vitral li.multi{font-size:19px}
-  .card{padding:12px}
-  .btn{padding:11px 16px}
+.result-sug{display:flex;justify-content:center;margin:0}
+.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (max-width:420px){
+  .enigma li{width:46px;height:46px;font-size:32px}
+  .enigma li.multi{font-size:19px}
+  .tema{font-size:20px}
+  .item{font-size:17px;padding:10px 12px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="topo">
-    <a class="voltar" href="https://carludix.com/catolicos/">← CARLUDIX</a>
-    <button class="ajuda" id="abrir-ajuda" type="button">? Como jogar</button>
-  </div>
-  <header>
-    <img src="logo.png" alt="Bíblia em Emojis" width="200" height="200">
-    <h1>Bíblia em Emojis</h1>
-    <p class="pergunta">Qual passagem bíblica está representada pelos emojis?</p>
-    <div class="tabs" role="group" aria-label="Modo de jogo">
-      <button id="tab-dia" type="button" aria-pressed="true"><strong>📅 Desafio do Dia</strong><span>Um enigma por dia</span></button>
-      <button id="tab-treino" type="button" aria-pressed="false"><strong>🎯 Treino</strong><span>Escolha o nível</span></button>
-    </div>
-  </header>
+  <h1>EmojiCeleste</h1>
 
-  <div class="bar" id="bar"></div>
-  <div class="moldura"><ol class="vitral" id="vitral"></ol></div>
-  <section class="card" id="play" aria-live="polite"></section>
-  <footer><strong>CARLUDIX PLAY</strong> · 36 passagens bíblicas<br><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></footer>
+  <!-- MENU -->
+  <section class="tela" id="t-menu">
+    <div class="topo">
+      <a class="voltar" href="https://carludix.com/catolicos/">← CARLUDIX</a>
+      <button class="icone-btn" type="button" id="ajuda-topo" aria-label="Como jogar">?</button>
+    </div>
+    <img class="logo" src="emojiceleste.webp" alt="EmojiCeleste" width="720" height="453">
+    <p class="sub">Adivinhe passagens bíblicas e músicas católicas pelos emojis!</p>
+    <div class="temas" role="group" aria-label="Tema">
+      <button class="tema b" type="button" data-tema="biblia" aria-pressed="true"><span>📖</span>Bíblia</button>
+      <button class="tema m" type="button" data-tema="musica" aria-pressed="false"><span>🎵</span>Músicas</button>
+    </div>
+    <ul class="menu">
+      <li id="item-dia"><button class="item" type="button" data-ir="dia"><span class="ic">📅</span><span class="tx">Desafio do Dia<small>Um enigma por dia, igual para todos</small></span><span class="badge" id="badge-dia">Hoje</span></button></li>
+      <li><button class="item" type="button" data-ir="niveis"><span class="ic">🎯</span><span class="tx">Treino por Nível<small id="treino-sub">Fácil, Médio e Difícil</small></span></button></li>
+      <li><button class="item" type="button" data-ir="stats"><span class="ic">📊</span><span class="tx">Estatísticas</span></button></li>
+      <li><button class="item" type="button" data-ir="ajuda"><span class="ic">❓</span><span class="tx">Como Jogar</span></button></li>
+    </ul>
+    <p class="nota" id="nota-musica" hidden>O Desafio do Dia é só do tema Bíblia.</p>
+  </section>
+
+  <!-- NÍVEIS -->
+  <section class="tela" id="t-niveis" hidden>
+    <div class="topo"><button class="voltar" type="button" data-ir="menu">← Menu</button></div>
+    <img class="logo mini" src="emojiceleste.webp" alt="" width="720" height="453">
+    <div class="faixa" id="niveis-titulo">🎵 Músicas – Treino</div>
+    <p class="sub">Escolha o nível de dificuldade:</p>
+    <div class="niveis" id="lista-niveis"></div>
+  </section>
+
+  <!-- PARTIDA -->
+  <section class="tela" id="t-jogo" hidden>
+    <div class="topo"><button class="voltar" type="button" data-ir="menu">← Menu</button><button class="icone-btn" type="button" data-ir="ajuda" aria-label="Como jogar">?</button></div>
+    <div id="jogo"></div>
+  </section>
+
+  <!-- ESTATÍSTICAS -->
+  <section class="tela" id="t-stats" hidden>
+    <div class="topo"><button class="voltar" type="button" data-ir="menu">← Menu</button></div>
+    <div class="faixa">📊 Estatísticas</div>
+    <div class="temas compacto" role="group" aria-label="Tema das estatísticas">
+      <button class="tema b" type="button" data-stats="biblia" aria-pressed="true"><span>📖</span>Bíblia</button>
+      <button class="tema m" type="button" data-stats="musica" aria-pressed="false"><span>🎵</span>Músicas</button>
+    </div>
+    <div id="stats"></div>
+  </section>
+
+  <footer><span><strong>CARLUDIX PLAY</strong> · <span id="contagem"></span></span>
+    <a class="sugestao" id="sug-rodape" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></footer>
 </div>
 
+<!-- COMO JOGAR -->
 <div class="overlay" id="ajuda" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ajuda-titulo">
-    <h2 id="ajuda-titulo">Como jogar</h2>
-    <div class="exemplo" aria-label="Exemplo: chuva, mar, barco, arco-íris"><div>🌧️🌊🛶🌈</div><p>Arca de Noé</p></div>
-    <ol>
-      <li>Os emojis contam uma passagem da Bíblia, na ordem em que ela acontece.</li>
-      <li>Digite o nome da passagem ou da história. Não precisa de acento.</li>
-      <li>Você tem 4 tentativas. Cada erro libera uma dica: Testamento, livro e uma pista.</li>
-      <li>Acertar de primeira vale 4 pontos. Cada erro ou dica pedida tira 1 ponto.</li>
-      <li>No Desafio do Dia, todos jogam o mesmo enigma. Ele fica mais difícil ao longo da semana.</li>
-    </ol>
-    <button class="btn" id="fechar-ajuda" type="button">Começar a jogar</button>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ajuda-t">
+    <button class="fechar" type="button" data-fechar aria-label="Fechar">✕</button>
+    <h2 id="ajuda-t">📖 Como Jogar</h2>
+    <p class="sub">O EmojiCeleste tem dois temas:</p>
+    <div class="temas-ajuda">
+      <div class="tb"><b>📖 Bíblia</b>Adivinhe a passagem bíblica pelos emojis.</div>
+      <div class="tm"><b>🎵 Músicas</b>Adivinhe o título da música e depois quem canta.</div>
+    </div>
+    <ul class="regras">
+      <li>🎯 Você tem 4 tentativas.</li>
+      <li>⭐ Acertar de primeira vale 4 pontos. Em Músicas, acertar quem canta vale +1.</li>
+      <li>➖ Cada erro ou dica pedida tira 1 ponto.</li>
+      <li>💡 As dicas são liberadas em ordem. A primeira vem de presente.</li>
+      <li>✍️ Enquanto você digita aparecem sugestões. A partir do segundo erro surgem 4 alternativas.</li>
+      <li>✅ A resposta aceita variações e dispensa acento.</li>
+      <li>📅 O Desafio do Dia é da Bíblia: só o sábado é difícil.</li>
+    </ul>
+    <div class="exemplos">
+      <div class="exemplo"><div>🌧️🌊🛶🌈</div>📖 Arca de Noé</div>
+      <div class="exemplo"><div>🔥🔁🆕</div>🎵 Queima de Novo · Colo de Deus</div>
+    </div>
+    <button class="btn" type="button" data-fechar>▶ Começar a jogar</button>
+  </div>
+</div>
+
+<!-- DICA -->
+<div class="overlay" id="dica" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dica-t">
+    <button class="fechar" type="button" data-fechar aria-label="Fechar">✕</button>
+    <h2 id="dica-t">💡 Dica 1</h2>
+    <p class="msg" id="dica-msg"></p>
+    <div class="dica-box"><span class="i" id="dica-i">📖</span><div><b id="dica-n">Testamento</b><span id="dica-v">Novo Testamento</span></div></div>
+    <button class="btn" type="button" data-fechar>Continuar</button>
   </div>
 </div>
 
 <script>
 const T_AT="Antigo Testamento", T_NT="Novo Testamento";
-/* l: nível · e: emojis · m: o que cada emoji representa · a: resposta · al: respostas aceitas
-   ref: referência · t: Testamento · b: livro · d: pista · c: curiosidade */
-const P=[
+const P_B=[
 // ---------- FÁCIL ----------
 {l:1,e:['🌧️','🌊','🛶','🐘','🐘','🦒','🦒','🕊️','🌿','🌈'],m:['a chuva','o dilúvio','a arca','os animais, dois a dois','os animais, dois a dois','os animais, dois a dois','os animais, dois a dois','a pomba','o ramo de oliveira','o arco-íris da aliança'],a:'Arca de Noé',al:['arca de noe','arca','noe','diluvio','arca do noe'],ref:'Gênesis 6–9',t:T_AT,b:'Livro do Gênesis',d:'Depois de quarenta dias de chuva, uma pomba volta com um ramo no bico.',c:'O arco-íris aparece no fim como sinal da aliança de Deus com toda a criação: a terra não seria mais destruída por um dilúvio.'},
 {l:1,e:['🌳','🐍','🍎','👫','😳','🍃','🚪'],m:['a árvore do conhecimento','a serpente','o fruto proibido','Adão e Eva','a vergonha','as folhas para se cobrir','a saída do jardim'],a:'Adão e Eva',al:['adao e eva','adao','eva','queda','pecado original','fruto proibido','serpente','jardim do eden','eden','paraiso'],ref:'Gênesis 3',t:T_AT,b:'Livro do Gênesis',d:'Uma serpente, uma árvore e um fruto que não devia ser comido.',c:'A Bíblia não diz que o fruto era uma maçã. A ideia vem do latim, em que “malum” pode significar tanto “mal” quanto “maçã”.'},
@@ -205,7 +311,7 @@ const P=[
 // ---------- MÉDIO ----------
 {l:2,e:['📜','🙅‍♂️','⛵','🌪️','🌊','🐋','3️⃣','🌅','🏙️','🙏'],m:['a missão de Deus','Jonas se recusa','o navio','a tempestade','jogado ao mar','o grande peixe','três dias','de volta à terra','a cidade de Nínive','a cidade se converte'],a:'Jonas',al:['jonas','jonas e a baleia','jonas e o grande peixe','jonas e o peixe'],ref:'Jonas 1–3',t:T_AT,b:'Livro de Jonas',d:'Um profeta foge da missão, é jogado ao mar e passa três dias num lugar escuro.',c:'O texto fala em “grande peixe”, não em baleia. Jesus cita os três dias de Jonas como sinal da própria ressurreição.'},
 {l:2,e:['👦','💰','➡️','🌍','🎉','💸','🐖','😢','🏃‍♂️','🏠','👨‍🦳','🤗','🐄'],m:['o filho mais novo','a herança','vai embora','para longe','a vida de festas','o dinheiro acaba','cuidando de porcos','o arrependimento','a volta','a casa do pai','o pai','o abraço','o novilho da festa'],a:'Filho pródigo',al:['filho prodigo','parabola do filho prodigo','pai misericordioso','parabola do pai misericordioso'],ref:'Lucas 15',t:T_NT,b:'Evangelho de Lucas',d:'O irmão mais velho fica com raiva da festa.',c:'Muitos preferem chamá-la de parábola do Pai misericordioso, porque o centro da história é o pai que corre ao encontro do filho.'},
-{l:2,e:['🚶‍♂️','🛣️','🦹','🤕','🙈','🙈','🫏','🧑','🩹','🏨','💰'],m:['um homem viaja','a estrada para Jericó','os assaltantes','ferido e abandonado','o sacerdote passa longe','o levita passa longe','o animal do samaritano','o samaritano para','os curativos','a hospedaria','paga as despesas'],a:'Bom Samaritano',al:['bom samaritano','parabola do bom samaritano','samaritano'],ref:'Lucas 10',t:T_NT,b:'Evangelho de Lucas',d:'Um sacerdote e um levita passam pelo outro lado da estrada.',c:'Jesus conta essa parábola para responder à pergunta “quem é o meu próximo?”.'},
+{l:2,e:['🚶‍♂️','🛣️','🦹','🤕','🙈','🙈','🫏','🧑','🩹','🏨','💰'],m:['um homem viaja','a estrada para Jericó','os assaltantes','ferido e abandonado','o sacerdote passa longe','o levita passa longe','o animal do samaritano','o samaritano para','os curativos','a hospedaria','paga as despesas'],a:'Bom Samaritano',al:['bom samaritano','parabola do bom samaritano','o bom samaritano'],ref:'Lucas 10',t:T_NT,b:'Evangelho de Lucas',d:'Um sacerdote e um levita passam pelo outro lado da estrada.',c:'Jesus conta essa parábola para responder à pergunta “quem é o meu próximo?”.'},
 {l:2,e:['🙏','🪟','👑','📜','⛔','🦁','🦁','🦁','🧔','👼','🔒'],m:['a oração','a janela aberta','o rei Dario','o decreto','a proibição','a cova dos leões','a cova dos leões','a cova dos leões','Daniel','o anjo que fecha a boca dos leões','a cova selada'],a:'Daniel na cova dos leões',al:['daniel na cova dos leoes','cova dos leoes','daniel','daniel e os leoes'],ref:'Daniel 6',t:T_AT,b:'Livro de Daniel',d:'Um decreto real proíbe rezar a qualquer deus por trinta dias.',c:'Daniel continuou rezando três vezes ao dia, com a janela aberta voltada para Jerusalém.'},
 {l:2,e:['🧑','📏','💰','🌳','🧗','👀','🙋‍♂️','🏠','🍽️','💸'],m:['Zaqueu','de baixa estatura','rico','a árvore','sobe para ver','Jesus o vê','desce depressa','a casa de Zaqueu','a refeição','devolve o que cobrou a mais'],a:'Zaqueu',al:['zaqueu','zaqueu na arvore','conversao de zaqueu','zaqueu e jesus'],ref:'Lucas 19',t:T_NT,b:'Evangelho de Lucas',d:'Um chefe dos cobradores de impostos, de baixa estatura, sobe numa árvore em Jericó.',c:'Zaqueu promete dar metade dos bens aos pobres e devolver quatro vezes o que tinha cobrado a mais.'},
 {l:2,e:['👦','🧥','🌈','😠','👥','🕳️','💰','🐫','👑','💭','🌾','🐄'],m:['José','a túnica','colorida','a inveja','os irmãos','o poço','vendido','os mercadores','o faraó','os sonhos','as espigas','as vacas'],a:'José do Egito',al:['jose do egito','jose e seus irmaos','jose','tunica colorida','jose e os irmaos','jose no egito'],ref:'Gênesis 37–41',t:T_AT,b:'Livro do Gênesis',d:'Vendido pelos irmãos, acaba interpretando os sonhos do faraó.',c:'As sete vacas gordas e as sete magras do sonho do faraó anunciavam sete anos de fartura e sete de fome.'},
@@ -227,150 +333,447 @@ const P=[
 {l:3,e:['🎖️','🧔','🩹','✉️','👑','🧔','7️⃣','🌊','🛁','✨','👶'],m:['Naamã, o general','Naamã, o general','a doença de pele','a carta','o rei','o profeta Eliseu','sete vezes','o rio Jordão','o banho','a cura','pele de criança'],a:'Cura de Naamã',al:['naama','cura de naama','naama o sirio','naaman','eliseu e naama','eliseu'],ref:'2 Reis 5',t:T_AT,b:'Segundo Livro dos Reis',d:'Um general estrangeiro mergulha sete vezes no rio Jordão.',c:'Naamã se ofendeu com a instrução simples do profeta Eliseu, mas obedeceu, e sua pele ficou como a de uma criança.'},
 {l:3,e:['⛓️','🧔','💂','💂','😴','👼','💡','⛓️','💥','🚪','🚶','🚪','👧','😲'],m:['as correntes','Pedro','os guardas','os guardas','dormindo','o anjo','a luz','as correntes caem','as correntes caem','a porta','Pedro sai','o portão','Rode','ninguém acredita'],a:'Pedro libertado da prisão',al:['pedro libertado da prisao','libertacao de pedro','pedro na prisao','pedro e o anjo','pedro sai da prisao','pedro libertado'],ref:'Atos 12',t:T_NT,b:'Atos dos Apóstolos',d:'Uma empregada chamada Rode fica tão feliz que esquece de abrir o portão.',c:'Enquanto Pedro estava preso, a comunidade rezava por ele sem parar. Quando ele bateu à porta, ninguém acreditou.'},
 {l:3,e:['🚶','🚶','🛣️','😔','🧔','💬','📜','🏠','🍞','✋','👀','💡'],m:['dois discípulos','dois discípulos','o caminho','a tristeza','Jesus se aproxima','a conversa','as Escrituras','a casa','o pão partido','o pão partido','os olhos se abrem','o reconhecem'],a:'Discípulos de Emaús',al:['discipulos de emaus','emaus','caminho de emaus','estrada de emaus'],ref:'Lucas 24',t:T_NT,b:'Evangelho de Lucas',d:'Dois discípulos só reconhecem o companheiro de viagem quando ele parte o pão.',c:'O Evangelho guarda o nome de um dos dois: Cléofas.'},
-{l:3,e:['👩','👩','👶','😠','👑','⚖️','🗡️','😱','💔','✅'],m:['as duas mulheres','as duas mulheres','o bebê','a disputa','o rei Salomão','o julgamento','a espada','o pavor','a mãe verdadeira desiste','a sentença justa'],a:'Julgamento de Salomão',al:['julgamento de salomao','salomao','sabedoria de salomao','salomao e as duas mulheres','salomao e as duas maes','juizo de salomao'],ref:'1 Reis 3',t:T_AT,b:'Primeiro Livro dos Reis',d:'Duas mulheres disputam um bebê, e o rei pede uma espada.',c:'Pouco antes, Salomão tinha pedido a Deus sabedoria, em vez de riqueza ou vida longa.'}
+{l:3,e:['👩','👩','👶','😠','👑','⚖️','🗡️','😱','💔','✅'],m:['as duas mulheres','as duas mulheres','o bebê','a disputa','o rei Salomão','o julgamento','a espada','o pavor','a mãe verdadeira desiste','a sentença justa'],a:'Julgamento de Salomão',al:['julgamento de salomao','salomao','sabedoria de salomao','salomao e as duas mulheres','salomao e as duas maes','juizo de salomao'],ref:'1 Reis 3',t:T_AT,b:'Primeiro Livro dos Reis',d:'Duas mulheres disputam um bebê, e o rei pede uma espada.',c:'Pouco antes, Salomão tinha pedido a Deus sabedoria, em vez de riqueza ou vida longa.'},
+// ---------- FÁCIL (novas) ----------
+{l:1,e:['👨‍🌾','🌾','🧑','🐑','🔥','🔥','😠','🪨','💔','❓'],m:['Caim, o agricultor','os frutos da terra','Abel, o pastor','os cordeiros','as ofertas','as ofertas','a inveja','o crime no campo','a morte de Abel','Deus pergunta pelo irmão'],a:'Caim e Abel',al:['caim e abel','caim','abel','cain e abel'],ref:'Gênesis 4',t:T_AT,b:'Livro do Gênesis',d:'Dois irmãos fazem ofertas a Deus, e um deles fica com inveja do outro.',c:'Quando Deus pergunta por Abel, Caim responde perguntando se ele era o guarda do irmão.'},
+{l:1,e:['⛰️','☁️','⚡','👴','🪨','🪨','🔟','📜'],m:['o monte Sinai','a nuvem','os trovões','Moisés','as duas tábuas de pedra','as duas tábuas de pedra','dez','a Lei de Deus'],a:'Os Dez Mandamentos',al:['dez mandamentos','os dez mandamentos','mandamentos','tabuas da lei','decalogo','moises no sinai','monte sinai'],ref:'Êxodo 19–20',t:T_AT,b:'Livro do Êxodo',d:'No alto de um monte, entre trovões, Deus entrega a Lei ao povo.',c:'Ao descer do monte e ver o povo adorando um bezerro de ouro, Moisés quebrou as tábuas e precisou subir de novo para recebê-las.'},
+{l:1,e:['🧔‍♂️','🌊','🧔','💧','☁️','🕊️','🗣️','❤️'],m:['João Batista','o rio Jordão','Jesus','o batismo','o céu se abre','o Espírito como pomba','a voz do Pai','o Filho amado'],a:'Batismo de Jesus',al:['batismo de jesus','batismo no jordao','joao batista batiza jesus','batismo','batismo do senhor'],ref:'Mateus 3',t:T_NT,b:'Evangelhos de Mateus, Marcos e Lucas',d:'Um primo batiza o outro no rio, e uma pomba desce do céu.',c:'João tentou recusar, dizendo que ele é que precisava ser batizado por Jesus.'},
+{l:1,e:['🌙','⛵','🎣','❌','🧔','🗣️','➡️','🐟','🐟','🐟','💥'],m:['a noite inteira','o barco','pescando','nada','Jesus','manda','lançar as redes de novo','muitos peixes','muitos peixes','muitos peixes','as redes quase rompem'],a:'Pesca milagrosa',al:['pesca milagrosa','pesca maravilhosa','rede cheia','pescadores de homens','chamado de pedro','pesca'],ref:'Lucas 5',t:T_NT,b:'Evangelho de Lucas',d:'Depois de uma noite sem pescar nada, eles lançam as redes mais uma vez.',c:'Depois disso, Pedro, Tiago e João deixaram tudo para seguir Jesus, que prometeu fazê-los pescadores de homens.'},
+{l:1,e:['⛵','🌪️','🌊','😱','🧔','😴','🙏','✋','🌤️'],m:['o barco','a tempestade','as ondas','o medo dos discípulos','Jesus','dormindo','acordam Jesus','ele manda o vento parar','a calmaria'],a:'Jesus acalma a tempestade',al:['jesus acalma a tempestade','tempestade acalmada','jesus acalma o mar','tempestade no mar','tempestade','a tempestade'],ref:'Marcos 4',t:T_NT,b:'Evangelho de Marcos',d:'Enquanto o barco quase afunda, o mestre dorme na popa.',c:'Só Marcos conta que Jesus dormia com a cabeça sobre um travesseiro.'},
+{l:1,e:['👑','🌵','✝️','⛰️','🧔','🌑','💔','🙏'],m:['a coroa','de espinhos','a cruz','o Calvário','Jesus','as trevas ao meio-dia','a morte','entrega o espírito ao Pai'],a:'Crucificação de Jesus',al:['crucificacao de jesus','crucificacao','paixao de cristo','paixao','morte de jesus','sexta feira santa','calvario','golgota','via sacra'],ref:'Mateus 27; Lucas 23',t:T_NT,b:'Os quatro Evangelhos',d:'No alto de um morro fora de Jerusalém, o céu escurece ao meio-dia.',c:'O nome Gólgota quer dizer “lugar da caveira”. Em latim, o mesmo lugar se chama Calvário.'},
+{l:1,e:['🧔','🫏','🌴','🌴','🧥','🛣️','👥','🙌','🏙️'],m:['Jesus','montado num jumentinho','os ramos','os ramos','os mantos','estendidos no caminho','a multidão','Hosana!','Jerusalém'],a:'Entrada em Jerusalém',al:['entrada em jerusalem','entrada triunfal','domingo de ramos','ramos','hosana','entrada de jesus em jerusalem'],ref:'Mateus 21',t:T_NT,b:'Os quatro Evangelhos',d:'A multidão estende mantos e ramos no caminho de um homem montado num jumentinho.',c:'A Igreja recorda esse dia no Domingo de Ramos, que abre a Semana Santa.'},
+{l:1,e:['🧔','⛰️','👥','🙌','⬆️','☁️','👼','👼'],m:['Jesus ressuscitado','o monte das Oliveiras','os apóstolos','a bênção','sobe ao céu','a nuvem o encobre','dois homens de branco','dois homens de branco'],a:'Ascensão de Jesus',al:['ascensao de jesus','ascensao','ascensao do senhor','jesus sobe ao ceu','subida ao ceu'],ref:'Atos 1',t:T_NT,b:'Atos dos Apóstolos',d:'Quarenta dias depois da Páscoa, uma nuvem o tira da vista dos discípulos.',c:'Os dois homens de branco perguntam aos apóstolos por que continuam parados, olhando para o céu.'},
+{l:1,e:['👶','👧','👦','➡️','🧔','🙅‍♂️','✋','🤗','🙌'],m:['as crianças','as crianças','as crianças','são trazidas','a Jesus','os discípulos querem impedir','Jesus os corrige','o abraço','a bênção'],a:'Jesus e as crianças',al:['jesus e as criancas','deixai vir a mim as criancinhas','deixai vir as criancas','criancas','jesus abencoa as criancas'],ref:'Marcos 10',t:T_NT,b:'Evangelhos de Marcos, Mateus e Lucas',d:'Os discípulos tentam afastar os pequenos, e o mestre fica indignado.',c:'Jesus diz que quem não receber o Reino de Deus como uma criança não entrará nele.'},
+{l:1,e:['👑','📜','👶','🧺','🌊','🌾','👸','🤲','👧','👩'],m:['o faraó','a ordem contra os meninos hebreus','o bebê','o cesto','o rio Nilo','entre os juncos','a filha do faraó','o recolhe','a irmã do bebê','a própria mãe vira ama'],a:'Moisés salvo das águas',al:['moises salvo das aguas','moises no cesto','moises bebe','nascimento de moises','moises no rio','moises no nilo','bebe moises'],ref:'Êxodo 2',t:T_AT,b:'Livro do Êxodo',d:'Para salvar o filho, uma mãe o deixa num cesto entre os juncos do rio.',c:'A filha do faraó deu ao menino o nome de Moisés, explicando que o tinha tirado das águas.'},
+{l:1,e:['⛰️','🧔','🪑','👥','🗣️','😢','➡️','😊','🕊️','🧂','💡'],m:['o monte','Jesus','senta para ensinar','a multidão','ensina','os que choram','serão','consolados','os que promovem a paz','o sal da terra','a luz do mundo'],a:'Sermão da Montanha',al:['sermao da montanha','bem aventurancas','as bem aventurancas','sermao do monte','bem aventurados'],ref:'Mateus 5–7',t:T_NT,b:'Evangelho de Mateus',d:'Sentado no alto de um monte, ele ensina quem são os felizes de verdade.',c:'O sermão ocupa três capítulos inteiros de Mateus, e é nele que Jesus ensina o Pai-Nosso.'},
+{l:1,e:['🏠','🪨','🌧️','🌊','💨','✅','🏠','🏖️','🌧️','💥'],m:['a casa do prudente','sobre a rocha','a chuva','a enchente','o vento','fica de pé','a casa do insensato','sobre a areia','a mesma chuva','desaba'],a:'Casa sobre a rocha',al:['casa sobre a rocha','casa na rocha','parabola da casa na rocha','construtor prudente','casa na areia','os dois alicerces','casa sobre a areia'],ref:'Mateus 7',t:T_NT,b:'Evangelho de Mateus',d:'Duas casas enfrentam a mesma tempestade, mas só uma tinha bons alicerces.',c:'É com essa parábola que Jesus fecha o Sermão da Montanha: quem ouve e pratica é como quem constrói na rocha.'},
+// ---------- MÉDIO (novas) ----------
+{l:2,e:['👩','🚶‍♀️','⛰️','🏠','👵','🤰','👶','💃','🎶'],m:['Maria','viaja depressa','às montanhas da Judeia','a casa de Zacarias','Isabel','grávida','o bebê João','pula de alegria','o cântico de Maria'],a:'Visitação',al:['visitacao','visita de maria a isabel','maria e isabel','maria visita isabel','magnificat'],ref:'Lucas 1',t:T_NT,b:'Evangelho de Lucas',d:'Grávida, uma jovem visita a parente idosa que também espera um filho.',c:'O cântico de Maria nesse encontro é o Magnificat, rezado todos os dias na oração das Vésperas.'},
+{l:2,e:['👴','👦','🪵','⛰️','🪨','🗡️','👼','✋','🐏'],m:['Abraão','Isaac','a lenha','o monte Moriá','o altar','a faca','o anjo','a mão detida','o carneiro preso no arbusto'],a:'Sacrifício de Isaac',al:['sacrificio de isaac','abraao e isaac','isaac','abraao sacrifica isaac','sacrificio de abraao'],ref:'Gênesis 22',t:T_AT,b:'Livro do Gênesis',d:'Um pai sobe o monte com o filho, que carrega a lenha nas costas.',c:'O carneiro preso pelos chifres foi oferecido no lugar do filho, e Abraão chamou o lugar de “O Senhor proverá”.'},
+{l:2,e:['👴','⛰️','⏳','👥','💍','🔥','🐂','✨','💃','📜','💥'],m:['Moisés','no monte Sinai','demora','o povo','as joias de ouro','derretidas','o bezerro','de ouro','a festa','as tábuas da Lei','quebradas'],a:'Bezerro de ouro',al:['bezerro de ouro','o bezerro de ouro','idolo de ouro','aarao e o bezerro'],ref:'Êxodo 32',t:T_AT,b:'Livro do Êxodo',d:'Cansado de esperar Moisés descer do monte, o povo pede um deus que possa ver.',c:'Foi Aarão, irmão de Moisés, quem moldou o bezerro com o ouro que o povo entregou.'},
+{l:2,e:['👨‍🌾','🌱','🛣️','🐦','🪨','☀️','🌵','🌾','🌾','🌾'],m:['o semeador','as sementes','à beira do caminho','os pássaros comem','o terreno pedregoso','o sol queima','os espinhos sufocam','a terra boa dá fruto','a terra boa dá fruto','a terra boa dá fruto'],a:'Parábola do Semeador',al:['parabola do semeador','semeador','o semeador','a semente'],ref:'Mateus 13',t:T_NT,b:'Evangelhos de Mateus, Marcos e Lucas',d:'As sementes caem em quatro tipos de terreno.',c:'O próprio Jesus explica a parábola: a semente é a Palavra, e os terrenos são as formas de recebê-la.'},
+{l:2,e:['🛏️','🧍','🧍','🧍','🧍','🏠','👥','⬆️','🕳️','⬇️','🧔','🚶'],m:['o paralítico na maca','quatro amigos','quatro amigos','quatro amigos','quatro amigos','a casa','a multidão','sobem ao telhado','abrem um buraco','descem a maca','Jesus','ele sai andando'],a:'Cura do paralítico',al:['cura do paralitico','paralitico','paralitico de cafarnaum','paralitico no telhado','paralitico descido pelo telhado'],ref:'Marcos 2',t:T_NT,b:'Evangelho de Marcos',d:'Sem conseguir passar pela multidão, quatro amigos abrem o teto da casa.',c:'Antes de curar, Jesus disse ao homem que seus pecados estavam perdoados, o que escandalizou os escribas.'},
+{l:2,e:['😴','👼','💭','👩','👶','👨','🫏','🏜️','🔺','👑','😠'],m:['José dorme','o anjo','no sonho','Maria','o Menino','José','a viagem','o deserto','o Egito','o rei Herodes','a fúria de Herodes'],a:'Fuga para o Egito',al:['fuga para o egito','fuga ao egito','sagrada familia foge','fuga da sagrada familia'],ref:'Mateus 2',t:T_NT,b:'Evangelho de Mateus',d:'Avisado em sonho, um pai leva a família à noite para outro país.',c:'A família ficou no Egito até a morte de Herodes e depois foi morar em Nazaré.'},
+{l:2,e:['👦','1️⃣2️⃣','🏛️','👨‍👩‍👦','🚶','😟','3️⃣','📜','👴','👴','😮'],m:['o menino Jesus','doze anos','o Templo de Jerusalém','José e Maria','voltam para casa','a aflição','três dias de busca','as Escrituras','os doutores da Lei','os doutores da Lei','o espanto com as respostas'],a:'Jesus entre os doutores',al:['jesus entre os doutores','jesus no templo','menino jesus no templo','jesus perdido no templo','perda e encontro de jesus','encontro de jesus no templo'],ref:'Lucas 2',t:T_NT,b:'Evangelho de Lucas',d:'Aos doze anos, ele fica para trás em Jerusalém e os pais o procuram por três dias.',c:'É o quinto mistério gozoso do Terço: a perda e o encontro do Menino Jesus no Templo.'},
+{l:2,e:['🏛️','🐑','🐂','🕊️','💰','🧔','🪢','🔀','💥','🙏'],m:['o Templo','os vendedores de ovelhas','de bois','de pombas','os cambistas','Jesus','o chicote de cordas','vira as mesas','expulsa todos','casa de oração'],a:'Expulsão dos vendilhões',al:['expulsao dos vendilhoes','vendilhoes do templo','jesus expulsa os vendilhoes','purificacao do templo','vendilhoes','expulsao dos vendedores'],ref:'João 2',t:T_NT,b:'Evangelho de João',d:'Com um chicote de cordas, ele derruba as mesas dos cambistas.',c:'Os quatro Evangelhos contam a cena, mas só João menciona o chicote feito de cordas.'},
+{l:2,e:['🔥','🧔','👧','❓','🙅‍♂️','🙅‍♂️','🙅‍♂️','🐓','👀','😭'],m:['a fogueira no pátio','Pedro','a criada','você é discípulo dele?','nega','nega de novo','nega pela terceira vez','o galo canta','o olhar de Jesus','o choro amargo'],a:'Negação de Pedro',al:['negacao de pedro','pedro nega jesus','pedro nega','o galo cantou','canto do galo'],ref:'Lucas 22',t:T_NT,b:'Os quatro Evangelhos',d:'Três vezes ele diz que não conhece o amigo, e então um galo canta.',c:'Depois da ressurreição, Jesus pergunta três vezes a Pedro se ele o ama, como que desfazendo as três negações.'},
+{l:2,e:['👥','🚪','🔒','🧔','✋','🙅','🤔','8️⃣','👆','🩹','🙏'],m:['os discípulos reunidos','as portas trancadas','as portas trancadas','Jesus aparece','as marcas nas mãos','Tomé não estava','e duvida','oito dias depois','Jesus o convida a tocar','as chagas','“Meu Senhor e meu Deus”'],a:'Incredulidade de Tomé',al:['incredulidade de tome','tome','sao tome','tome duvida','duvida de tome','ver para crer'],ref:'João 20',t:T_NT,b:'Evangelho de João',d:'Um discípulo diz que só vai acreditar se tocar nas feridas.',c:'A resposta de Tomé, “Meu Senhor e meu Deus”, é uma das profissões de fé mais claras de todo o Evangelho.'},
+{l:2,e:['☀️','🧔','🪣','💧','👩','🗣️','💧','✨','🏃‍♀️','🏘️'],m:['o meio-dia','Jesus cansado','o poço de Jacó','pede água','a samaritana','a conversa','a água viva','a revelação','ela corre','avisa a cidade'],a:'A samaritana no poço',al:['samaritana','a samaritana','mulher samaritana','samaritana no poco','jesus e a samaritana','poco de jaco','agua viva'],ref:'João 4',t:T_NT,b:'Evangelho de João',d:'Ao meio-dia, junto a um poço, Jesus pede de beber a uma mulher.',c:'Judeus e samaritanos não se davam, por isso a mulher se espanta que Jesus fale com ela.'},
+{l:2,e:['🧔','👥','⛰️','✨','👕','⚪','👴','👴','⛺','☁️','🗣️'],m:['Jesus','Pedro, Tiago e João','o monte alto','o rosto brilha','as roupas','brancas como a luz','Moisés e Elias','Moisés e Elias','as três tendas','a nuvem','a voz do Pai'],a:'Transfiguração',al:['transfiguracao','transfiguracao de jesus','monte tabor','jesus transfigurado'],ref:'Mateus 17',t:T_NT,b:'Evangelhos de Mateus, Marcos e Lucas',d:'No alto de um monte, as roupas dele ficam brancas como a luz.',c:'Pedro quis armar três tendas: uma para Jesus, uma para Moisés e uma para Elias.'},
+// ---------- DIFÍCIL (novas) ----------
+{l:3,e:['🧔','🧳','💰','💰','💰','📈','📈','🕳️','🔙','🎉','😠'],m:['o patrão','viaja','cinco talentos','dois talentos','um talento','o primeiro dobra','o segundo também','o terceiro enterra','o patrão volta','os fiéis são premiados','o medroso é repreendido'],a:'Parábola dos talentos',al:['parabola dos talentos','talentos','os talentos','servos e talentos'],ref:'Mateus 25',t:T_NT,b:'Evangelho de Mateus',d:'Um dos servos enterra o dinheiro por medo, os outros fazem render.',c:'Um talento era uma quantia enorme, cerca de 6 mil denários, o que equivalia a anos de trabalho.'},
+{l:3,e:['🪔','🪔','🪔','🪔','🪔','🛢️','😴','🌙','🤵','🏃‍♀️','🚪','🔒'],m:['dez moças com lâmpadas','dez moças com lâmpadas','dez moças com lâmpadas','dez moças com lâmpadas','dez moças com lâmpadas','o óleo de reserva','todas adormecem','meia-noite','chega o noivo','as imprudentes saem para comprar óleo','a festa começa','a porta se fecha'],a:'Parábola das dez virgens',al:['parabola das dez virgens','dez virgens','as dez virgens','virgens prudentes','virgens prudentes e insensatas'],ref:'Mateus 25',t:T_NT,b:'Evangelho de Mateus',d:'Cinco moças levaram óleo de reserva para as lâmpadas, cinco não.',c:'Jesus termina pedindo vigilância, porque ninguém sabe o dia nem a hora.'},
+{l:3,e:['👴','👨','🌊','🧥','↔️','🔥','🐎','🌪️','⬆️','🧥'],m:['Elias','Eliseu','o rio Jordão','o manto','abre as águas','o carro de fogo','os cavalos de fogo','o redemoinho','Elias sobe ao céu','Eliseu fica com o manto'],a:'Elias levado ao céu',al:['elias levado ao ceu','carro de fogo','elias e o carro de fogo','arrebatamento de elias','elias sobe ao ceu','elias e eliseu'],ref:'2 Reis 2',t:T_AT,b:'Segundo Livro dos Reis',d:'Um profeta desaparece num redemoinho, e o discípulo herda o manto dele.',c:'Eliseu pediu uma porção dobrada do espírito de Elias e depois repetiu, com o manto, o milagre de abrir o Jordão.'},
+{l:3,e:['🌵','🧔','👩','🪵','🫙','🛢️','🍞','👦','♾️'],m:['a seca','Elias','a viúva','juntando lenha','o resto de farinha','o pouco de azeite','o pão para o profeta','o filho dela','a farinha e o azeite não acabam'],a:'Elias e a viúva de Sarepta',al:['viuva de sarepta','elias e a viuva','elias e a viuva de sarepta','sarepta','farinha e azeite'],ref:'1 Reis 17',t:T_AT,b:'Primeiro Livro dos Reis',d:'Na seca, uma viúva divide com um profeta a última farinha que tinha.',c:'Jesus lembra essa viúva na sinagoga de Nazaré: Elias foi enviado a uma estrangeira, e não a uma israelita.'},
+{l:3,e:['🌙','👦','😴','🗣️','🏃','👴','🔁','3️⃣','🙏','👂'],m:['a noite','o menino Samuel','dormindo no santuário','uma voz chama','ele corre','até o sacerdote Eli','acontece de novo','três vezes','Eli entende','“Fala, Senhor, que teu servo escuta”'],a:'Chamado de Samuel',al:['chamado de samuel','vocacao de samuel','samuel','samuel e eli','fala senhor que teu servo escuta'],ref:'1 Samuel 3',t:T_AT,b:'Primeiro Livro de Samuel',d:'Um menino ouve chamarem seu nome à noite e acha que é o velho sacerdote.',c:'Samuel cresceu e se tornou o profeta que ungiu os dois primeiros reis de Israel, Saul e Davi.'},
+{l:3,e:['☀️','⛺','👴','🧑','🧑','🧑','🍞','🐄','👵','😂','👶'],m:['o calor do dia','a tenda','Abraão','os três visitantes','os três visitantes','os três visitantes','os pães','o bezerro','Sara','ri escondida','o filho prometido'],a:'Abraão e os três visitantes',al:['abraao e os tres visitantes','abraao em mamre','carvalhos de mamre','tres visitantes','visita a abraao','hospitalidade de abraao','sara ri'],ref:'Gênesis 18',t:T_AT,b:'Livro do Gênesis',d:'Três desconhecidos chegam à tenda, e a esposa idosa ri do que eles dizem.',c:'O filho que nasceu se chamou Isaac, nome que lembra “riso” em hebraico.'},
+{l:3,e:['🌙','🌊','🧔','🤼','👼','🌅','🦵','🙏','📛'],m:['a noite','o vau do Jaboc','Jacó','a luta','com um misterioso adversário','até o amanhecer','o quadril ferido','não te soltarei sem a bênção','o novo nome: Israel'],a:'Jacó luta com o anjo',al:['jaco luta com o anjo','luta de jaco','jaco e o anjo','jaco luta com deus','luta com o anjo','jaco vira israel'],ref:'Gênesis 32',t:T_AT,b:'Livro do Gênesis',d:'Um homem luta a noite inteira, sai mancando e com outro nome.',c:'O novo nome, Israel, passou a ser o nome de todo o povo descendente de Jacó.'},
+{l:3,e:['👬','🏹','🦌','😩','🍲','🔴','🤝','👑','❌'],m:['os gêmeos','Esaú, o caçador','a caça','chega faminto','o ensopado','de lentilhas vermelhas','a troca','o direito de primogênito','perdido'],a:'Esaú vende a primogenitura',al:['esau vende a primogenitura','esau e jaco','prato de lentilhas','primogenitura','esau','lentilhas'],ref:'Gênesis 25',t:T_AT,b:'Livro do Gênesis',d:'Um caçador faminto troca um direito valioso por um prato de comida.',c:'Por causa do ensopado vermelho, Esaú também foi chamado de Edom, que quer dizer “vermelho”.'},
+{l:3,e:['👼','🧔','🛣️','🏜️','🛞','🤴','📜','❓','💧','👉','✨'],m:['o anjo','Filipe','a estrada de Gaza','o deserto','a carruagem','o ministro da rainha da Etiópia','lendo Isaías','você entende o que lê?','a água','o pedido de batismo','Filipe desaparece'],a:'Filipe e o etíope',al:['filipe e o etiope','filipe e o eunuco','eunuco etiope','batismo do etiope','filipe','etiope'],ref:'Atos 8',t:T_NT,b:'Atos dos Apóstolos',d:'Na estrada do deserto, um discípulo explica Isaías a um viajante estrangeiro.',c:'Depois do batismo, Filipe foi levado pelo Espírito, e o etíope seguiu viagem cheio de alegria.'},
+{l:3,e:['🌙','🏠','🪟','🧔','🗣️','⏳','😴','⬇️','💥','🤗','😮‍💨'],m:['a noite','a sala no andar de cima','a janela','Paulo','prega','até meia-noite','o jovem Êutico cochila','cai','do terceiro andar','Paulo o abraça','ele está vivo'],a:'Êutico cai da janela',al:['eutico','eutico cai da janela','o jovem que caiu da janela','eutico e paulo','queda de eutico'],ref:'Atos 20',t:T_NT,b:'Atos dos Apóstolos',d:'Um sermão longo demais faz um jovem cochilar sentado na janela.',c:'Depois do susto, Paulo voltou para cima, partiu o pão e continuou falando até o amanhecer.'},
+{l:3,e:['⛵','🌪️','💥','🏝️','🔥','🪵','🐍','✋','😮','👍'],m:['o navio','a tempestade','o naufrágio','a ilha de Malta','a fogueira','os gravetos','a víbora','presa na mão de Paulo','todos esperam que ele morra','nada acontece'],a:'Naufrágio de Paulo em Malta',al:['naufragio de paulo','paulo em malta','malta','paulo e a vibora','paulo e a cobra','naufragio'],ref:'Atos 27–28',t:T_NT,b:'Atos dos Apóstolos',d:'Depois de um naufrágio, uma serpente morde um prisioneiro junto à fogueira.',c:'Os moradores, que antes acharam que ele era um assassino, passaram a dizer que ele era um deus.'},
+{l:3,e:['👑','🗿','🙇','🙅‍♂️','🙅‍♂️','🙅‍♂️','🔥','🔥','4️⃣','🚶','😲'],m:['o rei Nabucodonosor','a estátua de ouro','todos se curvam','os três jovens se recusam','os três jovens se recusam','os três jovens se recusam','a fornalha ardente','aquecida sete vezes mais','um quarto homem','andando no fogo','o espanto do rei'],a:'Os três jovens na fornalha',al:['os tres jovens na fornalha','fornalha ardente','tres jovens na fornalha','sadraque mesaque e abednego','sidrac misac e abdenago','fornalha','os tres jovens'],ref:'Daniel 3',t:T_AT,b:'Livro de Daniel',d:'Três jovens se recusam a adorar uma estátua de ouro e são jogados no fogo.',c:'Na Bíblia católica, Daniel 3 traz o cântico que os jovens rezam dentro da fornalha, usado até hoje na Liturgia das Horas.'}
 ];
-const LEVELS={1:'Fácil',2:'Médio',3:'Difícil'};
-const MAX=4, KEY='biblia-em-emojis:';
 
+/* Músicas: [nível, artista, título, emojis, significados, respostas extras, observação] — os emojis formam só o TÍTULO */
+const CD='Colo de Deus',MS='Missionário Shalom',MR='Padre Marcelo Rossi',PZ='Padre Zezinho',FM='Padre Fábio de Melo',FG='Frei Gilson',AR='Anjos de Resgate',ER='Eliana Ribeiro',BM='Bruna Marques',JA='Monsenhor Jonas Abib',UP='Um Peregrino',JC='Juninho Cassimiro',TA='Tony Allysson',RS='Rosa de Saron',TB='Thiago Brado',FJ='Fraternidade São João Paulo II',RR='Ramon e Rafael',CA='Cristo Alegria',ET='Entretons',IA='Irmã Ana Paula';
+const M_RAW=[
+// ---------- FÁCIL: as mais conhecidas ----------
+[1,CD,'Ave Maria',['🐦','💙','👩'],['ave (o pássaro!)','o manto azul','Maria']],
+[1,CD,'Queima de Novo',['🔥','🔁','🆕'],['queima','de','novo'],['queima novamente']],
+[1,CD,'Cheiro de Rosas',['👃','🌹','🌹'],['cheiro','de rosas','de rosas'],['cheiro de rosa']],
+[1,CD,'Desperta',['⏰','😴','➡️','👀'],['o despertador','quem dorme','acorda','desperta']],
+[1,CD,'Aparecida',['🇧🇷','👑','💙','🎣','🌊'],['a Padroeira do Brasil','Rainha','o manto azul','os pescadores','o rio Paraíba'],['nossa senhora aparecida']],
+[1,CD,'Jesus Meu Esposo',['✝️','💍','🤵'],['Jesus','meu','esposo']],
+[1,MS,'Aos Teus Pés',['🙇','🦶','🦶'],['aos','teus pés','teus pés'],['a teus pes'],'Lançada como single em 2021.'],
+[1,MS,'Enfermo de Amor',['🤒','❤️'],['enfermo','de amor'],['doente de amor'],'Faz parte do álbum Fogo, de 2024.'],
+[1,MR,'Noites Traiçoeiras',['🌙','🌙','🐍'],['noites','noites','traiçoeiras'],['noite traicoeira'],'Faz parte do álbum Minha Bênção, de 2006.'],
+[1,MR,'Maria Passa à Frente',['👩','💙','🚶‍♀️','➡️'],['Maria','o manto azul','passa','à frente'],['maria passa na frente'],'Gravada com Gusttavo Lima, em 2019.'],
+[1,MR,'Faz um Milagre em Mim',['✨','🪄','🙋'],['faz','um milagre','em mim']],
+[1,PZ,'Oração pela Família',['🙏','👨‍👩‍👧‍👦'],['oração','pela família'],['oracao pela familia','oracao da familia']],
+[1,FM,'Tudo Posso',['💯','💪'],['tudo','posso'],[],'Faz parte do álbum Vida, de 2008.'],
+[1,FM,'A Mão de Deus',['✋','🙏'],['a mão','de Deus'],[],'Gravada com Serginho Herval, no álbum Solo Sagrado, de 2014.'],
+[1,FG,'Eu Seguirei',['🙋','👣','➡️'],['eu','seguirei','seguirei'],['seguirei']],
+// ---------- MÉDIO ----------
+[2,CD,'Casa de Maria',['🏠','💙','👩'],['casa','de','Maria']],
+[2,CD,'Amor Incomparável',['❤️','🚫','⚖️'],['amor','in- (sem)','comparável']],
+[2,CD,'Como Não Me Apaixonar',['❓','🚫','😍'],['como','não','me apaixonar']],
+[2,CD,'Refrigera Minhalma',['🧊','🙋','💓'],['refrigera','minha','alma'],['refrigera minha alma','refrigera minh alma']],
+[2,CD,'Abba Pai',['👶','🗣️','👨'],['a criança','chama','Abba, Pai (papai)'],['aba pai']],
+[2,CD,'Voz de Trovão',['🗣️','⚡','🌩️'],['voz','de','trovão']],
+[2,MS,'Ressuscita-me Agora',['🪦','⬆️','🧍','⏰'],['quem estava morto','levanta','me','agora'],['ressuscita me agora','ressuscitame agora'],'Lançada como single em 2020.'],
+[2,MS,'Ele Voltará',['👤','🔙','⏳'],['ele','voltará','um dia'],['jesus voltara'],'Lançada como single em 2024.'],
+[2,MS,'O Teu Amor Me Sustentará',['❤️','🫵','🤲','🧍'],['o amor','teu','me sustentará','de pé'],['teu amor me sustentara']],
+[2,MR,'Âncora do Amor',['⚓','❤️'],['âncora','do amor'],[],'Faz parte do álbum Ágape Musical, de 2007.'],
+[2,MR,'Meu Mestre',['🙋','👨‍🏫'],['meu','mestre'],[],'Faz parte do álbum Ágape Musical, de 2007.'],
+[2,MR,'Eu Te Amo Tanto',['🙋','❤️','🫵','💯'],['eu','te amo','te','tanto'],[],'Faz parte do álbum Ágape Musical, de 2007.'],
+[2,PZ,'És Água Viva',['🫵','💧','🌱'],['és','água','viva'],['es agua viva','agua viva']],
+[2,PZ,'Alô Meu Deus',['📞','🙋','🙏'],['alô!','meu','Deus'],['alo meu deus']],
+[2,PZ,'Mãe do Céu Morena',['👩','☁️','🤎'],['mãe','do céu','morena']],
+[2,FM,'Viver pra Mim é Cristo',['🌱','🙋','🟰','✝️'],['viver','pra mim','é','Cristo'],['viver para mim e cristo'],'Faz parte do álbum Iluminar, de 2009.'],
+[2,FM,'Tudo é do Pai',['💯','🟰','👨'],['tudo','é','do Pai'],[],'Faz parte do álbum Vida, de 2008.'],
+[2,FM,'Iluminar',['💡','✨'],['ilumi-','nar'],[],'Faixa-título do álbum de 2009.'],
+[2,FM,'Filho do Céu',['👦','☁️'],['filho','do céu'],[],'Faixa-título do álbum de 2015.'],
+[2,FM,'Incendeia Minha Alma',['🔥','🙋','💓'],['incendeia','minha','alma'],[],'Faz parte do álbum Iluminar, de 2009.'],
+[2,FM,'Eu Descansarei',['🙋','😴','🛏️'],['eu','descansarei','descansarei'],[],'Lançada como single em 2025.'],
+[2,FG,'Eu Te Levantarei',['🙋','🫵','⬆️'],['eu','te','levantarei'],['te levantarei']],
+[2,FG,'Minha Família É uma Bênção',['👨‍👩‍👧‍👦','🙏','✨'],['minha família','é uma','bênção'],['familia e uma bencao','minha familia e bencao']],
+[2,FG,'Oração de São Francisco',['🙏','😇','🐺','🕊️'],['oração','de São','Francisco (o lobo de Gubbio)','a paz'],['oracao pela paz']],
+[2,AR,'Pão dos Anjos',['🍞','👼','👼'],['pão','dos anjos','dos anjos'],['pao do anjo']],
+[2,AR,'Sou Teu Anjo',['🙋','👼'],['sou','teu anjo'],['sou seu anjo']],
+[2,AR,'Amigos pela Fé',['🤝','🙏','✝️'],['amigos','pela','fé']],
+[2,AR,'Manda Teus Anjos',['📤','👼','👼'],['manda','teus anjos','teus anjos'],['manda seus anjos']],
+[2,ER,'Chuva de Graça',['🌧️','✨','🎁'],['chuva','de','graça (presente de Deus)'],['chuva de gracas']],
+[2,ER,'Porta do Céu',['🚪','☁️'],['porta','do céu']],
+[2,BM,'Sou Tua Casa',['🙋‍♀️','🏠'],['sou','tua casa']],
+[2,BM,'Me Rendo',['🙌','🏳️'],['me','rendo (bandeira branca)'],['eu me rendo']],
+[2,JA,'Brisa Leve',['🍃','🪶'],['brisa','leve']],
+[2,UP,'Tem um Manto Me Esperando',['👉','🧥','🙋','⏳'],['tem','um manto','me','esperando'],['um manto me esperando'],'Lançada em 2026.'],
+[2,UP,'Desculpa Mundo',['🙏','😔','🌍'],['desculpa','(sinto muito)','mundo'],[],'Lançada como single em 2026.'],
+[2,UP,'Volta pra Ele',['🔙','➡️','👤'],['volta','pra','ele'],['volta para ele'],'Lançada em 2026.'],
+[2,UP,'Dez Corações',['🔟','❤️'],['dez','corações'],['10 coracoes'],'Lançada em 2026.'],
+// ---------- DIFÍCIL: menos conhecidas e lançamentos recentes ----------
+[3,CD,'Maior Que os Meus Medos',['📏','⬆️','😨','😨'],['maior','que','os meus medos','os meus medos'],['maior que meus medos']],
+[3,CD,'Profetiza Filho de Maria',['🗣️','📜','👦','💙','👩'],['profetiza','(a palavra)','filho','de','Maria']],
+[3,CD,'Maranatha',['🙏','⏳','🔙'],['vem, Senhor','logo','volta (Maranatha!)'],['maranata']],
+[3,CD,'Se Ninguém Te Adorar Eu Vou',['🤷','🚫','🙇‍♂️','🙋','🚶'],['se ninguém','(ninguém)','te adorar','eu','vou']],
+[3,MS,'Há Pressa no Ar',['🏃','💨','🌬️'],['há pressa','(correndo)','no ar'],['pressa no ar'],'Lançada como single em 2023.'],
+[3,MS,'Estrangeiro Aqui',['🧳','🌍','📍'],['estrangeiro','neste mundo','aqui'],[],'Título de um álbum de 2005.'],
+[3,PZ,'Cidadão do Infinito',['🪪','♾️'],['cidadão','do infinito'],['cidadao do infinito']],
+[3,PZ,'Há um Barco Esquecido na Praia',['⛵','🤔','💭','🏖️'],['há um barco','esquecido','(esquecido)','na praia'],['barco esquecido na praia']],
+[3,PZ,'Um Coração para Amar',['1️⃣','❤️','➡️','😍'],['um','coração','para','amar'],['um coracao pra amar']],
+[3,FG,'Deixa Deus Sonhar em Ti',['✋','🙏','💭','🫵'],['deixa','Deus','sonhar','em ti'],['deixa deus sonhar']],
+[3,AR,'Peregrino do Amor',['🚶‍♂️','🎒','❤️'],['peregrino','a caminho','do amor']],
+[3,AR,'Eternos Amigos',['♾️','🤝'],['eternos','amigos'],['amigos eternos']],
+[3,ER,'Jesus, Manso e Humilde',['✝️','🐑','🙇'],['Jesus','manso','e humilde'],['manso e humilde']],
+[3,ER,'Saudades de Ti',['🥹','💭','🫵'],['saudades','de','ti'],['saudade de ti']],
+[3,BM,'Há Beleza no Vale',['✨','🌸','🏞️'],['há beleza','no','vale'],['beleza no vale']],
+[3,BM,'Tesouro Oculto',['💎','🙈'],['tesouro','oculto (escondido)'],['tesouro escondido']],
+[3,BM,'Brevíssimo Segundo',['⚡','⏱️','1️⃣'],['brevíssimo','segundo','um só']],
+[3,BM,'Família de Nazaré',['👨‍👩‍👦','🏡','🌄'],['a família','a casa','de Nazaré'],['sagrada familia de nazare']],
+[3,JA,'Livre Acesso',['🔓','🚪'],['livre','acesso']],
+[3,JA,'Não Dá Mais pra Voltar',['🚫','👌','➕','🔙'],['não','dá','mais','pra voltar'],['nao da mais para voltar']],
+[3,JA,'Inunda Meu Ser',['🌊','🙋','🧍'],['inunda','meu','ser']],
+[3,UP,'A Barca',['🚣','⛵'],['a barca','a barca'],[],'Lançada como single em 2026.'],
+[3,UP,'Nosso Céu',['👫','☁️'],['nosso','céu'],[],'Gravada com Mariana Barros, em 2026.'],
+[3,UP,'Reunião',['👥','🤝','👥'],['as pessoas','se reúnem','(reunião)']],
+[3,UP,'Não Tire os Olhos de Mim',['🚫','👀','🙋'],['não tire','os olhos','de mim'],[],'Lançada em 2026.'],
+[3,UP,'Deus de Abraão',['🙏','👴','⭐'],['Deus','de Abraão','(a promessa das estrelas)'],[],'Lançada como single em 2026.'],
+[3,UP,'Jesus de Nazaré',['✝️','🏡','🌄'],['Jesus','a casa','de Nazaré'],[],'Lançada em 2025.'],
+[3,UP,'Derramado em Ti',['🫗','🫵'],['derramado','em ti']],
+[3,UP,'Desejo de Alguém',['💭','❤️','👤'],['desejo','de','alguém']],
+// ---------- Juninho Cassimiro ----------
+[2,JC,'Teus Planos',['🫵','📋'],['teus','planos'],['seus planos']],
+[2,JC,'Quando Te Encontrar',['⏰','🫵','🔍','🤗'],['quando','te','encontrar','(o encontro)']],
+[2,JC,'A Felicidade',['😄','🎉'],['a felicidade','(alegria)'],['felicidade']],
+[3,JC,'O Poço',['🕳️','🪣'],['o poço','(o balde do poço)'],['poco']],
+[3,JC,'Em Busca do Amado',['🔍','❤️','🧔'],['em busca','do amado','(Jesus)'],['busca do amado']],
+[3,JC,'O Beijo Místico',['💋','✨','🙏'],['o beijo','místico','(na oração)'],['beijo mistico']],
+[3,JC,'O Convívio dos Eleitos',['🏡','👥','⭐'],['o convívio','(juntos)','dos eleitos'],['convivio dos eleitos']],
+// ---------- Tony Allysson ----------
+[2,TA,'Jesus Filho de Davi',['✝️','👦','👑'],['Jesus','filho','de Davi, o rei'],['jesus filho de david']],
+[2,TA,'Soberano',['👑','🌍'],['soberano','(acima de tudo)']],
+[2,TA,'Estou a Esperar',['🙋','⏳'],['estou','a esperar'],['estou esperando']],
+[2,TA,'Águas Profundas',['🌊','⬇️'],['águas','profundas'],['aguas profundas']],
+[2,TA,'Bem-Vindo, Espírito Santo',['👋','🕊️'],['bem-vindo','Espírito Santo'],['bem vindo espirito santo']],
+[3,TA,'Purifica-me',['🧼','✨','🙋'],['purifica','(limpa)','-me'],['purifica me','purificame']],
+[3,TA,'Sustenta o Fogo',['🤲','🔥'],['sustenta','o fogo']],
+[3,TA,'Espírito da Verdade',['🕊️','✅'],['Espírito','da verdade'],['espirito da verdade']],
+// ---------- Rosa de Saron ----------
+[2,RS,'Sem Você',['🚫','🫵'],['sem','você'],['sem voce']],
+[3,RS,'Menos de Um Segundo',['➖','1️⃣','⏱️'],['menos de','um','segundo'],['menos de 1 segundo']],
+[2,RS,'Do Alto da Pedra',['⬆️','🪨'],['do alto','da pedra']],
+[3,RS,'As Dores do Silêncio',['💔','🤫'],['as dores','do silêncio'],['dores do silencio']],
+[2,RS,'Máquina do Tempo',['⚙️','⏳'],['máquina','do tempo'],['maquina do tempo']],
+[2,RS,'Mire as Estrelas',['🎯','⭐','⭐'],['mire','as estrelas','as estrelas']],
+// ---------- Thiago Brado ----------
+[2,TB,'Mãe do Céu',['👩','☁️'],['mãe','do céu'],['mae do ceu']],
+[3,TB,'Sopro',['🌬️','💨'],['sopro','(o vento)']],
+[3,TB,'Somos',['👥','🟰'],['nós','somos']],
+[2,TB,'Vai Passar',['⏳','➡️'],['vai','passar']],
+[2,TB,'Eterna Adoração',['♾️','🙇'],['eterna','adoração'],['eterna adoracao']],
+// ---------- Fraternidade São João Paulo II ----------
+[2,FJ,'Terra Seca',['🏜️','🌵'],['terra','seca']],
+[2,FJ,'99 Ovelhas',['9️⃣','9️⃣','🐑'],['noventa e','nove','ovelhas'],['noventa e nove ovelhas']],
+[3,FJ,'Jardim',['🌷','🌳'],['jardim','(jardim)']],
+[3,FJ,'Romanos 12',['🏛️','📜','1️⃣','2️⃣'],['Romanos','a carta','1','2'],['romanos doze']],
+[3,FJ,'Perfume',['🌸','🧴'],['o perfume','(o frasco)']],
+[3,FJ,'Banquete',['🍽️','🍗','🍷'],['banquete','banquete','banquete']],
+[3,FJ,'Grão de Trigo',['🫘','🌾'],['grão','de trigo'],['grao de trigo']],
+[3,FJ,'Cântico dos Cânticos',['🎶','🎶'],['cântico','dos cânticos'],['cantico dos canticos']],
+[3,FJ,'Eu Escolhi a Melhor Parte',['🙋','👉','🥇','🧩'],['eu','escolhi','a melhor','parte'],['escolhi a melhor parte']],
+// ---------- Ramon e Rafael ----------
+[2,RR,'Meu Barco',['🙋','⛵'],['meu','barco']],
+[2,RR,'Chama de Amor',['🔥','❤️'],['chama','de amor']],
+[2,RR,'Filho Amado',['👦','❤️'],['filho','amado']],
+[3,RR,'A Bênção Vai Te Ligar',['🙏','➡️','📞','🫵'],['a bênção','vai','ligar','te'],['a bencao vai te ligar','bencao vai te ligar']],
+// ---------- Cristo Alegria ----------
+[2,CA,'Até o Fim',['➡️','🏁'],['até','o fim'],['ate o fim']],
+[3,CA,'Raboni',['👨‍🏫','🗣️'],['Mestre','(em hebraico: Raboni)'],['rabboni']],
+[3,CA,'Meu Imperador',['🙋','👑'],['meu','imperador']],
+[2,CA,'Confia no Teu Deus',['🤝','🫵','🙏'],['confia','no teu','Deus'],['confia no seu deus']],
+[3,CA,'Diamante',['💎','✨'],['diamante','(o brilho)']],
+[3,CA,'Forja',['🔥','🔨'],['o fogo','da forja']],
+// ---------- Entretons ----------
+[2,ET,'Maria, Tu Sabias?',['👩','🫵','❓'],['Maria','tu','sabias?'],['maria tu sabias','maria voce sabia']],
+[2,ET,'Essa Aliança',['👉','💍'],['essa','aliança'],['essa alianca']],
+[3,ET,'Reinará Sobre Nós',['👑','⬆️','👥'],['reinará','sobre','nós'],['reinara sobre nos']],
+[2,ET,'Eu, Você e Deus',['🙋','🫵','🙏'],['eu','você','e Deus'],['eu voce e deus']],
+[3,ET,'Oh Vem, Emanuel',['🙌','➡️','👶'],['oh, vem','(a chegada)','Emanuel'],['oh vem emanuel','vem emanuel']],
+// ---------- Irmã Ana Paula ----------
+[2,IA,'Sopra em Nós',['🌬️','👥'],['sopra','em nós'],['sopra em nos']],
+[2,IA,'Somos do Céu',['👥','☁️'],['somos','do céu'],['somos do ceu']],
+[2,IA,'O Mesmo Pão',['🟰','🍞'],['o mesmo','pão'],['mesmo pao']],
+[3,IA,'Eu Navegarei',['🙋','⛵','🌊'],['eu','navegarei','(no mar)']],
+[3,IA,'Mãe do Verbo',['👩','📖'],['mãe','do Verbo (a Palavra)'],['mae do verbo']],
+[2,IA,'Eu Acredito',['🙋','✅','🙏'],['eu','acredito','(a fé)']]
+];
+const M=M_RAW.map(([l,b,a,e,m,al=[],c=''])=>({l,b,a,e,m,al,c}));
+
+M.forEach(p=>{const w=p.a.replace(/[,?]/g,'').split(/\s+/);p.t=`${w.length} ${w.length===1?'palavra':'palavras'} no título`;
+  p.d='Iniciais: '+w.map(x=>x[0].toUpperCase()).join(' ');p.f=`Primeira palavra: “${w[0]}”`;p.ref=p.b});
+const ARTISTAS=[...new Set(M.map(p=>p.b))];
+const TEMAS={
+  biblia:{dados:P_B,nome:'Bíblia',icone:'📖',pergunta:'Qual é a passagem bíblica?',ph:'Digite sua resposta…',
+    dicas:[['Testamento','t','📜'],['Livro','b','📖'],['Pista','d','🔍']]},
+  musica:{dados:M,nome:'Músicas',icone:'🎵',pergunta:'Qual é o título da música?',ph:'Digite o título da música…',
+    dicas:[['Tamanho','t','🔢'],['Iniciais','d','🔤'],['Começo','f','✍️']]}
+};
+const LEVELS={1:'Fácil',2:'Médio',3:'Difícil'}, ESTRELAS={1:'⭐',2:'⭐⭐',3:'⭐⭐⭐'};
+const MAX=4, KEY='biblia-em-emojis:';
+let tema='biblia', P=P_B, statsTema='biblia';
+const T=()=>TEMAS[tema];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store={get(k){try{return JSON.parse(localStorage.getItem(KEY+k))}catch(e){return null}},set(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- respostas ---------- */
 const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim().replace(/^(a|o|os|as) /,'');
 function lev(a,b){const m=a.length,n=b.length;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
 function matches(guess,p){const g=norm(guess);if(!g)return false;
   return [p.a,...p.al].map(norm).some(x=>{if(x===g)return true;const tol=x.length>=10?2:x.length>=6?1:0;return tol&&Math.abs(x.length-g.length)<=tol&&lev(x,g)<=tol})}
-const store={get(k){try{return JSON.parse(localStorage.getItem(KEY+k))}catch(e){return null}},set(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v))}catch(e){}}};
 
-/* Desafio do dia: curva semanal. Dom = Evangelho/NT · Seg-Ter = Fácil · Qua-Qui = Médio · Sex-Sáb = Difícil */
-const EPOCH=Date.UTC(2026,10,1); // domingo
+/* ---------- desafio do dia (só Bíblia) ---------- */
+const EPOCH=Date.UTC(2026,10,1);
 function today(){const d=new Date();return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-EPOCH)/864e5)}
-function dailyPuzzle(n){const dow=((n%7)+7)%7, w=Math.floor(n/7);
-  if(dow===0){const nt=P.filter(p=>p.t===T_NT);return nt[w%nt.length]}
-  const lvl=Math.ceil(dow/2), slot=(dow+1)%2, pool=P.filter(p=>p.l===lvl);
-  return pool[(w*2+slot)%pool.length]}
 const dayNum=today();
+const chaveDia=n=>'dia:'+n;
+function dailyPuzzle(n){const dow=((n%7)+7)%7, w=Math.floor(n/7);
+  const plano={1:[1,0,3],2:[1,1,3],3:[1,2,3],4:[2,0,2],5:[2,1,2],6:[3,0,1]};
+  const pick=d=>{const pl=plano[d],pool=P_B.filter(p=>p.l===pl[0]);return pool[(w*pl[2]+pl[1])%pool.length]};
+  if(dow===0){const semana=[1,2,3,4,5,6].map(pick),nt=P_B.filter(p=>p.t===T_NT&&!semana.includes(p));return nt[w%nt.length]}
+  return pick(dow)}
 
-let mode='dia', level=1, deck=[], pos=0, total=0, cur=null, lastHint=-1, msg='', confirmTimer=null;
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-function newRound(p,saved){cur=Object.assign({p,wrong:0,hints:0,tried:[],done:false,won:false,gaveUp:false},saved||{},{p});msg='';lastHint=-1}
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function startTreino(){deck=shuffle(P.filter(p=>p.l===level));pos=0;total=0;newRound(deck[0]);render()}
-function startDia(){newRound(dailyPuzzle(dayNum),store.get('dia:'+dayNum));render()}
+/* ---------- estado ---------- */
+let tela='menu', mode='dia', level=1, deck=[], pos=0, total=0, cur=null, lastHint=-1, msg='', fimDeck=false;
+function rnd(seed){return()=>{seed=(seed*16807)%2147483647;return seed/2147483647}}
+const semente=(s,k)=>[...s].reduce((h,c)=>h+c.charCodeAt(0)*k,dayNum+11)%2147483646+1;
+function makeOpts(p){const r=rnd(semente(p.a,7));
+  let pool=P.filter(x=>x!==p&&x.t===p.t).map(x=>x.a).sort(()=>r()-.5);
+  if(pool.length<3)pool=pool.concat(P.filter(x=>x!==p&&!pool.includes(x.a)).map(x=>x.a).sort(()=>r()-.5));
+  return [...pool.slice(0,3),p.a].sort(()=>r()-.5)}
+function artOpts(p){const r=rnd(semente(p.a,13));return [...ARTISTAS.filter(a=>a!==p.b).sort(()=>r()-.5).slice(0,3),p.b].sort(()=>r()-.5)}
+function newRound(p,saved){cur=Object.assign({p,wrong:0,hints:0,tried:[],done:false,won:false,gaveUp:false,opts:null,artista:null,artSel:null,reg:false},saved||{},{p});
+  if(!cur.opts)cur.opts=makeOpts(p);msg='';lastHint=-1}
 const used=()=>Math.max(cur.wrong,cur.hints);
-const revealed=()=>Math.min(3,used());
+const revealed=()=>Math.min(3,used()+1);
 const score=()=>cur.won?MAX-used():0;
+const pontosRodada=()=>score()+(cur.artista?1:0);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-/* ---------- render ---------- */
-function renderBar(){
-  if(mode==='dia'){$('bar').innerHTML=`<span class="pill">📖 Desafio nº ${dayNum+1} · ${LEVELS[cur.p.l]}</span><span class="pill gold">⭐ 4 pts (máx.)</span>`;return}
-  $('bar').innerHTML=`<div class="levels" role="group" aria-label="Nível">${[1,2,3].map(n=>`<button type="button" data-l="${n}" aria-pressed="${n===level}">${LEVELS[n]}</button>`).join('')}</div>
-    <div class="pills"><span class="pill">${Math.min(pos+1,deck.length)}/${deck.length}</span><span class="pill gold">⭐ ${total} pts</span></div>`;
-  $('bar').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{level=+b.dataset.l;startTreino()});
+/* ---------- navegação ---------- */
+function ir(dest){
+  if(dest==='ajuda'){abrir('ajuda');return}
+  if(dest==='dia'){if(tema!=='biblia')return;mode='dia';fimDeck=false;newRound(dailyPuzzle(dayNum),store.get(chaveDia(dayNum)));mostrar('jogo');render();return}
+  if(dest==='stats'){statsTema=tema;mostrar('stats');renderStats();return}
+  if(dest==='niveis'){renderNiveis();mostrar('niveis');return}
+  if(dest==='menu'){renderMenu();mostrar('menu');return}
 }
-function renderVitral(list){
-  const v=$('vitral'), e=list||cur.p.e;
-  v.setAttribute('aria-label',list?'':`Sequência de ${e.length} emojis, para ler em ordem`);
-  v.innerHTML=e.map((x,i)=>`<li class="${x.split('⃣').length>2?'multi':''}" style="animation-delay:${i*40}ms">${x}</li>`).join('');
-  layoutVitral();
+function mostrar(t){tela=t;['menu','niveis','jogo','stats'].forEach(k=>$('t-'+k).hidden=k!==t);$('sug-rodape').hidden=t!=='menu';window.scrollTo({top:0})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ir]');if(b){ir(b.dataset.ir);return}
+  const tb=e.target.closest('[data-tema]');if(tb){setTema(tb.dataset.tema);return}
+  const sb=e.target.closest('[data-stats]');if(sb){statsTema=sb.dataset.stats;renderStats();return}
+  const f=e.target.closest('[data-fechar]');if(f){fechar(f.closest('.overlay').id);return}
+  const ov=e.target.classList&&e.target.classList.contains('overlay')?e.target:null;if(ov)fechar(ov.id)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')['ajuda','dica'].forEach(id=>{if(!$(id).hidden)fechar(id)})});
+let voltarFoco=null;
+function abrir(id){voltarFoco=document.activeElement;$(id).hidden=false;$(id).querySelector('[data-fechar].btn').focus()}
+function fechar(id){$(id).hidden=true;if(id==='ajuda')store.set('visto',1);const g=$('g');if(g&&tela==='jogo')g.focus();else if(voltarFoco&&voltarFoco.focus)voltarFoco.focus()}
+
+function setTema(t){tema=t;P=TEMAS[t].dados;document.body.classList.toggle('musica',t==='musica');store.set('tema',t);
+  try{history.replaceState(null,'',location.pathname+location.search+(t==='musica'?'#musica':''))}catch(e){}
+  document.querySelectorAll('[data-tema]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tema===t));
+  renderMenu();if(tela!=='menu')mostrar('menu')}
+
+/* ---------- menu ---------- */
+function renderMenu(){
+  $('item-dia').hidden=tema!=='biblia';$('nota-musica').hidden=tema==='biblia';
+  const r=store.get(chaveDia(dayNum)),bd=$('badge-dia');
+  if(r&&r.done){bd.textContent=r.won?'Feito ✓':'Feito';bd.className='badge ok'}else{bd.textContent='Hoje';bd.className='badge'}
+  const c=[1,2,3].map(l=>P.filter(p=>p.l===l).length);
+  $('treino-sub').textContent=`${LEVELS[1]} ${c[0]} · ${LEVELS[2]} ${c[1]} · ${LEVELS[3]} ${c[2]}`;
 }
-function layoutVitral(){
-  const v=$('vitral'), n=v.children.length; if(!n)return;
-  v.style.gridTemplateColumns='';
-  const first=v.querySelector('li:not(.multi)')||v.children[0];
-  const tile=first.offsetWidth+4, avail=v.clientWidth-12;
-  const maxCols=Math.max(1,Math.floor((avail+4)/tile)), rows=Math.ceil(n/maxCols), cols=Math.ceil(n/rows);
-  v.style.gridTemplateColumns=`repeat(${cols},auto)`;
+
+/* ---------- níveis ---------- */
+function renderNiveis(){
+  $('niveis-titulo').textContent=`${T().icone} ${T().nome} – Treino`;
+  const un=tema==='musica'?['música','músicas']:['passagem','passagens'];
+  $('lista-niveis').innerHTML=[1,2,3].map(l=>{const n=P.filter(p=>p.l===l).length;
+    return `<button class="nivel n${l}" type="button" data-nivel="${l}"><span class="est" aria-hidden="true">${ESTRELAS[l]}</span><span><b>${LEVELS[l]}</b><small>${n} ${n===1?un[0]:un[1]}${n>24?' · rodadas de 24':''}</small></span></button>`}).join('');
+  $('lista-niveis').querySelectorAll('[data-nivel]').forEach(b=>b.onclick=()=>{level=+b.dataset.nivel;mode='treino';startTreino()});
 }
-function dots(){let h='';const w=used();for(let i=0;i<MAX;i++)h+=`<i class="${i<w?'x':(cur.won&&i===w?'ok':'')}"></i>`;
-  return `<div class="tent">Tentativas <div class="dots" role="img" aria-label="${w} de ${MAX} tentativas usadas">${h}</div></div>`}
+function startTreino(){deck=shuffle(P.filter(p=>p.l===level)).slice(0,24);pos=0;total=0;fimDeck=false;newRound(deck[0]);mostrar('jogo');render()}
+
+/* ---------- partida ---------- */
+function dataHoje(){try{const s=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});return s[0].toUpperCase()+s.slice(1)}catch(e){return ''}}
+function cabecalho(){
+  if(mode==='dia')return `<div class="faixa">📅 Desafio do Dia</div><p class="data">${esc(dataHoje())} · nº ${dayNum+1} · ${LEVELS[cur.p.l]}</p>`;
+  return `<div class="faixa">${T().icone} ${T().nome} – Nível ${LEVELS[level]}</div>
+    <div class="linha-info"><span>Enigma ${Math.min(pos+1,deck.length)} de ${deck.length}</span><span>Pontos: ${total}</span></div>`;
+}
+function enigma(e){return `<ol class="enigma" id="enigma" aria-label="Sequência de ${e.length} emojis, para ler em ordem">${e.map((x,i)=>`<li class="${x.split('⃣').length>2?'multi':''}" style="animation-delay:${i*40}ms">${x}</li>`).join('')}</ol>`}
+function layoutEnigma(){const v=$('enigma');if(!v)return;const n=v.children.length;v.style.gridTemplateColumns='';
+  const first=v.querySelector('li:not(.multi)')||v.children[0];const tile=first.offsetWidth+4, avail=v.clientWidth-16;
+  const maxCols=Math.max(1,Math.floor((avail+4)/tile)),rows=Math.ceil(n/maxCols),cols=Math.ceil(n/rows);v.style.gridTemplateColumns=`repeat(${cols},auto)`}
+function dots(){let h='';const w=used();for(let i=0;i<MAX;i++)h+=`<i class="${i<w?'x':(cur.won&&i===w?'ok':'')}"></i>`;return `<span class="dots" role="img" aria-label="${w} de ${MAX} tentativas usadas">${h}</span>`}
 function legenda(p){const g=[];p.e.forEach((x,i)=>{const last=g[g.length-1];if(last&&last.m===p.m[i])last.e+=x;else g.push({e:x,m:p.m[i]})});
-  g.forEach(x=>{const a=[...new Intl.Segmenter('pt',{granularity:'grapheme'}).segment(x.e)].map(s=>s.segment);if(a.length>3&&a.every(y=>y===a[0]))x.e=a[0]+'×'+a.length});
-  return `<div class="legenda"><h3>O que cada emoji quer dizer</h3><ol>${g.map(x=>`<li><span aria-hidden="true">${x.e}</span><span>${esc(x.m)}</span></li>`).join('')}</ol></div>`}
+  g.forEach(x=>{try{const a=[...new Intl.Segmenter('pt',{granularity:'grapheme'}).segment(x.e)].map(s=>s.segment);if(a.length>3&&a.every(y=>y===a[0]))x.e=a[0]+'×'+a.length}catch(e){}});
+  return `<div class="cartao"><h3>💡 Significado dos emojis</h3><ul class="legenda">${g.map(x=>`<li><span aria-hidden="true">${x.e}</span><span>${esc(x.m)}</span></li>`).join('')}</ul></div>`}
+const SUG=`<p class="result-sug"><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>`;
 
 function render(){
-  renderBar();renderVitral();
-  const p=cur.p, r=revealed();
-  let html='';
+  const p=cur.p, box=$('jogo');
+  if(fimDeck){renderFim();return}
   if(!cur.done){
-    html+=`<p class="msg ${msg.startsWith('Não')?'erro':''}" id="msg">${esc(msg)}</p>
-    <form id="f" autocomplete="off"><label for="g" hidden>Seu palpite</label><input id="g" placeholder="Qual é a passagem?" maxlength="80" enterkeyhint="send"><button class="btn" type="submit">▶ Responder</button></form>
-    <div class="row">${dots()}<div class="acoes"><button class="btn ghost" type="button" id="dica" ${r>=3?'disabled':''}>Ver dica (−1 ponto)</button><button class="btn link" type="button" id="revelar">Revelar resposta</button></div></div>`;
-    if(cur.tried.length)html+=`<ul class="tried" aria-label="Palpites errados">${cur.tried.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
-    const H=[['Testamento',p.t,'📜'],['Livro',p.b,'📖'],['Pista',p.d,'🔍']];
-    html+=`<div class="dicas"><h2>💡 Dicas do Enigma</h2><ul class="hints">${H.map((h,i)=>i<r
-      ?`<li class="open ${i===lastHint?'nova':''}"><span aria-hidden="true">${h[2]}</span><div><b>${h[0]}</b>${esc(h[1])}</div></li>`
-      :`<li class="locked">🔒 ${h[0]}</li>`).join('')}</ul></div>`;
-  }else{
-    const pts=score();
-    const tag=cur.won?`Acertou · ${pts} ${pts===1?'ponto':'pontos'}`:(cur.gaveUp?'Resposta revelada':'Não foi dessa vez');
-    html+=`<div class="result ${cur.won?'won':'lost'}"><span class="tag">${tag}</span><h2>${esc(p.a)}</h2><p class="ref">${esc(p.ref)}</p><p>${esc(p.c)}</p></div>${legenda(p)}`;
-    if(mode==='dia'){const s=stats();
-      html+=`<div class="stats" aria-label="Suas estatísticas">
-        <div><b>${s.jogos}</b><span>jogos</span></div><div><b>${s.pct}%</b><span>acertos</span></div>
-        <div><b>${s.seq}</b><span>sequência</span></div><div><b>${s.melhor}</b><span>melhor sequência</span></div></div>
-        <div class="row">${dots()}<button class="btn" type="button" id="share">Copiar resultado</button></div>
-        <p class="muted" id="copied" hidden></p><p class="muted" id="cd"></p><p class="result-sug"><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>`}
-    else{const last=pos>=deck.length-1;html+=`<div class="row">${dots()}<button class="btn" type="button" id="next">${last?'Ver placar':'Próximo enigma'}</button></div><p class="result-sug"><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>`}
-  }
-  $('play').innerHTML=html;
-  if(!cur.done){
-    $('f').onsubmit=e=>{e.preventDefault();guess($('g').value)};
-    $('dica').onclick=pedirDica;
-    $('revelar').onclick=revelar;
-    if(matchMedia('(pointer:fine)').matches)$('g').focus();
-  }else if(mode==='dia'){$('share').onclick=share;countdown()}
-  else $('next').onclick=next;
+    const r=revealed(), alt=used()>=2;
+    const H=T().dicas.map(([n,k,i])=>[n,p[k],i]);
+    box.innerHTML=`<div class="tela">${cabecalho()}${enigma(p.e)}
+      <p class="pergunta">${T().pergunta}</p>
+      <p class="msg ${msg.startsWith('Não')?'':'info'}" id="msg">${esc(msg)}</p>
+      ${alt?`<div class="opcoes" role="group" aria-label="Escolha uma alternativa">${cur.opts.map(o=>`<button type="button" class="opcao" data-o="${esc(o)}" ${cur.tried.includes(o)?'disabled':''}>${esc(o)}</button>`).join('')}</div>`
+        :`<form id="f" autocomplete="off"><label for="g" hidden>Sua resposta</label><input id="g" placeholder="${T().ph}" maxlength="80" enterkeyhint="send"><button class="enviar" type="submit" aria-label="Responder">🔍</button></form><div class="sug" id="sug" aria-live="polite"></div>`}
+      <div class="tent"><span>Tentativas: ${MAX-used()}</span>${dots()}</div>
+      <div class="acoes"><button class="acao" type="button" id="b-dica" ${r>=3?'disabled':''}>💡 <span>Ver dica<small>(−1 ponto)</small></span></button>
+        <button class="acao" type="button" id="b-revelar">👁️ <span>Revelar<small>resposta</small></span></button></div>
+      ${cur.tried.length?`<ul class="tried" aria-label="Palpites errados">${cur.tried.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
+      <div class="liberadas">${H.slice(0,r).map((h,i)=>`<div class="liberada ${i===lastHint?'nova':''}"><span aria-hidden="true">${h[2]}</span><div><b>${h[0]}</b>${esc(h[1])}</div></div>`).join('')}</div>
+    </div>`;
+    layoutEnigma();
+    if($('f')){$('f').onsubmit=e=>{e.preventDefault();guess($('g').value)};$('g').oninput=sugerir;if(matchMedia('(pointer:fine)').matches)$('g').focus()}
+    else box.querySelectorAll('.opcao').forEach(b=>b.onclick=()=>guess(b.dataset.o));
+    $('b-dica').onclick=pedirDica;$('b-revelar').onclick=revelar;
+    return}
+  if(tema==='musica'&&cur.won&&cur.artista===null){renderArtista();return}
+  renderResultado();
+}
+
+function renderArtista(){const p=cur.p,ops=artOpts(p);
+  $('jogo').innerHTML=`<div class="tela"><div class="banner">✅ Título correto!</div>
+    <p class="pergunta">Agora, quem canta?</p>
+    <div class="titulo-certo">🎵 ${esc(p.a)}</div>
+    <div class="menu" role="group" aria-label="Quem canta?">${ops.map((o,i)=>`<button type="button" class="alternativa" data-a="${esc(o)}" aria-pressed="false"><span class="letra">${'ABCD'[i]}</span>${esc(o)}</button>`).join('')}</div>
+    <button class="btn" type="button" id="b-conf" disabled>Confirmar</button>
+    <p class="nota">Acertar quem canta vale +1 ponto.</p></div>`;
+  const bs=$('jogo').querySelectorAll('[data-a]');
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.setAttribute('aria-pressed',x===b));cur.artSel=b.dataset.a;$('b-conf').disabled=false});
+  $('b-conf').onclick=()=>{if(!cur.artSel)return;cur.artista=cur.artSel===p.b;if(cur.artista&&mode==='treino')total++;registrar();render()};
+}
+
+function renderResultado(){const p=cur.p,pts=pontosRodada(),mus=tema==='musica';
+  registrar();
+  const tudo=mus&&cur.won&&cur.artista;
+  const banner=cur.won?`<div class="banner">✅ ${tudo?'Você acertou tudo!':'Você acertou!'}</div>`:`<div class="banner perdeu">${cur.gaveUp?'👁️ Resposta revelada':'❌ Não foi dessa vez'}</div>`;
+  const pontos=cur.won?`<p class="nota">${pts} ${pts===1?'ponto':'pontos'}${mus?(cur.artista?' · artista certo, +1':' · errou quem canta'):''}</p>`:'';
+  let card;
+  if(mus){card=`<div class="cartao"><div class="resp"><div class="capa" aria-hidden="true">${p.e.slice(0,4).join('')}</div>
+      <div><p class="tt">${esc(p.a)}</p><p class="meta">👤 ${esc(p.b)}</p>${p.c?`<p class="meta">💿 ${esc(p.c)}</p>`:''}</div></div>
+      <a class="yt" href="https://www.youtube.com/results?search_query=${encodeURIComponent(p.a+' '+p.b)}" target="_blank" rel="noopener">▶ Ouvir no YouTube</a></div>`}
+  else{card=`<div class="cartao"><div class="resp"><div class="capa" aria-hidden="true" style="background:linear-gradient(160deg,#173A8C,#2F6FE4)">📖</div>
+      <div><p class="tt">${esc(p.a)}</p><p class="meta">📖 ${esc(p.ref)}</p></div></div></div>
+      <div class="cartao"><h3>ℹ️ Curiosidade</h3><p>${esc(p.c)}</p></div>`}
+  let fim;
+  if(mode==='dia'){fim=`<div class="botoes"><button class="btn azul" type="button" data-ir="stats">📊 Estatísticas</button><button class="btn" type="button" id="b-share">📋 Copiar resultado</button></div>
+      <p class="nota" id="copied" hidden></p><p class="nota" id="cd"></p>`}
+  else{const last=pos>=deck.length-1;fim=`<div class="botoes"><button class="btn azul" type="button" data-ir="niveis">🎯 Níveis</button><button class="btn" type="button" id="b-next">${last?'🏆 Ver placar':'▶ Próximo enigma'}</button></div>`}
+  $('jogo').innerHTML=`<div class="tela">${cabecalho()}${banner}${card}${legenda(p)}
+    <div class="tent"><span>Tentativas</span>${dots()}</div>${pontos}${fim}${SUG}</div>`;
+  if(mode==='dia'){$('b-share').onclick=share;countdown()}else $('b-next').onclick=next;
+}
+
+function renderFim(){const max=deck.length*(MAX+(tema==='musica'?1:0));
+  $('jogo').innerHTML=`<div class="tela">${cabecalho()}${enigma(['🏆','📖','✨'])}
+    <div class="banner">🏆 Fim do nível ${LEVELS[level]}</div>
+    <div class="cartao" style="text-align:center"><p class="tt" style="font:800 34px var(--display)">${total} de ${max} pontos</p>
+    <p>${total>=max*.75?'Você conhece muito bem!':total>=max*.5?'Bom resultado. Mais uma rodada e você fecha o nível.':'Vale tentar de novo: cada rodada vem embaralhada.'}</p></div>
+    <div class="botoes"><button class="btn azul" type="button" data-ir="niveis">🎯 Níveis</button><button class="btn" type="button" id="b-again">🔄 Jogar novamente</button></div>${SUG}</div>`;
+  layoutEnigma();$('b-again').onclick=startTreino;
 }
 
 /* ---------- ações ---------- */
-const NOMES=['Testamento','Livro','Pista'];
+const NOMES=()=>T().dicas.map(d=>d[0]);
+function mostrarDica(titulo){const H=T().dicas[lastHint],p=cur.p;
+  $('dica-t').textContent=`💡 Dica ${lastHint+1}`;$('dica-msg').textContent=titulo;$('dica-i').textContent=H[2];$('dica-n').textContent=H[0];$('dica-v').textContent=p[H[1]];abrir('dica')}
 function guess(v){if(!v.trim())return;
-  if(matches(v,cur.p)){cur.won=true;cur.done=true;if(mode==='treino')total+=score();save();render();$('play').scrollIntoView({block:'nearest',behavior:'smooth'});return}
+  if(matches(v,cur.p)){cur.won=true;cur.done=true;if(mode==='treino')total+=score();save();render();return}
   cur.tried.push(v.trim());cur.wrong=used()+1;
   if(cur.wrong>=MAX){cur.done=true;save();render();return}
-  lastHint=revealed()-1;msg=`Não é essa. Dica liberada: ${NOMES[lastHint]}.`;
-  save();render();const g=$('g');g.classList.add('shake');if(!matchMedia('(pointer:fine)').matches)g.focus();
+  const nova=revealed()-1;const novaDica=nova>lastHint&&nova<3;lastHint=nova;
+  msg=used()>=2?'Não é essa. Agora escolha entre 4 alternativas.':'Não é essa. Tente de novo.';
+  save();render();const g=$('g');if(g)g.classList.add('shake');
+  if(novaDica)mostrarDica('Não é essa! Nova dica liberada:');
 }
-function pedirDica(){cur.hints=Math.min(3,used()+1);lastHint=revealed()-1;msg=`Dica liberada: ${NOMES[lastHint]}. Esta vale um ponto a menos.`;save();render()}
-function revelar(){const b=$('revelar');
-  if(!b.classList.contains('confirmar')){b.classList.add('confirmar');b.textContent='Toque de novo para revelar';clearTimeout(confirmTimer);
-    confirmTimer=setTimeout(()=>{if(b.isConnected){b.classList.remove('confirmar');b.textContent='Revelar resposta'}},4000);return}
+function pedirDica(){cur.hints=Math.min(3,used()+1);lastHint=revealed()-1;msg='';save();render();mostrarDica('Esta dica vale um ponto a menos.')}
+let confirmT;
+function revelar(){const b=$('b-revelar');
+  if(!b.classList.contains('confirmar')){b.classList.add('confirmar');b.innerHTML='👁️ <span>Toque de novo<small>para revelar</small></span>';clearTimeout(confirmT);
+    confirmT=setTimeout(()=>{if(b.isConnected){b.classList.remove('confirmar');b.innerHTML='👁️ <span>Revelar<small>resposta</small></span>'}},4000);return}
   cur.done=true;cur.won=false;cur.gaveUp=true;save();render()}
-function save(){if(mode==='dia'){const {wrong,hints,tried,done,won,gaveUp}=cur;store.set('dia:'+dayNum,{wrong,hints,tried,done,won,gaveUp})}}
-function next(){if(pos<deck.length-1){pos++;newRound(deck[pos]);render();window.scrollTo({top:0,behavior:'smooth'});return}
-  pos=deck.length;renderBar();renderVitral(['🏆','📖','✨']);
-  const max=deck.length*MAX;
-  $('play').innerHTML=`<div class="result won"><span class="tag">Placar final · ${LEVELS[level]}</span><h2>${total} de ${max} pontos</h2><p>${total>=deck.length*3?'Você conhece bem essas histórias.':total>=deck.length*2?'Bom resultado. Mais uma rodada e você fecha o nível.':'Vale ler essas passagens de novo e tentar outra vez.'}</p></div>
-  <div class="row"><span></span><button class="btn" type="button" id="again">Jogar de novo</button></div><p class="result-sug"><a class="sugestao" href="https://carludix.com/contato/?jogo=B%C3%ADblia%20em%20Emojis" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>`;
-  $('again').onclick=startTreino}
+function save(){if(mode==='dia'){const {wrong,hints,tried,done,won,gaveUp,opts,reg}=cur;store.set(chaveDia(dayNum),{wrong,hints,tried,done,won,gaveUp,opts,reg})}}
+function next(){if(pos<deck.length-1){pos++;newRound(deck[pos]);render();window.scrollTo({top:0});return}fimDeck=true;render()}
 
-/* ---------- estatísticas do desafio diário ---------- */
-function stats(){let jogos=0,vit=0,melhor=0,run=0;
-  for(let d=0;d<=dayNum;d++){const r=store.get('dia:'+d);if(r&&r.done){jogos++;if(r.won){vit++;run++;melhor=Math.max(melhor,run)}else run=0}else if(d<dayNum)run=0}
-  let seq=0;for(let d=dayNum;d>=0;d--){const r=store.get('dia:'+d);if(r&&r.done&&r.won)seq++;else if(d===dayNum&&!(r&&r.done))continue;else break}
-  return {jogos,pct:jogos?Math.round(vit/jogos*100):0,seq,melhor}}
+/* ---------- sugestões ---------- */
+const titulos=()=>[...new Set(P.map(p=>p.a))].sort((a,b)=>a.localeCompare(b,'pt'));
+function sugerir(){const box=$('sug'),q=norm($('g').value);if(q.length<2){box.innerHTML='';return}
+  const hits=titulos().filter(t=>norm(t).startsWith(q)||norm(t).split(' ').some(w=>w.length>2&&w.startsWith(q))).filter(t=>!cur.tried.includes(t)).slice(0,4);
+  box.innerHTML=hits.map(t=>`<button type="button" class="chip" data-t="${esc(t)}">${esc(t)}</button>`).join('');
+  box.querySelectorAll('.chip').forEach(b=>b.onclick=()=>guess(b.dataset.t))}
 
-function share(){
-  const w=used();let m='';for(let i=0;i<MAX;i++)m+=i<w?'🟥':(cur.won&&i===w?'🟩':'⬜');
-  const s=stats();
-  const txt=`Bíblia em Emojis nº ${dayNum+1}\n${cur.p.e.join('')}\n${m} ${cur.won?score()+'/4':'X/4'}${s.seq>1?` · 🔥 ${s.seq} dias seguidos`:''}\n${location.origin+location.pathname}`;
-  const c=$('copied');const ok=()=>{c.hidden=false;c.textContent='Resultado copiado. É só colar no WhatsApp.'};const fail=()=>{c.hidden=false;c.textContent=txt;c.style.whiteSpace='pre-wrap'};
-  try{navigator.clipboard.writeText(txt).then(ok,fail)}catch(e){fail()}
+/* ---------- estatísticas ---------- */
+function registrar(){if(cur.reg||!cur.done)return;if(tema==='musica'&&cur.won&&cur.artista===null)return;cur.reg=true;
+  const k='stats:'+tema,s=store.get(k)||{jogos:0,acertos:0,artistas:0};s.jogos++;if(cur.won)s.acertos++;if(cur.artista)s.artistas++;store.set(k,s);
+  if(cur.won){const kr='resolvidos:'+tema,r=store.get(kr)||[];if(!r.includes(cur.p.a)){r.push(cur.p.a);store.set(kr,r)}}
+  save()}
+function sequencias(){let melhor=0,run=0;for(let d=0;d<=dayNum;d++){const r=store.get(chaveDia(d));if(r&&r.done){if(r.won){run++;melhor=Math.max(melhor,run)}else run=0}else if(d<dayNum)run=0}
+  let seq=0;for(let d=dayNum;d>=0;d--){const r=store.get(chaveDia(d));if(r&&r.done&&r.won)seq++;else if(d===dayNum&&!(r&&r.done))continue;else break}return {seq,melhor}}
+function renderStats(){const t=statsTema,s=store.get('stats:'+t)||{jogos:0,acertos:0,artistas:0},res=store.get('resolvidos:'+t)||[],dados=TEMAS[t].dados;
+  document.querySelectorAll('[data-stats]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.stats===t));
+  const pct=s.jogos?Math.round(s.acertos/s.jogos*100):0;
+  let tiles=`<div class="tile"><div class="i">🎮</div><span>Jogos</span><b>${s.jogos}</b></div><div class="tile"><div class="i">🎯</div><span>Acertos</span><b>${pct}%</b></div>`;
+  if(t==='biblia'){const q=sequencias();tiles+=`<div class="tile"><div class="i">📅</div><span>Sequência atual</span><b>${q.seq} ${q.seq===1?'dia':'dias'}</b></div><div class="tile"><div class="i">🔥</div><span>Melhor sequência</span><b>${q.melhor} ${q.melhor===1?'dia':'dias'}</b></div>`}
+  else{const pa=s.acertos?Math.round(s.artistas/s.acertos*100):0;tiles+=`<div class="tile"><div class="i">🎤</div><span>Acertou quem canta</span><b>${pa}%</b></div><div class="tile"><div class="i">🎵</div><span>Músicas descobertas</span><b>${res.length}</b></div>`}
+  const cores={1:'linear-gradient(90deg,#2FBF6A,#1E8A4B)',2:'linear-gradient(90deg,#4C8BFF,#2558C8)',3:'linear-gradient(90deg,#F05B6E,#B32237)'};
+  const barras=[1,2,3].map(l=>{const tot=dados.filter(p=>p.l===l),ok=tot.filter(p=>res.includes(p.a)).length,pc=tot.length?ok/tot.length*100:0;
+    return `<div class="barra"><span>${LEVELS[l]}</span><span class="trilho"><i style="width:${pc}%;background:${cores[l]}"></i></span><span class="v">${ok}/${tot.length}${ok===tot.length&&ok?' ✅':''}</span></div>`}).join('');
+  $('stats').innerHTML=`<div class="tela"><div class="tiles">${tiles}</div><div class="cartao"><h3>Progresso por nível (${TEMAS[t].nome})</h3>${barras}</div>
+    <p class="nota">As estatísticas ficam salvas só neste aparelho.</p></div>`;
 }
-let cdTimer;function countdown(){clearInterval(cdTimer);const tick=()=>{const el=$('cd');if(!el)return clearInterval(cdTimer);const d=new Date(),ms=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)-d;const h=Math.floor(ms/36e5),mi=Math.floor(ms%36e5/6e4);
-  const amanha=['Evangelho','Fácil','Fácil','Médio','Médio','Difícil','Difícil'][(dayNum+1)%7];el.textContent=`Próximo desafio em ${h}h ${String(mi).padStart(2,'0')}min · amanhã: ${amanha}.`};tick();cdTimer=setInterval(tick,30000)}
 
-/* ---------- Como jogar ---------- */
-function abrirAjuda(){$('ajuda').hidden=false;$('fechar-ajuda').focus()}
-function fecharAjuda(){$('ajuda').hidden=true;store.set('visto',1);const g=$('g');if(g&&matchMedia('(pointer:fine)').matches)g.focus()}
-$('abrir-ajuda').onclick=abrirAjuda;$('fechar-ajuda').onclick=fecharAjuda;
-$('ajuda').addEventListener('click',e=>{if(e.target.id==='ajuda')fecharAjuda()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('ajuda').hidden)fecharAjuda()});
+/* ---------- compartilhar ---------- */
+function share(){const w=used();let m='';for(let i=0;i<MAX;i++)m+=i<w?'🟥':(cur.won&&i===w?'🟩':'⬜');const q=sequencias();
+  const txt=`EmojiCeleste · 📖 Bíblia nº ${dayNum+1}\n${cur.p.e.join('')}\n${m} ${cur.won?score()+'/4':'X/4'}${q.seq>1?` · 🔥 ${q.seq} dias seguidos`:''}\n${location.origin+location.pathname}`;
+  const c=$('copied');const ok=()=>{c.hidden=false;c.textContent='Resultado copiado. É só colar no WhatsApp.'};const fail=()=>{c.hidden=false;c.textContent=txt;c.style.whiteSpace='pre-wrap'};
+  try{navigator.clipboard.writeText(txt).then(ok,fail)}catch(e){fail()}}
+let cdTimer;function countdown(){clearInterval(cdTimer);const tick=()=>{const el=$('cd');if(!el)return clearInterval(cdTimer);const d=new Date(),ms=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)-d;
+  const h=Math.floor(ms/36e5),mi=Math.floor(ms%36e5/6e4);el.textContent=`Próximo desafio em ${h}h ${String(mi).padStart(2,'0')}min · amanhã: ${LEVELS[dailyPuzzle(dayNum+1).l]}.`};tick();cdTimer=setInterval(tick,30000)}
 
-function setMode(m){mode=m;$('tab-dia').setAttribute('aria-pressed',m==='dia');$('tab-treino').setAttribute('aria-pressed',m==='treino');m==='dia'?startDia():startTreino()}
-$('tab-dia').onclick=()=>setMode('dia');$('tab-treino').onclick=()=>setMode('treino');
-let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(layoutVitral,100)});
-startDia();
-if(!store.get('visto'))abrirAjuda();
+/* ---------- início ---------- */
+$('contagem').textContent=`${P_B.length} passagens bíblicas · ${M.length} músicas católicas`;
+$('ajuda-topo').onclick=()=>abrir('ajuda');
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(layoutEnigma,100)});
+addEventListener('hashchange',()=>{const t=location.hash==='#musica'?'musica':'biblia';if(t!==tema)setTema(t)});
+setTema(location.hash==='#musica'?'musica':(location.hash==='#biblia'?'biblia':(store.get('tema')||'biblia')));
+mostrar('menu');
+if(!store.get('visto'))abrir('ajuda');
 </script>
 <script src="https://carludix.com/cookies.js" defer></script>
 </body>
