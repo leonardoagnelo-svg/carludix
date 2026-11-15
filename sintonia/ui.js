@@ -104,6 +104,7 @@
   }
   window.addEventListener("popstate", function () {
     if (!$("#modal-regras").hidden) { $("#modal-regras").hidden = true; return; }
+    if (!$("#modal-tutorial").hidden) { fecharTutorial(false); return; }
     if (TELAS_JOGO.indexOf(telaAtual) >= 0) {
       // durante a partida, o "voltar" não sai do jogo
       try { history.pushState({ tela: telaAtual }, ""); } catch (e) {}
@@ -183,6 +184,27 @@
 
   function icoTime(i) { return '<svg class="ico-time"><use href="#' + (i ? "i-lua" : "i-sol") + '"/></svg>'; }
 
+  var placarAntes = null; // durante a revelação, mostra o placar antigo e depois conta até o novo
+  function contarPlacar() {
+    if (!placarAntes) return;
+    var alvoPts = estado.times.map(function (t) { return t.pontos; }), ini = placarAntes.slice(), t0 = performance.now();
+    placarAntes = null;
+    function passo(agora) {
+      var k = Math.min(1, (agora - t0) / 600);
+      $$("[data-placar] .pt b").forEach(function (b, i) {
+        var idx = i % alvoPts.length;
+        b.textContent = Math.round(ini[idx] + (alvoPts[idx] - ini[idx]) * k);
+        if (alvoPts[idx] !== ini[idx]) b.classList.add("subiu");
+      });
+      if (k < 1) requestAnimationFrame(passo);
+      else setTimeout(function () { $$("[data-placar] .pt b").forEach(function (b) { b.classList.remove("subiu"); }); }, 500);
+    }
+    requestAnimationFrame(passo);
+  }
+  function animarCarta() {
+    $$("[data-carta]").forEach(function (c) { c.classList.remove("entra-carta"); void c.offsetWidth; c.classList.add("entra-carta"); });
+  }
+
   function renderPlacar() {
     $$("[data-placar]").forEach(function (el) {
       if (estado.modo === "coop") {
@@ -231,6 +253,7 @@
       av.textContent = "⚡ Empate! Morte súbita.";
       av.hidden = false;
     } else av.hidden = true;
+    renderEtapas("passe");
     mostrar("passe");
   }
   function salvo() { salvar(); }
@@ -252,6 +275,9 @@
     $("#zona-sint").classList.remove("visivel");
     $("#regua-sint").classList.remove("revelando");
     atualizarBotoesSint();
+    renderEtapas("sintonizador", estado.viuAlvo);
+    mostrarDica("#coach-segurar", "segurar");
+    animarCarta();
     mostrar("sintonizador");
   }
 
@@ -262,6 +288,10 @@
     palpite = 50;
     posicionarPino();
     renderPlacar(); renderCarta();
+    cancelarConfirmacao();
+    renderEtapas("palpite");
+    mostrarDica("#coach-palpite", "palpite");
+    $("#coach-arrasta").hidden = !!dicasVistas.palpite;
     mostrar("palpite");
   }
 
@@ -283,6 +313,10 @@
 
   function mostrarRevelacao(animar) {
     renderPlacar(); renderCarta();
+    if (animar) {
+      placarAntes = estado.times.map(function (t, i) { return t.pontos - (i === estado.vez ? estado.resultado.pontos : 0); });
+      $$("[data-placar] .pt b").forEach(function (b, i) { b.textContent = placarAntes[i % placarAntes.length]; });
+    }
     var zona = $("#zona-rev"), regua = $("#regua-rev");
     desenharZona(zona, estado.alvo);
     zona.classList.remove("anima", "visivel");
@@ -298,17 +332,20 @@
     var res = $("#resultado"); res.classList.remove("mostra", "ok10");
     var btn = $("#btn-proximo"); btn.classList.remove("pronto");
     btn.textContent = M.vaiTerminar(estado) ? "Ver resultado 🏁" : "Próxima rodada →";
+    renderEtapas("revelacao");
     mostrar("revelacao");
     void zona.offsetWidth;
     if (!animar) { zona.classList.add("visivel"); res.classList.add("mostra"); btn.classList.add("pronto"); return; }
     Som.rufar();
-    setTimeout(function () { zona.classList.add("visivel", "anima"); res.classList.add("mostra"); }, 250);
+    regua.classList.remove("varrendo"); void regua.offsetWidth; regua.classList.add("varrendo");
+    setTimeout(function () { zona.classList.add("visivel", "anima"); res.classList.add("mostra"); }, 650);
     setTimeout(function () {
+      contarPlacar();
       Som.resultado(r.pontos);
       if (r.pontos === 10) { vibrar([60, 40, 140]); confete(50); res.classList.add("ok10"); }
       else if (r.pontos) vibrar(80); else vibrar([30, 60, 30]);
-    }, 900);
-    setTimeout(function () { btn.classList.add("pronto"); }, 1500);
+    }, 1300);
+    setTimeout(function () { btn.classList.add("pronto"); }, 1900);
   }
 
   function proximo() {
@@ -364,7 +401,7 @@
       var r = trilho.getBoundingClientRect();
       return Math.max(0, Math.min(100, ((ev.clientX - r.left) / r.width) * 100));
     }
-    function move(v) { palpite = v; posicionarPino(); if (Math.round(v) !== ultimo) { ultimo = Math.round(v); if (ultimo % 2 === 0) Som.tique(); } }
+    function move(v) { if (!dicasVistas.palpite) { concluirDica("#coach-palpite", "palpite"); $("#coach-arrasta").hidden = true; } palpite = v; posicionarPino(); if (Math.round(v) !== ultimo) { ultimo = Math.round(v); if (ultimo % 2 === 0) Som.tique(); } }
     trilho.addEventListener("pointerdown", function (ev) {
       ativo = true; pino.classList.add("arrastando");
       try { trilho.setPointerCapture(ev.pointerId); } catch (e) {}
@@ -392,7 +429,8 @@
       if (ev) ev.preventDefault();
       if (!estado || estado.fase !== "sintonizador") return;
       zona.classList.add("visivel"); btn.classList.add("ativo");
-      if (!estado.viuAlvo) { M.marcarAlvoVisto(estado); salvar(); atualizarBotoesSint(); Som.toque(); vibrar(30); }
+      if (!estado.viuAlvo) { M.marcarAlvoVisto(estado); salvar(); atualizarBotoesSint(); renderEtapas("sintonizador", true); Som.toque(); vibrar(30); }
+      concluirDica("#coach-segurar", "segurar");
     }
     function fecha() { zona.classList.remove("visivel"); btn.classList.remove("ativo"); }
     btn.addEventListener("pointerdown", function (ev) { try { btn.setPointerCapture(ev.pointerId); } catch (e) {} abre(ev); });
@@ -404,26 +442,76 @@
     document.addEventListener("visibilitychange", fecha);
   }
 
-  /* ================= Segurar para travar o palpite ================= */
-  function ligarTravar() {
-    var btn = $("#btn-travar"), barra = $(".progresso", btn), timer = null, DUR = 700;
-    function inicia(ev) {
-      if (ev) ev.preventDefault();
-      if (timer) return;
-      btn.classList.add("enchendo");
-      barra.style.transition = "width " + DUR + "ms linear"; barra.style.width = "100%";
-      timer = setTimeout(function () { timer = null; cancela(); vibrar(40); travar(); }, DUR);
-    }
-    function cancela() {
-      if (timer) { clearTimeout(timer); timer = null; if (estado && estado.fase === "palpite") toast("Segure um pouquinho até encher"); }
-      btn.classList.remove("enchendo");
-      barra.style.transition = "width .2s"; barra.style.width = "0";
-    }
-    btn.addEventListener("pointerdown", function (ev) { try { btn.setPointerCapture(ev.pointerId); } catch (e) {} inicia(ev); });
-    ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (t) { btn.addEventListener(t, cancela); });
-    btn.addEventListener("contextmenu", function (ev) { ev.preventDefault(); });
-    btn.addEventListener("keydown", function (ev) { if ((ev.key === " " || ev.key === "Enter") && !ev.repeat) inicia(ev); });
-    btn.addEventListener("keyup", function (ev) { if (ev.key === " " || ev.key === "Enter") cancela(); });
+  /* ================= Travar palpite: toque + confirmação ================= */
+  function pedirConfirmacao() {
+    $("#btn-travar").hidden = true;
+    $("#confirmar-travar").hidden = false;
+    Som.toque();
+  }
+  function cancelarConfirmacao() {
+    $("#btn-travar").hidden = false;
+    $("#confirmar-travar").hidden = true;
+  }
+
+  /* ================= Etapas da rodada ================= */
+  var ETAPA = { passe: 0, sintonizador: 1, palpite: 3, revelacao: 4 };
+  function renderEtapas(fase, extra) {
+    var n = ETAPA[fase];
+    if (fase === "sintonizador" && extra) n = 2; // já viu o alvo: etapa da dica
+    $$("[data-etapas]").forEach(function (ol) {
+      $$("li", ol).forEach(function (li, i) {
+        li.className = i < n ? "feito" : (i === n ? "atual" : "");
+      });
+    });
+  }
+
+  /* ================= Dicas da primeira partida ================= */
+  var dicasVistas = ler("sintonia:dicas", {});
+  function mostrarDica(id, chave) {
+    var el = $(id);
+    if (!el) return;
+    el.hidden = !!dicasVistas[chave];
+  }
+  function concluirDica(id, chave) {
+    var el = $(id);
+    if (el) el.hidden = true;
+    if (!dicasVistas[chave]) { dicasVistas[chave] = true; gravar("sintonia:dicas", dicasVistas); }
+  }
+
+  /* ================= Tutorial ================= */
+  var TUT = [
+    { t: "A carta", x: "Cada rodada tem uma carta com dois extremos, um em cada ponta da régua. Aqui: Frio ⟷ Quente." },
+    { t: "O alvo secreto", x: "Um jogador é o Sintonizador. Só ele segura o botão e vê onde está o alvo escondido. Os outros não olham!" },
+    { t: "A dica", x: "O Sintonizador fala UMA dica em voz alta. O alvo está perto do quente? Uma boa dica é “café”." },
+    { t: "O palpite", x: "O grupo conversa e arrasta o marcador até onde acha que está o alvo. Depois, é só travar o palpite." },
+    { t: "Os pontos", x: "O alvo aparece! Quanto mais perto, mais pontos: 10 no centro, 6 no meio, 3 na borda. Pronto para jogar?" }
+  ];
+  var tutPasso = 0, tutDepois = null;
+  function abrirTutorial(depois) {
+    tutPasso = 0; tutDepois = depois || null;
+    desenharZona($("#tut-zona"), 80);
+    $("#modal-tutorial").hidden = false;
+    renderTutorial();
+  }
+  function renderTutorial() {
+    var p = TUT[tutPasso], palco = $(".tut-palco");
+    $("#tut-titulo").textContent = p.t;
+    $("#tut-texto").textContent = p.x;
+    $("#tut-passo").textContent = (tutPasso + 1) + " de " + TUT.length;
+    palco.className = "tut-palco p" + (tutPasso + 1);
+    void palco.offsetWidth;
+    palco.classList.add("anima");
+    $$("#tut-pontinhos i").forEach(function (d, i) { d.className = i === tutPasso ? "on" : (i < tutPasso ? "feito" : ""); });
+    $("#tut-voltar").disabled = tutPasso === 0;
+    $("#tut-proximo").textContent = tutPasso === TUT.length - 1 ? (tutDepois ? "Vamos jogar! ▶" : "Entendi! ✓") : "Próximo →";
+    if (tutPasso === 4) Som.resultado(6); else Som.toque();
+  }
+  function fecharTutorial(concluiu) {
+    $("#modal-tutorial").hidden = true;
+    gravar("sintonia:tutorial", true);
+    var d = tutDepois; tutDepois = null;
+    if (d && concluiu !== false) d();
+    else if (d) d();
   }
 
   /* ================= Utilidades ================= */
@@ -453,7 +541,10 @@
     var alvo = ev.target.closest("button");
     if (!alvo || alvo.disabled) return;
     if (alvo.dataset.ir) {
-      if (alvo.dataset.ir === "config") { atualizarConfig(); mostrar("config"); }
+      if (alvo.dataset.ir === "config") {
+        var irConfig = function () { atualizarConfig(); mostrar("config"); };
+        if (!ler("sintonia:tutorial", false) && telaAtual === "inicio") abrirTutorial(irConfig); else irConfig();
+      }
       else if (alvo.dataset.ir === "inicio") mostrarInicio();
       return;
     }
@@ -466,7 +557,15 @@
     }
     switch (alvo.dataset.acao || alvo.id) {
       case "btn-comecar": comecar(); break;
-      case "regras": $("#modal-regras").hidden = false; $(".modal-caixa").scrollTop = 0; break;
+      case "regras": $("#modal-regras").hidden = false; $("#modal-regras .modal-caixa").scrollTop = 0; break;
+      case "tutorial": abrirTutorial(); break;
+      case "fechar-tutorial": fecharTutorial(false); break;
+      case "tut-voltar": if (tutPasso > 0) { tutPasso--; renderTutorial(); } break;
+      case "tut-proximo": if (tutPasso < TUT.length - 1) { tutPasso++; renderTutorial(); } else fecharTutorial(true); break;
+      case "regras-de-tutorial": $("#modal-tutorial").hidden = true; tutDepois = null; $("#modal-regras").hidden = false; break;
+      case "travar": pedirConfirmacao(); break;
+      case "ajustar": cancelarConfirmacao(); break;
+      case "confirmar-travar": travar(); break;
       case "fechar-regras": $("#modal-regras").hidden = true; break;
       case "sou-sintonizador": irSintonizador(); break;
       case "trocar-carta":
@@ -494,13 +593,16 @@
     return false;
   }
   $("#modal-regras").addEventListener("click", function (ev) { if (ev.target.id === "modal-regras") ev.currentTarget.hidden = true; });
-  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") $("#modal-regras").hidden = true; });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Escape") return;
+    $("#modal-regras").hidden = true;
+    if (!$("#modal-tutorial").hidden) fecharTutorial(false);
+  });
 
   try { history.replaceState({ tela: "inicio" }, ""); } catch (e) {}
   montarConfig();
   ligarArraste();
   ligarSegurar();
-  ligarTravar();
   atualizarBotaoSom();
   mostrarInicio(true);
 })();

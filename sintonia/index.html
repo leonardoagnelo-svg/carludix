@@ -57,19 +57,19 @@
         <div class="card-menu azul">
           <svg class="cm-ico"><use href="#i-livro"/></svg>
           <h2>COMO JOGAR</h2>
-          <p>Aprenda as regras em 1 minuto.</p>
-          <button class="btn-card" data-acao="regras">Ver regras</button>
+          <p>Tutorial animado de 1 minuto.</p>
+          <button class="btn-card" data-acao="tutorial">▶ Ver tutorial</button>
         </div>
       </div>
     </div>
     <nav class="doca">
-      <button data-acao="regras"><span>📖</span>Como jogar</button>
+      <button data-acao="tutorial"><span>📖</span>Como jogar</button>
       <button data-acao="compartilhar"><span>📤</span>Chamar amigos</button>
       <a href="https://carludix.com/contato/?jogo=Sintonia" target="_blank" rel="noopener"><span>💡</span>Enviar sugestão</a>
       <a href="https://carludix.com/privacidade/"><span>🔒</span>Privacidade</a>
     </nav>
     <div class="rodape-capa">
-      <span class="versao">⚡ Versão 1.1</span>
+      <span class="versao">⚡ Versão 1.2</span>
       <span class="slogan">A diversão está na sua sintonia!</span>
     </div>
   </section>
@@ -119,6 +119,7 @@
 
   <!-- PASSE O APARELHO -->
   <section class="tela centro" id="tela-passe">
+    <ol class="etapas" data-etapas aria-label="Etapas da rodada"><li>Passar</li><li>Ver alvo</li><li>Dica</li><li>Palpite</li><li>Resultado</li></ol>
     <div class="placar" data-placar></div>
     <p class="rodada-info" data-rodada></p>
     <div class="faixa-aviso" id="aviso-ultima" hidden></div>
@@ -134,7 +135,9 @@
 
   <!-- SINTONIZADOR -->
   <section class="tela jogo" id="tela-sintonizador">
+    <ol class="etapas" data-etapas aria-label="Etapas da rodada"><li>Passar</li><li>Ver alvo</li><li>Dica</li><li>Palpite</li><li>Resultado</li></ol>
     <div class="placar" data-placar></div>
+    <button class="ajuda" data-acao="tutorial" aria-label="Como jogar">?</button>
     <p class="instrucao">Só você olha! Veja onde está o alvo e pense em <b>uma dica</b>.</p>
     <div class="carta" data-carta></div>
     <div class="regua" id="regua-sint">
@@ -143,6 +146,7 @@
     <button class="btn segurar" id="btn-segurar">
       <span class="seg-ico">👁️</span> Segure para ver o alvo
     </button>
+    <div class="coach" id="coach-segurar" hidden><span class="mao">👆</span>Segure este botão para ver o alvo. Solte para esconder.</div>
     <p class="exemplo">Ex.: “Frio ⟷ Quente”, alvo perto do quente → dica “café”.</p>
     <div class="linha-botoes">
       <button class="btn fantasma" id="btn-trocar" data-acao="trocar-carta">🔄 Trocar carta</button>
@@ -152,22 +156,31 @@
 
   <!-- PALPITE DO GRUPO -->
   <section class="tela jogo" id="tela-palpite">
+    <ol class="etapas" data-etapas aria-label="Etapas da rodada"><li>Passar</li><li>Ver alvo</li><li>Dica</li><li>Palpite</li><li>Resultado</li></ol>
     <div class="placar" data-placar></div>
     <p class="instrucao">Sintonizador: fale sua dica em voz alta!<br>Grupo: conversem e arrastem o marcador.</p>
+    <div class="coach" id="coach-palpite" hidden><span class="mao">👆</span>Arraste o marcador na régua (ou toque onde acham que está o alvo).</div>
     <div class="carta" data-carta></div>
     <div class="regua" id="regua-palpite">
       <div class="trilho" id="trilho-palpite">
         <div class="marcas"></div>
+        <div class="coach-arrasta" id="coach-arrasta" hidden><span class="mao">👆</span></div>
         <div class="pino" id="pino" role="slider" tabindex="0" aria-label="Palpite" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><i></i></div>
       </div>
     </div>
-    <button class="btn grande segurar-travar" id="btn-travar">
-      <span class="progresso"></span><span class="rotulo">🔒 Segure para travar o palpite</span>
-    </button>
+    <button class="btn grande" id="btn-travar" data-acao="travar">🔒 Travar palpite</button>
+    <div class="confirmar" id="confirmar-travar" hidden>
+      <p>Todo mundo concorda com esse lugar?</p>
+      <div class="linha-botoes">
+        <button class="btn fantasma" data-acao="ajustar">↩ Ajustar</button>
+        <button class="btn" data-acao="confirmar-travar">✅ Sim, travar</button>
+      </div>
+    </div>
   </section>
 
   <!-- REVELAÇÃO -->
   <section class="tela jogo" id="tela-revelacao">
+    <ol class="etapas" data-etapas aria-label="Etapas da rodada"><li>Passar</li><li>Ver alvo</li><li>Dica</li><li>Palpite</li><li>Resultado</li></ol>
     <div class="placar" data-placar></div>
     <div class="carta" data-carta></div>
     <div class="regua" id="regua-rev">
@@ -204,6 +217,34 @@
     </footer>
   </section>
 
+  <!-- TUTORIAL -->
+  <div class="modal" id="modal-tutorial" hidden>
+    <div class="modal-caixa tutorial" role="dialog" aria-modal="true" aria-labelledby="tut-titulo">
+      <div class="tut-topo"><span class="tut-passo" id="tut-passo">1 de 5</span><button class="tut-pular" data-acao="fechar-tutorial">Pular ✕</button></div>
+      <h2 id="tut-titulo"></h2>
+      <div class="tut-palco">
+        <div class="carta tut-carta"><div class="lado esq">Frio</div><div class="seta">⟷</div><div class="lado dir">Quente</div></div>
+        <div class="regua tut-regua" id="tut-regua">
+          <div class="trilho">
+            <div class="marcas"></div>
+            <div class="zona" id="tut-zona"></div>
+            <div class="pino fixo" id="tut-pino"><i></i></div>
+          </div>
+        </div>
+        <div class="tut-balao" id="tut-balao">☕ “Café!”</div>
+        <div class="tut-olho" id="tut-olho">🙈 🙈 🙈 <b>👀</b></div>
+        <div class="tut-pontos" id="tut-pontos">Quase! <b>+6</b></div>
+      </div>
+      <p class="tut-texto" id="tut-texto"></p>
+      <div class="tut-pontinhos" id="tut-pontinhos"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="linha-botoes">
+        <button class="btn fantasma" data-acao="tut-voltar" id="tut-voltar">← Voltar</button>
+        <button class="btn" data-acao="tut-proximo" id="tut-proximo">Próximo →</button>
+      </div>
+      <button class="link-regras" data-acao="regras-de-tutorial">Ver regras completas e pontuação</button>
+    </div>
+  </div>
+
   <!-- COMO SE JOGA -->
   <div class="modal" id="modal-regras" hidden>
     <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="regras-titulo">
@@ -212,7 +253,7 @@
         <li>Aparece uma carta com dois extremos, um em cada ponta da régua (ex.: <b>Frio ⟷ Quente</b>).</li>
         <li>O <b>Sintonizador</b> da vez segura o botão e vê, só ele, onde está o alvo escondido. Se não gostar da carta, pode trocar <b>uma vez</b>, antes de olhar.</li>
         <li>Ele fala <b>uma dica</b> (uma palavra ou frase curta) que fique naquele ponto da régua.</li>
-        <li>O grupo conversa, arrasta o marcador e <b>segura</b> o botão para travar o palpite.</li>
+        <li>O grupo conversa, arrasta o marcador e toca em <b>Travar palpite</b>.</li>
         <li>O alvo aparece e vocês ganham pontos pela distância:</li>
       </ol>
       <table class="tabela-pontos">

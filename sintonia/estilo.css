@@ -317,3 +317,111 @@ h3 small{text-transform:none;letter-spacing:0;font-weight:700}
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
+
+/* ================= v1.2: explicação, etapas e animações ================= */
+/* fundo com brilhos suaves em movimento */
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;
+  background:radial-gradient(300px 300px at 15% 30%,rgba(255,138,26,.12),transparent 70%),
+             radial-gradient(360px 360px at 85% 20%,rgba(25,199,230,.12),transparent 70%),
+             radial-gradient(320px 320px at 60% 85%,rgba(122,211,58,.10),transparent 70%);
+  animation:flutua 18s ease-in-out infinite alternate}
+@keyframes flutua{to{transform:translate(4%,-3%) scale(1.06)}}
+
+/* barra de etapas da rodada */
+.etapas{list-style:none;display:flex;gap:4px;counter-reset:et}
+.etapas li{flex:1;counter-increment:et;text-align:center;font-size:.72rem;font-weight:900;color:#7f8dc8;padding-top:22px;position:relative;line-height:1.1}
+.etapas li::before{content:counter(et);position:absolute;top:0;left:50%;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;
+  display:grid;place-items:center;background:#22337f;border:2px solid #3a4fa8;font-size:.7rem;color:#9aa8e0}
+.etapas li::after{content:"";position:absolute;top:10px;left:calc(50% + 12px);right:calc(-50% + 12px);height:2px;background:#2a3a8f}
+.etapas li:last-child::after{display:none}
+.etapas li.feito{color:#9fe8bf}
+.etapas li.feito::before{content:"✓";background:#16b85a;border-color:#3df08a;color:#fff}
+.etapas li.feito::after{background:#3df08a}
+.etapas li.atual{color:var(--ouro)}
+.etapas li.atual::before{background:var(--ouro);border-color:#fff3b0;color:#0b1450;box-shadow:0 0 12px rgba(255,199,44,.7);animation:pulsa-esc 1.4s ease-in-out infinite}
+
+/* botão de ajuda "?" */
+.ajuda{align-self:flex-end;margin-bottom:-8px;width:36px;height:36px;border-radius:50%;background:rgba(15,31,110,.8);border:2px solid var(--linha);font-weight:900;font-size:1.1rem;color:var(--ouro)}
+.ajuda:hover{border-color:var(--ouro)}
+
+/* dicas da primeira partida */
+.coach{display:flex;align-items:center;gap:10px;background:#fff;color:#0b1450;font-weight:900;font-size:1rem;padding:10px 14px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.35);position:relative;animation:entra .4s ease}
+.coach[hidden],.coach-arrasta[hidden]{display:none}
+.coach::before{content:"";position:absolute;top:-8px;left:50%;margin-left:-8px;border:8px solid transparent;border-top:0;border-bottom-color:#fff}
+#coach-palpite::before{display:none}
+#coach-palpite::after{content:"";position:absolute;bottom:-8px;left:50%;margin-left:-8px;border:8px solid transparent;border-bottom:0;border-top-color:#fff}
+.mao{font-size:1.6rem;animation:toca 1.2s ease-in-out infinite}
+@keyframes toca{50%{transform:translateY(4px) scale(.9)}}
+.coach-arrasta{position:absolute;top:50%;left:30%;z-index:3;pointer-events:none;font-size:2.2rem;animation:arrasta 2.2s ease-in-out infinite;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+@keyframes arrasta{0%,100%{left:30%}50%{left:68%}}
+
+/* confirmação do palpite */
+.confirmar{background:linear-gradient(180deg,#0e6b3a,#0a3d2a);border:3px solid var(--verde);border-radius:var(--raio);padding:14px;box-shadow:0 0 22px rgba(61,240,138,.45);display:flex;flex-direction:column;gap:10px;text-align:center;font-size:1.1rem;animation:entra .25s ease}
+.confirmar[hidden],#btn-travar[hidden]{display:none}
+
+/* carta entrando */
+.carta.entra-carta{animation:carta-vira .55s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes carta-vira{from{opacity:0;transform:perspective(600px) rotateX(70deg) translateY(-20px)}to{opacity:1;transform:none}}
+
+/* luz varrendo a régua antes da revelação */
+.regua .trilho::after{content:"";position:absolute;top:0;bottom:0;left:-30%;width:30%;border-radius:12px;pointer-events:none;opacity:0;z-index:3;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent)}
+.regua.varrendo .trilho::after{animation:varre .6s ease-in-out}
+@keyframes varre{0%{left:-30%;opacity:1}100%{left:100%;opacity:1}}
+
+/* placar contando */
+.placar .pt b.subiu{color:var(--verde);animation:salta .4s ease}
+
+/* botão principal pulsando de leve */
+#tela-passe .btn.grande,#btn-proximo.pronto,.verde .btn-card{animation:respira 2.4s ease-in-out infinite}
+@keyframes respira{50%{box-shadow:0 6px 0 var(--ouro2),0 0 26px rgba(255,199,44,.55)}}
+.verde .btn-card{animation-name:respira-verde}
+@keyframes respira-verde{50%{box-shadow:0 5px 0 #0c7a3a,0 0 22px rgba(61,240,138,.6)}}
+
+/* ícone do passe */
+.aviso-ico{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);border:3px solid rgba(255,255,255,.35);font-size:2.6rem}
+
+/* ---------- Tutorial ---------- */
+.modal-caixa.tutorial{padding:18px 20px 18px;gap:12px;text-align:center}
+.tut-topo{display:flex;justify-content:space-between;align-items:center}
+.tut-passo{font-size:.85rem;font-weight:900;color:var(--suave);text-transform:uppercase;letter-spacing:.08em}
+.tut-pular{color:var(--suave);font-weight:900;font-size:.95rem;padding:6px 8px}
+.tut-pular:hover{color:#fff}
+.tutorial h2{font-size:1.9rem;color:var(--ouro)}
+.tut-palco{position:relative;display:flex;flex-direction:column;gap:6px;padding:10px 4px 6px;min-height:230px}
+.tut-carta{min-height:64px}
+.tut-carta .lado{font-size:1.15rem}
+.tut-regua{padding:26px 4px 8px}
+.tut-regua .trilho{height:64px}
+.tut-balao,.tut-olho,.tut-pontos{position:absolute;left:50%;transform:translateX(-50%);opacity:0;pointer-events:none;white-space:nowrap}
+.tut-balao{bottom:0;background:#fff;color:#0b1450;font-weight:900;font-size:1.3rem;padding:8px 16px;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.tut-balao::after{content:"";position:absolute;top:-9px;left:50%;margin-left:-9px;border:9px solid transparent;border-top:0;border-bottom-color:#fff}
+.tut-olho{bottom:0;font-size:1.6rem}
+.tut-pontos{bottom:-4px;font-family:var(--titulo);font-size:1.8rem;color:#fff;text-shadow:0 3px 0 #0b1450}
+.tut-pontos b{color:var(--ouro)}
+.tut-texto{font-size:1.08rem;line-height:1.45;min-height:4.4em}
+.tut-pontinhos{display:flex;justify-content:center;gap:8px}
+.tut-pontinhos i{width:10px;height:10px;border-radius:50%;background:#2a3a8f;transition:all .2s}
+.tut-pontinhos i.feito{background:#3df08a}
+.tut-pontinhos i.on{width:26px;border-radius:6px;background:var(--ouro)}
+.link-regras{color:var(--ceu);font-weight:800;font-size:.95rem;text-decoration:underline;align-self:center}
+/* estados de cada passo */
+.tut-palco #tut-pino{left:50%;opacity:0;transition:left 1.4s cubic-bezier(.3,1.2,.4,1),opacity .3s}
+.tut-palco #tut-zona{transition:opacity .4s}
+.tut-palco.p1.anima .tut-carta{animation:carta-vira .6s cubic-bezier(.2,1.3,.4,1) both}
+.tut-palco.p2 #tut-zona{opacity:1}
+.tut-palco.p2.anima #tut-zona .f{animation:abre .7s .2s cubic-bezier(.2,1.4,.4,1) both}
+.tut-palco.p2 .tut-olho{opacity:1;transition:opacity .4s .3s}
+.tut-palco.p3 .tut-balao{opacity:1}
+.tut-palco.p3.anima .tut-balao{animation:balao .5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes balao{from{opacity:0;transform:translateX(-50%) scale(.4)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.tut-palco.p4 #tut-pino,.tut-palco.p5 #tut-pino{opacity:1}
+.tut-palco.p4.anima #tut-pino{animation:pino-tut 1.8s cubic-bezier(.3,1.1,.4,1) forwards}
+@keyframes pino-tut{0%{left:30%}100%{left:76%}}
+.tut-palco.p5 #tut-pino{left:76%}
+.tut-palco.p5 #tut-zona{opacity:1}
+.tut-palco.p5 .marcas{opacity:0}
+.tut-palco.p5.anima #tut-zona .f{animation:abre .7s .3s cubic-bezier(.2,1.4,.4,1) both}
+.tut-palco.p5 .tut-pontos{opacity:1}
+.tut-palco.p5.anima .tut-pontos{animation:balao .5s .8s cubic-bezier(.2,1.6,.4,1) both}
+@media (max-width:380px){.etapas li{font-size:.62rem}.tutorial h2{font-size:1.6rem}}
