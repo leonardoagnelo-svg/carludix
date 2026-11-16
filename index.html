@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0f1c">
-<title>CARLUDIX Play | Jogos de futebol, fé e diversão</title>
-<meta name="description" content="CARLUDIX Play: jogos grátis no navegador, com desafios novos todo dia. Futebol, Fé Católica e Diversão para jogar sozinho ou em grupo.">
+<title>CARLUDIX Play | Jogos de futebol, fé, diversão e cartas</title>
+<meta name="description" content="CARLUDIX Play: jogos grátis no navegador, com desafios novos todo dia. Futebol, Fé Católica, Diversão e Cartas &amp; Mesa para jogar sozinho ou em grupo.">
 <meta name="google-adsense-account" content="ca-pub-1981456165037413">
 <link rel="canonical" href="https://carludix.com/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://carludix.com/">
 <meta property="og:title" content="CARLUDIX Play">
-<meta property="og:description" content="Desafios novos todo dia: Futebol, Fé Católica e Diversão. Grátis, sem cadastro.">
+<meta property="og:description" content="Desafios novos todo dia: Futebol, Fé Católica, Diversão e Cartas &amp; Mesa. Grátis, sem cadastro.">
 <meta property="og:image" content="https://carludix.com/og/carludix-og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -174,7 +174,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 @media (max-width:560px){
   .nav{height:60px;gap:12px}.brand img{height:40px}
   .nav > .btn{display:none}
-  .links{gap:14px;font-size:13px}
+  .links{gap:14px;font-size:13px;overflow-x:auto;scrollbar-width:none;min-width:0;padding-bottom:8px;margin-bottom:-8px}
+  .links::-webkit-scrollbar{display:none}
+  .links a{white-space:nowrap}
   .links a[href="/"]{display:none}
   .hero{padding:48px 0}
   .section{padding:52px 0}
@@ -209,7 +211,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 .done{position:absolute;right:12px;top:12px;font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:#1f9d55;color:#fff}
 .dname{display:block;padding:14px 16px 2px;font-weight:800;font-size:17px;letter-spacing:-.01em}
 .duni{display:block;padding:0 16px 16px;font-size:13px;color:var(--muted)}
-.unis{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.unis{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
 .uni{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;min-height:220px;padding:24px;border-radius:18px;border:1px solid var(--line);transition:transform .2s,border-color .2s}
 .uni:hover{transform:translateY(-4px)}
 .uni h3{font-size:clamp(26px,3vw,34px);letter-spacing:-.03em;margin:0 0 4px;position:relative}
@@ -230,6 +232,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 .u-div{background:radial-gradient(90% 120% at 100% 0%,rgba(63,116,255,.5),transparent 60%),linear-gradient(135deg,#0f1f4d,#0d1124 70%);border-color:rgba(63,116,255,.45)}
 .u-div:hover{border-color:rgba(90,140,255,.95)}
 .u-div .btn{background:#3f74ff;color:#fff}
+.u-car{background:radial-gradient(90% 120% at 100% 0%,rgba(31,164,99,.45),transparent 60%),linear-gradient(135deg,#0d3a26,#08150f 70%);border-color:rgba(31,164,99,.45)}
+.u-car:hover{border-color:rgba(60,200,130,.95)}
+.u-car .btn{background:#1fa463;color:#fff}
+.suits{position:absolute;right:18px;top:16px;display:flex;gap:4px;pointer-events:none}
+.suits span{display:grid;place-items:center;width:52px;height:72px;border-radius:9px;background:#f6f1e4;font-size:30px;line-height:1;box-shadow:0 8px 18px rgba(0,0,0,.45)}
+.suits span:nth-child(1){transform:rotate(-12deg) translateY(10px);color:#16181d}
+.suits span:nth-child(2){transform:rotate(-4deg);color:#d4252f}
+.suits span:nth-child(3){transform:rotate(5deg);color:#16181d}
+.suits span:nth-child(4){transform:rotate(13deg) translateY(10px);color:#d4252f}
+.uni .soon{position:absolute;left:24px;top:20px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;border-radius:999px;background:rgba(0,0,0,.35);color:#bff2d6;border:1px solid rgba(120,220,170,.4)}
 .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .fcard{display:flex;align-items:center;gap:14px;padding:14px;border-radius:16px;background:var(--panel);border:1px solid var(--line);transition:transform .2s,border-color .2s}
 .fcard:hover{transform:translateY(-3px);border-color:#3a4766}
@@ -246,7 +258,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 .home-about strong{color:var(--text)}
 .ha-more{margin-top:20px!important}.ha-more a{color:#fff;font-weight:700;text-underline-offset:3px}
 @media(max-width:1000px){.dgrid{grid-template-columns:repeat(2,1fr)}.unis{grid-template-columns:1fr}.feat{grid-template-columns:repeat(2,1fr)}.uni{min-height:180px}}
-@media(max-width:620px){.feat{grid-template-columns:1fr}.ha-grid{grid-template-columns:1fr;gap:14px}.dgrid{gap:12px}.dname{font-size:15px;padding:12px 12px 2px}.duni{padding:0 12px 12px}.dbadge{left:8px;top:8px;font-size:10px}.done{right:8px;top:8px;font-size:11px}.uni p{max-width:58%}.uni .stack img{width:68px;height:68px}.nav-right{display:none}.links a{white-space:nowrap}.streak2.on{display:inline-flex}}
+@media(max-width:620px){.u-car{padding-top:104px}.suits{top:14px}.suits span{width:38px;height:54px;font-size:21px;border-radius:7px}.feat{grid-template-columns:1fr}.ha-grid{grid-template-columns:1fr;gap:14px}.dgrid{gap:12px}.dname{font-size:15px;padding:12px 12px 2px}.duni{padding:0 12px 12px}.dbadge{left:8px;top:8px;font-size:10px}.done{right:8px;top:8px;font-size:11px}.uni p{max-width:58%}.uni .stack img{width:68px;height:68px}.nav-right{display:none}.links a{white-space:nowrap}.streak2.on{display:inline-flex}}
 </style>
 </head>
 <body>
@@ -258,6 +270,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
       <a href="/futebol/">Futebol</a>
       <a href="/catolicos/">Fé Católica</a>
       <a href="/diversao/">Diversão</a>
+      <a href="/cartas/">Cartas &amp; Mesa</a>
     </div>
     <div class="nav-right"><span class="streak" id="streak" title="Dias seguidos jogando um desafio do dia">🔥 <b id="streakN">0</b> <span class="t">dias seguidos</span></span><a class="btn btn-red btn-sm" href="#hoje">Jogar agora</a></div>
   </nav>
@@ -270,19 +283,19 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
     </div>
     <div class="dgrid">
       <a class="dcard d-fut" href="/quem-e-o-jogador/" data-daily="quem-e-o-jogador">
-        <span class="dcover"><img src="/quem-e-o-jogador/logo.png?v=202611161237" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
+        <span class="dcover"><img src="/quem-e-o-jogador/logo.png?v=202611161311" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
         <span class="dname">Quem é o Jogador?</span><span class="duni">Futebol</span>
       </a>
       <a class="dcard d-cat" href="/quem-e-o-santo/" data-daily="quem-e-o-santo">
-        <span class="dcover"><img src="/quem-e-o-santo/logo.png?v=202611161237" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
+        <span class="dcover"><img src="/quem-e-o-santo/logo.png?v=202611161311" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
         <span class="dname">Quem é o Santo?</span><span class="duni">Fé Católica</span>
       </a>
       <a class="dcard d-fut" href="/grade-dos-craques/" data-daily="grade-dos-craques">
-        <span class="dcover"><img src="/grade-dos-craques/logo.png?v=202611161237" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
+        <span class="dcover"><img src="/grade-dos-craques/logo.png?v=202611161311" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
         <span class="dname">Grade dos Craques</span><span class="duni">Futebol</span>
       </a>
       <a class="dcard d-cat" href="/biblia-em-emojis/" data-daily="biblia-em-emojis">
-        <span class="dcover"><img src="/biblia-em-emojis/logo.png?v=202611161237" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
+        <span class="dcover"><img src="/biblia-em-emojis/logo.png?v=202611161311" alt="" width="132" height="132"><span class="dbadge">Diário</span><span class="done" hidden>✓ Jogado</span></span>
         <span class="dname">EmojiCeleste</span><span class="duni">Fé Católica</span>
       </a>
     </div>
@@ -290,20 +303,21 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
   <section class="wrap sec" id="universos" aria-labelledby="uni-t">
     <div class="sec-head"><div><h2 id="uni-t">Escolha seu universo</h2></div></div>
     <div class="unis">
-      <a class="uni u-fut" href="/futebol/"><span class="stack"><img src="/quem-e-o-jogador/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"><img src="/mais-ou-menos/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"><img src="/racha-dos-campeoes/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"></span><h3>Futebol</h3><p>Adivinhe craques, complete grades e monte times campeões.</p><span class="btn btn-sm">Entrar →</span></a>
-      <a class="uni u-cat" href="/catolicos/"><span class="stack"><img src="/quem-e-o-santo/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"><img src="/que-santo-que-disse/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"><img src="/rumo-ao-ceu/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"></span><h3>Fé Católica</h3><p>Santos, Bíblia e a história da Igreja para todas as idades.</p><span class="btn btn-sm">Entrar →</span></a>
-      <a class="uni u-div" href="/diversao/"><span class="stack"><img src="/quizarena/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"><img src="/sintonia/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"><img src="/doidodromo/logo.png?v=202611161237" alt="" width="96" height="96" loading="lazy"></span><h3>Diversão</h3><p>Para jogar junto: quiz ao vivo, dicas e corrida maluca.</p><span class="btn btn-sm">Entrar →</span></a>
+      <a class="uni u-fut" href="/futebol/"><span class="stack"><img src="/quem-e-o-jogador/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"><img src="/mais-ou-menos/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"><img src="/racha-dos-campeoes/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"></span><h3>Futebol</h3><p>Adivinhe craques, complete grades e monte times campeões.</p><span class="btn btn-sm">Entrar →</span></a>
+      <a class="uni u-cat" href="/catolicos/"><span class="stack"><img src="/quem-e-o-santo/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"><img src="/que-santo-que-disse/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"><img src="/rumo-ao-ceu/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"></span><h3>Fé Católica</h3><p>Santos, Bíblia e a história da Igreja para todas as idades.</p><span class="btn btn-sm">Entrar →</span></a>
+      <a class="uni u-div" href="/diversao/"><span class="stack"><img src="/quizarena/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"><img src="/sintonia/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"><img src="/doidodromo/logo.png?v=202611161311" alt="" width="96" height="96" loading="lazy"></span><h3>Diversão</h3><p>Para jogar junto: quiz ao vivo, dicas e corrida maluca.</p><span class="btn btn-sm">Entrar →</span></a>
+      <a class="uni u-car" href="/cartas/"><span class="soon">Novo universo</span><span class="suits" aria-hidden="true"><span>♠</span><span>♥</span><span>♣</span><span>♦</span></span><h3>Cartas &amp; Mesa</h3><p>Buraco e outros clássicos de baralho e de mesa, contra o computador ou online.</p><span class="btn btn-sm">Entrar →</span></a>
     </div>
   </section>
   <section class="wrap sec" aria-labelledby="novos-t">
     <div class="sec-head"><div><h2 id="novos-t">Novos e em destaque</h2></div></div>
     <div class="feat">
-      <a class="fcard" href="/doidodromo/"><img src="/doidodromo/logo.png?v=202611161237" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Doidódromo</b><small>Diversão</small></span></a>
-      <a class="fcard" href="/trunfo-celeste/"><img src="/trunfo-celeste/logo.png?v=202611161237" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Trunfo Celeste</b><small>Fé Católica</small></span></a>
-      <a class="fcard" href="/sintonia/"><img src="/sintonia/logo.png?v=202611161237" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Sintonia</b><small>Diversão</small></span></a>
-      <a class="fcard" href="/letrampago/"><img src="/letrampago/logo.png?v=202611161237" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Letrâmpago</b><small>Diversão</small></span></a>
-      <a class="fcard" href="/racha-dos-campeoes/"><img src="/racha-dos-campeoes/logo.png?v=202611161237" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge ">DESTAQUE</span><b>Racha dos Campeões</b><small>Futebol</small></span></a>
-      <a class="fcard" href="/degraus-da-sabedoria/"><img src="/degraus-da-sabedoria/logo.png?v=202611161237" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge ">DESTAQUE</span><b>Degraus da Sabedoria</b><small>Fé Católica</small></span></a>
+      <a class="fcard" href="/doidodromo/"><img src="/doidodromo/logo.png?v=202611161311" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Doidódromo</b><small>Diversão</small></span></a>
+      <a class="fcard" href="/trunfo-celeste/"><img src="/trunfo-celeste/logo.png?v=202611161311" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Trunfo Celeste</b><small>Fé Católica</small></span></a>
+      <a class="fcard" href="/sintonia/"><img src="/sintonia/logo.png?v=202611161311" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Sintonia</b><small>Diversão</small></span></a>
+      <a class="fcard" href="/letrampago/"><img src="/letrampago/logo.png?v=202611161311" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge is-new">NOVO</span><b>Letrâmpago</b><small>Diversão</small></span></a>
+      <a class="fcard" href="/racha-dos-campeoes/"><img src="/racha-dos-campeoes/logo.png?v=202611161311" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge ">DESTAQUE</span><b>Racha dos Campeões</b><small>Futebol</small></span></a>
+      <a class="fcard" href="/degraus-da-sabedoria/"><img src="/degraus-da-sabedoria/logo.png?v=202611161311" alt="" width="64" height="64" loading="lazy"><span class="ftxt"><span class="fbadge ">DESTAQUE</span><b>Degraus da Sabedoria</b><small>Fé Católica</small></span></a>
     </div>
   </section>
   <div class="wrap"><div class="cdx-ad" data-ad="portal-meio"></div></div>
@@ -311,7 +325,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
     <h2 id="sobre-t">Sobre a CARLUDIX</h2>
     <div class="ha-grid">
       <p>A CARLUDIX Play reúne jogos curtos e gratuitos que funcionam direto no navegador, no celular ou no computador. Não é preciso baixar nada nem criar conta: escolha um universo, abra um jogo e comece. Vários desafios mudam todos os dias e são iguais para todo mundo, para você comparar o resultado com a família e os amigos.</p>
-      <p>No universo <strong>Futebol</strong>, você adivinha jogadores pela carreira e pelas pistas, completa grades de craques e monta times campeões. No universo <strong>Fé Católica</strong>, conhece santos, passagens da Bíblia e lugares da história da Igreja de um jeito leve, bom para a família e para a catequese. E no universo <strong>Diversão</strong> ficam os jogos para jogar junto, como o <strong>QuizArena</strong>, um quiz ao vivo com cada pessoa respondendo pelo celular, o <strong>Sintonia</strong>, em que um dá a dica e o grupo acha o ponto certo, o <strong>Letrâmpago</strong>, de pensar rápido com letras e temas, e o <strong>Doidódromo</strong>, uma corrida de tabuleiro maluca com corredores cheios de poderes.</p>
+      <p>No universo <strong>Futebol</strong>, você adivinha jogadores pela carreira e pelas pistas, completa grades de craques e monta times campeões. No universo <strong>Fé Católica</strong>, conhece santos, passagens da Bíblia e lugares da história da Igreja de um jeito leve, bom para a família e para a catequese. E no universo <strong>Diversão</strong> ficam os jogos para jogar junto, como o <strong>QuizArena</strong>, um quiz ao vivo com cada pessoa respondendo pelo celular, o <strong>Sintonia</strong>, em que um dá a dica e o grupo acha o ponto certo, o <strong>Letrâmpago</strong>, de pensar rápido com letras e temas, e o <strong>Doidódromo</strong>, uma corrida de tabuleiro maluca com corredores cheios de poderes. O universo mais novo é o <strong>Cartas &amp; Mesa</strong>, para os clássicos de baralho e de mesa, começando pelo <strong>Buraco</strong>.</p>
     </div>
     <p class="ha-more"><a href="/sobre/">Conheça a história do nome →</a></p>
   </section>
