@@ -460,7 +460,7 @@ const L = {
     const maos = {...j.maos};
     if(p){
       if(vale) jog[j.cont.i] = {...p, ok:1};
-      else { jog.splice(j.cont.i,1); maos[p.u] = tok(maos[p.u]).concat(p.c).join(" "); }
+      else { jog.splice(j.cont.i,1); maos[p.u] = tok(maos[p.u]).concat(p.c, novoBaralho()[0]).join(" "); }   // não valeu: carta volta + 1 de castigo
     }
     j = {...j, jogadas:jog, maos, cont:null, veredito:p?{u:p.u, c:p.c, w:p.w||"", ok:vale?1:0, s:sim, n:nao, t:c.now}:null};
     const d = L.depoisDaJogada(j, c);
@@ -776,7 +776,7 @@ function telaComo(){
     <li><b>Contra robôs:</b> jogue sozinho contra 1 a 5 robôs, no nível fácil, médio ou difícil.</li></ul>
     <p>Desça quantas cartas conseguir! Cada tema aceita <b>3 cartas</b>: na 3ª, vira o <b>próximo tema</b> e todo mundo continua com a mão que tem. A rodada acaba quando <b>alguém zera a mão</b>. Se o tempo de um tema acabar antes das 3 cartas, a rodada também acaba. Não vale repetir palavra no mesmo tema.</p>
     <h3>⚠️ Contestar</h3>
-    <p>Achou a resposta forçada? Toque em <b>Contestar</b>. Todos votam (menos quem jogou). Empate: a resposta vale. Se não valer, a carta volta para a mão de quem jogou.</p>
+    <p>Achou a resposta forçada? Toque em <b>Contestar</b>. Todos votam (menos quem jogou). Empate: a resposta vale. Se não valer, a carta volta para a mão de quem jogou <b>e ele ainda compra mais 1 carta</b>.</p>
     <h3>🌩️ Raios</h3>
     <p>Quem zerou não leva raio. Os outros somam os raios das cartas que <b>sobraram na mão</b>. Raio é ruim! Na rodada seguinte todo mundo recebe 5 cartas novas.</p>
     <div class="tabRaios">${faixa}</div>
@@ -865,7 +865,7 @@ function aoMudarSala(){
     if(agora()-j.veredito.t < 8000){
       const v=j.veredito, quem=pj(v.u).n, pal = v.w?`“${v.w}”`:`a carta ${letraDe(v.c)}`;
       if(v.ok) toast(`✔ Vale! ${pal} de ${quem} foi aceita (${v.s}×${v.n})`,"bom",3200);
-      else toast(`✘ Não vale! ${pal} volta para ${quem} (${v.s}×${v.n})`,"ruim",3200);
+      else toast(`✘ Não vale! ${pal} volta para ${quem}, que ainda compra +1 carta (${v.s}×${v.n})`,"ruim",3600);
     }
   }
   S.faseVista = j.fase;
