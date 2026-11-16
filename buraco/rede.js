@@ -35,6 +35,15 @@
   }
 
   function codigoNovo() { let s = ''; for (let i = 0; i < 4; i++) s += LETRAS[Math.floor(Math.random() * LETRAS.length)]; return s; }
+  // Coloca cada jogador no lugar escolhido; se dois escolherem o mesmo, quem chegou antes fica e o outro vai para o primeiro livre
+  function distribuirLugares(sala) {
+    const n = (sala && sala.max) || 4, lugares = Array(n).fill(null);
+    const js = Object.entries((sala && sala.jogadores) || {}).filter(([, j]) => j).sort((a, b) => (a[1].entrouEm || 0) - (b[1].entrouEm || 0));
+    const sobra = [];
+    js.forEach(e => { const l = e[1].lugar; if (Number.isInteger(l) && l >= 0 && l < n && !lugares[l]) lugares[l] = e; else sobra.push(e); });
+    sobra.forEach(e => { const k = lugares.indexOf(null); if (k >= 0) lugares[k] = e; });
+    return lugares;
+  }
   const humanosDe = sala => Object.entries((sala && sala.jogadores) || {}).filter(([, j]) => j && !j.bot);
 
   /* ---------- contador "jogando online agora" ---------- */
@@ -87,7 +96,7 @@
     await marcar(P_SALAS + codigo, D.set(D.ref(db, P_SALAS + codigo), {
       codigo, jogo: JOGO, publica: !!o.publica, modo: o.modo, min: o.min, max: o.max,
       anfitriao: uid, status: 'esperando', criadaEm: D.serverTimestamp(), atualizadaEm: D.serverTimestamp(),
-      jogadores: { [uid]: { apelido: o.perfil.apelido, avatar: o.perfil.avatar, pronto: true, bot: false, entrouEm: D.serverTimestamp() } },
+      jogadores: { [uid]: { apelido: o.perfil.apelido, avatar: o.perfil.avatar, pronto: true, bot: false, lugar: 0, entrouEm: D.serverTimestamp() } },
     }));
     return codigo;
   }
@@ -117,7 +126,10 @@
       }
     }
     const dados = Object.assign({ pronto: sala.status !== 'esperando', bot: false }, jaEstava || {}, { apelido: perfil.apelido, avatar: perfil.avatar });
-    if (!jaEstava) dados.entrouEm = D.serverTimestamp();
+    if (!jaEstava) {
+      dados.entrouEm = D.serverTimestamp();
+      if (sala.status === 'esperando') { const livre = distribuirLugares(sala).indexOf(null); if (livre >= 0) dados.lugar = livre; }
+    }
     // presença: some da sala ao fechar a aba
     offs.push(D.onValue(D.ref(db, '.info/connected'), s => {
       if (!s.val()) return;
@@ -157,11 +169,24 @@
       onSaiu: f => ouv.saiu.push(f),
       pronto: v => marcar(P_SALAS + codigo + '/jogadores/' + uid, D.update(minhaRef, { pronto: !!v })).then(() => D.update(RS(), { atualizadaEm: D.serverTimestamp() })),
       remover: u => D.remove(RS('jogadores/' + u)),
+      // trocar de lugar (escolher a dupla) antes de começar
+      async mudarLugar(i) {
+        if (sala.status !== 'esperando' || distribuirLugares(sala)[i]) return false;
+        dados.lugar = i;
+        await marcar(P_SALAS + codigo + '/jogadores/' + uid, D.update(minhaRef, { lugar: i, pronto: false }));
+        return true;
+      },
+      async moverBot(botId, i) {
+        if (sala.status !== 'esperando' || distribuirLugares(sala)[i]) return false;
+        await D.update(RS('jogadores/' + botId), { lugar: i });
+        return true;
+      },
       async porBots(nomes, avatar) {
         const js = sala.jogadores || {};
         const falta = (sala.max || 4) - Object.keys(js).length;
+        const livres = distribuirLugares(sala).map((x, k) => x ? -1 : k).filter(k => k >= 0);
         const upd = {};
-        for (let i = 0; i < falta; i++) upd['jogadores/bot' + Date.now().toString(36) + i] = { apelido: nomes[i] || 'Bot', avatar: avatar || '🤖', pronto: true, bot: true, entrouEm: Date.now() + i };
+        for (let i = 0; i < falta; i++) upd['jogadores/bot' + Date.now().toString(36) + i] = { apelido: nomes[i] || 'Bot', avatar: avatar || '🤖', pronto: true, bot: true, lugar: livres[i], entrouEm: Date.now() + i };
         upd.atualizadaEm = D.serverTimestamp();
         if (falta > 0) await marcar(P_SALAS + codigo, D.update(RS(), upd));
       },
@@ -224,5 +249,5 @@
     return api;
   }
 
-  G.BuracoRede = { conectar, marcarOnline, desmarcarOnline, ouvirContador, ouvirSalas, criarSala, abrirSala, humanosDe };
+  G.BuracoRede = { distribuirLugares, conectar, marcarOnline, desmarcarOnline, ouvirContador, ouvirSalas, criarSala, abrirSala, humanosDe };
 })(window);

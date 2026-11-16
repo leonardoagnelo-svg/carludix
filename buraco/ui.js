@@ -47,27 +47,36 @@
   }
   const logoHTML = `<img class="logo" src="logo.png" alt="Buraco" onerror="this.outerHTML='<div class=&quot;logo-txt&quot;>Buraco</div>'">`;
 
-  function cartaHTML(id, cls) {
+  function cartaHTML(id, cls, selo) {
     cls = cls || '';
+    const sl = selo ? `<b class="selo-cor">${selo}</b>` : '';
     if (id === null || id === undefined) return `<div class="carta verso ${cls}"></div>`;
     const c = M.carta(id);
-    if (c.cur) return `<div class="carta cur ${cls}" data-id="${id}"><span class="v">★</span><span class="g">★</span><span class="nn">CURINGÃO</span></div>`;
+    if (c.cur) return `<div class="carta cur ${cls}" data-id="${id}"><span class="v">★</span><span class="g">★</span><span class="nn">CURINGÃO</span>${sl}</div>`;
     const red = c.n === 1 || c.n === 2;
-    return `<div class="carta np${c.n} ${red ? 'verm' : ''} ${cls}" data-id="${id}"><span class="v">${VALORES[c.v]}</span><span class="n">${M.NAIPES[c.n]}</span><span class="g">${M.NAIPES[c.n]}</span></div>`;
+    return `<div class="carta np${c.n} ${red ? 'verm' : ''} ${cls}" data-id="${id}"><span class="v">${VALORES[c.v]}</span><span class="n">${M.NAIPES[c.n]}</span><span class="g">${M.NAIPES[c.n]}</span>${sl}</div>`;
   }
 
   /* =================== INÍCIO =================== */
+  const svgOuro = d => `<svg class="ic-ouro" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const ICONE_MENU = {
+    continuar: svgOuro('<path d="M8 5l11 7-11 7z"/>'),
+    bots: svgOuro('<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 16h6"/><circle cx="12" cy="3.5" r="1"/>'),
+    online: svgOuro('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>'),
+    local: svgOuro('<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'),
+    regras: svgOuro('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 11h5"/>'),
+  };
   function telaInicio() {
     P = null;
     const salvo = store.get('salvo', null);
     tela(`<div class="inicio">
       ${logoHTML}
       <div class="menu">
-        ${salvo ? '<button class="btn ouro grande" data-a="continuar"><span class="ic">▶</span> Continuar partida</button>' : ''}
-        <button class="btn verm grande" data-a="bots"><span class="ic">🤖</span> Contra o computador</button>
-        <button class="btn" data-a="online"><span class="ic">🌐</span> Jogar online</button>
-        <button class="btn" data-a="local"><span class="ic">📱</span> No mesmo aparelho</button>
-        <button class="btn claro" data-a="regras">📖 Como jogar</button>
+        ${salvo ? `<button class="btn ouro grande" data-a="continuar">${ICONE_MENU.continuar} Continuar partida</button>` : ''}
+        <button class="btn verm grande" data-a="bots">${ICONE_MENU.bots} Contra o computador</button>
+        <button class="btn" data-a="online">${ICONE_MENU.online} Jogar online</button>
+        <button class="btn" data-a="local">${ICONE_MENU.local} No mesmo aparelho</button>
+        <button class="btn claro" data-a="regras">${ICONE_MENU.regras} Como jogar</button>
       </div>
       ${rodape()}
     </div>`);
@@ -212,6 +221,37 @@
     document.body.classList.add('em-jogo');
     app.onclick = cliqueJogo;
     const onR = () => P && desenharJogo();
+    let arr = null;
+    const marcarCarta = (el, id, marcar) => {
+      if (marcar && !P.sel.includes(id)) P.sel.push(id);
+      if (!marcar) P.sel = P.sel.filter(x => x !== id);
+      el.classList.toggle('sel', marcar);
+    };
+    const pdown = e => {
+      const c = e.target.closest && e.target.closest('.mao2 .carta');
+      if (!c || !P || P.passando !== null || c.dataset.id === undefined) return;
+      const id = +c.dataset.id;
+      arr = { marcar: !P.sel.includes(id), vistos: new Set([id]) };
+      P.dica = null; P.confirmarLixo = false;
+      marcarCarta(c, id, arr.marcar);
+      P.ultimoToque = Date.now();
+    };
+    const pmove = e => {
+      if (!arr) return;
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const c = el && el.closest('.mao2 .carta');
+      if (!c || c.dataset.id === undefined) return;
+      const id = +c.dataset.id;
+      if (arr.vistos.has(id)) return;
+      arr.vistos.add(id);
+      marcarCarta(c, id, arr.marcar);
+    };
+    const pup = () => { if (!arr) return; arr = null; P.ultimoToque = Date.now(); desenharJogo(); };
+    app.addEventListener('pointerdown', pdown);
+    window.addEventListener('pointermove', pmove);
+    window.addEventListener('pointerup', pup);
+    window.addEventListener('pointercancel', pup);
+    limpeza.push(() => { app.removeEventListener('pointerdown', pdown); window.removeEventListener('pointermove', pmove); window.removeEventListener('pointerup', pup); window.removeEventListener('pointercancel', pup); });
     window.addEventListener('resize', onR);
     limpeza.push(() => window.removeEventListener('resize', onR));
     desenharJogo();
@@ -294,6 +334,41 @@
     const f = P.falas && P.falas[s]; if (!f || !f.itens.length) return '';
     return `<div class="fala">${esc(f.itens.join(' · '))}${f.carta !== undefined ? ' ' + cartaHTML(f.carta, 'mini') : ''}</div>`;
   }
+  function valorDoCoringa(j) {
+    if (j.w === null || j.w === undefined) return '';
+    const NOME = ['', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    if (j.t === 'trinca') { const nat = j.c.find(c => c !== j.w); return nat !== undefined ? '=' + NOME[M.valorDe(nat)] : ''; }
+    const iw = j.c.indexOf(j.w);
+    for (let i = 0; i < j.c.length; i++) {
+      const c = j.c[i];
+      if (c === j.w) continue;
+      let v = M.valorDe(c);
+      if (v === 1) v = i === 0 ? 1 : 14; // Ás no começo vale 1, no fim vale 14
+      const alvo = v + (iw - i);
+      if (alvo >= 1 && alvo <= 14) return '=' + NOME[alvo];
+    }
+    return '';
+  }
+  // carta voando de quem descartou até o lixo
+  function animarDescarte(raiz, v) {
+    try {
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const alvoEl = raiz.querySelector('.lixo2 .lixo-aberto .carta:last-child') || raiz.querySelector('.lixo2 .pilha-cartas > .carta:last-child');
+      const origemEl = v.s === P.eu ? raiz.querySelector('.mao2') : raiz.querySelector('.assento[data-s="' + v.s + '"] .avatar');
+      if (!alvoEl || !origemEl) return;
+      const a = alvoEl.getBoundingClientRect(), o = origemEl.getBoundingClientRect();
+      const d = document.createElement('div');
+      d.className = 'voo';
+      d.style.cssText = `left:${a.left}px;top:${a.top}px;width:${a.width}px;--cw:${a.width}px`;
+      d.innerHTML = cartaHTML(v.carta);
+      document.body.appendChild(d);
+      alvoEl.style.visibility = 'hidden';
+      const dx = (o.left + o.width / 2) - (a.left + a.width / 2), dy = (o.top + o.height / 2) - (a.top + a.height / 2);
+      const an = d.animate([{ transform: `translate(${dx}px,${dy}px) scale(.6) rotate(-20deg)`, opacity: .6 }, { transform: 'none', opacity: 1 }], { duration: 380, easing: 'cubic-bezier(.2,.8,.3,1)' });
+      an.onfinish = () => { d.remove(); alvoEl.style.visibility = ''; };
+      setTimeout(() => { if (d.isConnected) { d.remove(); alvoEl.style.visibility = ''; } }, 900);
+    } catch (e) {}
+  }
   function pontosNaMesa(st, t) { return st.jogos[t].reduce((a, j) => a + j.c.reduce((b, c) => b + M.pontos(c), 0), 0); }
 
   function cartasQueCabem(st, t, sel) {
@@ -316,6 +391,10 @@
     if (st.seq !== P.seqVisto) {
       const u = st.ultimo || {};
       registrarAcao(st, u);
+      if (u.tipo === 'descartar' || (u.tipo === 'morto' && u.texto.includes('descartou')) || u.tipo === 'batida') {
+        const cartaVoo = st.lixo.length ? st.lixo[st.lixo.length - 1] : null;
+        if (cartaVoo !== null && u.s !== undefined) P.voo = { s: u.s, carta: cartaVoo };
+      }
       if (u.tipo === 'canastra') { toast('🎉 ' + (u.texto.split(' — ')[1] || 'Canastra!').replace('CANASTRA', 'Canastra').replace('LIMPA', 'limpa').replace('SUJA', 'suja') + ' · ' + st.jogadores[u.s].nome, 'festa'); som('canastra'); }
       else if (u.tipo === 'morto') { toast('💀 ' + u.texto, 'festa'); som('morto'); }
       else if (u.tipo === 'baixar') som('baixar');
@@ -333,7 +412,7 @@
       const k = st.maos[s].length, ehVez = st.vez === s && !fim;
       const leque = Array.from({ length: Math.min(k, 9) }, (_, i) => `<i style="--i:${i - (Math.min(k, 9) - 1) / 2}"></i>`).join('');
       const sub = ausente(s) ? 'saiu · 🤖 no lugar' : ehVez ? (st.fase === 'comprar' ? 'vai comprar…' : 'jogando…') : '';
-      return `<div class="assento ${pos} ${ehVez ? 'vez' : ''} ${s % 2 === meuT ? 'parc' : 'adv'} ${ausente(s) ? 'ausente' : ''}">
+      return `<div data-s="${s}" class="assento ${pos} ${ehVez ? 'vez' : ''} ${s % 2 === meuT ? 'parc' : 'adv'} ${ausente(s) ? 'ausente' : ''}">
         <div class="leque-costas">${leque}</div>
         <div class="avatar">${esc(avatarDe(st, s))}${st.jogadores[s].tipo === 'bot' ? '<i class="selo-bot">🤖</i>' : ''}<b class="qt-cartas">${k}</b></div>
         <div class="nome-assento">${esc(st.jogadores[s].nome)}${s % 2 === meuT && n === 4 ? '<span class="chip-parc">parceiro</span>' : ''}</div>${sub ? `<div class="sub-assento">${sub}</div>` : (falaHTML(s) || '<div class="sub-assento">&nbsp;</div>')}</div>`;
@@ -355,9 +434,18 @@
       return js.map((j, i) => {
         const r = rotuloJogo(j);
         const mudou = antes[i] !== j.c.length;
-        return `<button class="jg ${r.cls} ${meus && cabe.includes(i) ? 'cabe' : ''} ${mudou && ant.jogos ? 'brilha' : ''}" data-jogo="${i}">
+        const selo = valorDoCoringa(j);
+        const compacto = (P.compacto || {})[t] && j.c.length >= 5;
+        let cartasH;
+        if (compacto) {
+          const iw = j.w === null ? -1 : j.c.indexOf(j.w);
+          const vis = new Set([0, j.c.length - 2, j.c.length - 1]); if (iw >= 0) vis.add(iw);
+          cartasH = ''; let ultimo = -1;
+          j.c.forEach((c, k) => { if (!vis.has(k)) return; if (ultimo >= 0 && k - ultimo > 1) cartasH += `<span class="reticencias">…</span>`; cartasH += cartaHTML(c, c === j.w ? 'coringa' : '', c === j.w ? selo : ''); ultimo = k; });
+        } else cartasH = j.c.map(c => cartaHTML(c, c === j.w ? 'coringa' : '', c === j.w ? selo : '')).join('');
+        return `<button class="jg ${r.cls} ${compacto ? 'compacto' : ''} ${meus && cabe.includes(i) ? 'cabe' : ''} ${mudou && ant.jogos ? 'brilha' : ''}" data-jogo="${i}">
           <span class="etq ${r.cls}">${r.txt}<em>${M.ehCanastra(j) ? j.c.length : j.c.length + '/7'}</em></span>
-          <span class="cartas-jg">${j.c.map(c => cartaHTML(c, c === j.w ? 'coringa' : '')).join('')}</span></button>`;
+          <span class="cartas-jg">${cartasH}</span></button>`;
       }).join('');
     };
 
@@ -436,7 +524,7 @@
         <div class="centro2">
           ${mortoHTML(meuT, rotMortoMeu)}
           <button class="monte2 ${podeComprar ? 'pode' : ''}" data-a="comprar"><div class="pilha-cartas">${st.monte.length ? cartaHTML(null, 'baixo') + cartaHTML(null) : '<div class="vazio-l"></div>'}</div><span class="rotulo">Monte <b>${st.monte.length}</b></span></button>
-          <button class="lixo2 ${podeLixo || podeDescartarNoLixo ? 'pode' : ''}" data-a="lixo-mesa">${lixoHTML}<span class="rotulo">Lixo <b>${st.lixo.length}</b></span></button>
+          <button class="lixo2 ${podeLixo || podeDescartarNoLixo ? 'pode' : ''}" data-a="lixo-mesa">${lixoHTML}<span class="rotulo">Lixo <b>${st.lixo.length}</b>${st.cfg.lixo === 'aberto' && st.lixo.length > 1 ? ' 🔍' : ''}</span></button>
           ${mortoHTML(advT, rotMortoDeles)}
         </div>
         <div class="area-nossa meus"><div class="fita">${n === 4 ? 'Nossas canastras e jogos' : 'Suas canastras e jogos'}</div><div class="lista-jogos">${jogosHTML(meuT, true)}</div></div>
@@ -446,6 +534,15 @@
       <div class="botoes">${botoes}</div>`;
     ajustarMao();
     const la = raiz.querySelector('.lixo-aberto'); if (la) la.scrollLeft = la.scrollWidth;
+    // jogos compactos quando a mesa enche (vale até o fim da mão)
+    if (P.compactoMao !== st.mao) { P.compacto = {}; P.compactoMao = st.mao; }
+    let recompor = false;
+    [[meuT, '.area-nossa .lista-jogos'], [advT, '.area-deles .lista-jogos']].forEach(([t, sel]) => {
+      const el = raiz.querySelector(sel);
+      if (el && !(P.compacto[t]) && el.scrollHeight > el.clientHeight + 6) { P.compacto[t] = true; recompor = true; }
+    });
+    if (recompor && !P.recompondo) { P.recompondo = true; desenharJogo(); P.recompondo = false; return; }
+    if (P.voo) { const v = P.voo; P.voo = null; animarDescarte(raiz, v); }
 
     P.ant = { mao: mao.slice(), lixoTopo: topo, jogos: [st.jogos[0].map(j => j.c.length), st.jogos[1].map(j => j.c.length)], vez };
 
@@ -495,6 +592,16 @@
     }
   }
 
+  function verLixo() {
+    const st = P.st;
+    const cartas = M.ordenarMao(st.lixo, 'naipe');
+    const v = veu(`<div class="painel"><h2 class="titulo centro">Lixo · ${st.lixo.length} cartas</h2>
+      <p class="sub centro">Em ordem de naipe. A última descartada foi ${esc(M.nomeCarta(st.lixo[st.lixo.length - 1]))}.</p>
+      <div class="grade-lixo">${cartas.map(c => cartaHTML(c, c === st.lixo[st.lixo.length - 1] ? 'ultima' : '')).join('')}</div>
+      <div class="linha c" style="margin-top:12px"><button class="btn ouro" data-x="ok">Voltar ao jogo</button></div></div>`, () => desenharJogo());
+    v.querySelector('[data-x="ok"]').onclick = () => { fecharVeu(); desenharJogo(); };
+  }
+
   function darDica() {
     const st = P.st, s = P.eu, t = s % 2;
     const a = B.proxima(st, s);
@@ -519,6 +626,7 @@
     const cartaEl = e.target.closest('.mao2 .carta');
     if (cartaEl && cartaEl.dataset.id !== undefined) {
       if (P.passando !== null) return;
+      if (Date.now() - (P.ultimoToque || 0) < 700) return; // já tratado pelo toque/arrasto
       const id = +cartaEl.dataset.id;
       P.dica = null; P.confirmarLixo = false;
       P.sel = P.sel.includes(id) ? P.sel.filter(x => x !== id) : P.sel.concat([id]);
@@ -545,11 +653,13 @@
     if (a === 'placar') { P.verMesa = false; return desenharJogo(); }
     if (a === 'ordem') { P.ordem = P.ordem === 'naipe' ? 'valor' : 'naipe'; store.set('ordem', P.ordem); return desenharJogo(); }
     if (a === 'limpar') { P.sel = []; P.dica = null; P.confirmarLixo = false; return desenharJogo(); }
+    if (a === 'lixo-mesa' && st.cfg.lixo === 'aberto' && st.lixo.length > 1 && !(minhaVez() && st.fase === 'comprar')) return verLixo();
     if (!minhaVez()) return;
     if (a === 'dica') return darDica();
     if (a === 'comprar' && st.fase === 'comprar') agir({ t: 'comprar' });
     if ((a === 'lixo' || a === 'lixo-mesa') && st.fase === 'jogar' && a === 'lixo-mesa') {
       if (P.sel.length === 1) return agir({ t: 'descartar', carta: P.sel[0] });
+      if (st.cfg.lixo === 'aberto' && st.lixo.length > 1) return verLixo();
       return;
     }
     if ((a === 'lixo' || a === 'lixo-mesa') && st.fase === 'comprar') {
@@ -695,6 +805,7 @@
         ${linha('Morto não pego', 'morto', num)}
         ${linha('Cartas na mão', 'mao', num)}
         <tr class="tot"><td>Total da mão</td><td>${num(r.times[meuT], 'total')}</td><td>${num(r.times[advT], 'total')}</td></tr>
+        ${st.historico.length > 1 ? `<tr class="ant"><td>Mãos anteriores</td><td>${st.historico.slice(0, -1).map(h => (h[meuT] > 0 ? '+' : '') + h[meuT]).join(' · ')}</td><td>${st.historico.slice(0, -1).map(h => (h[advT] > 0 ? '+' : '') + h[advT]).join(' · ')}</td></tr>` : ''}
         <tr class="ger"><td>Placar (até ${st.cfg.meta})</td><td>${st.placar[meuT]}</td><td>${st.placar[advT]}</td></tr>
       </table>
       ${!fim ? `<p class="nota centro">Faltam ${Math.max(0, st.cfg.meta - st.placar[meuT])} pontos para ${st.n === 2 ? (P.modo === 'local' ? esc(nomeT(meuT)) : 'você') : 'nós'} e ${Math.max(0, st.cfg.meta - st.placar[advT])} para ${esc(st.n === 2 ? nomeT(advT) : 'eles')}.</p>` : ''}
@@ -992,15 +1103,17 @@
       const host = mesa.souAnfitriao();
       const js = ordenados(sala);
       const n = sala.max || 4;
+      const lugares = R.distribuirLugares(sala);
       const linhas = [];
-      for (let i = 0; i < n; i++) {
+      const ordemVis = n === 4 ? [0, 2, 1, 3] : [0, 1]; // mostra a dupla A junta e depois a dupla B
+      for (const i of ordemVis) {
         const dupla = n === 4 ? `<span class="dupla ${i % 2 ? 'b' : 'a'}">${i % 2 ? 'Dupla B' : 'Dupla A'}</span>` : '';
-        const x = js[i];
-        if (!x) { linhas.push(`<div class="jogador-sala livre"><div class="av">＋</div><div class="info"><b>Vaga livre</b><span>esperando alguém…</span></div>${dupla}</div>`); continue; }
+        const x = lugares[i];
+        if (!x) { linhas.push(`<button class="jogador-sala livre ${i % 2 ? 'tb' : 'ta'}" data-lugar="${i}"><div class="av">＋</div><div class="info"><b>Vaga livre</b><span>${n === 4 ? 'toque para sentar aqui' : 'esperando alguém…'}</span></div>${dupla}</button>`); continue; }
         const [u, j] = x;
         const eu = u === mesa.uid;
         const ehHost = u === sala.anfitriao;
-        linhas.push(`<div class="jogador-sala ${eu ? 'eu' : ''}"><div class="av">${esc(j.bot ? '🤖' : j.avatar)}</div>
+        linhas.push(`<div class="jogador-sala ${eu ? 'eu' : ''} ${i % 2 ? 'tb' : 'ta'}"><div class="av">${esc(j.bot ? '🤖' : j.avatar)}</div>
           <div class="info"><b>${j.bot ? '🤖 ' : ''}${esc(j.apelido)}${ehHost ? ' 👑' : ''}${eu ? ' (você)' : ''}</b><span>${j.bot ? 'bot' : j.pronto || ehHost ? '✅ pronto' : '⏳ não está pronto'}</span></div>
           ${dupla}${host && !eu ? `<button class="ic-btn rem" data-rem="${esc(u)}" aria-label="Remover ${esc(j.apelido)}" title="Remover">✕</button>` : ''}</div>`);
       }
@@ -1023,7 +1136,7 @@
             ${!host ? `<button class="btn ${meu.pronto ? 'claro' : 'ouro grande'}" data-a="pronto">${meu.pronto ? '✋ Pronto ✓ (toque para desfazer)' : '✋ Pronto'}</button>` : ''}
             ${host ? `${!cheia ? '<button class="btn" data-a="bots">🤖 Completar com bots</button>' : ''}
               <button class="btn ouro grande" data-a="comecar" ${cheia && prontos ? '' : 'disabled'}>▶ Começar</button>
-              <p class="nota centro">${!cheia ? (n - js.length > 1 ? 'Faltam ' + (n - js.length) + ' jogadores' : 'Falta 1 jogador') + '. Espere ou complete com bots.' : prontos ? 'Todos prontos! Pode começar.' : 'Esperando todos tocarem em “Pronto”.'}${n === 4 ? ' As duplas seguem a ordem de chegada.' : ''}</p>`
+              <p class="nota centro">${!cheia ? (n - js.length > 1 ? 'Faltam ' + (n - js.length) + ' jogadores' : 'Falta 1 jogador') + '. Espere ou complete com bots.' : prontos ? 'Todos prontos! Pode começar.' : 'Esperando todos tocarem em “Pronto”.'}${n === 4 ? ' Para trocar de dupla, toque numa vaga livre.' : ''}</p>`
             : '<p class="nota centro">Quando todos estiverem prontos, o anfitrião 👑 começa a partida.</p>'}
           </div>
           <div class="reacoes">${REACOES.map(r => `<button class="reac" data-r="${esc(r)}">${esc(r)}</button>`).join('')}</div>
@@ -1040,6 +1153,8 @@
     } }, 1000);
     limpeza.push(() => clearInterval(tique));
     app.onclick = async e => {
+      const lg = e.target.closest('[data-lugar]');
+      if (lg) { mesa.mudarLugar(+lg.dataset.lugar).then(ok => { if (!ok) toast('Esse lugar já foi ocupado.'); }).catch(err => toast(erroOnline(err), 'erro')); return; }
       const rem = e.target.closest('[data-rem]');
       if (rem) { if (mesa.souAnfitriao()) mesa.remover(rem.dataset.rem); return; }
       const rc = e.target.closest('[data-r]');
@@ -1071,8 +1186,8 @@
 
   async function comecarOnline(mesa) {
     const sala = mesa.sala, n = sala.max || 4;
-    const js = Object.entries(sala.jogadores || {}).sort((a, b) => (a[1].entrouEm || 0) - (b[1].entrouEm || 0)).slice(0, n);
-    if (js.length < n) { toast('Ainda falta gente na sala.'); return; }
+    const js = R.distribuirLugares(sala);
+    if (js.some(x => !x)) { toast('Ainda falta gente na sala.'); return; }
     const jog = js.map(([u, j]) => j.bot ? { nome: j.apelido, tipo: 'bot', nivel: 'medio', avatar: '🤖' } : { nome: j.apelido, tipo: 'humano', uid: u, nivel: 'medio', avatar: j.avatar });
     const cfg = mesa.cfg || M.configPadrao('fechado');
     const st = M.novoJogo(cfg, jog);

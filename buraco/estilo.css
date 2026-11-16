@@ -558,3 +558,52 @@ body.grande .mao2.duas .carta{--cw:clamp(42px,11.5vw,58px)}
   .area-deles,.area-nossa{min-height:0}
 }
 @media (max-width:380px){ .placar2 .pl i{font-size:10.5px} .morto .rotulo{font-size:10.5px;padding:1px 4px} }
+
+/* =================== lote 2 =================== */
+/* fonte arredondada nos títulos (Nunito, licença OFL, servida pelo próprio jogo) */
+@font-face{font-family:"Nunito";font-weight:800;font-display:swap;src:url("fontes/nunito-latin-800-normal.woff2") format("woff2")}
+@font-face{font-family:"Nunito";font-weight:900;font-display:swap;src:url("fontes/nunito-latin-900-normal.woff2") format("woff2")}
+.titulo,.ganhou,.logo-txt,.placar2 .pl b,.faixa b,.fita,.bt,.btn,.etq,.rotulo,.nome-assento,.tx-btn,.qt-cartas,.codigo-sala b,.lugares{font-family:"Nunito",Inter,ui-sans-serif,system-ui,sans-serif}
+.titulo,.ganhou{font-weight:900;letter-spacing:.2px}
+
+/* raios padronizados: 8 (cartas e selos), 14 (botões e cartões), 22 (painéis e mesa) */
+.btn,.bt,.opcao,.txt,.tx-btn,.ic-btn,.mini-btn,.mesa-item,.jogador-sala,.jg,.placar2,.banner-bots,.toast,.vazio,.voltar{border-radius:14px}
+.painel,.mesa{border-radius:22px}
+.mesa::before{border-radius:17px}
+.etq,.rotulo,.fala,.chip-parc,.dupla,.selo-cor{border-radius:8px}
+
+/* ícones dourados do menu inicial */
+.ic-ouro{color:#ffd877;filter:drop-shadow(0 1px 0 #6b4510);flex:none}
+.btn.ouro .ic-ouro{color:#3a2300;filter:none}
+.menu .btn{justify-content:flex-start;padding-left:22px;gap:14px}
+.menu .btn.claro{justify-content:center;padding-left:18px}
+
+/* selo do coringa (valor que ele representa) */
+.selo-cor{position:absolute;right:1px;bottom:1px;z-index:2;background:#4a2386;color:#ffe7a6;font-size:9px;font-weight:900;line-height:1;padding:2px 3px;font-style:normal;border:1px solid #c9a8ff}
+.mao2 .selo-cor{display:none}
+
+/* jogos compactos */
+.jg.compacto .cartas-jg{align-items:center}
+.reticencias{display:inline-flex;align-items:center;justify-content:center;width:18px;margin:0 2px 0 calc(var(--mw)*-.2);height:calc(var(--mh)*.6);font-weight:900;color:#ffe7a6;background:rgba(0,0,0,.35);border-radius:6px;z-index:2;flex:none;font-size:13px}
+.jg.compacto .reticencias + .carta{margin-left:2px}
+
+/* grade do lixo aberto */
+.grade-lixo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.grade-lixo .carta{--cw:46px}
+.grade-lixo .carta.ultima{box-shadow:0 0 0 3px var(--ouro),0 4px 10px rgba(0,0,0,.4)}
+
+/* carta voando para o lixo */
+.voo{position:fixed;z-index:70;pointer-events:none}
+.voo .carta{--cw:inherit;box-shadow:0 10px 24px rgba(0,0,0,.5)}
+
+/* arrastar o dedo pela mão */
+.mao2{touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* sala de espera: duplas por cor e vagas tocáveis */
+.jogador-sala.ta{border-left:5px solid #3e6fd8}
+.jogador-sala.tb{border-left:5px solid #c43a48}
+button.jogador-sala{width:100%;text-align:left;color:#fff;font:inherit;cursor:pointer}
+button.jogador-sala:hover{opacity:1;background:rgba(245,196,81,.12)}
+
+/* placar da mão: mãos anteriores */
+.tab-res tr.ant td{font-size:12.5px;color:#cfe6d6;white-space:normal;word-break:break-word}
