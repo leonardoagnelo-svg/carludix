@@ -224,167 +224,273 @@
     return j.tipo === 'humano' && j.uid && !P.mesa.presente(j.uid);
   }
 
+  /* ---------- sons curtinhos (Web Audio, sem arquivos) ---------- */
+  let audioCtx = null;
+  function som(tipo) {
+    if (!store.get('som', true)) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = audioCtx, t0 = ctx.currentTime;
+      const nota = (f, ini, dur, vol, forma) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = forma || 'triangle'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t0 + ini); g.gain.linearRampToValueAtTime(vol, t0 + ini + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + ini + dur);
+        o.connect(g); g.connect(ctx.destination); o.start(t0 + ini); o.stop(t0 + ini + dur + 0.05);
+      };
+      const ruido = (ini, dur, vol) => {
+        const b = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate), d = b.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+        f.type = 'highpass'; f.frequency.value = 1800; g.gain.value = vol;
+        s.buffer = b; s.connect(f); f.connect(g); g.connect(ctx.destination); s.start(t0 + ini);
+      };
+      if (tipo === 'carta') ruido(0, 0.09, 0.25);
+      if (tipo === 'baixar') { ruido(0, 0.08, 0.2); ruido(0.07, 0.08, 0.2); }
+      if (tipo === 'vez') { nota(660, 0, 0.12, 0.12); nota(880, 0.1, 0.16, 0.12); }
+      if (tipo === 'canastra') [523, 659, 784, 1047].forEach((f, i) => nota(f, i * 0.09, 0.25, 0.14));
+      if (tipo === 'morto') { nota(392, 0, 0.2, 0.12, 'sine'); nota(523, 0.15, 0.3, 0.12, 'sine'); }
+      if (tipo === 'erro') nota(180, 0, 0.18, 0.1, 'square');
+      if (tipo === 'fim') [523, 659, 784, 659, 1047].forEach((f, i) => nota(f, i * 0.12, 0.3, 0.14));
+    } catch (e) {}
+  }
+
+  /* ---------- desenho da mesa ---------- */
+  function avatarDe(st, s) {
+    const j = st.jogadores[s];
+    if (j.tipo === 'bot') return '🤖';
+    return j.avatar || (j.nome || '?').trim().charAt(0).toUpperCase();
+  }
+  function rotuloJogo(j) {
+    if (!M.ehCanastra(j)) return { txt: 'Jogo', cls: '' };
+    if (M.ehLimpa(j)) return j.c.length >= 13 ? { txt: '👑 Canastra real', cls: 'real' } : { txt: '👑 Canastra limpa', cls: 'limpa' };
+    return { txt: 'Canastra suja', cls: 'suja' };
+  }
+  function pontosNaMesa(st, t) { return st.jogos[t].reduce((a, j) => a + j.c.reduce((b, c) => b + M.pontos(c), 0), 0); }
+
+  function cartasQueCabem(st, t, sel) {
+    // índices dos jogos da dupla onde as cartas escolhidas encaixam
+    const r = [];
+    st.jogos[t].forEach((j, i) => { if (M.analisarJogo(j.c.concat(sel), j.t, st.cfg)) r.push(i); });
+    return r;
+  }
+
   function desenharJogo() {
     const raiz = document.getElementById('jogo'); if (!raiz || !P) return;
     const st = P.st, n = st.n, eu = P.eu, meuT = eu % 2, advT = 1 - meuT;
     const mao = st.maos[eu] || [];
     P.sel = P.sel.filter(id => mao.includes(id));
     const vez = minhaVez();
+    const fim = st.fase === 'fimMao' || st.fase === 'fimJogo';
+    const ant = P.ant || {};
 
-    // festa (canastra, morto, batida) para jogadas novas
+    // eventos novos: som e festa
     if (st.seq !== P.seqVisto) {
       const u = st.ultimo || {};
-      if (u.tipo === 'canastra') toast('🎉 ' + u.texto.split(' — ')[1].replace('CANASTRA', 'Canastra').replace('LIMPA', 'limpa').replace('SUJA', 'suja') + ' (' + st.jogadores[u.s].nome + ')', 'festa');
-      else if (u.tipo === 'morto') toast('💀 ' + u.texto, 'festa');
+      if (u.tipo === 'canastra') { toast('🎉 ' + (u.texto.split(' — ')[1] || 'Canastra!').replace('CANASTRA', 'Canastra').replace('LIMPA', 'limpa').replace('SUJA', 'suja') + ' · ' + st.jogadores[u.s].nome, 'festa'); som('canastra'); }
+      else if (u.tipo === 'morto') { toast('💀 ' + u.texto, 'festa'); som('morto'); }
+      else if (u.tipo === 'baixar') som('baixar');
+      else if (u.tipo === 'comprar' || u.tipo === 'descartar' || u.tipo === 'lixo') som('carta');
+      if (u.tipo === 'batida' || st.fase === 'fimJogo') som('fim');
+      if (vez && !ant.vez) setTimeout(() => som('vez'), 250);
       P.seqVisto = st.seq;
     }
 
     const nomeT = t => n === 2 ? (t === meuT ? (P.modo === 'local' ? st.jogadores[t].nome : 'Você') : st.jogadores[t].nome) : (t === meuT ? 'Nós' : 'Eles');
-    const subT = t => n === 4 ? esc(st.jogadores[t].nome + ' e ' + st.jogadores[t + 2].nome) : (st.pegouMorto[t] ? 'pegou o morto' : 'sem morto');
-    const mortoT = t => st.pegouMorto[t] ? ' 💀' : '';
-
-    // jogadores ao redor
-    const outros = n === 2 ? [(eu + 1) % 2] : [(eu + 1) % 4, (eu + 2) % 4, (eu + 3) % 4];
-    const chips = outros.map(s => `<div class="jog ${st.vez === s && st.fase !== 'fimMao' && st.fase !== 'fimJogo' ? 'vez' : ''} ${s % 2 === meuT ? 'parc' : ''} ${ausente(s) ? 'ausente' : ''}">
-        <div class="mini"><b>${st.maos[s].length}</b></div>
-        <div style="min-width:0"><div class="nm">${st.jogadores[s].tipo === 'bot' ? '🤖 ' : esc(st.jogadores[s].avatar ? st.jogadores[s].avatar + ' ' : '')}${esc(st.jogadores[s].nome)}</div>
-        <div class="st">${ausente(s) ? 'saiu · 🤖 bot no lugar' : st.vez === s ? (st.fase === 'comprar' ? 'vai comprar…' : 'jogando…') : st.maos[s].length + ' cartas'}</div></div></div>`).join('');
-
-    const jogosHTML = (t, meus) => {
-      const js = st.jogos[t];
-      if (!js.length) return `<div class="sem-jogos">${meus ? 'Nenhum jogo baixado ainda.' : 'Nada baixado.'}</div>`;
-      return js.map((j, i) => {
-        const can = M.ehCanastra(j);
-        let cabe = false;
-        if (meus && vez && P.sel.length) {
-          if (st.fase === 'jogar') cabe = !!M.analisarJogo(j.c.concat(P.sel), j.t, st.cfg);
-          else if (st.fase === 'comprar' && st.cfg.lixo === 'fechado' && st.lixo.length) cabe = !!M.analisarJogo(j.c.concat(P.sel, [st.lixo[st.lixo.length - 1]]), j.t, st.cfg);
-        } else if (meus && vez && st.fase === 'comprar' && st.cfg.lixo === 'fechado' && st.lixo.length && !P.sel.length) {
-          const topo = st.lixo[st.lixo.length - 1];
-          cabe = !M.ehCoringa(topo) && !!M.analisarJogo(j.c.concat([topo]), j.t, st.cfg);
-        }
-        return `<button class="jg ${can ? 'canastra ' + (M.ehLimpa(j) ? 'limpa' : 'suja') : ''} ${cabe ? 'cabe' : ''}" data-jogo="${i}">${j.c.map(c => cartaHTML(c)).join('')}<span class="qt">${j.c.length}</span></button>`;
-      }).join('');
-    };
     const canastras = t => st.jogos[t].filter(M.ehCanastra).length;
 
-    // centro: mortos, monte, lixo
-    const topo = st.lixo.length ? st.lixo[st.lixo.length - 1] : null;
-    const podeComprar = vez && st.fase === 'comprar';
-    let lixoHTML;
-    if (st.cfg.lixo === 'aberto') {
-      lixoHTML = `<button class="lixo ${podeComprar && st.lixo.length ? 'pode-clicar' : ''}" data-a="lixo"><div class="lixo-aberto">${st.lixo.length ? st.lixo.map(c => cartaHTML(c)).join('') : '<div class="lixo-pilha"><div class="vazio-l"></div></div>'}</div><span class="rotulo">Lixo <b>${st.lixo.length}</b></span></button>`;
-    } else {
-      lixoHTML = `<button class="lixo ${podeComprar && st.lixo.length ? 'pode-clicar' : ''}" data-a="lixo"><div class="lixo-pilha">${topo !== null ? cartaHTML(topo) : '<div class="vazio-l"></div>'}</div><span class="rotulo">Lixo <b>${st.lixo.length}</b></span></button>`;
-    }
-    const mortosHTML = `<div class="mortos"><div class="ms">${[0, 1].map(i => cartaHTML(null, i < st.mortos.length ? '' : 'pego')).join('')}</div><span class="rotulo">Mortos <b>${st.mortos.length}</b></span></div>`;
+    // assentos dos outros
+    const assento = (s, pos) => {
+      const k = st.maos[s].length, ehVez = st.vez === s && !fim;
+      const leque = Array.from({ length: Math.min(k, 9) }, (_, i) => `<i style="--i:${i - (Math.min(k, 9) - 1) / 2}"></i>`).join('');
+      const sub = ausente(s) ? 'saiu · 🤖 no lugar' : ehVez ? (st.fase === 'comprar' ? 'vai comprar…' : 'jogando…') : (s % 2 === meuT && n === 4 ? 'parceiro' : '');
+      return `<div class="assento ${pos} ${ehVez ? 'vez' : ''} ${s % 2 === meuT ? 'parc' : 'adv'} ${ausente(s) ? 'ausente' : ''}">
+        <div class="leque-costas">${leque}</div>
+        <div class="avatar">${esc(avatarDe(st, s))}<b class="qt-cartas">${k}</b></div>
+        <div class="nome-assento">${esc(st.jogadores[s].nome)}</div>${sub ? `<div class="sub-assento">${sub}</div>` : ''}</div>`;
+    };
+    const assentosHTML = n === 2
+      ? `<div class="assentos dois">${assento((eu + 1) % 2, 'topo')}</div>`
+      : `<div class="assentos quatro">${assento((eu + 1) % 4, 'esq')}${assento((eu + 2) % 4, 'topo')}${assento((eu + 3) % 4, 'dir')}</div>`;
 
-    // aviso da vez
-    let aviso = '', avisoCls = '';
-    if (st.fase === 'fimMao' || st.fase === 'fimJogo') aviso = 'Fim da mão';
-    else if (P.ocupado) aviso = 'Enviando jogada…';
-    else if (vez) { avisoCls = 'vez'; aviso = st.fase === 'comprar' ? 'Sua vez: compre uma carta' : 'Sua vez: baixe jogos e descarte'; }
-    else aviso = 'Vez de ' + esc(st.jogadores[st.vez].nome) + (st.jogadores[st.vez].tipo === 'bot' ? ' 🤖' : '') + '…';
+    // jogos
+    const topo = st.lixo.length ? st.lixo[st.lixo.length - 1] : null;
+    let cabe = [];
+    if (vez && st.fase === 'jogar' && P.sel.length) cabe = cartasQueCabem(st, meuT, P.sel);
+    else if (vez && st.fase === 'comprar' && st.cfg.lixo === 'fechado' && topo !== null && !M.ehCoringa(topo)) cabe = cartasQueCabem(st, meuT, P.sel.concat([topo]));
+    if (P.dica && P.dica.jogo >= 0) cabe = [P.dica.jogo];
+    const jogosHTML = (t, meus) => {
+      const js = st.jogos[t];
+      if (!js.length) return `<div class="sem-jogos">${meus ? 'Nenhum jogo baixado ainda' : 'Nada baixado ainda'}</div>`;
+      const antes = (ant.jogos || [[], []])[t] || [];
+      return js.map((j, i) => {
+        const r = rotuloJogo(j);
+        const mudou = antes[i] !== j.c.length;
+        return `<button class="jg ${r.cls} ${meus && cabe.includes(i) ? 'cabe' : ''} ${mudou && ant.jogos ? 'brilha' : ''}" data-jogo="${i}">
+          <span class="etq ${r.cls}">${r.txt}<em>${j.c.length}</em></span>
+          <span class="cartas-jg">${j.c.map(c => cartaHTML(c)).join('')}</span></button>`;
+      }).join('');
+    };
+
+    // centro da mesa
+    const podeComprar = vez && st.fase === 'comprar';
+    const podeDescartarNoLixo = vez && st.fase === 'jogar' && P.sel.length === 1;
+    const mortoHTML = (t, rot) => {
+      const pego = st.pegouMorto[t];
+      const existe = !pego && st.mortos.length > 0;
+      return `<div class="morto ${pego ? 'pego' : ''}"><div class="pilha-cartas">${existe ? cartaHTML(null) + cartaHTML(null) : '<div class="vazio-l">✓</div>'}</div><span class="rotulo">${rot}</span>${pego ? '<span class="rotulo-sub">já pegou ✓</span>' : ''}</div>`;
+    };
+    const lixoTopoMudou = ant.lixoTopo !== topo;
+    let lixoHTML;
+    if (st.cfg.lixo === 'aberto' && st.lixo.length > 1) {
+      lixoHTML = `<div class="lixo-aberto">${st.lixo.map((c, i) => cartaHTML(c, i === st.lixo.length - 1 && lixoTopoMudou ? 'cai' : '')).join('')}</div>`;
+    } else lixoHTML = `<div class="pilha-cartas">${st.lixo.length > 1 ? cartaHTML(st.lixo[st.lixo.length - 2], 'baixo') : ''}${topo !== null ? cartaHTML(topo, lixoTopoMudou ? 'cai' : '') : '<div class="vazio-l"></div>'}</div>`;
+    const rotMortoMeu = n === 2 ? (P.modo === 'local' ? 'Morto ' + st.jogadores[meuT].nome : 'Seu morto') : 'Nosso morto';
+    const rotMortoDeles = n === 2 ? 'Morto dele' : 'Morto deles';
+
+    // faixa da vez
+    let faixa, faixaCls = '';
+    if (fim) faixa = 'Fim da mão';
+    else if (P.ocupado) faixa = 'Enviando jogada…';
+    else if (vez) { faixa = st.fase === 'comprar' ? 'Sua vez · compre' : 'Sua vez · baixe e descarte'; faixaCls = 'minha'; }
+    else if (n === 4 && st.vez % 2 === meuT) faixa = 'Vez do parceiro · ' + esc(st.jogadores[st.vez].nome);
+    else faixa = 'Vez de ' + esc(st.jogadores[st.vez].nome);
 
     // mão
     const ordem = M.ordenarMao(mao, P.ordem);
     const esconder = P.passando !== null;
-    const maoHTML = ordem.map(id => esconder ? cartaHTML(null) : cartaHTML(id, (P.sel.includes(id) ? 'sel ' : '') + (id === st.comprada && st.vez === eu ? 'nova' : ''))).join('');
+    const antMao = ant.mao || [];
+    const dicaSel = P.dica ? P.dica.cartas || [] : [];
+    const maoHTML = ordem.map(id => esconder ? cartaHTML(null) : cartaHTML(id, (P.sel.includes(id) ? 'sel ' : '') + (dicaSel.includes(id) ? 'dica ' : '') + (id === st.comprada && st.vez === eu ? 'nova ' : '') + (ant.mao && !antMao.includes(id) ? 'chega' : ''))).join('');
 
-    // ações e dica
-    let acoes = '', dica = '';
-    if (vez && st.fase === 'comprar') {
-      acoes = `<button class="btn" data-a="comprar">🂠 Comprar do monte</button><button class="btn verm" data-a="lixo" ${st.lixo.length ? '' : 'disabled'}>🗑️ Pegar lixo</button>`;
+    // botões
+    const k = P.sel.length;
+    const emJogo = vez && st.fase === 'jogar';
+    const podeBaixar = emJogo && k >= 1 && (cabe.length > 0 || (k >= 3 && !!M.analisarJogo(P.sel, null, st.cfg)));
+    const botoes = esconder || fim ? '' : `
+      <button class="bt bt-comprar" data-a="comprar" ${podeComprar ? '' : 'disabled'}><span>🂠</span>Comprar</button>
+      <button class="bt bt-lixo" data-a="lixo" ${podeComprar && st.lixo.length ? '' : 'disabled'}><span>🗑️</span>Pegar lixo</button>
+      <button class="bt bt-baixar" data-a="baixar" ${podeBaixar ? '' : 'disabled'}><span>⬇</span>Baixar</button>
+      <button class="bt bt-descartar" data-a="descartar" ${emJogo && k === 1 ? '' : 'disabled'}><span>▶</span>Descartar</button>`;
+
+    // dica de texto
+    let dica = '';
+    if (P.dica && P.dica.texto) dica = P.dica.texto;
+    else if (vez && st.fase === 'comprar') {
       if (!st.lixo.length) dica = 'Toque no monte para comprar.';
       else if (st.cfg.lixo === 'aberto') dica = 'Compre do monte ou pegue o lixo inteiro.';
-      else dica = 'Lixo fechado: para pegar, a carta de cima tem que virar jogo na hora. Selecione as cartas da sua mão que formam jogo com ela e toque em “Pegar lixo” (ou toque num jogo seu que fique destacado).';
-    } else if (vez && st.fase === 'jogar') {
-      const k = P.sel.length;
-      acoes = `<button class="btn ouro" data-a="baixar" ${k >= 3 ? '' : 'disabled'}>⬇ Baixar jogo novo</button><button class="btn verm" data-a="descartar" ${k === 1 ? '' : 'disabled'}>Descartar</button>`;
-      if (!k) dica = 'Toque nas cartas para escolher. Com 3+ cartas: baixe um jogo novo. Para encaixar, toque num jogo seu. Para terminar a vez, descarte 1 carta.';
-      else {
-        const cabem = st.jogos[meuT].filter(j => M.analisarJogo(j.c.concat(P.sel), j.t, st.cfg)).length;
-        dica = cabem ? 'Toque no jogo destacado para encaixar ' + (k === 1 ? 'a carta' : 'as cartas') + '.' : (k >= 3 ? (M.analisarJogo(P.sel, null, st.cfg) ? 'Essas cartas formam um jogo: toque em “Baixar jogo novo”.' : 'Essas cartas não formam jogo.') : (k === 1 ? 'Descarte esta carta para passar a vez.' : 'Escolha mais cartas para formar um jogo.'));
-      }
-      if (!M.podeBater(st, meuT)) dica += ' Para bater: ' + M.motivoNaoBate(st, meuT) + '.';
-    } else if (P.modo === 'online' && st.fase !== 'fimMao' && st.fase !== 'fimJogo') {
-      dica = 'Sala ' + esc(P.mesa.codigo) + (ausente(st.vez) ? ' · ' + esc(st.jogadores[st.vez].nome) + ' saiu: um bot está jogando no lugar.' : '');
-    }
+      else dica = cabe.length && !k ? 'A carta do lixo encaixa num jogo seu: toque em “Pegar lixo”.' : 'Para pegar o lixo, a carta de cima tem que virar jogo: escolha as cartas da mão que combinam com ela e toque em “Pegar lixo”.';
+    } else if (emJogo) {
+      if (!k) dica = 'Toque nas cartas para escolher. Depois: Baixar (jogo novo ou encaixe) ou Descartar 1 para passar a vez.';
+      else if (cabe.length) dica = 'Encaixa no jogo destacado: toque em Baixar ou no próprio jogo.' + (k === 1 ? ' Ou toque no lixo para descartar.' : '');
+      else if (k >= 3) dica = M.analisarJogo(P.sel, null, st.cfg) ? 'Forma um jogo novo: toque em Baixar.' : 'Essas cartas não formam jogo.';
+      else dica = k === 1 ? 'Descarte esta carta (botão ou toque no lixo) para passar a vez.' : 'Escolha pelo menos 3 cartas para um jogo novo.';
+      if (!M.podeBater(st, meuT)) dica += ' · Para bater: ' + M.motivoNaoBate(st, meuT) + '.';
+    } else if (P.modo === 'online' && !fim) dica = 'Sala ' + esc(P.mesa.codigo) + (ausente(st.vez) ? ' · ' + esc(st.jogadores[st.vez].nome) + ' saiu: um bot joga no lugar.' : '');
 
     raiz.innerHTML = `
-      <div class="topo">
-        <button class="menu-btn" data-a="menu" aria-label="Menu">☰</button>
-        ${P.modo === 'online' ? '<button class="menu-btn" data-a="reagir" aria-label="Reações">😊</button>' : ''}
-        <div class="placar">
-          <div class="tm"><small>${esc(nomeT(meuT))}${mortoT(meuT)}</small><b>${st.placar[meuT]}</b></div>
-          <div class="meta">${esc(M.descreverConfig(st.cfg))}<br>até ${st.cfg.meta}<br>mão ${st.mao}</div>
-          <div class="tm"><small>${esc(nomeT(advT))}${mortoT(advT)}</small><b>${st.placar[advT]}</b></div>
+      <div class="placar2">
+        <button class="ic-btn" data-a="menu" aria-label="Menu">☰</button>
+        <div class="pl"><small>${esc(nomeT(meuT))}</small><b>${st.placar[meuT]}</b></div>
+        <div class="pl meta"><small>meta</small><b>${st.cfg.meta.toLocaleString('pt-BR')}</b></div>
+        <div class="pl"><small>${esc(nomeT(advT))}</small><b>${st.placar[advT]}</b></div>
+        ${P.modo === 'online' ? '<button class="ic-btn" data-a="reagir" aria-label="Reações">😊</button>' : `<button class="ic-btn" data-a="som" aria-label="Som">${store.get('som', true) ? '🔊' : '🔇'}</button>`}
+      </div>
+      <div class="faixa"><span class="fx-esq">Mão ${st.mao} · ${esc(M.descreverConfig(st.cfg))}</span><b class="${faixaCls}">${faixa}</b><span class="fx-dir">${esc(nomeT(meuT))}: ${canastras(meuT)} 👑 · ${esc(nomeT(advT))}: ${canastras(advT)} 👑</span></div>
+      <div class="mesa">
+        ${assentosHTML}
+        <div class="area-deles"><div class="fita pequena">Jogos ${n === 4 ? 'deles' : 'de ' + esc(st.jogadores[advT].nome)} · ${pontosNaMesa(st, advT)} pts</div><div class="lista-jogos deles">${jogosHTML(advT, false)}</div></div>
+        <div class="centro2">
+          ${mortoHTML(meuT, rotMortoMeu)}
+          <button class="monte2 ${podeComprar ? 'pode' : ''}" data-a="comprar"><div class="pilha-cartas">${st.monte.length ? cartaHTML(null, 'baixo') + cartaHTML(null) : '<div class="vazio-l"></div>'}</div><span class="rotulo">Monte <b>${st.monte.length}</b></span></button>
+          <button class="lixo2 ${(podeComprar && st.lixo.length) || podeDescartarNoLixo ? 'pode' : ''}" data-a="lixo-mesa">${lixoHTML}<span class="rotulo">Lixo <b>${st.lixo.length}</b></span></button>
+          ${mortoHTML(advT, rotMortoDeles)}
         </div>
+        <div class="area-nossa meus"><div class="fita">${n === 4 ? 'Nossas canastras e jogos' : 'Suas canastras e jogos'} · ${pontosNaMesa(st, meuT)} pts</div><div class="lista-jogos">${jogosHTML(meuT, true)}</div></div>
+        <div class="log2">${esc((st.ultimo && st.ultimo.texto) || '')}</div>
+        <div class="mao2" id="mao">${maoHTML}</div>
       </div>
-      <div class="oponentes">${chips}</div>
-      <div class="area-jogos"><h4><span>Jogos ${n === 4 ? 'deles' : 'de ' + esc(st.jogadores[advT].nome)}</span><b>${canastras(advT) ? canastras(advT) + ' canastra' + (canastras(advT) > 1 ? 's' : '') : ''}</b></h4><div class="lista-jogos">${jogosHTML(advT, false)}</div></div>
-      <div class="centro-mesa">
-        ${mortosHTML}
-        <button class="monte ${podeComprar ? 'pode-clicar' : ''}" data-a="comprar">${st.monte.length ? cartaHTML(null) : '<div class="lixo-pilha"><div class="vazio-l"></div></div>'}<span class="rotulo">Monte <b>${st.monte.length}</b></span></button>
-        ${lixoHTML}
+      <div class="botoes">${botoes}</div>
+      <div class="rodape-jogo">
+        ${vez && !esconder ? '<button class="mini-btn" data-a="dica">💡 Dica</button>' : ''}
+        ${mao.length > 1 && !esconder ? `<button class="mini-btn" data-a="ordem">↕ ${P.ordem === 'naipe' ? 'Por naipe' : 'Por valor'}</button>` : ''}
+        ${k ? '<button class="mini-btn" data-a="limpar">✕ Desmarcar</button>' : ''}
       </div>
-      <div class="area-jogos meus"><h4><span>${n === 4 ? 'Nossos jogos' : 'Seus jogos'}</span><b>${canastras(meuT) ? canastras(meuT) + ' canastra' + (canastras(meuT) > 1 ? 's' : '') : ''}</b></h4><div class="lista-jogos">${jogosHTML(meuT, true)}</div></div>
-      <div class="aviso ${avisoCls}">${aviso}</div>
-      <div class="log">${esc((st.ultimo && st.ultimo.texto) || '')}</div>
-      <div class="mao-area">
-        <div class="mao" id="mao">${maoHTML}</div>
-        <div class="acoes">${acoes}${mao.length > 1 && !esconder ? `<button class="btn claro peq" data-a="ordem">↕ ${P.ordem === 'naipe' ? 'Por naipe' : 'Por valor'}</button>` : ''}</div>
-        <div class="dica">${dica}</div>
-      </div>`;
+      <div class="dica">${dica}</div>`;
     ajustarMao();
 
+    P.ant = { mao: mao.slice(), lixoTopo: topo, jogos: [st.jogos[0].map(j => j.c.length), st.jogos[1].map(j => j.c.length)], vez };
+
     // sobreposições
-    if (P.passando !== null && st.fase !== 'fimMao' && st.fase !== 'fimJogo') {
+    if (P.passando !== null && !fim) {
       const s = P.passando;
-      veu(`<div class="painel centro"><h2 class="titulo">Vez de ${esc(st.jogadores[s].nome)}</h2>
+      veu(`<div class="painel centro"><div style="font-size:54px">${esc(avatarDe(st, s))}</div><h2 class="titulo">Vez de ${esc(st.jogadores[s].nome)}</h2>
         <p class="sub">Passe o aparelho para ${esc(st.jogadores[s].nome)}. Os outros não olham! 🙈</p>
         <button class="btn ouro grande" data-v="ver">Sou ${esc(st.jogadores[s].nome)}, mostrar cartas</button></div>`)
-        .onclick = e => { if (e.target.closest('[data-v="ver"]')) { P.eu = s; P.passando = null; P.sel = []; fecharVeu(); salvar(); desenharJogo(); } };
-    } else if ((st.fase === 'fimMao' || st.fase === 'fimJogo') && !P.verMesa) {
+        .onclick = e => { if (e.target.closest('[data-v="ver"]')) { P.eu = s; P.passando = null; P.sel = []; P.ant = null; fecharVeu(); salvar(); desenharJogo(); } };
+    } else if (fim && !P.verMesa) {
       mostrarResultado();
     } else if (!document.querySelector('.veu.menu-jogo-veu')) fecharVeu();
-    if ((st.fase === 'fimMao' || st.fase === 'fimJogo') && P.verMesa) {
-      const a = raiz.querySelector('.acoes');
-      if (a) a.innerHTML = '<button class="btn ouro" data-a="placar">📋 Ver placar</button>';
+    if (fim && P.verMesa) {
+      const b = raiz.querySelector('.botoes');
+      if (b) b.innerHTML = '<button class="bt bt-baixar" data-a="placar" style="grid-column:1/-1"><span>📋</span>Ver placar</button>';
     }
   }
 
+  // mão em leque: sobreposição que cabe na largura e leve arco
   function ajustarMao() {
     const el = document.getElementById('mao'); if (!el) return;
     const cartas = Array.from(el.children); if (!cartas.length) return;
     const cw = cartas[0].getBoundingClientRect().width || 60;
-    const w = el.clientWidth - 8;
+    const w = el.clientWidth - 10;
     const k = cartas.length;
-    let linhas = 1, porLinha = k;
-    const passo = k > 1 ? (w - cw) / (k - 1) : cw;
-    if (passo < cw * 0.3 && k > 12) { linhas = 2; porLinha = Math.ceil(k / 2); }
-    el.classList.toggle('duas', linhas === 2);
-    const p2 = porLinha > 1 ? Math.min(cw * 1.04, (w - cw) / (porLinha - 1)) : cw;
-    const ml = Math.min(4, p2 - cw);
+    const duas = k > 16 && (w - cw) / (k - 1) < cw * 0.34;
+    const porLinha = duas ? Math.ceil(k / 2) : k;
+    const passo = porLinha > 1 ? Math.min(cw * 0.8, (w - cw) / (porLinha - 1)) : cw;
+    el.classList.toggle('duas', duas);
+    el.style.height = duas ? '' : '';
     cartas.forEach((c, i) => {
-      const inicioLinha = i % porLinha === 0;
-      c.style.marginLeft = inicioLinha ? '0px' : ml + 'px';
-      if (linhas === 2) c.style.flexBasis = 'auto';
+      const linha = Math.floor(i / porLinha), j = i % porLinha;
+      const meio = (Math.min(porLinha, k - linha * porLinha) - 1) / 2;
+      const d = j - meio;
+      const ang = duas ? 0 : Math.max(-10, Math.min(10, d * Math.min(2.6, 30 / k)));
+      const y = duas ? 0 : Math.pow(Math.abs(d), 2) * Math.min(0.8, 9 / k);
+      c.style.marginLeft = j === 0 ? '0px' : (passo - cw) + 'px';
+      c.style.setProperty('--r', ang + 'deg');
+      c.style.setProperty('--y', y + 'px');
+      c.style.zIndex = String(i + 1);
     });
-    if (linhas === 2) {
-      // quebra de linha: um elemento que força a segunda fileira
+    if (duas) {
       const br = document.createElement('div'); br.style.flexBasis = '100%'; br.style.height = '0';
       el.insertBefore(br, cartas[porLinha]);
     }
   }
 
+  function darDica() {
+    const st = P.st, s = P.eu, t = s % 2;
+    const a = B.proxima(st, s);
+    if (!a) return;
+    let texto = '', cartas = [], jogo = -1;
+    if (a.t === 'comprar') texto = '💡 Compre do monte: o lixo não ajuda agora.';
+    else if (a.t === 'lixo') {
+      cartas = a.cartas || []; jogo = a.jogo === undefined ? -1 : a.jogo;
+      texto = st.cfg.lixo === 'aberto' ? '💡 Pegue o lixo: tem cartas que servem para você.' : '💡 Dá para pegar o lixo' + (cartas.length ? ' usando as cartas destacadas' : ' encaixando a carta de cima no jogo destacado') + '.';
+    } else if (a.t === 'baixar') {
+      cartas = a.cartas; jogo = a.jogo;
+      texto = jogo >= 0 ? '💡 Encaixe a carta destacada no jogo que está piscando.' : '💡 As cartas destacadas formam um jogo novo.';
+    } else if (a.t === 'descartar') { cartas = [a.carta]; texto = '💡 Uma boa carta para descartar: ' + M.nomeCarta(a.carta) + '.'; }
+    P.dica = { texto, cartas, jogo: a.t === 'baixar' || a.t === 'lixo' ? jogo : -1 };
+    P.sel = cartas.slice();
+    desenharJogo();
+  }
+
   function cliqueJogo(e) {
     if (!P) return;
     const st = P.st;
-    const cartaEl = e.target.closest('.mao .carta');
+    const cartaEl = e.target.closest('.mao2 .carta');
     if (cartaEl && cartaEl.dataset.id !== undefined) {
       if (P.passando !== null) return;
       const id = +cartaEl.dataset.id;
+      P.dica = null;
       P.sel = P.sel.includes(id) ? P.sel.filter(x => x !== id) : P.sel.concat([id]);
       desenharJogo();
       return;
@@ -405,21 +511,42 @@
     const a = b.dataset.a;
     if (a === 'menu') return menuJogo();
     if (a === 'reagir') return abrirReacoes();
+    if (a === 'som') { store.set('som', !store.get('som', true)); return desenharJogo(); }
     if (a === 'placar') { P.verMesa = false; return desenharJogo(); }
     if (a === 'ordem') { P.ordem = P.ordem === 'naipe' ? 'valor' : 'naipe'; store.set('ordem', P.ordem); return desenharJogo(); }
+    if (a === 'limpar') { P.sel = []; P.dica = null; return desenharJogo(); }
     if (!minhaVez()) return;
+    if (a === 'dica') return darDica();
     if (a === 'comprar' && st.fase === 'comprar') agir({ t: 'comprar' });
-    if (a === 'lixo' && st.fase === 'comprar') {
+    if ((a === 'lixo' || a === 'lixo-mesa') && st.fase === 'jogar' && a === 'lixo-mesa') {
+      if (P.sel.length === 1) return agir({ t: 'descartar', carta: P.sel[0] });
+      return;
+    }
+    if ((a === 'lixo' || a === 'lixo-mesa') && st.fase === 'comprar') {
       if (!st.lixo.length) return;
       if (st.cfg.lixo === 'aberto') return agir({ t: 'lixo' });
       const topo = st.lixo[st.lixo.length - 1];
-      if (P.sel.length) return agir({ t: 'lixo', cartas: P.sel.slice(), jogo: -1 });
       const t = P.eu % 2;
+      if (P.dica && P.dica.jogo >= 0 && !P.sel.length) return agir({ t: 'lixo', cartas: [], jogo: P.dica.jogo });
+      if (P.sel.length) {
+        // tenta jogo novo; se não der, tenta encaixar num jogo existente
+        if (M.analisarJogo(P.sel.concat([topo]), null, st.cfg)) return agir({ t: 'lixo', cartas: P.sel.slice(), jogo: -1 });
+        const idx = M.ehCoringa(topo) ? -1 : st.jogos[t].findIndex(j => M.analisarJogo(j.c.concat(P.sel, [topo]), j.t, st.cfg));
+        return agir({ t: 'lixo', cartas: P.sel.slice(), jogo: idx });
+      }
       const idx = M.ehCoringa(topo) ? -1 : st.jogos[t].findIndex(j => M.analisarJogo(j.c.concat([topo]), j.t, st.cfg));
       if (idx >= 0) return agir({ t: 'lixo', cartas: [], jogo: idx });
-      toast('Para pegar o lixo fechado, selecione na sua mão as cartas que formam jogo com ' + M.nomeCarta(topo) + '.');
+      som('erro');
+      toast('Para pegar o lixo fechado, escolha na sua mão as cartas que formam jogo com ' + M.nomeCarta(topo) + '.');
     }
-    if (a === 'baixar' && st.fase === 'jogar') agir({ t: 'baixar', cartas: P.sel.slice(), jogo: -1 });
+    if (a === 'baixar' && st.fase === 'jogar') {
+      const t = P.eu % 2;
+      if (P.dica && P.dica.jogo >= 0) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: P.dica.jogo });
+      if (P.sel.length >= 3 && M.analisarJogo(P.sel, null, st.cfg)) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: -1 });
+      const cabem = cartasQueCabem(st, t, P.sel);
+      if (cabem.length) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: cabem[0] });
+      agir({ t: 'baixar', cartas: P.sel.slice(), jogo: -1 });
+    }
     if (a === 'descartar' && st.fase === 'jogar') {
       if (P.sel.length !== 1) { toast('Escolha 1 carta para descartar.'); return; }
       agir({ t: 'descartar', carta: P.sel[0] });
@@ -442,14 +569,14 @@
     const st = P.st;
     const res = M.aplicar(st, s, a);
     if (!res.ok) {
-      if (!deBot) { toast(res.erro, 'erro'); return res; }
+      if (!deBot) { som('erro'); toast(res.erro, 'erro'); return res; }
       // segurança: se o bot errar, compra ou descarta qualquer carta válida
       console.warn('bot', a, res.erro);
       const alt = st.fase === 'comprar' ? { t: 'comprar' } : B.decidirDescarte(st, s);
       const r2 = M.aplicar(st, s, alt);
       if (!r2.ok) return r2;
     }
-    if (s === P.eu) P.sel = [];
+    if (s === P.eu) { P.sel = []; P.dica = null; }
     depoisDaJogada();
     return res;
   }
@@ -477,9 +604,9 @@
     let atraso = null;
     if (P.modo === 'online') {
       if (!P.mesa.souAnfitriao()) return;
-      if (j.tipo === 'bot') atraso = st.fase === 'comprar' ? 800 : 650;
+      if (j.tipo === 'bot') atraso = st.fase === 'comprar' ? 1100 : 850;
       else if (ausente(s)) atraso = 2500;
-    } else if (j.tipo === 'bot') atraso = st.fase === 'comprar' ? 750 : 600;
+    } else if (j.tipo === 'bot') atraso = st.fase === 'comprar' ? 1000 : 800;
     if (atraso === null) return;
     const seq = st.seq;
     P.timer = setTimeout(() => {
@@ -771,7 +898,7 @@
     R.marcarOnline().catch(() => {});
     try { history.replaceState(null, '', location.pathname + '?sala=' + codigo + (TESTE ? '&teste=' + TESTE : '')); } catch (e) {}
     mesa.onEstado(st => receberEstado(mesa, st));
-    mesa.onErro(msg => { if (P) { P.ocupado = false; desenharJogo(); } toast(msg, 'erro'); });
+    mesa.onErro(msg => { if (P) { P.ocupado = false; desenharJogo(); } som('erro'); toast(msg, 'erro'); });
     mesa.onReacao(v => mostrarReacao(mesa, v));
     mesa.onSaiu(motivo => {
       if (mesaAtual !== mesa) return;
