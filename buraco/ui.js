@@ -19,7 +19,7 @@
   let P = null;           // partida aberta
   let limpeza = [];       // ouvintes da tela atual
   function limpar() { limpeza.forEach(f => { try { f(); } catch (e) {} }); limpeza = []; }
-  function tela(html) { limpar(); fecharVeu(); app.innerHTML = html; window.scrollTo(0, 0); }
+  function tela(html) { limpar(); fecharVeu(); document.body.classList.remove('em-jogo'); app.innerHTML = html; window.scrollTo(0, 0); }
 
   let toastT = null;
   function toast(msg, tipo) {
@@ -29,7 +29,7 @@
     d.textContent = msg;
     document.body.appendChild(d);
     clearTimeout(toastT);
-    toastT = setTimeout(() => d.remove(), tipo === 'festa' ? 2600 : 3400);
+    toastT = setTimeout(() => d.remove(), tipo === 'festa' ? 1900 : tipo === 'erro' ? 2600 : 2200);
   }
   function veu(html, aoFechar) {
     fecharVeu();
@@ -51,9 +51,9 @@
     cls = cls || '';
     if (id === null || id === undefined) return `<div class="carta verso ${cls}"></div>`;
     const c = M.carta(id);
-    if (c.cur) return `<div class="carta cur ${cls}" data-id="${id}"><span class="v">★</span><span class="g">🃏</span><span class="nn">CURINGÃO</span></div>`;
+    if (c.cur) return `<div class="carta cur ${cls}" data-id="${id}"><span class="v">★</span><span class="g">★</span><span class="nn">CURINGÃO</span></div>`;
     const red = c.n === 1 || c.n === 2;
-    return `<div class="carta ${red ? 'verm' : ''} ${c.v === 2 ? 'dois' : ''} ${cls}" data-id="${id}"><span class="v">${VALORES[c.v]}</span><span class="n">${M.NAIPES[c.n]}</span><span class="g">${M.NAIPES[c.n]}</span></div>`;
+    return `<div class="carta np${c.n} ${red ? 'verm' : ''} ${cls}" data-id="${id}"><span class="v">${VALORES[c.v]}</span><span class="n">${M.NAIPES[c.n]}</span><span class="g">${M.NAIPES[c.n]}</span></div>`;
   }
 
   /* =================== INÍCIO =================== */
@@ -64,8 +64,8 @@
       ${logoHTML}
       <div class="menu">
         ${salvo ? '<button class="btn ouro grande" data-a="continuar"><span class="ic">▶</span> Continuar partida</button>' : ''}
-        <button class="btn verm grande" data-a="online"><span class="ic">🌐</span> Jogar online</button>
-        <button class="btn" data-a="bots"><span class="ic">🤖</span> Contra o computador</button>
+        <button class="btn verm grande" data-a="bots"><span class="ic">🤖</span> Contra o computador</button>
+        <button class="btn" data-a="online"><span class="ic">🌐</span> Jogar online</button>
         <button class="btn" data-a="local"><span class="ic">📱</span> No mesmo aparelho</button>
         <button class="btn claro" data-a="regras">📖 Como jogar</button>
       </div>
@@ -85,11 +85,11 @@
   /* =================== CONFIGURAR =================== */
   function telaConfig(modo) {
     const salvo = store.get('cfg', {});
-    const C = Object.assign({ variante: 'fechado', n: 4, meta: 3000, nivel: 'medio', publica: true }, salvo);
+    const C = Object.assign({ variante: 'fechado', n: 4, meta: 1500, nivel: 'medio', publica: true, velocidade: store.get('velocidade', 'normal') }, salvo);
     const base = M.configPadrao(C.variante);
     ['lixo', 'trincas', 'batida', 'curingoes'].forEach(k => { if (C[k] === undefined) C[k] = base[k]; });
     let assentos = store.get('assentos', null) || [
-      { nome: 'Jogador 1', tipo: 'humano' }, { nome: 'Jogador 2', tipo: 'humano' }, { nome: 'Jogador 3', tipo: 'humano' }, { nome: 'Jogador 4', tipo: 'humano' }];
+      { nome: 'Jogador 1', tipo: 'humano' }, { nome: 'Jogador 2', tipo: 'humano' }, { nome: 'Jogador 3', tipo: 'bot' }, { nome: 'Jogador 4', tipo: 'bot' }];
     const meuNome = store.get('nome', '') || ((perfil() || {}).apelido || '');
 
     const op = (campo, valor, rot, sub) => `<button class="opcao ${C[campo] === valor ? 'on' : ''}" data-c="${campo}" data-v="${esc(JSON.stringify(valor))}">${rot}${sub ? '<small>' + sub + '</small>' : ''}</button>`;
@@ -118,6 +118,8 @@
         <div class="opcoes">${op('meta', 1500, '1.500')}${op('meta', 2000, '2.000')}${op('meta', 3000, '3.000')}</div>
         ${modo === 'bots' || modo === 'local' ? `<label class="rot">Dificuldade dos bots</label>
         <div class="opcoes">${op('nivel', 'facil', 'Fácil')}${op('nivel', 'medio', 'Médio')}${op('nivel', 'dificil', 'Difícil')}</div>` : ''}
+        ${modo !== 'criar' ? `<label class="rot">Velocidade dos bots</label>
+        <div class="opcoes">${op('velocidade', 'lenta', 'Lenta')}${op('velocidade', 'normal', 'Normal')}${op('velocidade', 'rapida', 'Rápida')}</div>` : ''}
         ${modo === 'local' ? `<label class="rot">Jogadores</label>${lugares.join('')}<p class="nota">Nas duplas, quem está na Dupla A joga junto. Na vez de cada pessoa, o jogo pede para passar o aparelho.</p>` : ''}
         ${modo === 'criar' ? `<label class="rot">Quem pode entrar</label>
         <div class="opcoes">${op('publica', true, 'Pública', 'aparece na lista de salas')}${op('publica', false, 'Privada', 'só com o código')}</div>` : ''}
@@ -131,7 +133,7 @@
           <label class="rot">Curingões (jokers)</label>
           <div class="opcoes">${op('curingoes', true, 'Com', '108 cartas')}${op('curingoes', false, 'Sem', '104 cartas')}</div>
         </details>
-        <div class="linha c" style="margin-top:18px"><button class="btn ouro grande" data-a="ir">${modo === 'criar' ? '➕ Criar sala' : 'Começar'}</button></div>
+        <div style="margin-top:18px"><button class="btn ouro grande larg" data-a="ir">${modo === 'criar' ? '➕ Criar sala' : 'Começar'}</button></div>
       </div>`);
     }
     desenhar();
@@ -161,6 +163,7 @@
       lerCampos();
       const nome = store.get('nome', '') || 'Você';
       store.set('cfg', C);
+      store.set('velocidade', C.velocidade || 'normal');
       const cfg = { variante: C.variante, lixo: C.lixo, trincas: C.trincas, batida: C.batida, meta: C.meta, curingoes: C.curingoes, reais: true };
       if (modo === 'bots') {
         const nomes = M.embaralhar(NOMES_BOT.slice());
@@ -206,6 +209,7 @@
   function telaJogo() {
     limpar(); fecharVeu();
     app.innerHTML = '<div class="jogo" id="jogo"></div>';
+    document.body.classList.add('em-jogo');
     app.onclick = cliqueJogo;
     const onR = () => P && desenharJogo();
     window.addEventListener('resize', onR);
@@ -255,15 +259,40 @@
   }
 
   /* ---------- desenho da mesa ---------- */
+  const svg = d => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const ICONE = {
+    comprar: svg('<rect x="4" y="3" width="11" height="16" rx="2"/><path d="M19 9v8M15 13h8"/>'),
+    lixo: svg('<rect x="7" y="2" width="10" height="13" rx="2"/><path d="M3 15l4 5h10l4-5"/><path d="M12 6v6"/>'),
+    baixar: svg('<path d="M12 3v11M7 9l5 5 5-5"/><path d="M4 17v3h16v-3"/>'),
+    descartar: svg('<rect x="3" y="6" width="10" height="14" rx="2"/><path d="M15 9h6M18 6l3 3-3 3"/>'),
+  };
   function avatarDe(st, s) {
     const j = st.jogadores[s];
-    if (j.tipo === 'bot') return '🤖';
+    if (j.tipo === 'bot') { let h = 0; for (const ch of String(j.nome)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return AVATARES[h % 16]; }
     return j.avatar || (j.nome || '?').trim().charAt(0).toUpperCase();
   }
   function rotuloJogo(j) {
     if (!M.ehCanastra(j)) return { txt: 'Jogo', cls: '' };
     if (M.ehLimpa(j)) return j.c.length >= 13 ? { txt: '👑 Canastra real', cls: 'real' } : { txt: '👑 Canastra limpa', cls: 'limpa' };
     return { txt: 'Canastra suja', cls: 'suja' };
+  }
+  function registrarAcao(st, u) {
+    if (!u || !u.texto) return;
+    P.historico = P.historico || [];
+    if (P.historico[0] !== u.texto) { P.historico.unshift(u.texto); P.historico.length = Math.min(P.historico.length, 30); }
+    if (u.s === undefined) { if (u.tipo === 'inicio') P.falas = {}; return; }
+    P.falas = P.falas || {};
+    const f = P.falas[u.s] = (u.tipo === 'comprar' || u.tipo === 'lixo') ? { itens: [] } : (P.falas[u.s] || { itens: [] });
+    const it = { comprar: 'comprou', lixo: 'pegou o lixo', baixar: 'baixou', canastra: 'canastra!', morto: 'pegou o morto', batida: 'bateu!', descartar: 'descartou' }[u.tipo];
+    if (!it) return;
+    if (u.tipo === 'baixar' && f.itens[f.itens.length - 1] && f.itens[f.itens.length - 1].startsWith('baixou')) {
+      const n = (+(f.itens[f.itens.length - 1].split('×')[1] || 1)) + 1; f.itens[f.itens.length - 1] = 'baixou ×' + n;
+    } else f.itens.push(it);
+    if (u.tipo === 'descartar') f.carta = u.carta;
+  }
+  function falaHTML(s) {
+    const f = P.falas && P.falas[s]; if (!f || !f.itens.length) return '';
+    return `<div class="fala">${esc(f.itens.join(' · '))}${f.carta !== undefined ? ' ' + cartaHTML(f.carta, 'mini') : ''}</div>`;
   }
   function pontosNaMesa(st, t) { return st.jogos[t].reduce((a, j) => a + j.c.reduce((b, c) => b + M.pontos(c), 0), 0); }
 
@@ -283,9 +312,10 @@
     const fim = st.fase === 'fimMao' || st.fase === 'fimJogo';
     const ant = P.ant || {};
 
-    // eventos novos: som e festa
+    // eventos novos: som, festa, falas e histórico
     if (st.seq !== P.seqVisto) {
       const u = st.ultimo || {};
+      registrarAcao(st, u);
       if (u.tipo === 'canastra') { toast('🎉 ' + (u.texto.split(' — ')[1] || 'Canastra!').replace('CANASTRA', 'Canastra').replace('LIMPA', 'limpa').replace('SUJA', 'suja') + ' · ' + st.jogadores[u.s].nome, 'festa'); som('canastra'); }
       else if (u.tipo === 'morto') { toast('💀 ' + u.texto, 'festa'); som('morto'); }
       else if (u.tipo === 'baixar') som('baixar');
@@ -302,11 +332,11 @@
     const assento = (s, pos) => {
       const k = st.maos[s].length, ehVez = st.vez === s && !fim;
       const leque = Array.from({ length: Math.min(k, 9) }, (_, i) => `<i style="--i:${i - (Math.min(k, 9) - 1) / 2}"></i>`).join('');
-      const sub = ausente(s) ? 'saiu · 🤖 no lugar' : ehVez ? (st.fase === 'comprar' ? 'vai comprar…' : 'jogando…') : (s % 2 === meuT && n === 4 ? 'parceiro' : '');
+      const sub = ausente(s) ? 'saiu · 🤖 no lugar' : ehVez ? (st.fase === 'comprar' ? 'vai comprar…' : 'jogando…') : '';
       return `<div class="assento ${pos} ${ehVez ? 'vez' : ''} ${s % 2 === meuT ? 'parc' : 'adv'} ${ausente(s) ? 'ausente' : ''}">
         <div class="leque-costas">${leque}</div>
-        <div class="avatar">${esc(avatarDe(st, s))}<b class="qt-cartas">${k}</b></div>
-        <div class="nome-assento">${esc(st.jogadores[s].nome)}</div>${sub ? `<div class="sub-assento">${sub}</div>` : ''}</div>`;
+        <div class="avatar">${esc(avatarDe(st, s))}${st.jogadores[s].tipo === 'bot' ? '<i class="selo-bot">🤖</i>' : ''}<b class="qt-cartas">${k}</b></div>
+        <div class="nome-assento">${esc(st.jogadores[s].nome)}${s % 2 === meuT && n === 4 ? '<span class="chip-parc">parceiro</span>' : ''}</div>${sub ? `<div class="sub-assento">${sub}</div>` : (falaHTML(s) || '<div class="sub-assento">&nbsp;</div>')}</div>`;
     };
     const assentosHTML = n === 2
       ? `<div class="assentos dois">${assento((eu + 1) % 2, 'topo')}</div>`
@@ -326,13 +356,15 @@
         const r = rotuloJogo(j);
         const mudou = antes[i] !== j.c.length;
         return `<button class="jg ${r.cls} ${meus && cabe.includes(i) ? 'cabe' : ''} ${mudou && ant.jogos ? 'brilha' : ''}" data-jogo="${i}">
-          <span class="etq ${r.cls}">${r.txt}<em>${j.c.length}</em></span>
-          <span class="cartas-jg">${j.c.map(c => cartaHTML(c)).join('')}</span></button>`;
+          <span class="etq ${r.cls}">${r.txt}<em>${M.ehCanastra(j) ? j.c.length : j.c.length + '/7'}</em></span>
+          <span class="cartas-jg">${j.c.map(c => cartaHTML(c, c === j.w ? 'coringa' : '')).join('')}</span></button>`;
       }).join('');
     };
 
     // centro da mesa
     const podeComprar = vez && st.fase === 'comprar';
+    const opcaoLixo = podeComprar && st.lixo.length ? (st.cfg.lixo === 'aberto' ? { t: 'lixo' } : B.opcaoLixo(st, eu)) : null;
+    const podeLixo = !!opcaoLixo || (podeComprar && st.lixo.length > 0 && P.sel.length > 0);
     const podeDescartarNoLixo = vez && st.fase === 'jogar' && P.sel.length === 1;
     const mortoHTML = (t, rot) => {
       const pego = st.pegouMorto[t];
@@ -351,7 +383,7 @@
     let faixa, faixaCls = '';
     if (fim) faixa = 'Fim da mão';
     else if (P.ocupado) faixa = 'Enviando jogada…';
-    else if (vez) { faixa = st.fase === 'comprar' ? 'Sua vez · compre' : 'Sua vez · baixe e descarte'; faixaCls = 'minha'; }
+    else if (vez) { faixa = (n === 4 ? 'Nossa vez' : 'Sua vez') + (st.fase === 'comprar' ? ' · compre' : ' · jogue'); faixaCls = 'minha' + (st.fase === 'jogar' && M.podeBater(st, meuT) ? ' bate' : ''); if (st.fase === 'jogar' && M.podeBater(st, meuT)) faixa += ' · já pode bater!'; }
     else if (n === 4 && st.vez % 2 === meuT) faixa = 'Vez do parceiro · ' + esc(st.jogadores[st.vez].nome);
     else faixa = 'Vez de ' + esc(st.jogadores[st.vez].nome);
 
@@ -359,18 +391,19 @@
     const ordem = M.ordenarMao(mao, P.ordem);
     const esconder = P.passando !== null;
     const antMao = ant.mao || [];
+    if (vez) { P.novas = P.novas || []; if (ant.mao) mao.forEach(id => { if (!antMao.includes(id) && !P.novas.includes(id)) P.novas.push(id); }); } else P.novas = [];
     const dicaSel = P.dica ? P.dica.cartas || [] : [];
-    const maoHTML = ordem.map(id => esconder ? cartaHTML(null) : cartaHTML(id, (P.sel.includes(id) ? 'sel ' : '') + (dicaSel.includes(id) ? 'dica ' : '') + (id === st.comprada && st.vez === eu ? 'nova ' : '') + (ant.mao && !antMao.includes(id) ? 'chega' : ''))).join('');
+    const maoHTML = ordem.map(id => esconder ? cartaHTML(null) : cartaHTML(id, (P.sel.includes(id) ? 'sel ' : '') + (dicaSel.includes(id) ? 'sugerida ' : '') + ((P.novas || []).includes(id) || (id === st.comprada && st.vez === eu) ? 'nova ' : '') + (ant.mao && !antMao.includes(id) ? 'chega' : ''))).join('');
 
     // botões
     const k = P.sel.length;
     const emJogo = vez && st.fase === 'jogar';
     const podeBaixar = emJogo && k >= 1 && (cabe.length > 0 || (k >= 3 && !!M.analisarJogo(P.sel, null, st.cfg)));
     const botoes = esconder || fim ? '' : `
-      <button class="bt bt-comprar" data-a="comprar" ${podeComprar ? '' : 'disabled'}><span>🂠</span>Comprar</button>
-      <button class="bt bt-lixo" data-a="lixo" ${podeComprar && st.lixo.length ? '' : 'disabled'}><span>🗑️</span>Pegar lixo</button>
-      <button class="bt bt-baixar" data-a="baixar" ${podeBaixar ? '' : 'disabled'}><span>⬇</span>Baixar</button>
-      <button class="bt bt-descartar" data-a="descartar" ${emJogo && k === 1 ? '' : 'disabled'}><span>▶</span>Descartar</button>`;
+      <button class="bt bt-comprar" data-a="comprar" ${podeComprar ? '' : 'disabled'}>${ICONE.comprar}Comprar</button>
+      <button class="bt bt-lixo" data-a="lixo" ${podeLixo ? '' : 'disabled'}>${ICONE.lixo}${P.confirmarLixo ? 'Confirmar' : 'Pegar lixo'}</button>
+      <button class="bt bt-baixar" data-a="baixar" ${podeBaixar ? '' : 'disabled'}>${ICONE.baixar}Baixar</button>
+      <button class="bt bt-descartar" data-a="descartar" ${emJogo && k === 1 ? '' : 'disabled'}>${ICONE.descartar}Descartar</button>`;
 
     // dica de texto
     let dica = '';
@@ -378,52 +411,48 @@
     else if (vez && st.fase === 'comprar') {
       if (!st.lixo.length) dica = 'Toque no monte para comprar.';
       else if (st.cfg.lixo === 'aberto') dica = 'Compre do monte ou pegue o lixo inteiro.';
-      else dica = cabe.length && !k ? 'A carta do lixo encaixa num jogo seu: toque em “Pegar lixo”.' : 'Para pegar o lixo, a carta de cima tem que virar jogo: escolha as cartas da mão que combinam com ela e toque em “Pegar lixo”.';
+      else if (P.confirmarLixo) dica = 'As cartas destacadas formam jogo com ' + M.nomeCarta(topo) + ': toque em Confirmar.';
+      else dica = opcaoLixo ? 'O ' + M.nomeCarta(topo) + ' do lixo serve para você: toque em Pegar lixo, ou compre do monte.' : 'O ' + M.nomeCarta(topo) + ' do lixo não serve para você agora: compre do monte.';
     } else if (emJogo) {
-      if (!k) dica = 'Toque nas cartas para escolher. Depois: Baixar (jogo novo ou encaixe) ou Descartar 1 para passar a vez.';
-      else if (cabe.length) dica = 'Encaixa no jogo destacado: toque em Baixar ou no próprio jogo.' + (k === 1 ? ' Ou toque no lixo para descartar.' : '');
+      if (!k) dica = 'Escolha cartas para baixar, ou 1 para descartar.' + (M.podeBater(st, meuT) ? ' Já pode bater!' : '');
+      else if (cabe.length > 1) dica = 'Encaixa em mais de um jogo: toque no jogo que você quer.';
+      else if (cabe.length) dica = 'Encaixa no jogo destacado: toque em Baixar ou no jogo.';
       else if (k >= 3) dica = M.analisarJogo(P.sel, null, st.cfg) ? 'Forma um jogo novo: toque em Baixar.' : 'Essas cartas não formam jogo.';
-      else dica = k === 1 ? 'Descarte esta carta (botão ou toque no lixo) para passar a vez.' : 'Escolha pelo menos 3 cartas para um jogo novo.';
-      if (!M.podeBater(st, meuT)) dica += ' · Para bater: ' + M.motivoNaoBate(st, meuT) + '.';
+      else dica = k === 1 ? 'Descarte (botão ou toque no lixo) para passar a vez.' : 'Escolha pelo menos 3 cartas para um jogo novo.';
     } else if (P.modo === 'online' && !fim) dica = 'Sala ' + esc(P.mesa.codigo) + (ausente(st.vez) ? ' · ' + esc(st.jogadores[st.vez].nome) + ' saiu: um bot joga no lugar.' : '');
 
     raiz.innerHTML = `
       <div class="placar2">
         <button class="ic-btn" data-a="menu" aria-label="Menu">☰</button>
-        <div class="pl"><small>${esc(nomeT(meuT))}</small><b>${st.placar[meuT]}</b></div>
-        <div class="pl meta"><small>meta</small><b>${st.cfg.meta.toLocaleString('pt-BR')}</b></div>
-        <div class="pl"><small>${esc(nomeT(advT))}</small><b>${st.placar[advT]}</b></div>
+        <div class="pl"><small>${esc(nomeT(meuT))}</small><b>${st.placar[meuT]}</b><i>${canastras(meuT) ? '👑' + canastras(meuT) + ' · ' : ''}mesa +${pontosNaMesa(st, meuT)}</i></div>
+        <div class="pl meta"><small>meta</small><b>${st.cfg.meta.toLocaleString('pt-BR')}</b><i>mão ${st.mao} · ${esc(M.descreverConfig(st.cfg))}</i></div>
+        <div class="pl"><small>${esc(nomeT(advT))}</small><b>${st.placar[advT]}</b><i>${canastras(advT) ? '👑' + canastras(advT) + ' · ' : ''}mesa +${pontosNaMesa(st, advT)}</i></div>
         ${P.modo === 'online' ? '<button class="ic-btn" data-a="reagir" aria-label="Reações">😊</button>' : `<button class="ic-btn" data-a="som" aria-label="Som">${store.get('som', true) ? '🔊' : '🔇'}</button>`}
       </div>
-      <div class="faixa"><span class="fx-esq">Mão ${st.mao} · ${esc(M.descreverConfig(st.cfg))}</span><b class="${faixaCls}">${faixa}</b><span class="fx-dir">${esc(nomeT(meuT))}: ${canastras(meuT)} 👑 · ${esc(nomeT(advT))}: ${canastras(advT)} 👑</span></div>
+      <div class="faixa">${mao.length > 1 && !esconder ? `<button class="tx-btn" data-a="ordem" title="Ordenar ${P.ordem === 'naipe' ? 'por valor' : 'por naipe'}">↕ Ordem</button>` : '<span></span>'}<b class="${faixaCls}">${faixa}</b>${vez && !esconder ? '<button class="tx-btn" data-a="dica">💡 Dica</button>' : '<span></span>'}</div>
       <div class="mesa">
         ${assentosHTML}
-        <div class="area-deles"><div class="fita pequena">Jogos ${n === 4 ? 'deles' : 'de ' + esc(st.jogadores[advT].nome)} · ${pontosNaMesa(st, advT)} pts</div><div class="lista-jogos deles">${jogosHTML(advT, false)}</div></div>
+        <div class="area-deles"><div class="fita pequena">Jogos ${n === 4 ? 'deles' : 'de ' + esc(st.jogadores[advT].nome)}</div><div class="lista-jogos deles">${jogosHTML(advT, false)}</div></div>
         <div class="centro2">
           ${mortoHTML(meuT, rotMortoMeu)}
           <button class="monte2 ${podeComprar ? 'pode' : ''}" data-a="comprar"><div class="pilha-cartas">${st.monte.length ? cartaHTML(null, 'baixo') + cartaHTML(null) : '<div class="vazio-l"></div>'}</div><span class="rotulo">Monte <b>${st.monte.length}</b></span></button>
-          <button class="lixo2 ${(podeComprar && st.lixo.length) || podeDescartarNoLixo ? 'pode' : ''}" data-a="lixo-mesa">${lixoHTML}<span class="rotulo">Lixo <b>${st.lixo.length}</b></span></button>
+          <button class="lixo2 ${podeLixo || podeDescartarNoLixo ? 'pode' : ''}" data-a="lixo-mesa">${lixoHTML}<span class="rotulo">Lixo <b>${st.lixo.length}</b></span></button>
           ${mortoHTML(advT, rotMortoDeles)}
         </div>
-        <div class="area-nossa meus"><div class="fita">${n === 4 ? 'Nossas canastras e jogos' : 'Suas canastras e jogos'} · ${pontosNaMesa(st, meuT)} pts</div><div class="lista-jogos">${jogosHTML(meuT, true)}</div></div>
-        <div class="log2">${esc((st.ultimo && st.ultimo.texto) || '')}</div>
-        <div class="mao2" id="mao">${maoHTML}</div>
+        <div class="area-nossa meus"><div class="fita">${n === 4 ? 'Nossas canastras e jogos' : 'Suas canastras e jogos'}</div><div class="lista-jogos">${jogosHTML(meuT, true)}</div></div>
+        <div class="linha-balao"><div class="balao ${vez ? 'fixo' : ''}">${esc((P.dica && P.dica.texto) || (vez && dica ? dica : ((st.ultimo && st.ultimo.texto) || dica || '')))}</div>${k && !esconder ? '<button class="tx-btn" data-a="limpar">✕ Desmarcar</button>' : ''}</div>
+        <div class="mao-wrap"><div class="mao2" id="mao">${maoHTML}</div></div>
       </div>
-      <div class="botoes">${botoes}</div>
-      <div class="rodape-jogo">
-        ${vez && !esconder ? '<button class="mini-btn" data-a="dica">💡 Dica</button>' : ''}
-        ${mao.length > 1 && !esconder ? `<button class="mini-btn" data-a="ordem">↕ ${P.ordem === 'naipe' ? 'Por naipe' : 'Por valor'}</button>` : ''}
-        ${k ? '<button class="mini-btn" data-a="limpar">✕ Desmarcar</button>' : ''}
-      </div>
-      <div class="dica">${dica}</div>`;
+      <div class="botoes">${botoes}</div>`;
     ajustarMao();
+    const la = raiz.querySelector('.lixo-aberto'); if (la) la.scrollLeft = la.scrollWidth;
 
     P.ant = { mao: mao.slice(), lixoTopo: topo, jogos: [st.jogos[0].map(j => j.c.length), st.jogos[1].map(j => j.c.length)], vez };
 
     // sobreposições
     if (P.passando !== null && !fim) {
       const s = P.passando;
-      veu(`<div class="painel centro"><div style="font-size:54px">${esc(avatarDe(st, s))}</div><h2 class="titulo">Vez de ${esc(st.jogadores[s].nome)}</h2>
+      veu(`<div class="painel centro"><div class="avatar-grande">${esc(avatarDe(st, s))}</div><h2 class="titulo">Vez de ${esc(st.jogadores[s].nome)}</h2>
         <p class="sub">Passe o aparelho para ${esc(st.jogadores[s].nome)}. Os outros não olham! 🙈</p>
         <button class="btn ouro grande" data-v="ver">Sou ${esc(st.jogadores[s].nome)}, mostrar cartas</button></div>`)
         .onclick = e => { if (e.target.closest('[data-v="ver"]')) { P.eu = s; P.passando = null; P.sel = []; P.ant = null; fecharVeu(); salvar(); desenharJogo(); } };
@@ -432,7 +461,7 @@
     } else if (!document.querySelector('.veu.menu-jogo-veu')) fecharVeu();
     if (fim && P.verMesa) {
       const b = raiz.querySelector('.botoes');
-      if (b) b.innerHTML = '<button class="bt bt-baixar" data-a="placar" style="grid-column:1/-1"><span>📋</span>Ver placar</button>';
+      if (b) b.innerHTML = '<button class="bt bt-baixar" data-a="placar" style="grid-column:1/-1">📋 Ver placar</button>';
     }
   }
 
@@ -443,7 +472,7 @@
     const cw = cartas[0].getBoundingClientRect().width || 60;
     const w = el.clientWidth - 10;
     const k = cartas.length;
-    const duas = k > 16 && (w - cw) / (k - 1) < cw * 0.34;
+    const duas = k > 12 && (w - cw) / (k - 1) < 26; // duas fileiras quando a parte tocável de cada carta ficaria estreita demais
     const porLinha = duas ? Math.ceil(k / 2) : k;
     const passo = porLinha > 1 ? Math.min(cw * 0.8, (w - cw) / (porLinha - 1)) : cw;
     el.classList.toggle('duas', duas);
@@ -452,8 +481,9 @@
       const linha = Math.floor(i / porLinha), j = i % porLinha;
       const meio = (Math.min(porLinha, k - linha * porLinha) - 1) / 2;
       const d = j - meio;
-      const ang = duas ? 0 : Math.max(-10, Math.min(10, d * Math.min(2.6, 30 / k)));
-      const y = duas ? 0 : Math.pow(Math.abs(d), 2) * Math.min(0.8, 9 / k);
+      const lim = window.innerWidth < 500 ? 4 : 10;
+      const ang = duas ? 0 : Math.max(-lim, Math.min(lim, d * Math.min(2.6, 30 / k)));
+      const y = duas ? 0 : Math.min(8, Math.pow(Math.abs(d), 2) * Math.min(0.8, 9 / k) * (lim / 10));
       c.style.marginLeft = j === 0 ? '0px' : (passo - cw) + 'px';
       c.style.setProperty('--r', ang + 'deg');
       c.style.setProperty('--y', y + 'px');
@@ -490,7 +520,7 @@
     if (cartaEl && cartaEl.dataset.id !== undefined) {
       if (P.passando !== null) return;
       const id = +cartaEl.dataset.id;
-      P.dica = null;
+      P.dica = null; P.confirmarLixo = false;
       P.sel = P.sel.includes(id) ? P.sel.filter(x => x !== id) : P.sel.concat([id]);
       desenharJogo();
       return;
@@ -514,7 +544,7 @@
     if (a === 'som') { store.set('som', !store.get('som', true)); return desenharJogo(); }
     if (a === 'placar') { P.verMesa = false; return desenharJogo(); }
     if (a === 'ordem') { P.ordem = P.ordem === 'naipe' ? 'valor' : 'naipe'; store.set('ordem', P.ordem); return desenharJogo(); }
-    if (a === 'limpar') { P.sel = []; P.dica = null; return desenharJogo(); }
+    if (a === 'limpar') { P.sel = []; P.dica = null; P.confirmarLixo = false; return desenharJogo(); }
     if (!minhaVez()) return;
     if (a === 'dica') return darDica();
     if (a === 'comprar' && st.fase === 'comprar') agir({ t: 'comprar' });
@@ -527,7 +557,15 @@
       if (st.cfg.lixo === 'aberto') return agir({ t: 'lixo' });
       const topo = st.lixo[st.lixo.length - 1];
       const t = P.eu % 2;
+      if (P.confirmarLixo && P.confirmarLixo.t) { const op = P.confirmarLixo; P.confirmarLixo = false; return agir(op); }
       if (P.dica && P.dica.jogo >= 0 && !P.sel.length) return agir({ t: 'lixo', cartas: [], jogo: P.dica.jogo });
+      if (!P.sel.length) {
+        const op = B.opcaoLixo(st, P.eu);
+        if (!op) { som('erro'); toast(M.nomeCarta(topo) + ' não serve para você agora. Compre do monte.'); return; }
+        if (!op.cartas.length) return agir(op);
+        P.confirmarLixo = op; P.sel = op.cartas.slice(); P.dica = { texto: '', cartas: op.cartas, jogo: op.jogo };
+        return desenharJogo();
+      }
       if (P.sel.length) {
         // tenta jogo novo; se não der, tenta encaixar num jogo existente
         if (M.analisarJogo(P.sel.concat([topo]), null, st.cfg)) return agir({ t: 'lixo', cartas: P.sel.slice(), jogo: -1 });
@@ -537,13 +575,14 @@
       const idx = M.ehCoringa(topo) ? -1 : st.jogos[t].findIndex(j => M.analisarJogo(j.c.concat([topo]), j.t, st.cfg));
       if (idx >= 0) return agir({ t: 'lixo', cartas: [], jogo: idx });
       som('erro');
-      toast('Para pegar o lixo fechado, escolha na sua mão as cartas que formam jogo com ' + M.nomeCarta(topo) + '.');
+      toast(M.nomeCarta(topo) + ' não forma jogo com essas cartas.');
     }
     if (a === 'baixar' && st.fase === 'jogar') {
       const t = P.eu % 2;
       if (P.dica && P.dica.jogo >= 0) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: P.dica.jogo });
       if (P.sel.length >= 3 && M.analisarJogo(P.sel, null, st.cfg)) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: -1 });
       const cabem = cartasQueCabem(st, t, P.sel);
+      if (cabem.length > 1) { toast('Toque no jogo onde quer encaixar (os que piscam).'); return; }
       if (cabem.length) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: cabem[0] });
       agir({ t: 'baixar', cartas: P.sel.slice(), jogo: -1 });
     }
@@ -576,7 +615,7 @@
       const r2 = M.aplicar(st, s, alt);
       if (!r2.ok) return r2;
     }
-    if (s === P.eu) { P.sel = []; P.dica = null; }
+    if (s === P.eu) { P.sel = []; P.dica = null; P.confirmarLixo = false; }
     depoisDaJogada();
     return res;
   }
@@ -602,12 +641,14 @@
     if (st.fase !== 'comprar' && st.fase !== 'jogar') return;
     const s = st.vez, j = st.jogadores[s];
     let atraso = null;
+    const fator = { lenta: 1.6, normal: 1, rapida: 0.5 }[store.get('velocidade', 'normal')] || 1;
     if (P.modo === 'online') {
       if (!P.mesa.souAnfitriao()) return;
       if (j.tipo === 'bot') atraso = st.fase === 'comprar' ? 1100 : 850;
       else if (ausente(s)) atraso = 2500;
     } else if (j.tipo === 'bot') atraso = st.fase === 'comprar' ? 1000 : 800;
     if (atraso === null) return;
+    if (j.tipo === 'bot') atraso = Math.round(atraso * fator);
     const seq = st.seq;
     P.timer = setTimeout(() => {
       if (!P || P.st.seq !== seq || P.st.vez !== s) return;
@@ -656,6 +697,7 @@
         <tr class="tot"><td>Total da mão</td><td>${num(r.times[meuT], 'total')}</td><td>${num(r.times[advT], 'total')}</td></tr>
         <tr class="ger"><td>Placar (até ${st.cfg.meta})</td><td>${st.placar[meuT]}</td><td>${st.placar[advT]}</td></tr>
       </table>
+      ${!fim ? `<p class="nota centro">Faltam ${Math.max(0, st.cfg.meta - st.placar[meuT])} pontos para ${st.n === 2 ? (P.modo === 'local' ? esc(nomeT(meuT)) : 'você') : 'nós'} e ${Math.max(0, st.cfg.meta - st.placar[advT])} para ${esc(st.n === 2 ? nomeT(advT) : 'eles')}.</p>` : ''}
       <div class="pilha">${btns.join('')}</div>
       ${fim ? `<div class="cdx-ad" data-ad="jogo-resultado"></div><div class="cdx" style="margin-top:12px"><a href="${URL_SUG}" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>` : ''}
     </div>`);
@@ -689,13 +731,23 @@
     };
   }
 
+  function aplicarPreferencias() {
+    document.body.classList.toggle('grande', !!store.get('grande', false));
+    document.body.classList.toggle('cores4', !!store.get('cores4', false));
+    if (P) desenharJogo();
+  }
+
   function menuJogo() {
     const online = P.modo === 'online';
     const v = veu(`<div class="painel menu-jogo centro">
       <h2 class="titulo">Menu</h2>
       ${online ? `<p class="sub">Sala <b style="color:var(--ouro);letter-spacing:3px">${esc(P.mesa.codigo)}</b></p>` : ''}
       <button class="btn" data-m="regras">📖 Como jogar</button>
-      <button class="btn" data-m="ordem">↕ Ordenar ${P.ordem === 'naipe' ? 'por valor' : 'por naipe'}</button>
+      <button class="btn" data-m="historico">📜 O que aconteceu</button>
+      <button class="btn" data-m="grande">🔎 Letras e cartas grandes: ${store.get('grande', false) ? 'ligado' : 'desligado'}</button>
+      <button class="btn" data-m="cores">🎨 Baralho 4 cores: ${store.get('cores4', false) ? 'ligado' : 'desligado'}</button>
+      <button class="btn" data-m="vel">🐢 Velocidade dos bots: ${({ lenta: 'lenta', normal: 'normal', rapida: 'rápida' })[store.get('velocidade', 'normal')]}</button>
+      <button class="btn" data-m="som">${store.get('som', true) ? '🔊 Som: ligado' : '🔇 Som: desligado'}</button>
       <button class="btn verm" data-m="sair">${online ? 'Sair da mesa' : 'Sair (a partida fica salva)'}</button>
       <button class="btn claro" data-m="fechar">Voltar ao jogo</button>
     </div>`, () => desenharJogo());
@@ -707,6 +759,15 @@
       if (m === 'fechar') { fecharVeu(); desenharJogo(); }
       if (m === 'ordem') { P.ordem = P.ordem === 'naipe' ? 'valor' : 'naipe'; store.set('ordem', P.ordem); fecharVeu(); desenharJogo(); }
       if (m === 'regras') mostrarRegras(() => desenharJogo());
+      if (m === 'grande') { store.set('grande', !store.get('grande', false)); aplicarPreferencias(); fecharVeu(); menuJogo(); }
+      if (m === 'cores') { store.set('cores4', !store.get('cores4', false)); aplicarPreferencias(); fecharVeu(); menuJogo(); }
+      if (m === 'som') { store.set('som', !store.get('som', true)); fecharVeu(); menuJogo(); }
+      if (m === 'vel') { const v = store.get('velocidade', 'normal'); store.set('velocidade', v === 'normal' ? 'lenta' : v === 'lenta' ? 'rapida' : 'normal'); fecharVeu(); menuJogo(); }
+      if (m === 'historico') {
+        const h = (P.historico || []).slice(0, 20);
+        const v2 = veu(`<div class="painel"><h2 class="titulo centro">O que aconteceu</h2><ol class="historico">${h.map(x => `<li>${esc(x)}</li>`).join('') || '<li>Nada ainda.</li>'}</ol><div class="linha c"><button class="btn ouro" data-x="ok">Voltar ao jogo</button></div></div>`, () => desenharJogo());
+        v2.querySelector('[data-x="ok"]').onclick = () => { fecharVeu(); desenharJogo(); };
+      }
       if (m === 'sair') { fecharVeu(); if (online) sairOnline(); else { clearTimeout(P.timer); salvar(); telaInicio(); } }
     };
   }
@@ -818,7 +879,7 @@
         <div class="pilha">
           <button class="btn verm grande" data-a="rapido">⚡ Jogo rápido</button>
           <button class="btn ouro" data-a="criar">➕ Criar sala</button>
-          <div class="linha" style="flex-wrap:nowrap"><input class="txt" id="cod" maxlength="4" placeholder="CÓDIGO" style="text-align:center;letter-spacing:5px;text-transform:uppercase;font-weight:900"><button class="btn" data-a="entrar" style="flex:none">🔑 Entrar com código</button></div>
+          <div class="linha" style="flex-wrap:nowrap"><input class="txt" id="cod" maxlength="4" placeholder="CÓDIGO" style="flex:0 0 120px;text-align:center;letter-spacing:3px;text-transform:uppercase;font-weight:900;padding-left:6px;padding-right:6px"><button class="btn" data-a="entrar" style="flex:1">🔑 Entrar com código</button></div>
         </div>
         <label class="rot" style="margin-top:18px">Salas abertas</label>
         <div class="mesas" id="mesas"><div class="vazio">Conectando…</div></div>
@@ -833,6 +894,7 @@
       if (a === 'perfil') { e.preventDefault(); pedirPerfil(() => telaSalas(), true); }
       if (a === 'entrar') { const c = $('#cod').value.trim().toUpperCase(); if (/^[A-Z0-9]{4}$/.test(c)) entrarSala(c); else toast('Digite as 4 letras do código'); }
       if (a === 'sentar') entrarSala(b.dataset.cod);
+      if (a === 'bots-agora') { R.desmarcarOnline(); telaConfig('bots'); }
     };
     try {
       R.marcarOnline().catch(() => {});
@@ -840,7 +902,7 @@
       limpeza.push(offC);
       const off = await R.ouvirSalas((lista, err) => {
         const el = document.getElementById('mesas'); if (!el) return;
-        if (!lista) { el.innerHTML = `<div class="vazio">${esc(erroOnline(err))}</div>`; return; }
+        if (!lista) { el.innerHTML = `<div class="vazio">${esc(erroOnline(err))}<div style="margin-top:10px"><button class="btn peq verm" data-a="bots-agora">🤖 Jogar contra o computador</button></div></div>`; return; }
         if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma sala aberta agora. Crie uma ou toque em “Jogo rápido”.</div>'; return; }
         el.innerHTML = lista.map(m => {
           const h = (m.jogadores || {})[m.anfitriao] || {};
@@ -872,7 +934,9 @@
       const cfg = Object.assign(M.configPadrao(C.variante || 'fechado'), { meta: C.meta || 3000 });
       criarSalaOnline({ cfg, n: C.n === 4 ? 4 : 2, publica: true }, true);
     } catch (e) {
-      const m = document.getElementById('msg'); if (m) m.textContent = erroOnline(e);
+      const box = app.querySelector('.painel');
+      if (box) box.innerHTML = `<h2 class="titulo">Online indisponível</h2><p class="sub">${esc(erroOnline(e))}</p><div class="pilha"><button class="btn verm" data-a="bots-agora">🤖 Jogar contra o computador</button><button class="btn" data-a="tentar">Tentar de novo</button><button class="btn claro" data-a="voltar">Voltar</button></div>`;
+      app.onclick = ev => { const b = ev.target.closest('[data-a]'); if (!b) return; if (b.dataset.a === 'bots-agora') telaConfig('bots'); if (b.dataset.a === 'tentar') jogoRapido(); if (b.dataset.a === 'voltar') telaSalas(); };
     }
   }
 
@@ -937,8 +1001,8 @@
         const eu = u === mesa.uid;
         const ehHost = u === sala.anfitriao;
         linhas.push(`<div class="jogador-sala ${eu ? 'eu' : ''}"><div class="av">${esc(j.bot ? '🤖' : j.avatar)}</div>
-          <div class="info"><b>${j.bot ? '🤖 ' : ''}${esc(j.apelido)}${ehHost ? ' 👑' : ''}${eu ? ' (você)' : ''}</b><span>${j.bot ? 'bot' : j.pronto || ehHost ? '✅ pronto' : '⏳ ainda não está pronto'}</span></div>
-          ${dupla}${host && !eu ? `<button class="btn peq claro" data-rem="${esc(u)}">Remover</button>` : ''}</div>`);
+          <div class="info"><b>${j.bot ? '🤖 ' : ''}${esc(j.apelido)}${ehHost ? ' 👑' : ''}${eu ? ' (você)' : ''}</b><span>${j.bot ? 'bot' : j.pronto || ehHost ? '✅ pronto' : '⏳ não está pronto'}</span></div>
+          ${dupla}${host && !eu ? `<button class="ic-btn rem" data-rem="${esc(u)}" aria-label="Remover ${esc(j.apelido)}" title="Remover">✕</button>` : ''}</div>`);
       }
       const cheia = js.length >= n;
       const prontos = js.every(([u, j]) => j.bot || j.pronto || u === sala.anfitriao);
@@ -946,7 +1010,7 @@
       let banner = '';
       if (host && rapidoDesde && !cheia) {
         const falta = Math.max(0, Math.ceil(30 - (Date.now() - rapidoDesde) / 1000));
-        if (falta <= 10) banner = `<div class="banner-bots">Ninguém online agora. Completando com bots em ${falta}s… <button class="btn peq claro" data-a="esperar">Esperar mais</button></div>`;
+        banner = falta <= 10 ? `<div class="banner-bots">Ninguém online agora. Completando com bots em ${falta}s… <button class="btn peq claro" data-a="esperar">Esperar mais</button></div>` : `<div class="banner-bots">Jogo rápido: se ninguém chegar, começa com bots em ${falta}s.</div>`;
       }
       raiz.innerHTML = `<button class="voltar" data-a="sair">← Sair da sala</button>
         <div class="painel" style="max-width:560px;margin:0 auto">
@@ -959,7 +1023,7 @@
             ${!host ? `<button class="btn ${meu.pronto ? 'claro' : 'ouro grande'}" data-a="pronto">${meu.pronto ? '✋ Pronto ✓ (toque para desfazer)' : '✋ Pronto'}</button>` : ''}
             ${host ? `${!cheia ? '<button class="btn" data-a="bots">🤖 Completar com bots</button>' : ''}
               <button class="btn ouro grande" data-a="comecar" ${cheia && prontos ? '' : 'disabled'}>▶ Começar</button>
-              <p class="nota centro">${!cheia ? 'Faltam ' + (n - js.length) + ' jogador' + (n - js.length > 1 ? 'es' : '') + '. Espere ou complete com bots.' : prontos ? 'Todos prontos! Pode começar.' : 'Esperando todos tocarem em “Pronto”.'}${n === 4 ? ' As duplas seguem a ordem de chegada.' : ''}</p>`
+              <p class="nota centro">${!cheia ? (n - js.length > 1 ? 'Faltam ' + (n - js.length) + ' jogadores' : 'Falta 1 jogador') + '. Espere ou complete com bots.' : prontos ? 'Todos prontos! Pode começar.' : 'Esperando todos tocarem em “Pronto”.'}${n === 4 ? ' As duplas seguem a ordem de chegada.' : ''}</p>`
             : '<p class="nota centro">Quando todos estiverem prontos, o anfitrião 👑 começa a partida.</p>'}
           </div>
           <div class="reacoes">${REACOES.map(r => `<button class="reac" data-r="${esc(r)}">${esc(r)}</button>`).join('')}</div>
@@ -1085,6 +1149,7 @@
   }
 
   /* =================== PARTIDA =================== */
+  aplicarPreferencias();
   const q = new URLSearchParams(location.search);
   const cod = (q.get('sala') || '').toUpperCase();
   if (/^[A-Z0-9]{4}$/.test(cod)) pedirPerfil(() => entrarSala(cod));

@@ -257,7 +257,7 @@
       const idx = a.jogo === undefined ? -1 : a.jogo;
       if (ehCoringa(topo) && idx >= 0) return erro('Coringa pego do lixo precisa ir num jogo novo.');
       const m = montarJogo(st, t, ids.concat([topo]), idx, a.tipo);
-      if (m.erro) return erro('Para pegar o lixo, a carta de cima (' + nomeCarta(topo) + ') tem que entrar na hora num jogo (novo, com cartas da sua mão, ou num jogo seu já baixado). ' + m.erro);
+      if (m.erro) return erro(nomeCarta(topo) + ' do lixo não forma jogo assim: ele precisa entrar num jogo na hora.');
       const jogosDepois = st.jogos[t].slice();
       if (m.idx >= 0) jogosDepois[m.idx] = m.jogo; else jogosDepois.push(m.jogo);
       const novaMaoJ = resto.concat(st.lixo.slice(0, -1));
@@ -360,7 +360,7 @@
     }
     for (const s of parceiros(st, t)) for (const c of st.maos[s]) r.mao -= pontos(c);
     if (bateu) r.batida = 100;
-    if (!st.pegouMorto[t] && st.pegouMorto[1 - t]) r.morto = -100;
+    if (!st.pegouMorto[t]) r.morto = -100; // dupla que não pegou o morto perde 100
     r.total = r.cartas + r.bonus + r.mao + r.batida + r.morto;
     return r;
   }

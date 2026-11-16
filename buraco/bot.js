@@ -191,6 +191,24 @@
     return { t: 'descartar', carta: melhor };
   }
 
+  // Primeira forma válida de pegar o lixo fechado (ou null). Prefere não gastar coringa.
+  function opcaoLixo(st, s) {
+    if (!st.lixo.length || st.fase !== 'comprar') return null;
+    if (st.cfg.lixo === 'aberto') return { t: 'lixo' };
+    const t = M.timeDe(st, s), mao = st.maos[s], topo = st.lixo[st.lixo.length - 1];
+    if (!M.ehCoringa(topo)) for (let i = 0; i < st.jogos[t].length; i++) { const a = { t: 'lixo', cartas: [], jogo: i }; if (testa(st, s, a)) return a; }
+    let comCor = null;
+    for (let i = 0; i < mao.length; i++) for (let j = i + 1; j < mao.length; j++) {
+      const ids = [mao[i], mao[j]];
+      if (!M.analisarJogo(ids.concat([topo]), null, st.cfg)) continue;
+      const a = { t: 'lixo', cartas: ids, jogo: -1 };
+      if (!testa(st, s, a)) continue;
+      if (ids.some(M.ehCoringa)) { if (!comCor) comCor = a; continue; }
+      return a;
+    }
+    return comCor;
+  }
+
   function proxima(st, s) {
     if (st.vez !== s) return null;
     if (st.fase === 'comprar') return decidirCompra(st, s);
@@ -198,7 +216,7 @@
     return null;
   }
 
-  const Bot = { proxima, decidirCompra, decidirBaixa, decidirDescarte };
+  const Bot = { proxima, decidirCompra, decidirBaixa, decidirDescarte, opcaoLixo };
   G.BuracoBot = Bot;
   if (typeof module !== 'undefined' && module.exports) module.exports = Bot;
 })(typeof window !== 'undefined' ? window : globalThis);
