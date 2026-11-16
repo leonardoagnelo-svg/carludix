@@ -42,6 +42,10 @@
     const v = VARIANTES[variante] || VARIANTES.fechado;
     return { variante: VARIANTES[variante] ? variante : 'fechado', lixo: v.lixo, trincas: v.trincas, batida: v.batida, meta: 3000, curingoes: true, reais: true };
   }
+  function descreverFim(cfg) {
+    if (cfg.fim === 'maos') { const n = cfg.maos || 3; return n === 1 ? '1 mão' : n + ' mãos'; }
+    return 'até ' + (cfg.meta || 3000).toLocaleString('pt-BR');
+  }
   function descreverConfig(cfg) {
     const base = configPadrao(cfg.variante);
     const dif = ['lixo', 'trincas', 'batida', 'curingoes'].some(k => cfg[k] !== base[k]);
@@ -372,7 +376,13 @@
     st.historico.push([res[0].total, res[1].total]);
     st.resultado = { times: res, bateu: timeBateu };
     const meta = st.cfg.meta;
-    if ((st.placar[0] >= meta || st.placar[1] >= meta) && st.placar[0] !== st.placar[1]) {
+    if (st.cfg.fim === 'maos') {
+      // termina depois de um número fixo de mãos; vence quem tiver mais pontos (pode empatar)
+      if (st.mao >= (st.cfg.maos || 3)) {
+        st.fase = 'fimJogo';
+        st.resultado.vencedor = st.placar[0] === st.placar[1] ? null : (st.placar[0] > st.placar[1] ? 0 : 1);
+      } else st.fase = 'fimMao';
+    } else if ((st.placar[0] >= meta || st.placar[1] >= meta) && st.placar[0] !== st.placar[1]) {
       st.fase = 'fimJogo';
       st.resultado.vencedor = st.placar[0] > st.placar[1] ? 0 : 1;
     } else st.fase = 'fimMao';
@@ -400,7 +410,7 @@
 
   const Motor = {
     NAIPES, carta, ehCuringao, ehDois, ehCoringa, valorDe, naipeDe, pontos, nomeCarta,
-    VARIANTES, configPadrao, descreverConfig,
+    VARIANTES, configPadrao, descreverConfig, descreverFim,
     analisarSequencia, analisarTrinca, analisarJogo, ehCanastra, ehLimpa,
     novoJogo, novaMao, aplicar, timeDe, parceiros, mortoDisponivel, podeBater, motivoNaoBate,
     temCanastraParaBater, contarTime, nomeTime, ordenarMao, embaralhar, montarJogo, conferirSobra,

@@ -94,7 +94,7 @@
   /* =================== CONFIGURAR =================== */
   function telaConfig(modo) {
     const salvo = store.get('cfg', {});
-    const C = Object.assign({ variante: 'fechado', n: 4, meta: 1500, nivel: 'medio', publica: true, velocidade: store.get('velocidade', 'normal') }, salvo);
+    const C = Object.assign({ variante: 'fechado', n: 4, meta: 1500, fim: 'pontos', maos: 3, nivel: 'medio', publica: true, velocidade: store.get('velocidade', 'normal') }, salvo);
     const base = M.configPadrao(C.variante);
     ['lixo', 'trincas', 'batida', 'curingoes'].forEach(k => { if (C[k] === undefined) C[k] = base[k]; });
     let assentos = store.get('assentos', null) || [
@@ -123,8 +123,12 @@
         <div class="opcoes">${op('n', 2, '1 x 1', 'mano a mano')}${op('n', 4, 'Duplas', '2 x 2')}</div>
         <label class="rot">Variante</label>
         <div class="opcoes">${op('variante', 'fechado', 'Fechado', 'lixo fechado, vale trinca')}${op('variante', 'aberto', 'Aberto', 'pega o lixo inteiro')}${op('variante', 'stbl', 'STBL', 'sem trinca, bate limpo')}</div>
-        <label class="rot">Pontos para vencer</label>
-        <div class="opcoes">${op('meta', 1500, '1.500')}${op('meta', 2000, '2.000')}${op('meta', 3000, '3.000')}</div>
+        <label class="rot">Como a partida termina</label>
+        <div class="opcoes">${op('fim', 'pontos', 'Por pontos', 'quem chegar primeiro')}${op('fim', 'maos', 'Por mãos', 'número fixo de mãos')}</div>
+        ${C.fim === 'maos' ? `<label class="rot">Quantas mãos</label>
+        <div class="opcoes">${op('maos', 1, '1 mão')}${op('maos', 3, '3 mãos')}${op('maos', 5, '5 mãos')}</div>`
+        : `<label class="rot">Pontos para vencer</label>
+        <div class="opcoes">${op('meta', 1500, '1.500')}${op('meta', 2000, '2.000')}${op('meta', 3000, '3.000')}</div>`}
         ${modo === 'bots' || modo === 'local' ? `<label class="rot">Dificuldade dos bots</label>
         <div class="opcoes">${op('nivel', 'facil', 'Fácil')}${op('nivel', 'medio', 'Médio')}${op('nivel', 'dificil', 'Difícil')}</div>` : ''}
         ${modo !== 'criar' ? `<label class="rot">Velocidade dos bots</label>
@@ -173,7 +177,7 @@
       const nome = store.get('nome', '') || 'Você';
       store.set('cfg', C);
       store.set('velocidade', C.velocidade || 'normal');
-      const cfg = { variante: C.variante, lixo: C.lixo, trincas: C.trincas, batida: C.batida, meta: C.meta, curingoes: C.curingoes, reais: true };
+      const cfg = { variante: C.variante, lixo: C.lixo, trincas: C.trincas, batida: C.batida, meta: C.meta, fim: C.fim || 'pontos', maos: C.maos || 3, curingoes: C.curingoes, reais: true };
       if (modo === 'bots') {
         const nomes = M.embaralhar(NOMES_BOT.slice());
         const jog = [{ nome, tipo: 'humano' }];
@@ -516,7 +520,7 @@
       <div class="placar2">
         <button class="ic-btn" data-a="menu" aria-label="Menu">☰</button>
         <div class="pl"><small>${esc(nomeT(meuT))}</small><b>${st.placar[meuT]}</b><i>${canastras(meuT) ? '👑' + canastras(meuT) + ' · ' : ''}mesa +${pontosNaMesa(st, meuT)}</i></div>
-        <div class="pl meta"><small>meta</small><b>${st.cfg.meta.toLocaleString('pt-BR')}</b><i>mão ${st.mao} · ${esc(M.descreverConfig(st.cfg))}</i></div>
+        ${st.cfg.fim === 'maos' ? `<div class="pl meta"><small>mão</small><b>${st.mao} de ${st.cfg.maos || 3}</b><i>${esc(M.descreverConfig(st.cfg))}</i></div>` : `<div class="pl meta"><small>meta</small><b>${st.cfg.meta.toLocaleString('pt-BR')}</b><i>mão ${st.mao} · ${esc(M.descreverConfig(st.cfg))}</i></div>`}
         <div class="pl"><small>${esc(nomeT(advT))}</small><b>${st.placar[advT]}</b><i>${canastras(advT) ? '👑' + canastras(advT) + ' · ' : ''}mesa +${pontosNaMesa(st, advT)}</i></div>
         ${P.modo === 'online' ? '<button class="ic-btn" data-a="reagir" aria-label="Reações">😊</button>' : `<button class="ic-btn" data-a="som" aria-label="Som">${store.get('som', true) ? '🔊' : '🔇'}</button>`}
       </div>
@@ -791,7 +795,8 @@
     const fim = st.fase === 'fimJogo';
     const host = P.modo !== 'online' || P.mesa.souAnfitriao();
     let titulo = '';
-    if (fim) {
+    if (fim && r.vencedor === null) titulo = '🤝 Empate!';
+    else if (fim) {
       const v = r.vencedor;
       if (P.modo === 'local' && humanos(st).length > 1) titulo = '🏆 ' + esc(nomeT(v)) + (st.n === 2 ? ' venceu!' : ' venceram!');
       else titulo = v === meuT ? '🏆 ' + (st.n === 2 ? 'Você venceu!' : 'Vocês venceram!') : '😬 ' + esc(nomeT(v)) + (st.n === 2 ? ' venceu' : ' venceram');
@@ -818,9 +823,10 @@
         ${linha('Cartas na mão', 'mao', num)}
         <tr class="tot"><td>Total da mão</td><td>${num(r.times[meuT], 'total')}</td><td>${num(r.times[advT], 'total')}</td></tr>
         ${st.historico.length > 1 ? `<tr class="ant"><td>Mãos anteriores</td><td>${st.historico.slice(0, -1).map(h => (h[meuT] > 0 ? '+' : '') + h[meuT]).join(' · ')}</td><td>${st.historico.slice(0, -1).map(h => (h[advT] > 0 ? '+' : '') + h[advT]).join(' · ')}</td></tr>` : ''}
-        <tr class="ger"><td>Placar (até ${st.cfg.meta})</td><td>${st.placar[meuT]}</td><td>${st.placar[advT]}</td></tr>
+        <tr class="ger"><td>Placar (${esc(M.descreverFim(st.cfg))})</td><td>${st.placar[meuT]}</td><td>${st.placar[advT]}</td></tr>
       </table>
-      ${!fim ? `<p class="nota centro">Faltam ${Math.max(0, st.cfg.meta - st.placar[meuT])} pontos para ${st.n === 2 ? (P.modo === 'local' ? esc(nomeT(meuT)) : 'você') : 'nós'} e ${Math.max(0, st.cfg.meta - st.placar[advT])} para ${esc(st.n === 2 ? nomeT(advT) : 'eles')}.</p>` : ''}
+      ${!fim && st.cfg.fim === 'maos' ? `<p class="nota centro">${(st.cfg.maos || 3) - st.mao === 1 ? 'Falta 1 mão' : 'Faltam ' + ((st.cfg.maos || 3) - st.mao) + ' mãos'}. No fim, vence quem tiver mais pontos.</p>` : ''}
+      ${!fim && st.cfg.fim !== 'maos' ? `<p class="nota centro">Faltam ${Math.max(0, st.cfg.meta - st.placar[meuT])} pontos para ${st.n === 2 ? (P.modo === 'local' ? esc(nomeT(meuT)) : 'você') : 'nós'} e ${Math.max(0, st.cfg.meta - st.placar[advT])} para ${esc(st.n === 2 ? nomeT(advT) : 'eles')}.</p>` : ''}
       <div class="pilha">${btns.join('')}</div>
       ${fim ? `<div class="cdx-ad" data-ad="jogo-resultado"></div><div class="cdx" style="margin-top:12px"><a href="${URL_SUG}" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>` : ''}
     </div>`);
@@ -990,7 +996,7 @@
     if (/jogando/.test(m)) return 'Essa sala já começou a jogar. Escolha outra.';
     return 'Não deu para conectar ao servidor. Confira a internet e tente de novo.';
   }
-  const textoModo = (cfg, n) => (M.VARIANTES[cfg.variante] || M.VARIANTES.fechado).nome + (M.descreverConfig(cfg).includes('personalizado') ? '*' : '') + ' · ' + (n === 2 ? '1x1' : 'Duplas') + ' · até ' + cfg.meta;
+  const textoModo = (cfg, n) => (M.VARIANTES[cfg.variante] || M.VARIANTES.fechado).nome + (M.descreverConfig(cfg).includes('personalizado') ? '*' : '') + ' · ' + (n === 2 ? '1x1' : 'Duplas') + ' · ' + M.descreverFim(cfg);
 
   async function telaSalas() {
     P = null;
@@ -1054,7 +1060,7 @@
       if (cancelado) return;
       if (lista.length) return entrarSala(lista[0].codigo, true);
       const C = store.get('cfg', {});
-      const cfg = Object.assign(M.configPadrao(C.variante || 'fechado'), { meta: C.meta || 3000 });
+      const cfg = Object.assign(M.configPadrao(C.variante || 'fechado'), { meta: C.meta || 1500, fim: C.fim || 'pontos', maos: C.maos || 3 });
       criarSalaOnline({ cfg, n: C.n === 4 ? 4 : 2, publica: true }, true);
     } catch (e) {
       const box = app.querySelector('.painel');
