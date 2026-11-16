@@ -91,6 +91,7 @@ body:not(.musica):not(.santos) .faixa{background:linear-gradient(180deg,#3E6FE0,
 .n1{background:linear-gradient(180deg,#3BC46E,#1F8A47)}
 .n2{background:linear-gradient(180deg,#3B7BEA,#2453B8)}
 .n3{background:linear-gradient(180deg,#E8455B,#B32237)}
+.n0{background:linear-gradient(180deg,#A866F0,#5E2AA6)}
 
 /* partida */
 .enigma{background:var(--parch);border:4px solid var(--gold);border-radius:20px;padding:14px 8px;display:grid;gap:4px;justify-content:center;margin:0;list-style:none;
@@ -389,7 +390,7 @@ const P_B=[
 ];
 
 /* Músicas: [nível, artista, título, emojis, significados, respostas extras, observação] — os emojis formam só o TÍTULO */
-const CD='Colo de Deus',MS='Missionário Shalom',MR='Padre Marcelo Rossi',PZ='Padre Zezinho',FM='Padre Fábio de Melo',FG='Frei Gilson',AR='Anjos de Resgate',ER='Eliana Ribeiro',BM='Bruna Marques',JA='Monsenhor Jonas Abib',UP='Um Peregrino',JC='Juninho Cassimiro',TA='Tony Allysson',RS='Rosa de Saron',TB='Thiago Brado',FJ='Fraternidade São João Paulo II',RR='Ramon e Rafael',CA='Cristo Alegria',ET='Entretons',IA='Irmã Ana Paula';
+const CD='Colo de Deus',MS='Missionário Shalom',MR='Padre Marcelo Rossi',PZ='Padre Zezinho',FM='Padre Fábio de Melo',FG='Frei Gilson',AR='Anjos de Resgate',ER='Eliana Ribeiro',BM='Bruna Marques',JA='Monsenhor Jonas Abib',UP='Um Peregrino',JC='Juninho Cassimiro',TA='Tony Allysson',RS='Rosa de Saron',TB='Thiago Brado',FJ='Fraternidade São João Paulo II',RR='Ramon e Rafael',CA='Cristo Alegria',ET='Entretons',IA='Irmã Ana Paula',WA='Walmir Alencar',CB='Celina Borges',FV='Flavinho',RM='Padre Reginaldo Manzotti',ZF='Ziza Fernandes',AA='Adriana Arydes';
 const M_RAW=[
 // ---------- FÁCIL: as mais conhecidas ----------
 [1,CD,'Ave Maria',['🐦','💙','👩'],['ave (o pássaro!)','o manto azul','Maria']],
@@ -534,12 +535,60 @@ const M_RAW=[
 [2,ET,'Eu, Você e Deus',['🙋','🫵','🙏'],['eu','você','e Deus'],['eu voce e deus']],
 [3,ET,'Oh Vem, Emanuel',['🙌','➡️','👶'],['oh, vem','(a chegada)','Emanuel'],['oh vem emanuel','vem emanuel']],
 // ---------- Irmã Ana Paula ----------
-[2,IA,'Sopra em Nós',['🌬️','👥'],['sopra','em nós'],['sopra em nos']],
 [2,IA,'Somos do Céu',['👥','☁️'],['somos','do céu'],['somos do ceu']],
 [2,IA,'O Mesmo Pão',['🟰','🍞'],['o mesmo','pão'],['mesmo pao']],
 [3,IA,'Eu Navegarei',['🙋','⛵','🌊'],['eu','navegarei','(no mar)']],
 [3,IA,'Mãe do Verbo',['👩','📖'],['mãe','do Verbo (a Palavra)'],['mae do verbo']],
-[2,IA,'Eu Acredito',['🙋','✅','🙏'],['eu','acredito','(a fé)']]
+[2,IA,'Eu Acredito',['🙋','✅','🙏'],['eu','acredito','(a fé)']],
+// ---------- Walmir Alencar ----------
+[2,WA,'O Céu se Abre',['☁️','↔️'],['o céu','se abre'],['ceu se abre']],
+[2,WA,'Abraço de Pai',['🤗','👨'],['abraço','de pai'],['abraco de pai']],
+[3,WA,'Cenáculo de Amor',['🏠','🔥','❤️'],['o cenáculo (a sala do alto)','o fogo de Pentecostes','de amor'],['cenaculo de amor']],
+[3,WA,'O Mistério da Trindade',['❓','🔺'],['o mistério','da Trindade (três em um)'],['misterio da trindade']],
+[2,WA,'Celebra a Vitória',['🎉','🏆'],['celebra','a vitória'],['celebra a vitoria']],
+[3,WA,'Forte Presença',['💪','👤','✨'],['forte','presença','(alguém ao lado)'],['forte presenca']],
+[3,WA,'Imagem e Semelhança',['🖼️','🟰','👤'],['imagem','e semelhança','(feitos como Deus)'],['imagem e semelhanca']],
+// ---------- Celina Borges ----------
+[2,CB,'Derrama o Teu Amor Aqui',['🫗','❤️','📍'],['derrama','o teu amor','aqui'],['derrama teu amor aqui']],
+[2,CB,'Busque o Alto',['🔍','⬆️'],['busque','o alto'],['busque o alto']],
+[2,CB,'Deus Tocou em Mim',['🙏','👆','🙋'],['Deus','tocou','em mim']],
+[3,CB,'Vivo pra Teu Louvor',['🌱','🙌','🎶'],['vivo','pra teu','louvor'],['vivo para teu louvor']],
+[2,CB,'Fica Senhor Comigo',['🧍','🙏','🫂'],['fica','Senhor','comigo'],['fica senhor comigo']],
+[3,CB,'Amigo É Só Me Chamar',['🤝','📞','🙋'],['amigo','é só chamar','me'],['amigo e so me chamar']],
+[2,CB,'Reina Senhor',['👑','🙏'],['reina','Senhor']],
+[3,CB,'Hoje Eu Vou Tocar no Senhor',['📅','🙋','👆','🙏'],['hoje','eu vou','tocar','no Senhor'],['hoje eu vou tocar no senhor']],
+// ---------- Flavinho ----------
+[2,FV,'Deus É Maior',['🙏','⬆️'],['Deus','é maior'],['deus e maior']],
+[2,FV,'Cantiga de Amor',['🎶','❤️'],['cantiga','de amor']],
+[2,FV,'Divino Amigo',['✨','🤝'],['divino','amigo']],
+[3,FV,'Na Cruz com Cristo',['✝️','🫂'],['na cruz','com Cristo']],
+[2,FV,'Deus É Capaz',['🙏','💪'],['Deus','é capaz'],['deus e capaz']],
+[3,FV,'Abandono',['🫳','🙏'],['abandono','nas mãos de Deus']],
+[3,FV,'Vou Me Prostrar',['🙇','🙏'],['vou me prostrar','diante de Deus'],['vou me prostar']],
+// ---------- Padre Reginaldo Manzotti ----------
+[2,RM,'Vou Evangelizar',['🚶','📖','🌍'],['vou','evangelizar (levar a Palavra)','pelo mundo']],
+[2,RM,'A Tempestade Vai Passar',['⛈️','⏳','➡️'],['a tempestade','vai','passar'],['tempestade vai passar']],
+[2,RM,'Caminhando com Maria',['🚶','💙','👩'],['caminhando','com','Maria']],
+[3,RM,'Pedi e Recebereis',['🙏','🎁'],['pedi','e recebereis']],
+[3,RM,'Arcanjos',['👼','⚔️','👼'],['os arcanjos','Miguel','Gabriel e Rafael']],
+[3,RM,'Só Porque Você Veio',['1️⃣','➡️','🫵','🚶'],['só','porque','você','veio'],['so porque voce veio']],
+// ---------- Ziza Fernandes ----------
+[3,ZF,'Acontecer',['✨','⏳'],['acontecer','(vai acontecer)']],
+[2,ZF,'Cara de Família',['😊','👨‍👩‍👧'],['cara','de família'],['cara de familia']],
+[3,ZF,'Não Foi Tua Culpa',['🚫','🫵','😔'],['não foi','tua','culpa'],['nao foi tua culpa','nao foi sua culpa']],
+[2,ZF,'Abre Tua Porta',['🔓','🫵','🚪'],['abre','tua','porta'],['abre a tua porta']],
+[3,ZF,'O Que Agrada a Deus',['❓','😊','🙏'],['o que','agrada','a Deus'],['o que agrada a deus']],
+[2,ZF,'Pedro Pescador',['🧔','🎣'],['Pedro','pescador']],
+[3,ZF,'Preço do Amor',['💲','❤️'],['preço','do amor'],['preco do amor']],
+[3,ZF,'Viver pra Acreditar',['🌱','➡️','🙏'],['viver','pra','acreditar'],['viver para acreditar']],
+// ---------- Adriana Arydes ----------
+[2,AA,'Nossa Missão',['👥','🎯'],['nossa','missão'],['nossa missao']],
+[2,AA,'Olhos no Espelho',['👀','🪞'],['olhos','no espelho']],
+[2,AA,'Novo Amanhecer',['🆕','🌅'],['novo','amanhecer']],
+[2,AA,'Poder do Amor',['💪','❤️'],['poder','do amor']],
+[3,AA,'Diário de Maria',['📔','💙','👩'],['diário','de','Maria'],['diario de maria']],
+[2,AA,'Ser Mãe',['👩','🍼'],['ser','mãe'],['ser mae']],
+[2,AA,'Lindo Céu',['😍','☁️'],['lindo','céu'],['lindo ceu']]
 ];
 const M=M_RAW.map(([l,b,a,e,m,al=[],c=''])=>({l,b,a,e,m,al,c}));
 
@@ -608,7 +657,8 @@ const TEMAS={
   santos:{dados:S,nome:'Santos',icone:'😇',pergunta:'Qual é o santo?',ph:'Digite o nome do santo…',
     dicas:[['Época','t','⏳'],['Origem','b','🌍'],['Pista','d','🔍']]}
 };
-const LEVELS={1:'Fácil',2:'Médio',3:'Difícil'}, ESTRELAS={1:'⭐',2:'⭐⭐',3:'⭐⭐⭐'};
+const LEVELS={0:'Todas',1:'Fácil',2:'Médio',3:'Difícil'}, ESTRELAS={0:'🌈',1:'⭐',2:'⭐⭐',3:'⭐⭐⭐'};
+const nomeNivel=l=>l===0?'Todos os níveis':'Nível '+LEVELS[l];
 const MAX=4, KEY='emojiceleste:';
 /* traz o progresso de quem jogava no endereço antigo (biblia-em-emojis) */
 try{if(!localStorage.getItem(KEY+'migrado')){const velho='biblia-em-emojis:';
@@ -684,24 +734,24 @@ function renderMenu(){
   const r=store.get(chaveDia(dayNum)),bd=$('badge-dia');
   if(r&&r.done){bd.textContent=r.won?'Feito ✓':'Feito';bd.className='badge ok'}else{bd.textContent='Hoje';bd.className='badge'}
   const c=[1,2,3].map(l=>P.filter(p=>p.l===l).length);
-  $('treino-sub').textContent=`${LEVELS[1]} ${c[0]} · ${LEVELS[2]} ${c[1]} · ${LEVELS[3]} ${c[2]}`;
+  $('treino-sub').textContent=tema==='musica'?'Fácil · Médio · Difícil · Todas':`${LEVELS[1]} ${c[0]} · ${LEVELS[2]} ${c[1]} · ${LEVELS[3]} ${c[2]} · Todas`;
 }
 
 /* ---------- níveis ---------- */
 function renderNiveis(){
   $('niveis-titulo').textContent=`${T().icone} ${T().nome} – Treino`;
   const un={musica:['música','músicas'],santos:['santo','santos'],biblia:['passagem','passagens']}[tema];
-  $('lista-niveis').innerHTML=[1,2,3].map(l=>{const n=P.filter(p=>p.l===l).length;
-    return `<button class="nivel n${l}" type="button" data-nivel="${l}"><span class="est" aria-hidden="true">${ESTRELAS[l]}</span><span><b>${LEVELS[l]}</b><small>${n} ${n===1?un[0]:un[1]}${n>24?' · rodadas de 24':''}</small></span></button>`}).join('');
+  const sub=l=>{if(l===0)return 'Mistura os três níveis';if(tema==='musica')return ['','As mais conhecidas','Para quem acompanha','Para fãs de verdade'][l];const n=P.filter(p=>p.l===l).length;return `${n} ${n===1?un[0]:un[1]}`};
+  $('lista-niveis').innerHTML=[1,2,3,0].map(l=>`<button class="nivel n${l}" type="button" data-nivel="${l}"><span class="est" aria-hidden="true">${ESTRELAS[l]}</span><span><b>${LEVELS[l]}</b><small>${sub(l)}</small></span></button>`).join('');
   $('lista-niveis').querySelectorAll('[data-nivel]').forEach(b=>b.onclick=()=>{level=+b.dataset.nivel;mode='treino';startTreino()});
 }
-function startTreino(){deck=shuffle(P.filter(p=>p.l===level)).slice(0,24);pos=0;total=0;fimDeck=false;newRound(deck[0]);mostrar('jogo');render()}
+function startTreino(){deck=shuffle(P.filter(p=>level===0||p.l===level)).slice(0,24);pos=0;total=0;fimDeck=false;newRound(deck[0]);mostrar('jogo');render()}
 
 /* ---------- partida ---------- */
 function dataHoje(){try{const s=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});return s[0].toUpperCase()+s.slice(1)}catch(e){return ''}}
 function cabecalho(){
   if(mode==='dia')return `<div class="faixa">📅 Desafio do Dia</div><p class="data">${esc(dataHoje())} · nº ${dayNum+1} · ${LEVELS[cur.p.l]}</p>`;
-  return `<div class="faixa">${T().icone} ${T().nome} – Nível ${LEVELS[level]}</div>
+  return `<div class="faixa">${T().icone} ${T().nome} – ${nomeNivel(level)}</div>
     <div class="linha-info"><span>Enigma ${Math.min(pos+1,deck.length)} de ${deck.length}</span><span>Pontos: ${total}</span></div>`;
 }
 function enigma(e){return `<ol class="enigma" id="enigma" aria-label="Sequência de ${e.length} emojis, para ler em ordem">${e.map((x,i)=>`<li class="${x.split('⃣').length>2?'multi':''}" style="animation-delay:${i*40}ms">${x}</li>`).join('')}</ol>`}
@@ -778,7 +828,7 @@ function renderResultado(){const p=cur.p,pts=pontosRodada(),mus=tema==='musica';
 
 function renderFim(){const max=deck.length*(MAX+(tema==='musica'?1:0));
   $('jogo').innerHTML=`<div class="tela">${cabecalho()}${enigma(['🏆','📖','✨'])}
-    <div class="banner">🏆 Fim do nível ${LEVELS[level]}</div>
+    <div class="banner">🏆 Fim da rodada · ${level===0?'Todas':LEVELS[level]}</div>
     <div class="cartao" style="text-align:center"><p class="tt" style="font:800 34px var(--display)">${total} de ${max} pontos</p>
     <p>${total>=max*.75?'Você conhece muito bem!':total>=max*.5?'Bom resultado. Mais uma rodada e você fecha o nível.':'Vale tentar de novo: cada rodada vem embaralhada.'}</p></div>
     <div class="botoes"><button class="btn azul" type="button" data-ir="niveis">🎯 Níveis</button><button class="btn" type="button" id="b-again">🔄 Jogar novamente</button></div>${SUG}</div>`;
@@ -830,7 +880,7 @@ function renderStats(){const t=statsTema,s=store.get('stats:'+t)||{jogos:0,acert
   else{const pa=s.acertos?Math.round(s.artistas/s.acertos*100):0;tiles+=`<div class="tile"><div class="i">🎤</div><span>Acertou quem canta</span><b>${pa}%</b></div><div class="tile"><div class="i">🎵</div><span>Músicas descobertas</span><b>${res.length}</b></div>`}
   const cores={1:'linear-gradient(90deg,#2FBF6A,#1E8A4B)',2:'linear-gradient(90deg,#4C8BFF,#2558C8)',3:'linear-gradient(90deg,#F05B6E,#B32237)'};
   const barras=[1,2,3].map(l=>{const tot=dados.filter(p=>p.l===l),ok=tot.filter(p=>res.includes(p.a)).length,pc=tot.length?ok/tot.length*100:0;
-    return `<div class="barra"><span>${LEVELS[l]}</span><span class="trilho"><i style="width:${pc}%;background:${cores[l]}"></i></span><span class="v">${ok}/${tot.length}${ok===tot.length&&ok?' ✅':''}</span></div>`}).join('');
+    return `<div class="barra"><span>${LEVELS[l]}</span><span class="trilho"><i style="width:${pc}%;background:${cores[l]}"></i></span><span class="v">${t==='musica'?Math.round(pc)+'%':ok+'/'+tot.length}${ok===tot.length&&ok?' ✅':''}</span></div>`}).join('');
   $('stats').innerHTML=`<div class="tela"><div class="tiles">${tiles}</div><div class="cartao"><h3>Progresso por nível (${TEMAS[t].nome})</h3>${barras}</div>
     <p class="nota">As estatísticas ficam salvas só neste aparelho.</p></div>`;
 }
@@ -844,7 +894,7 @@ let cdTimer;function countdown(){clearInterval(cdTimer);const tick=()=>{const el
   const h=Math.floor(ms/36e5),mi=Math.floor(ms%36e5/6e4);el.textContent=`Próximo desafio em ${h}h ${String(mi).padStart(2,'0')}min · amanhã: ${LEVELS[dailyPuzzle(dayNum+1).l]}.`};tick();cdTimer=setInterval(tick,30000)}
 
 /* ---------- início ---------- */
-$('contagem').textContent=`${P_B.length} passagens bíblicas · ${M.length} músicas · ${S.length} santos`;
+$('contagem').textContent='📖 Bíblia · 🎵 Músicas · 😇 Santos';
 $('ajuda-topo').onclick=()=>abrir('ajuda');
 let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(layoutEnigma,100)});
 const temaHash=()=>({'#musica':'musica','#santos':'santos','#biblia':'biblia'})[location.hash];
