@@ -615,11 +615,13 @@
   const AVATARES = ['🦊', '🐶', '🐱', '🐼', '🐸', '🐯', '🦁', '🐵', '🐧', '🦉', '🐢', '🐙', '🦄', '🐝', '🐞', '🐬', '⚽', '🏀', '🎾', '🃏', '♠️', '♥️', '♦️', '♣️', '🎲', '⭐', '🚀', '🌻'];
   const REACOES = ['👏', '😂', '🔥', '😮', '🙏', 'Boa jogada!', 'Boa sorte!', 'GG!'];
   const PROIBIDAS = ['porra', 'caralho', 'karalho', 'krl', 'merda', 'bosta', 'puta', 'puto', 'putinha', 'putaria', 'prostitut', 'buceta', 'boceta', 'bct', 'xereca', 'xoxota', 'cu', 'cuzao', 'cusao', 'foda', 'fode', 'foder', 'fuder', 'fdp', 'pqp', 'vsf', 'tnc', 'kct', 'cacete', 'kacete', 'piroca', 'penis', 'vagina', 'bunda', 'sexo', 'porno', 'punheta', 'siririca', 'tesao', 'gostosa', 'safad', 'vagabund', 'vadia', 'piranha', 'arromb', 'otario', 'idiota', 'imbecil', 'babaca', 'retardad', 'corno', 'chifrud', 'viado', 'bicha', 'boiola', 'baitola', 'traveco', 'sapatao', 'crioulo', 'nazi', 'hitler', 'estupr', 'pedofil', 'maconha', 'cocaina', 'desgraca', 'lixo humano'];
+  const TESTE = (new URLSearchParams(location.search).get('teste') || '').replace(/[^a-z0-9]/gi, '').slice(0, 8);
   function perfil() {
+    if (TESTE) return { apelido: 'Teste ' + TESTE.toUpperCase(), avatar: '🐸' };
     try { const p = JSON.parse(localStorage.getItem('carludix:jogador') || 'null'); if (p && p.apelido && p.avatar && !apelidoInvalido(p.apelido)) return p; } catch (e) {}
     return null;
   }
-  function salvarPerfil(p) { try { localStorage.setItem('carludix:jogador', JSON.stringify(p)); } catch (e) {} }
+  function salvarPerfil(p) { if (TESTE) return; try { localStorage.setItem('carludix:jogador', JSON.stringify(p)); } catch (e) {} }
   const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   function apelidoInvalido(a) {
     a = String(a || '');
@@ -763,7 +765,7 @@
     catch (e) { toast(erroOnline(e), 'erro'); try { history.replaceState(null, '', location.pathname); } catch (e2) {} return telaSalas(); }
     mesaAtual = mesa;
     R.marcarOnline().catch(() => {});
-    try { history.replaceState(null, '', location.pathname + '?sala=' + codigo); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + '?sala=' + codigo + (TESTE ? '&teste=' + TESTE : '')); } catch (e) {}
     mesa.onEstado(st => receberEstado(mesa, st));
     mesa.onErro(msg => { if (P) { P.ocupado = false; desenharJogo(); } toast(msg, 'erro'); });
     mesa.onReacao(v => mostrarReacao(mesa, v));

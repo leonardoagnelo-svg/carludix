@@ -18,8 +18,12 @@
   function conectar() {
     if (!fbP) fbP = (async () => {
       const [A, Au, D] = await Promise.all([import(FB_V + 'firebase-app.js'), import(FB_V + 'firebase-auth.js'), import(FB_V + 'firebase-database.js')]);
-      const app = A.getApps().length ? A.getApp() : A.initializeApp(FB_CFG);
-      const auth = Au.getAuth(app), db = D.getDatabase(app);
+      // ?teste=x abre um jogador de teste separado (outro login anônimo só nesta aba) para testar com várias abas
+      const teste = (new URLSearchParams(location.search).get('teste') || '').replace(/[^a-z0-9]/gi, '').slice(0, 8);
+      const nomeApp = teste ? 'buraco-teste-' + teste : '[DEFAULT]';
+      const app = A.getApps().find(a => a.name === nomeApp) || (teste ? A.initializeApp(FB_CFG, nomeApp) : A.initializeApp(FB_CFG));
+      const auth = teste ? Au.initializeAuth(app, { persistence: Au.inMemoryPersistence }) : Au.getAuth(app);
+      const db = D.getDatabase(app);
       const uid = await new Promise((ok, falha) => { Au.onAuthStateChanged(auth, u => { if (u) ok(u.uid); }); Au.signInAnonymously(auth).catch(falha); });
       return { D, db, uid };
     })().catch(e => { console.error(e); fbP = null; throw e; });
