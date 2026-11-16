@@ -357,8 +357,8 @@ const FAIXAS = [
   {nome:"Difíceis", letras:"HIJOQUZ",  copias:2, r:[0,1]},
   {nome:"Raras",    letras:"KWXY",     copias:1, r:[0,0]},
 ];
-const MAO = 5, MESA_VISIVEL = 6;
-const T_CONTAGEM = 3600, T_REVISAO = 6000, T_VOTO = 15000, T_FIMRODADA = 12000, T_MIN_RETOMA = 10000;
+const MAO = 5, POR_TEMA = 3;
+const T_CONTAGEM = 3600, T_REVISAO = 6000, T_TROCA = 4000, T_VOTO = 15000, T_FIMRODADA = 12000, T_MIN_RETOMA = 10000;
 const AVS = ["🦊","🐼","🐯","🦁","🐸","🐵","🐧","🦉","🐙","🦄","🐢","🐝","🐶","🐱","🐰","🐻"];
 
 const rnd = n => Math.floor(Math.random()*n);
@@ -386,17 +386,33 @@ const L = {
     j = {fase:"lobby", ordem, totais:tot, rodada:0, usados:[]};
     return L.novaRodada(j, c);
   },
-  novaRodada(j, c){
-    const b = novoBaralho(), maos = {};
-    for(const u of arr(j.ordem)) if(c.online.includes(u)) maos[u] = b.splice(0,MAO).join(" ");
+  sorteiaTema(j, c){
     const pool = TEMAS.map((t,i)=>i).filter(i=>(TEMAS[i].p==="g"&&c.cfg.diversos!==false) || (TEMAS[i].p==="f"&&c.cfg.futebol) || (TEMAS[i].p==="c"&&c.cfg.catolico)).filter(i=>!c.cfg.robos || BANCO[TEMAS[i].t]);
     if(!pool.length) TEMAS.forEach((t,i)=>{ if(t.p==="g" && (!c.cfg.robos||BANCO[t.t])) pool.push(i); });
     let usados = arr(j.usados).filter(i=>pool.includes(i));
     let livres = pool.filter(i=>!usados.includes(i));
     if(!livres.length){usados=[];livres=pool}
     const ti = livres[rnd(livres.length)];
-    return {...j, rodada:(j.rodada||0)+1, maos, jogadas:[], tema:TEMAS[ti].t, usados:[...usados,ti],
+    return {tema:TEMAS[ti].t, usados:[...usados,ti]};
+  },
+  novaRodada(j, c){
+    const b = novoBaralho(), maos = {};
+    for(const u of arr(j.ordem)) if(c.online.includes(u)) maos[u] = b.splice(0,MAO).join(" ");
+    const t = L.sorteiaTema(j, c);
+    return {...j, rodada:(j.rodada||0)+1, maos, jogadas:[], tema:t.tema, temas:[t.tema], tn:0, usados:t.usados,
       fase:"contagem", ate:c.now+T_CONTAGEM, restante:c.cfg.tempo*1000, cont:null, veredito:null, resumo:null, zerou:null};
+  },
+  proximoTema(j, c){   // 3 cartas no tema: vira o próximo, as mãos continuam
+    const t = L.sorteiaTema(j, c);
+    return {...j, tema:t.tema, temas:[...arr(j.temas), t.tema], tn:(j.tn||0)+1, usados:t.usados,
+      fase:"contagem", ate:c.now+T_CONTAGEM, restante:c.cfg.tempo*1000, cont:null};
+  },
+  doTema: j => arr(j.jogadas).filter(x=>(x.tm||0)===(j.tn||0)),
+  depoisDaJogada(j, c){   // decide a fase depois de descer/contestar
+    const zerou = arr(j.ordem).find(u=>(j.maos||{})[u]!=null && !tok(j.maos[u]).length);
+    if(zerou) return {...j, fase:"revisao", ate:c.now+T_REVISAO, zerou};
+    if(L.doTema(j).length>=POR_TEMA) return {...j, fase:"troca", ate:c.now+T_TROCA};
+    return null;
   },
   jogar(j, c, carta, palavra){
     if(j.fase!=="jogando" || c.now>j.ate) return c.erro="A rodada não está aberta agora.", undefined;
@@ -407,19 +423,20 @@ const L = {
       const p = normal(palavra);
       if(p.length<2) return c.erro="Escreva uma palavra.", undefined;
       if(p[0].toUpperCase()!==letraDe(carta)) return c.erro=`A palavra tem que começar com ${letraDe(carta)}.`, undefined;
-      if(jog.some(x=>normal(x.w)===p)) return c.erro="Essa palavra já foi usada nesta rodada.", undefined;
+      if(L.doTema(j).some(x=>normal(x.w)===p)) return c.erro="Essa palavra já foi usada neste tema.", undefined;
     }
     mao.splice(k,1);
-    const nova = {u:c.uid, c:carta, t:c.now}; if(c.cfg.modo==="online") nova.w = String(palavra).trim().slice(0,40);
+    const nova = {u:c.uid, c:carta, t:c.now, tm:j.tn||0}; if(c.cfg.modo==="online") nova.w = String(palavra).trim().slice(0,40);
     jog.push(nova);
     j = {...j, jogadas:jog, maos:{...j.maos, [c.uid]:mao.join(" ")}};
-    if(!mao.length){ j.restante=Math.max(0,j.ate-c.now); j.fase="revisao"; j.ate=c.now+T_REVISAO; j.zerou=c.uid; }
-    return j;
+    const rest = Math.max(0,j.ate-c.now);
+    const d = L.depoisDaJogada(j, c);
+    return d ? {...d, restante:rest} : j;
   },
   contestar(j, c, i){
-    if(j.fase!=="jogando" && j.fase!=="revisao") return undefined;
+    if(j.fase!=="jogando" && j.fase!=="revisao" && j.fase!=="troca") return undefined;
     const jog = arr(j.jogadas), p = jog[i];
-    if(!p || p.u===c.uid || p.ok || !arr(j.ordem).includes(c.uid)) return undefined;
+    if(!p || p.u===c.uid || p.ok || (p.tm||0)!==(j.tn||0) || !arr(j.ordem).includes(c.uid)) return undefined;
     if(j.fase==="jogando") j.restante = Math.max(0, j.ate-c.now);
     const eleitores = arr(j.ordem).filter(u=>u!==p.u && c.online.includes(u));
     j = {...j, fase:"votacao", ate:c.now+T_VOTO, cont:{i, por:c.uid, eleitores, votos:{[c.uid]:false}}};
@@ -446,8 +463,8 @@ const L = {
       else { jog.splice(j.cont.i,1); maos[p.u] = tok(maos[p.u]).concat(p.c).join(" "); }
     }
     j = {...j, jogadas:jog, maos, cont:null, veredito:p?{u:p.u, c:p.c, w:p.w||"", ok:vale?1:0, s:sim, n:nao, t:c.now}:null};
-    const zerou = arr(j.ordem).find(u=>maos[u]!=null && !tok(maos[u]).length);
-    if(zerou){ j.fase="revisao"; j.ate=c.now+T_REVISAO; j.zerou=zerou; }
+    const d = L.depoisDaJogada(j, c);
+    if(d) return d;
     else { j.fase="jogando"; j.ate=c.now+Math.max(j.restante||0, T_MIN_RETOMA); }
     return j;
   },
@@ -464,6 +481,7 @@ const L = {
     switch(j.fase){
       case "contagem": return {...j, fase:"jogando", ate:c.now+(j.restante||c.cfg.tempo*1000)};
       case "jogando": case "revisao": return L.fecharRodada(j, c);
+      case "troca": return L.proximoTema(j, c);
       case "votacao": return L.apurar(j, c);
       case "fimRodada": return L.novaRodada(j, c);
     }
@@ -756,7 +774,7 @@ function telaComo(){
     <ul><li><b>Online:</b> digite a palavra e aperte Enter. O jogo escolhe a carta certa da sua mão (ou toque na carta antes).</li>
     <li><b>Presencial:</b> grite a palavra e toque na carta ao mesmo tempo.</li>
     <li><b>Contra robôs:</b> jogue sozinho contra 1 a 5 robôs, no nível fácil, médio ou difícil.</li></ul>
-    <p>Desça quantas cartas conseguir! A rodada acaba quando <b>alguém zera a mão</b> (ou quando o tempo acaba). Não vale repetir palavra na mesma rodada.</p>
+    <p>Desça quantas cartas conseguir! Cada tema aceita <b>3 cartas</b>: na 3ª, vira o <b>próximo tema</b> e todo mundo continua com a mão que tem. A rodada acaba quando <b>alguém zera a mão</b>. Se o tempo de um tema acabar antes das 3 cartas, a rodada também acaba. Não vale repetir palavra no mesmo tema.</p>
     <h3>⚠️ Contestar</h3>
     <p>Achou a resposta forçada? Toque em <b>Contestar</b>. Todos votam (menos quem jogou). Empate: a resposta vale. Se não valer, a carta volta para a mão de quem jogou.</p>
     <h3>🌩️ Raios</h3>
@@ -873,7 +891,7 @@ setInterval(()=>{
 const entre = ([a,b]) => a + Math.random()*(b-a);
 function jogadaDoRobo(j, u){
   const banco = BANCO[j.tema] || [];
-  const usadas = new Set(arr(j.jogadas).map(x=>normal(x.w)));
+  const usadas = new Set(L.doTema(j).map(x=>normal(x.w)));
   const mao = tok((j.maos||{})[u]).sort((x,y)=>raiosDe(y)-raiosDe(x));
   for(const t of mao){
     const ops = banco.filter(w=>{ const n=normal(w); return n[0] && n[0].toUpperCase()===letraDe(t) && !usadas.has(n); });
@@ -888,7 +906,8 @@ setInterval(()=>{
   for(const u of so.bots){
     if(j.fase==="jogando"){
       let p = so.prox[u];
-      if(!p || p.r!==j.rodada){ p = so.prox[u] = {r:j.rodada, t:now+entre(nv.d)}; }
+      const rk = j.rodada+":"+(j.tn||0);
+      if(!p || p.r!==rk){ p = so.prox[u] = {r:rk, t:now+entre(nv.d)}; }
       if(now < p.t || so.ocupado[u]) continue;
       p.t = now + entre(nv.d);
       if(Math.random() < nv.esq) continue;               // "deu branco"
@@ -992,19 +1011,20 @@ function telaJogo(){
     montaZonaMao(jogo, c);
   }
   const contando = j.fase==="contagem";
-  document.getElementById("pRod").textContent = "Rodada " + j.rodada;
+  document.getElementById("pRod").textContent = "Rodada " + j.rodada + ((j.tn||0) ? " · tema " + ((j.tn||0)+1) : "");
   const meus = (j.totais||{})[S.uid]||0;
   document.getElementById("pRaio").innerHTML = jogo ? `<i>⚡</i> ${meus} / ${c.limite}` : `👀 assistindo`;
-  document.getElementById("temaTx").textContent = contando ? "Prepare-se…" : j.tema;
+  document.getElementById("temaTx").textContent = contando ? ((j.tn||0) ? "Próximo tema…" : "Prepare-se…") : j.tema;
   document.getElementById("tema").classList.toggle("vazio", contando);
   document.getElementById("cont").innerHTML = contando ? `<div class="contagem"><b id="cNum"></b></div>` : "";
 
   // mesa
   const jog = arr(j.jogadas);
-  const podeContestar = jogo && (j.fase==="jogando"||j.fase==="revisao");
-  const idx = jog.map((p,i)=>i).reverse().slice(0, MESA_VISIVEL);   // mais recentes primeiro
-  document.getElementById("mesa").innerHTML = !jog.length ? `<div class="vaziaMesa">A mesa está vazia. Desça a primeira carta! ⚡</div>` : idx.map(i=>{
-    const p = jog[i];
+  const podeContestar = jogo && (j.fase==="jogando"||j.fase==="revisao"||j.fase==="troca");
+  const idx = jog.map((p,i)=>i).filter(i=>(jog[i].tm||0)===(j.tn||0));   // só as cartas do tema atual
+  document.getElementById("mesa").innerHTML = [0,1,2].map(n=>{
+    const i = idx[n], p = jog[i];
+    if(!p) return `<div class="slot"><span class="num">${n+1}</span></div>`;
     const q = pj(p.u);
     return `<div class="slot cheio">${cartaHTML(p.c,"mini")}
       <span class="quem">${esc(q.a)} ${esc(q.n)}</span>
@@ -1133,15 +1153,17 @@ function atualizaRelogio(){
   const st = document.getElementById("status");
   if(j.fase==="contagem"){ const n=document.getElementById("cNum"); if(n) n.textContent = s>3?"3":(s||"JÁ!"); if(st) st.textContent="Prepare-se!"; }
   const bar = document.getElementById("tBar"), num = document.getElementById("tNum");
-  if(bar && (j.fase==="jogando"||j.fase==="revisao"||j.fase==="contagem"||j.fase==="votacao")){
-    const tot = j.fase==="revisao" ? T_REVISAO : j.fase==="votacao" ? T_VOTO : j.fase==="contagem" ? T_CONTAGEM : Math.max(c.tempo*1000, j.restante||0, T_MIN_RETOMA);
+  if(bar && (j.fase==="jogando"||j.fase==="revisao"||j.fase==="troca"||j.fase==="contagem"||j.fase==="votacao")){
+    const tot = j.fase==="revisao" ? T_REVISAO : j.fase==="troca" ? T_TROCA : j.fase==="votacao" ? T_VOTO : j.fase==="contagem" ? T_CONTAGEM : Math.max(c.tempo*1000, j.restante||0, T_MIN_RETOMA);
     const pct = j.fase==="votacao" ? Math.min(100, ((j.restante||0)/(c.tempo*1000))*100) : Math.min(100, ms/tot*100);
-    if(j.fase!=="votacao"){ bar.style.width = pct+"%"; bar.className = (j.fase==="jogando" && s<=10) || j.fase==="revisao" ? "alerta" : ""; num.textContent = String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+    if(j.fase!=="votacao"){ bar.style.width = pct+"%"; bar.className = (j.fase==="jogando" && s<=10) || j.fase==="revisao" || j.fase==="troca" ? "alerta" : ""; num.textContent = String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
     else { num.textContent = "⏸"; }
   }
   if(st){
     const qtd = arr(j.jogadas).length;
-    if(j.fase==="jogando"){ st.className="status quente"; st.textContent = qtd ? `Quem zerar a mão primeiro fecha a rodada! (${qtd} na mesa)` : "VALENDO! Desça suas cartas!"; }
+    const nt = L.doTema(j).length;
+    if(j.fase==="jogando"){ st.className="status quente"; st.textContent = nt ? `${nt} de 3 cartas — na 3ª muda o tema!` : "VALENDO! Desça suas cartas!"; }
+    else if(j.fase==="troca"){ st.className="status"; st.textContent = `3 cartas! Próximo tema em ${s}s… alguém contesta?`; }
     else if(j.fase==="revisao"){ st.className="status"; st.textContent = `${j.zerou?pj(j.zerou).n:"Alguém"} zerou a mão! Alguém contesta? (${s}s)`; }
     else if(j.fase==="votacao"){ st.className="status"; st.textContent = "Votação em andamento…"; }
     else if(j.fase!=="contagem"){ st.className="status"; st.textContent=""; }
@@ -1168,7 +1190,10 @@ function telaResumo(fim){
         <div class="bar"><i style="width:${Math.min(100,t/c.limite*100)}%"></i></div></span>
       ${!fim?`<span class="mais">+${res[u]||0}</span>`:""}<span class="pt"><i>⚡</i>${t}</span></div>`;
   }).join("");
-  const jogHTML = jog.length ? `<div class="jogadas">${jog.map(p=>`<div class="jl"><span class="v">✓</span>${cartaHTML(p.c,"mini")}<span>${p.w?esc(p.w):"(falada)"}</span><small>${esc(pj(p.u).a)} ${esc(pj(p.u).n)}</small></div>`).join("")}</div>`
+  const linhaJ = p=>`<div class="jl"><span class="v">✓</span>${cartaHTML(p.c,"mini")}<span>${p.w?esc(p.w):"(falada)"}</span><small>${esc(pj(p.u).a)} ${esc(pj(p.u).n)}</small></div>`;
+  const temasR = arr(j.temas).length ? arr(j.temas) : [j.tema];
+  const jogHTML = jog.length ? temasR.map((t,n)=>{ const g = jog.filter(p=>(p.tm||0)===n);
+      return g.length ? `<div class="rot" style="margin:10px 0 4px;text-align:left">${n+1}. ${esc(t)}</div><div class="jogadas">${g.map(linhaJ).join("")}</div>` : ""; }).join("")
     : `<p class="info">Ninguém desceu carta a tempo! 😅</p>`;
   const meuRes = res[S.uid];
   if(fim){
@@ -1192,7 +1217,7 @@ function telaResumo(fim){
     $app.innerHTML = `
     <div class="centro"><div class="faixaOuro">🏁 Rodada ${j.rodada} encerrada!</div>
       <p style="font-size:18px;font-weight:800;margin:10px 0 0">${j.zerou?`${esc(pj(j.zerou).a)} ${esc(pj(j.zerou).n)} zerou a mão! ⚡`:"⏱ O tempo acabou!"}</p></div>
-    <div class="painel" style="margin-top:16px"><div class="rot">CARTAS JOGADAS · ${esc(j.tema)}</div>${jogHTML}</div>
+    <div class="painel" style="margin-top:16px"><div class="rot">CARTAS JOGADAS</div>${jogHTML}</div>
     ${meuRes!=null?`<p class="centro" style="font-family:'Lilita One';font-size:22px;margin:12px 0 0">${meuRes?`Cartas restantes viraram <span style="color:var(--ouro)">+${meuRes} raio${meuRes>1?"s":""}</span>`:"Zero raios nesta rodada! 🎉"}</p>`:""}
     <div class="painel" style="margin-top:12px"><div class="rot">PLACAR <small>limite: ${c.limite} raios · menos é melhor</small></div>${linhas}</div>
     <p class="info">Próxima rodada em <b id="rNum">…</b>s</p>
