@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Letrâmpago</title>
+<meta name="description" content="Letrâmpago: jogo de grupo de pensar rápido. Um tema na mesa, cinco letras na mão: fale uma palavra e desça a carta antes de todo mundo. Quem chegar ao limite de raios perde!">
+<meta name="theme-color" content="#2a0a6b">
+<meta property="og:title" content="Letrâmpago — CARLUDIX">
+<meta property="og:description" content="Tema na mesa, letras na mão: fale rápido e desça a carta! Jogo de grupo online e presencial.">
+<meta property="og:image" content="https://carludix.com/letrampago/logo.png">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --roxo:#2a0a6b; --roxo2:#160438; --roxo3:#3d1496; --lilas:#7b4dff; --ouro:#ffc928; --ouro2:#ff9d00;
+  --verde:#2bc44a; --verde2:#168a2c; --verm:#e8263d; --verm2:#a0101f; --azul:#1f6bff; --branco:#fff;
+  --txt:#f4eeff; --suave:#c7b6ff; --painel:rgba(30,8,80,.72); --borda:rgba(255,201,40,.55);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:"Baloo 2",system-ui,sans-serif;color:var(--txt);
+  background:var(--roxo2);
+  background-image:
+    radial-gradient(ellipse at 50% 0%,rgba(123,77,255,.55),transparent 60%),
+    repeating-conic-gradient(from 0deg at 50% 18%,rgba(255,255,255,.035) 0 6deg,transparent 6deg 18deg),
+    linear-gradient(180deg,#3a0f8f 0%,#1a0547 70%,#120332 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+}
+button,input{font-family:inherit}
+.hide{display:none!important}
+#app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:14px 16px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+h1,h2,h3,.tit{font-family:"Lilita One",sans-serif;font-weight:400;letter-spacing:.5px;margin:0}
+.tit{font-size:28px;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35);transform:skew(-4deg)}
+.topo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.voltar{width:42px;height:42px;border-radius:12px;border:2px solid var(--lilas);background:var(--roxo3);color:#fff;font-size:22px;display:grid;place-items:center;cursor:pointer;flex:none}
+.painel{background:var(--painel);border:2px solid rgba(123,77,255,.6);border-radius:18px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08)}
+.painel+.painel{margin-top:12px}
+.rot{font-family:"Lilita One";font-size:15px;text-align:center;color:#fff;margin-bottom:8px;letter-spacing:.6px}
+.rot small{display:block;font-family:"Baloo 2";font-size:12px;color:var(--suave);letter-spacing:0}
+
+/* botões */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:16px;padding:13px 16px;cursor:pointer;
+  font-family:"Lilita One";font-size:21px;letter-spacing:.6px;color:#3a1600;
+  background:linear-gradient(180deg,#ffe36b,var(--ouro) 45%,var(--ouro2));box-shadow:0 5px 0 #b56200,0 8px 16px rgba(0,0,0,.35);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #b56200,0 4px 8px rgba(0,0,0,.35)}
+.btn[disabled]{filter:grayscale(.8) brightness(.7);cursor:not-allowed}
+.btn.verde{color:#fff;background:linear-gradient(180deg,#5ee26e,var(--verde) 50%,var(--verde2));box-shadow:0 5px 0 #0c5e1c,0 8px 16px rgba(0,0,0,.35);text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.btn.verm{color:#fff;background:linear-gradient(180deg,#ff6a7b,var(--verm) 50%,var(--verm2));box-shadow:0 5px 0 #650812,0 8px 16px rgba(0,0,0,.35);text-shadow:0 2px 0 rgba(0,0,0,.3)}
+.btn.roxo{color:#fff;font-size:17px;padding:11px;background:linear-gradient(180deg,#8f63ff,#5a2fe0);box-shadow:0 4px 0 #2f1388,0 6px 12px rgba(0,0,0,.3);border:2px solid #a98bff}
+.btn.peq{font-size:15px;padding:8px 12px;border-radius:12px;width:auto}
+.btns{display:flex;flex-direction:column;gap:12px}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;border-radius:12px;border:2px solid var(--lilas);background:var(--roxo3);color:#fff;font-family:"Lilita One";font-size:22px;padding:8px 4px;cursor:pointer}
+.seg button small{display:block;font-family:"Baloo 2";font-size:11px;color:var(--suave);line-height:1.1}
+.seg button.on{background:linear-gradient(180deg,#ffe36b,var(--ouro2));color:#3a1600;border-color:#fff3b0;box-shadow:0 0 14px rgba(255,201,40,.6)}
+.seg button.on small{color:#5a2c00}
+.stepper{display:flex;justify-content:center;align-items:center;gap:6px}
+.stepper button{width:46px;height:46px;border-radius:12px;border:2px solid var(--lilas);background:var(--roxo3);color:#fff;font-size:26px;cursor:pointer}
+.stepper b{min-width:64px;text-align:center;font-family:"Lilita One";font-size:30px;background:rgba(0,0,0,.25);border-radius:10px;padding:2px 0}
+.chk{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(0,0,0,.2);cursor:pointer;margin-top:6px;font-weight:700}
+.chk input{width:22px;height:22px;accent-color:var(--ouro)}
+input.campo{width:100%;padding:12px 14px;border-radius:14px;border:2px solid var(--lilas);background:#1b0650;color:#fff;font-size:20px;font-weight:700;outline:none}
+input.campo:focus{border-color:var(--ouro);box-shadow:0 0 0 3px rgba(255,201,40,.25)}
+input.codigo{text-align:center;font-family:"Lilita One";font-size:34px;letter-spacing:8px;text-transform:uppercase}
+
+/* home */
+.marca{display:block;width:min(100%,300px);max-height:36vh;object-fit:contain;margin:0 auto -6px;filter:drop-shadow(0 10px 22px rgba(0,0,0,.45));animation:flutua 4s ease-in-out infinite}
+@keyframes flutua{50%{transform:translateY(-6px)}}
+.perfil{display:flex;gap:10px;align-items:center}
+.av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:28px;background:radial-gradient(circle at 35% 30%,#fff,#d9c9ff);border:3px solid var(--ouro);flex:none;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.avs{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:10px}
+.avs button{font-size:24px;aspect-ratio:1;border-radius:10px;border:2px solid transparent;background:rgba(255,255,255,.1);cursor:pointer;padding:0}
+.avs button.on{border-color:var(--ouro);background:rgba(255,201,40,.25)}
+.rodape{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;margin-top:auto;padding-top:20px;font-size:14px}
+.rodape a{color:var(--suave);text-decoration:none;font-weight:700}
+.rodape a:hover{color:#fff}
+.icones{display:flex;justify-content:space-between;margin-top:12px}
+.ic{width:44px;height:44px;border-radius:12px;border:2px solid var(--lilas);background:var(--roxo3);color:#fff;font-size:20px;cursor:pointer;display:grid;place-items:center}
+
+/* sala */
+.codbox{display:flex;align-items:center;gap:12px}
+.codbox .cod{flex:1;text-align:center;background:rgba(0,0,0,.28);border:2px solid var(--lilas);border-radius:14px;padding:6px}
+.codbox .cod small{display:block;font-size:12px;color:var(--suave)}
+.codbox .cod b{font-family:"Lilita One";font-size:36px;letter-spacing:5px;color:#fff}
+.qr{background:#fff;border-radius:10px;padding:4px;width:104px;height:104px;flex:none}
+.qr svg{width:100%;height:100%;display:block}
+.lista{display:flex;flex-direction:column;gap:2px}
+.jog{display:flex;align-items:center;gap:10px;padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.08);font-weight:700;font-size:17px}
+.jog:last-child{border-bottom:0}
+.jog .av{width:36px;height:36px;font-size:21px;border-width:2px;cursor:default}
+.jog .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jog .nm small{color:var(--suave);font-weight:500}
+.ok{width:26px;height:26px;border-radius:50%;background:var(--verde);display:grid;place-items:center;color:#fff;font-size:15px;border:2px solid #b9ffc4;flex:none}
+.ok.off{background:#666;border-color:#999}
+.espera{color:var(--suave);font-style:italic;font-weight:500}
+.info{font-size:14px;color:var(--suave);text-align:center;margin-top:8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.tag{font-size:13px;font-weight:700;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:2px 10px}
+
+/* jogo */
+.barra{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.pill{background:rgba(0,0,0,.35);border:2px solid var(--lilas);border-radius:12px;padding:3px 12px;font-weight:800;font-size:15px;white-space:nowrap}
+.pill.raio{border-color:var(--ouro);font-family:"Lilita One";font-size:19px;font-weight:400}
+.pill.raio i{font-style:normal;color:var(--ouro)}
+.tema{position:relative;background:linear-gradient(180deg,#ffe56b,var(--ouro) 55%,#ffad1f);color:#3a1200;border-radius:18px;padding:22px 14px 14px;text-align:center;
+  box-shadow:0 6px 0 #b56200,0 10px 24px rgba(0,0,0,.4);transform:rotate(-1.2deg);margin:14px 4px 6px}
+.tema .et{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--ouro2);color:#3a1200;font-family:"Lilita One";font-size:15px;padding:2px 14px;border-radius:10px;border:2px solid #fff3b0}
+.tema .tx{font-family:"Lilita One";font-size:26px;line-height:1.12}
+.tema.vazio .tx{opacity:.35}
+.relogio{display:flex;align-items:center;gap:10px;margin:14px 2px 6px}
+.relogio .tb{flex:1;height:14px;border-radius:10px;background:rgba(0,0,0,.4);overflow:hidden;border:2px solid rgba(255,255,255,.15)}
+.relogio .tb i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--verde),var(--ouro));border-radius:10px;transition:width .25s linear}
+.relogio .tb i.alerta{background:linear-gradient(90deg,var(--verm),#ff8a00)}
+.relogio b{font-family:"Lilita One";font-size:22px;min-width:52px;text-align:right}
+.status{text-align:center;font-weight:800;font-size:17px;min-height:26px;margin:4px 0}
+.status.quente{color:var(--ouro);animation:pulsa .8s ease-in-out infinite}
+@keyframes pulsa{50%{transform:scale(1.06)}}
+.mesa{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
+.slot{min-height:132px;border:2px dashed rgba(255,255,255,.25);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px 4px;gap:4px;background:rgba(0,0,0,.15);text-align:center}
+.slot.cheio{border-style:solid;border-color:rgba(255,201,40,.5);background:rgba(0,0,0,.25);animation:entra .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes entra{from{transform:scale(.4) rotate(-12deg);opacity:0}}
+.slot .quem{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot .pal{font-size:15px;font-weight:800;color:#fff;background:rgba(255,255,255,.12);border-radius:8px;padding:0 6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot .num{font-family:"Lilita One";font-size:30px;opacity:.25;margin-top:30px}
+.contestar{border:0;border-radius:9px;background:var(--verm);color:#fff;font-weight:800;font-size:12px;padding:3px 8px;cursor:pointer;box-shadow:0 2px 0 var(--verm2)}
+.selo{font-size:12px;font-weight:800;color:#b9ffc4}
+
+.carta{position:relative;width:58px;height:78px;border-radius:12px;border:3px solid #fff;display:grid;place-items:center;flex:none;
+  font-family:"Lilita One";font-size:38px;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35);box-shadow:0 4px 0 rgba(0,0,0,.35),inset 0 -6px 0 rgba(0,0,0,.15);user-select:none}
+.carta.mini{width:44px;height:58px;font-size:28px;border-width:2px;border-radius:9px}
+.carta .r{position:absolute;top:-9px;right:-9px;background:#2a0a6b;border:2px solid var(--ouro);color:var(--ouro);border-radius:12px;font-family:"Lilita One";font-size:13px;padding:0 5px;text-shadow:none;line-height:18px}
+.carta.mini .r{font-size:11px;top:-8px;right:-8px;line-height:15px}
+.c0{background:linear-gradient(180deg,#ff5468,#d5112a)}
+.c1{background:linear-gradient(180deg,#4b8bff,#1446d6)}
+.c2{background:linear-gradient(180deg,#ffd84a,#f0a400);color:#3a1600;text-shadow:0 2px 0 rgba(255,255,255,.4)}
+.c3{background:linear-gradient(180deg,#a96bff,#6b25e0)}
+.c4{background:linear-gradient(180deg,#4fe06a,#16a335)}
+.mao{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:14px 4px 6px;margin-top:auto}
+.mao .carta{cursor:pointer;transition:transform .12s}
+.mao .carta:hover{transform:translateY(-5px)}
+.mao .carta.sel{transform:translateY(-12px) scale(1.06);box-shadow:0 0 0 3px var(--ouro),0 8px 18px rgba(255,201,40,.6)}
+.mao.trava .carta{opacity:.55;cursor:default;transform:none}
+.mao .vazia{color:var(--suave);font-weight:700;padding:16px}
+.maoTit{text-align:center;font-weight:800;font-size:14px;color:var(--suave);margin-top:6px}
+.envio{display:flex;gap:8px;margin-top:8px}
+.envio input{flex:1;font-size:20px}
+.envio .btn{width:auto;padding:10px 16px;font-size:18px}
+.erro{color:#ff9aa6;text-align:center;font-weight:800;font-size:14px;min-height:20px}
+.treme{animation:treme .35s}
+@keyframes treme{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.placar{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none}
+.placar::-webkit-scrollbar{display:none}
+.pj{flex:none;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.12);border-radius:30px;padding:2px 10px 2px 3px;font-weight:800;font-size:13px}
+.pj.eu{border-color:var(--ouro)}
+.pj.off{opacity:.45}
+.pj .av{width:28px;height:28px;font-size:16px;border-width:2px;cursor:default}
+.pj .q{color:var(--suave);font-weight:700}
+.pj i{font-style:normal;color:var(--ouro)}
+
+/* modal votação */
+.veu{position:fixed;inset:0;background:rgba(10,2,30,.72);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:20;padding:16px}
+.modal{width:min(100%,420px);background:linear-gradient(180deg,#3a1496,#220870);border:3px solid var(--ouro);border-radius:22px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.6);animation:entra .3s}
+.faixa{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--verm),#ff4d61);border-radius:14px;padding:8px 12px;font-family:"Lilita One";font-size:22px;color:#fff;transform:rotate(-2deg);margin:-30px 0 14px;box-shadow:0 5px 0 var(--verm2)}
+.faixa span{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--verm);display:grid;place-items:center;flex:none}
+.perg{text-align:center;font-family:"Lilita One";font-size:21px;line-height:1.2;margin:4px 0 12px}
+.perg .pq{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:8px}
+.votos{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.voto{position:relative}
+.voto .av{width:42px;height:42px;font-size:24px;cursor:default}
+.voto b{position:absolute;bottom:-4px;right:-4px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;color:#fff;border:2px solid #fff}
+.voto b.s{background:var(--verde)} .voto b.n{background:var(--verm)} .voto b.e{background:#777}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.duas .btn{flex-direction:column;gap:2px;padding:12px 6px;font-size:22px}
+.duas .btn span{font-size:30px;line-height:1}
+
+/* resumo / fim */
+.faixaOuro{display:inline-block;background:linear-gradient(180deg,#ffe56b,var(--ouro2));color:#3a1200;font-family:"Lilita One";font-size:26px;padding:6px 20px;border-radius:14px;transform:rotate(-2deg);box-shadow:0 5px 0 #b56200}
+.centro{text-align:center}
+.jogadas{display:flex;flex-direction:column;gap:6px}
+.jl{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.92);color:#2a0a6b;border-radius:12px;padding:6px 10px;font-weight:800}
+.jl .v{width:24px;height:24px;border-radius:50%;background:var(--verde);color:#fff;display:grid;place-items:center;font-size:14px;flex:none}
+.jl small{margin-left:auto;color:#6a55a8;font-weight:700}
+.rk{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.12);margin-top:8px;font-weight:800;font-size:17px}
+.rk .pos{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:"Lilita One";font-size:18px;background:#5a3fb0;border:2px solid #b9a6ff;flex:none}
+.rk.p1{background:linear-gradient(90deg,rgba(255,201,40,.35),rgba(0,0,0,.3));border-color:var(--ouro)}
+.rk.p1 .pos{background:var(--ouro);color:#3a1200;border-color:#fff3b0}
+.rk.p2 .pos{background:#c9d3e6;color:#2a2a4a;border-color:#fff}
+.rk.p3 .pos{background:#d98b4a;color:#fff;border-color:#ffd2ad}
+.rk.perde{border-color:var(--verm);background:linear-gradient(90deg,rgba(232,38,61,.3),rgba(0,0,0,.3))}
+.rk .av{width:36px;height:36px;font-size:20px;border-width:2px;cursor:default}
+.rk .nm{flex:1;min-width:0}
+.rk .nm small{display:block;font-size:12px;font-weight:700;color:#ffb3bd;line-height:1}
+.rk .pt{font-family:"Lilita One";font-size:20px;font-weight:400}
+.rk .pt i{font-style:normal;color:var(--ouro)}
+.rk .mais{font-size:13px;color:#ffd36b}
+.bar{height:6px;border-radius:4px;background:rgba(0,0,0,.4);margin-top:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ouro),var(--verm))}
+.trofeu{font-size:64px;line-height:1;filter:drop-shadow(0 6px 12px rgba(255,201,40,.5))}
+.contagem{position:fixed;inset:0;display:grid;place-items:center;z-index:15;pointer-events:none}
+.contagem b{font-family:"Lilita One";font-size:120px;color:var(--ouro);text-shadow:0 6px 0 #b56200,0 0 40px rgba(255,201,40,.7);animation:pop .9s ease-out infinite}
+@keyframes pop{from{transform:scale(1.6);opacity:0}30%{opacity:1;transform:scale(1)}}
+#toast{position:fixed;left:50%;top:16px;transform:translateX(-50%) translateY(-120px);background:#fff;color:#2a0a6b;font-weight:800;padding:10px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:50;transition:transform .3s;max-width:92vw;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#toast.bom{background:var(--verde);color:#fff}
+#toast.ruim{background:var(--verm);color:#fff}
+.como p,.como li{font-size:16px;line-height:1.45}
+.como h3{color:var(--ouro);font-size:20px;margin:14px 0 4px}
+.como ul{padding-left:20px;margin:6px 0}
+.tabRaios{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;font-size:15px}
+.espectador{background:rgba(0,0,0,.35);border-radius:12px;padding:8px;text-align:center;font-weight:700;color:var(--suave)}
+@media (max-width:370px){.carta{width:50px;height:68px;font-size:32px}.tema .tx{font-size:22px}.mesa .slot{min-height:120px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script type="module">
+/* =========================================================
+   LETRÂMPAGO — CARLUDIX
+   Dados ao vivo: Firebase "carludix" em carludix/letrampago/...
+   Teste local sem servidor: ?mock (usa localStorage + BroadcastChannel)
+   ========================================================= */
+const NOME_JOGO = "Letrâmpago";
+const PREF = "letrampago:";
+const PARAMS = new URLSearchParams(location.search);
+const MOCK = PARAMS.has("mock");
+
+/* ---------------- temas ---------------- */
+const TEMAS_G = `Algo que você vê no céu|Um aplicativo de celular|Algo encontrado no oceano|Algo que te faz pensar na África|Algo que você não consegue carregar sozinho|Uma pessoa corajosa|Nome de menino|Nome de menina|Fruta|Legume ou verdura|Animal da fazenda|Animal selvagem|Bicho que voa|Bicho que vive na água|Inseto|Cor|Profissão|País|Cidade brasileira|Capital de um país|Estado brasileiro|Marca famosa|Comida de festa junina|Sobremesa|Comida de café da manhã|Bebida sem álcool|Algo que tem na cozinha|Algo que tem no banheiro|Algo que tem no quarto|Material escolar|Algo que você leva para a praia|Algo que você leva numa viagem|Esporte|Instrumento musical|Cantor ou cantora brasileira|Banda ou grupo musical|Filme famoso|Desenho animado|Personagem de desenho|Super-herói ou vilão|Série de TV|Novela brasileira|Programa de TV|Jogo de videogame|Brinquedo|Jogo de tabuleiro ou de cartas|Peça de roupa|Calçado|Acessório|Parte do corpo|Algo que tem rodas|Meio de transporte|Marca de carro|Algo que faz barulho|Algo gelado|Algo quente|Algo redondo|Algo amarelo|Algo vermelho|Algo verde|Algo pequeno|Algo gigante|Algo que gruda|Algo que cheira bem|Algo que cheira mal|Algo que dá medo|Algo que te deixa feliz|Algo que quebra fácil|Algo que tem botão|Algo que funciona com pilha ou bateria|Algo que você encontra no supermercado|Algo que você encontra na farmácia|Algo que você encontra num parque|Algo que tem num hospital|Algo que tem num aeroporto|Algo de festa de aniversário|Algo de Natal|Algo de casamento|Algo de acampamento|Algo que você faz no fim de semana|Algo que se faz com as mãos|Verbo de ação|Palavra difícil de escrever|Adjetivo para elogiar alguém|Sentimento|Algo que as pessoas colecionam|Hobby|Ferramenta|Material de construção|Eletrodoméstico|Móvel da casa|Planta ou flor|Árvore|Tempero|Doce brasileiro|Salgado de lanchonete|Prato típico brasileiro|Comida italiana|Comida japonesa|Sabor de sorvete|Sabor de pizza|Ingrediente de bolo|Algo que se compra na padaria|Nome de cachorro|Nome de gato|Personagem de conto de fadas|Personagem do folclore brasileiro|Algo do espaço|Fenômeno da natureza|Algo do inverno|Algo do verão|Algo que você vê numa fazenda|Algo que você vê na cidade grande|Lugar para passear|Ponto turístico do Brasil|Ponto turístico do mundo|Rio, mar ou lago|Ilha, praia ou montanha famosa|Idioma|Matéria da escola|Algo que tem tela|Rede social ou site|Palavra em inglês que todo mundo usa|Algo que estoura|Algo pontudo|Algo que você empresta|Desculpa para chegar atrasado|Algo que se guarda na geladeira|Algo que se leva na mochila|Algo que você faz antes de dormir|Algo que você faz ao acordar|Algo que um bebê usa|Algo que avó sempre diz|Algo que tem números|Algo que abre com chave|Algo que brilha|Algo listrado|Bicho que tem rabo|Algo que você assopra|Algo que você corta|Algo que você enche|Algo que você pinta|Personagem histórico|Invenção importante|Algo que existia antigamente|Algo de circo|Algo de mágico|Algo de pirata|Algo de castelo medieval|Algo de escritório|Algo de academia|Algo de salão de beleza|Algo de mercado de bairro|Algo que se vende na feira|Algo que tem sabor azedo|Algo doce|Algo salgado|Algo crocante|Algo molhado|Algo que voa (sem ser bicho)|Algo que anda devagar|Algo muito rápido|Algo que você nunca empresta|Algo que fica no carro|Coisa que se faz no celular|Algo que tem cheiro de infância|Algo que se faz num churrasco|Algo de piquenique|Algo que tem no zoológico|Algo do fundo do mar|Algo que tem na praça|Algo que você vê na estrada|Algo de festa de criança|Algo de restaurante|Emprego dos sonhos|Algo que se dá de presente|Algo que se usa na chuva|Algo que tem tampa|Algo que tem cordão ou corda|Algo de papel|Algo de vidro|Algo de madeira|Algo de metal|Algo de plástico|Nome de família famoso|Personagem de filme|Animal de estimação|Animal que bota ovo|Bicho que mora no mato`;
+const TEMAS_F = `Time de futebol brasileiro|Time de futebol europeu|Seleção de futebol|Jogador brasileiro|Jogador estrangeiro|Goleiro famoso|Técnico de futebol|Estádio de futebol|Posição em campo|Algo que tem num estádio|Palavra do futebol (drible, pênalti…)|Campeonato ou copa|Apelido de time (Timão, Peixe…)|Jogador que foi campeão do mundo|Mascote de time|Algo que o árbitro usa ou faz|Lance de jogo|Jogador camisa 10|Ídolo de algum time|Time campeão da Libertadores|Atacante artilheiro|Algo de torcedor|Narrador ou comentarista|Brasileiro que jogou na Europa|País que já sediou a Copa|Palavra que o narrador grita|Esporte olímpico|Atleta brasileiro (qualquer esporte)|Clube do interior paulista|Time do Nordeste|Time do Sul|Algo que tem no vestiário|Coisa que o goleiro faz`;
+const TEMAS_C = `Santo ou santa|Livro da Bíblia|Personagem do Antigo Testamento|Personagem do Novo Testamento|Apóstolo de Jesus|Papa|Oração|Algo que tem numa igreja|Objeto usado na Missa|Festa ou tempo litúrgico|Título de Nossa Senhora|Lugar citado na Bíblia|Milagre de Jesus|Parábola de Jesus|Virtude|Sacramento|Parte da Missa|Animal citado na Bíblia|Música católica (título)|Cantor ou banda católica|Santuário ou lugar de peregrinação|Algo do presépio|Algo da Páscoa|Anjo ou arcanjo|Profeta|Algo que o padre usa|Palavra que aparece no Pai-Nosso|Algo de procissão|Ordem ou congregação religiosa|Dom ou fruto do Espírito Santo|Personagem da Paixão de Cristo|Algo de batizado|Algo de Primeira Comunhão|Algo de casamento na igreja|Algo de festa de padroeiro`;
+const TEMAS = [
+  ...TEMAS_G.split("|").map(t=>({t,p:"g"})),
+  ...TEMAS_F.split("|").map(t=>({t,p:"f"})),
+  ...TEMAS_C.split("|").map(t=>({t,p:"c"}))
+];
+
+/* ---------------- baralho de letras ----------------
+   Raios = pontos ruins. Letras fáceis (que saem rápido) valem mais;
+   difíceis e raras valem menos, para não punir duas vezes o azar. */
+const FAIXAS = [
+  {nome:"Fáceis",   letras:"ACMPSBT",  copias:4, r:[1,2]},
+  {nome:"Médias",   letras:"DEFGLNRV", copias:3, r:[1,1]},
+  {nome:"Difíceis", letras:"HIJOQUZ",  copias:2, r:[0,1]},
+  {nome:"Raras",    letras:"KWXY",     copias:1, r:[0,0]},
+];
+const MAO = 5, JOGADAS_POR_RODADA = 3;
+const T_CONTAGEM = 3600, T_REVISAO = 6000, T_VOTO = 15000, T_FIMRODADA = 12000, T_MIN_RETOMA = 10000;
+const AVS = ["🦊","🐼","🐯","🦁","🐸","🐵","🐧","🦉","🐙","🦄","🐢","🐝","🐶","🐱","🐰","🐻"];
+
+const rnd = n => Math.floor(Math.random()*n);
+function embaralha(a){for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function novoBaralho(){
+  const b=[];
+  for(const f of FAIXAS) for(const l of f.letras) for(let k=0;k<f.copias;k++) b.push(l+(f.r[0]+rnd(f.r[1]-f.r[0]+1)));
+  return embaralha(b);
+}
+const tok = s => (s||"").split(" ").filter(Boolean);           // "A2 B1" -> ["A2","B1"]
+const letraDe = t => t[0], raiosDe = t => +t.slice(1);
+const somaMao = s => tok(s).reduce((a,t)=>a+raiosDe(t),0);
+const arr = x => Array.isArray(x) ? x.filter(v=>v!=null) : (x ? Object.keys(x).sort((a,b)=>a-b).map(k=>x[k]).filter(v=>v!=null) : []);
+const normal = s => (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/\s+/g," ").trim();
+const corDe = l => "c"+("ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(l)%5);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------------- regras (funções puras sobre o nó "jogo") ----------------
+   Todas rodam dentro de transações: quem chegar primeiro altera; as outras
+   abortam pela checagem de fase/prazo. Assim não dependemos de um "servidor". */
+const L = {
+  iniciar(j, c){
+    const ordem = c.online.slice();
+    const tot = {}; ordem.forEach(u=>tot[u]=0);
+    j = {fase:"lobby", ordem, totais:tot, rodada:0, usados:[]};
+    return L.novaRodada(j, c);
+  },
+  novaRodada(j, c){
+    const b = novoBaralho(), maos = {};
+    for(const u of arr(j.ordem)) if(c.online.includes(u)) maos[u] = b.splice(0,MAO).join(" ");
+    const pool = TEMAS.map((t,i)=>i).filter(i=>TEMAS[i].p==="g" || (TEMAS[i].p==="f"&&c.cfg.futebol) || (TEMAS[i].p==="c"&&c.cfg.catolico));
+    let usados = arr(j.usados).filter(i=>pool.includes(i));
+    let livres = pool.filter(i=>!usados.includes(i));
+    if(!livres.length){usados=[];livres=pool}
+    const ti = livres[rnd(livres.length)];
+    return {...j, rodada:(j.rodada||0)+1, maos, jogadas:[], tema:TEMAS[ti].t, usados:[...usados,ti],
+      fase:"contagem", ate:c.now+T_CONTAGEM, restante:c.cfg.tempo*1000, cont:null, veredito:null, resumo:null};
+  },
+  jogar(j, c, carta, palavra){
+    if(j.fase!=="jogando" || c.now>j.ate) return c.erro="A rodada não está aberta agora.", undefined;
+    const jog = arr(j.jogadas);
+    if(jog.length>=JOGADAS_POR_RODADA) return c.erro="Já desceram 3 cartas!", undefined;
+    const mao = tok((j.maos||{})[c.uid]); const k = mao.indexOf(carta);
+    if(k<0) return c.erro="Essa carta não está mais na sua mão.", undefined;
+    if(c.cfg.modo==="online"){
+      const p = normal(palavra);
+      if(p.length<2) return c.erro="Escreva uma palavra.", undefined;
+      if(p[0].toUpperCase()!==letraDe(carta)) return c.erro=`A palavra tem que começar com ${letraDe(carta)}.`, undefined;
+      if(jog.some(x=>normal(x.w)===p)) return c.erro="Essa palavra já foi usada nesta rodada.", undefined;
+    }
+    mao.splice(k,1);
+    const nova = {u:c.uid, c:carta, t:c.now}; if(c.cfg.modo==="online") nova.w = String(palavra).trim().slice(0,40);
+    jog.push(nova);
+    j = {...j, jogadas:jog, maos:{...j.maos, [c.uid]:mao.join(" ")}};
+    if(jog.length>=JOGADAS_POR_RODADA){ j.restante=Math.max(0,j.ate-c.now); j.fase="revisao"; j.ate=c.now+T_REVISAO; }
+    return j;
+  },
+  contestar(j, c, i){
+    if(j.fase!=="jogando" && j.fase!=="revisao") return undefined;
+    const jog = arr(j.jogadas), p = jog[i];
+    if(!p || p.u===c.uid || p.ok || !arr(j.ordem).includes(c.uid)) return undefined;
+    if(j.fase==="jogando") j.restante = Math.max(0, j.ate-c.now);
+    const eleitores = arr(j.ordem).filter(u=>u!==p.u && c.online.includes(u));
+    j = {...j, fase:"votacao", ate:c.now+T_VOTO, cont:{i, por:c.uid, eleitores, votos:{[c.uid]:false}}};
+    return L.talvezApure(j, c);
+  },
+  votar(j, c, v){
+    if(j.fase!=="votacao" || !j.cont) return undefined;
+    if(!arr(j.cont.eleitores).includes(c.uid)) return undefined;
+    j = {...j, cont:{...j.cont, votos:{...(j.cont.votos||{}), [c.uid]:!!v}}};
+    return L.talvezApure(j, c);
+  },
+  talvezApure(j, c){
+    const el = arr(j.cont.eleitores), vt = j.cont.votos||{};
+    return el.every(u=>u in vt) ? L.apurar(j, c) : j;
+  },
+  apurar(j, c){
+    const vt = (j.cont&&j.cont.votos)||{};
+    const sim = Object.values(vt).filter(Boolean).length, nao = Object.values(vt).length - sim;
+    const vale = sim>=nao;                          // empate: vale
+    const jog = arr(j.jogadas), p = jog[j.cont.i];
+    const maos = {...j.maos};
+    if(p){
+      if(vale) jog[j.cont.i] = {...p, ok:1};
+      else { jog.splice(j.cont.i,1); maos[p.u] = tok(maos[p.u]).concat(p.c).join(" "); }
+    }
+    j = {...j, jogadas:jog, maos, cont:null, veredito:p?{u:p.u, c:p.c, w:p.w||"", ok:vale?1:0, s:sim, n:nao, t:c.now}:null};
+    if(jog.length>=JOGADAS_POR_RODADA){ j.fase="revisao"; j.ate=c.now+T_REVISAO; }
+    else { j.fase="jogando"; j.ate=c.now+Math.max(j.restante||0, T_MIN_RETOMA); }
+    return j;
+  },
+  fecharRodada(j, c){
+    const tot = {...(j.totais||{})}, resumo = {};
+    for(const u of arr(j.ordem)){ const s = somaMao((j.maos||{})[u]); resumo[u]=s; tot[u]=(tot[u]||0)+s; }
+    const lim = c.cfg.limite, estourou = arr(j.ordem).filter(u=>tot[u]>=lim);
+    j = {...j, totais:tot, resumo, cont:null};
+    if(estourou.length){ j.fase="fim"; j.ate=null; j.perdedores=estourou; }
+    else { j.fase="fimRodada"; j.ate=c.now+T_FIMRODADA; }
+    return j;
+  },
+  avancar(j, c){
+    switch(j.fase){
+      case "contagem": return {...j, fase:"jogando", ate:c.now+(j.restante||c.cfg.tempo*1000)};
+      case "jogando": case "revisao": return L.fecharRodada(j, c);
+      case "votacao": return L.apurar(j, c);
+      case "fimRodada": return L.novaRodada(j, c);
+    }
+    return undefined;
+  }
+};
+
+/* ---------------- camada de dados ---------------- */
+async function conectarFirebase(){
+  const V="10.12.2", B=`https://www.gstatic.com/firebasejs/${V}/`;
+  const [{initializeApp},A,D] = await Promise.all([import(B+"firebase-app.js"),import(B+"firebase-auth.js"),import(B+"firebase-database.js")]);
+  const app = initializeApp({
+    apiKey:"AIzaSyDmgYvZko7-jwMVEKbrwMuyFIA4Iz0gnK8", authDomain:"carludix.firebaseapp.com",
+    databaseURL:"https://carludix-default-rtdb.firebaseio.com", projectId:"carludix",
+    storageBucket:"carludix.firebasestorage.app", messagingSenderId:"450493225382", appId:"1:450493225382:web:09c01f72156017fd385767"
+  });
+  const auth = A.getAuth(app), db = D.getDatabase(app);
+  const R = p => D.ref(db, p.startsWith(".info") ? p : "carludix/letrampago/"+p);
+  let off = 0; D.onValue(R(".info/serverTimeOffset"), s=>off=s.val()||0);
+  const uid = await new Promise((ok,falha)=>{ A.onAuthStateChanged(auth,u=>{ if(u) ok(u.uid) }); A.signInAnonymously(auth).catch(falha); });
+  const limpa = v => v===undefined ? undefined : JSON.parse(JSON.stringify(v));
+  return {
+    uid, agora:()=>Date.now()+off,
+    on:(p,cb)=>D.onValue(R(p),s=>cb(s.val())),
+    get:async p=>(await D.get(R(p))).val(),
+    set:(p,v)=>D.set(R(p),limpa(v)),
+    update:(p,v)=>D.update(R(p),limpa(v)),
+    remove:p=>D.remove(R(p)),
+    tx:async(p,fn)=>{ const r = await D.runTransaction(R(p), cur=>limpa(fn(cur))); return {ok:r.committed, val:r.snapshot.val()}; },
+    presenca(p){
+      const un = D.onValue(R(".info/connected"), s=>{ if(s.val()){ D.onDisconnect(R(p)).set(false); D.set(R(p),true); } });
+      return async()=>{ un(); try{ await D.onDisconnect(R(p)).cancel(); }catch(e){} };
+    }
+  };
+}
+function conectarMock(){
+  const KEY = PREF+"mockdb", bc = new BroadcastChannel(PREF+"mock");
+  const uid = PARAMS.get("uid") || sessionStorage.getItem(PREF+"mockuid") || ("u"+Math.random().toString(36).slice(2,8));
+  sessionStorage.setItem(PREF+"mockuid", uid);
+  const ler = () => JSON.parse(localStorage.getItem(KEY)||"{}");
+  const ks = p => p.split("/").filter(Boolean);
+  const pega = (d,p) => ks(p).reduce((o,k)=>o==null?null:(o[k]??null), d);
+  const poe = (d,p,v) => { const k=ks(p); let o=d; for(let i=0;i<k.length-1;i++){ if(o[k[i]]==null||typeof o[k[i]]!=="object") o[k[i]]={}; o=o[k[i]]; }
+    if(v==null) delete o[k.at(-1)]; else o[k.at(-1)] = JSON.parse(JSON.stringify(v)); };
+  const ouv = [];
+  const dispara = () => { const d=ler(); for(const l of ouv){ const s=JSON.stringify(pega(d,l.p)); if(s!==l.u){ l.u=s; l.cb(JSON.parse(s)); } } };
+  const grava = d => { localStorage.setItem(KEY, JSON.stringify(d)); bc.postMessage(1); dispara(); };
+  bc.onmessage = dispara;
+  return {
+    uid, agora:()=>Date.now(),
+    on:(p,cb)=>{ const l={p,cb}; ouv.push(l); setTimeout(dispara); return ()=>ouv.splice(ouv.indexOf(l),1); },
+    get:async p=>pega(ler(),p),
+    set:async(p,v)=>{ const d=ler(); poe(d,p,v); grava(d); },
+    update:async(p,o)=>{ const d=ler(); for(const k in o) poe(d,p+"/"+k,o[k]); grava(d); },
+    remove:async p=>{ const d=ler(); poe(d,p,null); grava(d); },
+    tx:async(p,fn)=>{ const d=ler(), cur=pega(d,p); const nv=fn(cur==null?null:JSON.parse(JSON.stringify(cur)));
+      if(nv===undefined) return {ok:false,val:cur}; poe(d,p,nv); grava(d); return {ok:true,val:nv}; },
+    presenca(p){ const d=ler(); poe(d,p,true); grava(d); const f=()=>{const d=ler(); if(pega(d,p.replace(/\/on$/,""))) {poe(d,p,false); grava(d);}};
+      addEventListener("pagehide",f); return async()=>removeEventListener("pagehide",f); }
+  };
+}
+
+/* ---------------- estado do app ---------------- */
+const S = {
+  tela:"home", db:null, uid:null, sala:null, room:null, unsub:null, pararPresenca:null,
+  nome: lerLS("nome","") , av: lerLS("av", AVS[rnd(AVS.length)]), som: lerLS("som","1")==="1",
+  cfg:{modo:"online", limite:30, max:8, tempo:60, futebol:true, catolico:false, ...JSON.parse(lerLS("cfg","{}")||"{}")},
+  sel:null, ultimoVer:0, ultimaQtd:0, faseVista:"", erro:""
+};
+window.__S = S; window.__L = L;
+function lerLS(k,d){ try{ const v=localStorage.getItem(PREF+k); return v==null?d:v }catch(e){ return d } }
+function gravaLS(k,v){ try{ localStorage.setItem(PREF+k,v) }catch(e){} }
+const $app = document.getElementById("app");
+const agora = () => S.db ? S.db.agora() : Date.now();
+
+function toast(msg, tipo="", ms=2600){
+  const t=document.getElementById("toast"); t.textContent=msg; t.className="on "+tipo;
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.className=tipo,ms);
+}
+/* sons simples (WebAudio) */
+let AC;
+function bip(f=660, d=.09, tipo="triangle", vol=.12){
+  if(!S.som) return;
+  try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); const o=AC.createOscillator(), g=AC.createGain();
+    o.type=tipo; o.frequency.value=f; g.gain.value=vol; o.connect(g); g.connect(AC.destination);
+    g.gain.exponentialRampToValueAtTime(.001, AC.currentTime+d); o.start(); o.stop(AC.currentTime+d); }catch(e){}
+}
+const somCarta = () => { bip(520,.07); setTimeout(()=>bip(880,.1),60) };
+const somAlerta = () => { bip(300,.15,"square",.08); setTimeout(()=>bip(240,.2,"square",.08),150) };
+const somFim = () => [523,659,784,1046].forEach((f,i)=>setTimeout(()=>bip(f,.16),i*110));
+
+/* ---------------- helpers de sala ---------------- */
+const J = () => (S.room && S.room.jogo) || {fase:"lobby"};
+const cfgSala = () => (S.room && S.room.cfg) || S.cfg;
+const jogadores = () => S.room && S.room.jogadores ? S.room.jogadores : {};
+const online = () => Object.entries(jogadores()).filter(([u,p])=>p&&p.n&&p.on).sort((a,b)=>(a[1].e||0)-(b[1].e||0)).map(([u])=>u);
+const pj = u => jogadores()[u] || {n:"Jogador", a:"🙂"};
+const souHost = () => S.room && S.room.host===S.uid;
+const ctx = () => ({now:agora(), uid:S.uid, online:online(), cfg:cfgSala(), erro:""});
+const caminho = () => "salas/"+S.sala;
+
+async function txJogo(fn){
+  const c = ctx();
+  const r = await S.db.tx(caminho()+"/jogo", cur => { if(!cur) return undefined; c.now = agora(); c.erro=""; return fn(cur, c); });
+  return {...r, erro:c.erro};
+}
+
+/* ---------------- telas ---------------- */
+function render(){
+  if(S.tela!=="sala") S.chave="";
+  switch(S.tela){
+    case "home": return telaHome();
+    case "criar": return telaCriar();
+    case "entrar": return telaEntrar();
+    case "como": return telaComo();
+    case "sala": return telaSala();
+  }
+}
+const rodape = () => `<div class="rodape">
+  <a href="https://carludix.com/diversao/">← CARLUDIX</a>
+  <a href="https://carludix.com/privacidade/">🔒 Privacidade</a>
+  <a href="https://carludix.com/contato/?jogo=${encodeURIComponent(NOME_JOGO)}" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>`;
+const avatar = (a, extra="") => `<span class="av" ${extra}>${esc(a)}</span>`;
+const cartaHTML = (t, cls="", attrs="") => `<div class="carta ${corDe(letraDe(t))} ${cls}" ${attrs}>${letraDe(t)}<span class="r">⚡${raiosDe(t)}</span></div>`;
+
+function telaHome(){
+  $app.innerHTML = `
+  <img class="marca" src="marca.webp" alt="Letrâmpago" width="640" height="532">
+  <div class="painel">
+    <div class="perfil">
+      <span class="av" id="avBtn" title="Trocar avatar">${esc(S.av)}</span>
+      <input class="campo" id="nome" maxlength="16" placeholder="Seu nome" value="${esc(S.nome)}" autocomplete="nickname">
+    </div>
+    <div class="avs hide" id="avs">${AVS.map(a=>`<button data-av="${a}" class="${a===S.av?"on":""}">${a}</button>`).join("")}</div>
+  </div>
+  <div class="btns" style="margin-top:16px">
+    <button class="btn" id="bCriar">⚡ CRIAR SALA</button>
+    <button class="btn roxo" id="bEntrar">🔑 ENTRAR COM CÓDIGO</button>
+    <button class="btn roxo" id="bComo">❓ COMO JOGAR</button>
+  </div>
+  <div class="icones"><button class="ic" id="bSom" title="Som">${S.som?"🔊":"🔇"}</button></div>
+  ${rodape()}`;
+  const nome = document.getElementById("nome");
+  nome.oninput = () => { S.nome = nome.value.trim(); gravaLS("nome", S.nome); };
+  document.getElementById("avBtn").onclick = () => document.getElementById("avs").classList.toggle("hide");
+  document.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{ S.av=b.dataset.av; gravaLS("av",S.av); telaHome(); });
+  const precisaNome = () => { if(!S.nome){ nome.classList.add("treme"); nome.focus(); setTimeout(()=>nome.classList.remove("treme"),400); toast("Digite seu nome primeiro 😉"); return true; } };
+  document.getElementById("bCriar").onclick = () => { if(!precisaNome()){ S.tela="criar"; render(); } };
+  document.getElementById("bEntrar").onclick = () => { if(!precisaNome()){ S.tela="entrar"; render(); } };
+  document.getElementById("bComo").onclick = () => { S.tela="como"; render(); };
+  document.getElementById("bSom").onclick = () => { S.som=!S.som; gravaLS("som",S.som?"1":"0"); telaHome(); };
+}
+
+function telaCriar(){
+  const c = S.cfg;
+  const seg = (k, ops) => `<div class="seg">${ops.map(([v,l,s])=>`<button data-k="${k}" data-v="${v}" class="${c[k]==v?"on":""}">${l}${s?`<small>${s}</small>`:""}</button>`).join("")}</div>`;
+  $app.innerHTML = `
+  <div class="topo"><button class="voltar" id="bVolta">←</button><h2 class="tit">NOVA PARTIDA</h2></div>
+  <div class="painel"><div class="rot">MODO DE JOGO</div>
+    ${seg("modo",[["online","💻 Online","digitando a palavra"],["presencial","🗣️ Presencial","falando em voz alta"]])}
+  </div>
+  <div class="painel"><div class="rot">LIMITE DE RAIOS<small>quem chegar, perde</small></div>
+    ${seg("limite",[[20,"20","rápida"],[30,"30","normal"],[40,"40","longa"]])}
+  </div>
+  <div class="painel"><div class="rot">TEMPO DE CADA RODADA</div>
+    ${seg("tempo",[[45,"45s"],[60,"60s"],[90,"90s"]])}
+  </div>
+  <div class="painel"><div class="rot">MÁX. DE JOGADORES</div>
+    <div class="stepper"><button data-st="-1">−</button><b id="mx">${c.max}</b><button data-st="1">+</button></div>
+  </div>
+  <div class="painel"><div class="rot">TEMAS<small>os gerais sempre entram</small></div>
+    <label class="chk"><input type="checkbox" id="cF" ${c.futebol?"checked":""}> ⚽ Incluir temas de Futebol</label>
+    <label class="chk"><input type="checkbox" id="cC" ${c.catolico?"checked":""}> ✝️ Incluir temas da Fé Católica</label>
+  </div>
+  <div style="margin-top:16px"><button class="btn" id="bCria">👥 CRIAR SALA</button></div>`;
+  document.getElementById("bVolta").onclick = () => { S.tela="home"; render(); };
+  document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ const v=b.dataset.v; c[b.dataset.k] = isNaN(v)?v:+v; salvaCfg(); telaCriar(); });
+  document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ c.max=Math.min(10,Math.max(2,c.max+ +b.dataset.st)); salvaCfg(); document.getElementById("mx").textContent=c.max; });
+  document.getElementById("cF").onchange = e => { c.futebol=e.target.checked; salvaCfg(); };
+  document.getElementById("cC").onchange = e => { c.catolico=e.target.checked; salvaCfg(); };
+  document.getElementById("bCria").onclick = criarSala;
+}
+const salvaCfg = () => gravaLS("cfg", JSON.stringify(S.cfg));
+
+function telaEntrar(){
+  $app.innerHTML = `
+  <div class="topo"><button class="voltar" id="bVolta">←</button><h2 class="tit">ENTRAR NA SALA</h2></div>
+  <div class="painel"><div class="rot">CÓDIGO DA SALA</div>
+    <input class="campo codigo" id="cod" maxlength="5" autocomplete="off" autocapitalize="characters" value="${esc(PARAMS.get("sala")||"")}">
+    <div class="erro" id="err"></div>
+    <button class="btn verde" id="bVai">▶ ENTRAR</button>
+  </div>
+  <p class="info">Peça o código para quem criou a sala ou aponte a câmera para o QR code.</p>`;
+  const cod = document.getElementById("cod"); cod.focus();
+  document.getElementById("bVolta").onclick = () => { S.tela="home"; render(); };
+  const vai = () => entrarSala(cod.value.trim().toUpperCase(), document.getElementById("err"));
+  document.getElementById("bVai").onclick = vai;
+  cod.onkeydown = e => { if(e.key==="Enter") vai(); };
+}
+
+function telaComo(){
+  const faixa = FAIXAS.map(f=>`<div>${cartaHTML(f.letras[0]+f.r[1],"mini")}</div><div><b>${f.nome}</b> (${f.letras.split("").join(", ")}): ${f.r[0]===f.r[1]?f.r[0]:f.r[0]+" a "+f.r[1]} raio${f.r[1]===1?"":"s"}</div>`).join("");
+  $app.innerHTML = `
+  <div class="topo"><button class="voltar" id="bVolta">←</button><h2 class="tit">COMO JOGAR</h2></div>
+  <div class="painel como">
+    <p>Cada jogador recebe <b>5 cartas de letras</b>. Um <b>tema</b> aparece na mesa, por exemplo “Algo que você vê no céu”.</p>
+    <h3>⚡ Desça rápido</h3>
+    <p>Para jogar uma carta, diga uma palavra do tema que comece com a letra dela. “Lua!” → desce o <b>L</b>.</p>
+    <ul><li><b>Online:</b> digite a palavra e aperte Enter. O jogo escolhe a carta certa da sua mão (ou toque na carta antes).</li>
+    <li><b>Presencial:</b> grite a palavra e toque na carta ao mesmo tempo.</li></ul>
+    <p>A rodada acaba quando <b>3 cartas</b> forem jogadas (pode ser tudo da mesma pessoa) ou quando o tempo acabar.</p>
+    <h3>⚠️ Contestar</h3>
+    <p>Achou a resposta forçada? Toque em <b>Contestar</b>. Todos votam (menos quem jogou). Empate: a resposta vale. Se não valer, a carta volta para a mão de quem jogou.</p>
+    <h3>🌩️ Raios</h3>
+    <p>No fim da rodada, as cartas que <b>sobraram na sua mão</b> viram raios. Raio é ruim! Todo mundo recebe 5 cartas novas.</p>
+    <div class="tabRaios">${faixa}</div>
+    <h3>🏆 Fim</h3>
+    <p>Quando alguém chega ao <b>limite de raios</b> (20, 30 ou 40), a partida acaba: essa pessoa perde e <b>quem tiver menos raios é o campeão</b>.</p>
+  </div>
+  <div style="margin-top:14px"><button class="btn" id="bOk">BORA JOGAR!</button></div>
+  ${rodape()}`;
+  document.getElementById("bVolta").onclick = document.getElementById("bOk").onclick = () => { S.tela="home"; render(); };
+}
+
+/* ---------------- criar / entrar / sair ---------------- */
+async function criarSala(){
+  const btn = document.getElementById("bCria"); btn.disabled = true;
+  try{
+    const AL = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let code;
+    for(let i=0;i<8;i++){ code = Array.from({length:5},()=>AL[rnd(AL.length)]).join(""); if(!(await S.db.get("salas/"+code+"/cfg"))) break; }
+    const c = {...S.cfg};
+    await S.db.set("salas/"+code, {cfg:c, host:S.uid, criada:agora(), v:1,
+      jogadores:{[S.uid]:{n:S.nome, a:S.av, e:agora(), on:true}}, jogo:{fase:"lobby"}});
+    await abrirSala(code);
+  }catch(e){ console.error(e); toast("Não consegui criar a sala. Verifique a internet.","ruim"); btn.disabled=false; }
+}
+async function entrarSala(code, errEl){
+  const msg = m => { if(errEl) errEl.textContent = m; else toast(m,"ruim"); };
+  if(!/^[A-Z0-9]{5}$/.test(code)) return msg("O código tem 5 letras/números.");
+  try{
+    const s = await S.db.get("salas/"+code);
+    if(!s || !s.cfg) return msg("Sala não encontrada.");
+    const ps = s.jogadores||{}, ja = ps[S.uid] && ps[S.uid].n;
+    const qtd = Object.values(ps).filter(p=>p&&p.n&&p.on).length;
+    if(!ja && qtd >= (s.cfg.max||10)) return msg("Essa sala está cheia.");
+    await S.db.update("salas/"+code+"/jogadores/"+S.uid, {n:S.nome, a:S.av, e:ja?ps[S.uid].e:agora(), on:true});
+    await abrirSala(code);
+  }catch(e){ console.error(e); msg("Não consegui entrar. Verifique a internet."); }
+}
+async function abrirSala(code){
+  if(S.unsub) S.unsub();
+  S.sala = code; S.tela = "sala"; gravaLS("sala", code);
+  history.replaceState(null,"", location.pathname + (MOCK?"?mock&uid="+S.uid:"") );
+  S.pararPresenca = S.db.presenca(caminho()+"/jogadores/"+S.uid+"/on");
+  S.unsub = S.db.on(caminho(), v => { S.room = v; aoMudarSala(); });
+}
+async function sairSala(){
+  if(!S.sala) return;
+  const lobby = J().fase==="lobby";
+  try{
+    if(S.pararPresenca) await S.pararPresenca();
+    if(lobby) await S.db.remove(caminho()+"/jogadores/"+S.uid);
+    else await S.db.set(caminho()+"/jogadores/"+S.uid+"/on", false);
+  }catch(e){}
+  if(S.unsub) S.unsub();
+  S.unsub=null; S.sala=null; S.room=null; gravaLS("sala","");
+  S.tela="home"; render();
+}
+
+/* ---------------- reação a mudanças ---------------- */
+function aoMudarSala(){
+  if(!S.room){ toast("A sala foi encerrada."); S.sala=null; gravaLS("sala",""); S.tela="home"; return render(); }
+  const me = jogadores()[S.uid];
+  if(!me || !me.n){ // fui removido ou o nó sumiu: recoloca
+    if(S.sala) S.db.update(caminho()+"/jogadores/"+S.uid, {n:S.nome||"Jogador", a:S.av, e:agora(), on:true});
+    return;
+  }
+  // anfitrião caiu? o jogador online mais antigo assume
+  const h = jogadores()[S.room.host];
+  if(!h || !h.on){ const on = online(); if(on[0]===S.uid) S.db.set(caminho()+"/host", S.uid); }
+
+  const j = J();
+  // efeitos sonoros e avisos
+  const qtd = arr(j.jogadas).length;
+  if(j.fase!==S.faseVista){
+    if(j.fase==="votacao") somAlerta();
+    if(j.fase==="fimRodada"||j.fase==="fim") somFim();
+    if(j.fase==="contagem") S.sel=null;
+  }
+  if(qtd>S.ultimaQtd && (j.fase==="jogando"||j.fase==="revisao")) somCarta();
+  S.ultimaQtd = qtd;
+  if(j.veredito && j.veredito.t!==S.ultimoVer){
+    S.ultimoVer = j.veredito.t;
+    if(agora()-j.veredito.t < 8000){
+      const v=j.veredito, quem=pj(v.u).n, pal = v.w?`“${v.w}”`:`a carta ${letraDe(v.c)}`;
+      if(v.ok) toast(`✔ Vale! ${pal} de ${quem} foi aceita (${v.s}×${v.n})`,"bom",3200);
+      else toast(`✘ Não vale! ${pal} volta para ${quem} (${v.s}×${v.n})`,"ruim",3200);
+    }
+  }
+  S.faseVista = j.fase;
+  telaSala();
+}
+
+/* motor: quem vir o prazo vencer, avança (anfitrião primeiro, os outros como reserva) */
+setInterval(()=>{
+  if(S.tela!=="sala" || !S.room) return;
+  const j = J();
+  atualizaRelogio();
+  if(!j.ate || j.fase==="lobby" || j.fase==="fim") return;
+  const atraso = agora() - j.ate;
+  const vez = souHost() ? 0 : 1200 + (online().indexOf(S.uid)*400);
+  if(atraso > vez && !S.avancando){
+    S.avancando = true;
+    const fase = j.fase, ate = j.ate;
+    txJogo((cur,c)=> cur.fase===fase && cur.ate===ate ? L.avancar(cur,c) : undefined).finally(()=>S.avancando=false);
+  }
+}, 250);
+
+/* ---------------- tela da sala (lobby / jogo / resumo / fim) ---------------- */
+function telaSala(){
+  const j = J();
+  const f = j.fase;
+  if(f==="lobby") return telaLobby();
+  if(f==="fimRodada") return telaResumo(false);
+  if(f==="fim") return telaResumo(true);
+  return telaJogo();
+}
+
+function telaLobby(){
+  const c = cfgSala(), ps = jogadores(), host = S.room.host;
+  const lista = Object.entries(ps).filter(([u,p])=>p&&p.n).sort((a,b)=>(a[1].e||0)-(b[1].e||0));
+  const link = location.origin + location.pathname + "?sala=" + S.sala + (MOCK?"&mock":"");
+  let qr = "";
+  try{ const q = qrcode(0,"M"); q.addData(link); q.make(); qr = q.createSvgTag({cellSize:4, margin:2, scalable:true}); }catch(e){}
+  const vagas = Math.max(0, (c.max||8) - lista.filter(([u,p])=>p.on).length);
+  const n = online().length;
+  S.chave = "lobby";
+  $app.innerHTML = `
+  <div class="topo"><button class="voltar" id="bSai" title="Sair">←</button><h2 class="tit">SALA DA PARTIDA</h2></div>
+  <div class="painel codbox">
+    <div class="cod"><small>Código da sala</small><b>${S.sala}</b>
+      <div style="display:flex;gap:6px;justify-content:center;margin-top:4px">
+        <button class="btn roxo peq" id="bCopia">📋 Copiar</button>
+        ${navigator.share?`<button class="btn roxo peq" id="bComp">📤 Convidar</button>`:""}
+      </div></div>
+    ${qr?`<div class="qr">${qr}</div>`:""}
+  </div>
+  <div class="painel">
+    <div class="rot">JOGADORES (${lista.filter(([u,p])=>p.on).length}/${c.max})</div>
+    <div class="lista">
+      ${lista.map(([u,p])=>`<div class="jog">${avatar(p.a)}<span class="nm">${esc(p.n)}${u===host?" 👑":""}${u===S.uid?" <small>(você)</small>":""}</span><span class="ok ${p.on?"":"off"}">${p.on?"✓":"…"}</span></div>`).join("")}
+      ${vagas?`<div class="jog"><span class="av" style="background:transparent;border-style:dashed;border-color:#8a76c9"></span><span class="espera">Aguardando jogador…</span></div>`:""}
+    </div>
+    <div class="tags">
+      <span class="tag">${c.modo==="online"?"💻 Online":"🗣️ Presencial"}</span>
+      <span class="tag">⚡ limite ${c.limite}</span><span class="tag">⏱ ${c.tempo}s</span>
+      ${c.futebol?`<span class="tag">⚽ Futebol</span>`:""}${c.catolico?`<span class="tag">✝️ Fé Católica</span>`:""}
+    </div>
+  </div>
+  <div style="margin-top:16px">
+    ${souHost()
+      ? `<button class="btn verde" id="bIni" ${n<2?"disabled":""}>▶ INICIAR PARTIDA</button>
+         <p class="info">${n<2?"Precisa de pelo menos 2 jogadores.":"Todo mundo dentro? Bora!"}</p>`
+      : `<div class="espectador">⏳ Aguardando ${esc(pj(host).n)} iniciar a partida…</div>`}
+  </div>
+  ${rodape()}`;
+  document.getElementById("bSai").onclick = sairSala;
+  document.getElementById("bCopia").onclick = () => { navigator.clipboard?.writeText(link).then(()=>toast("Link da sala copiado!","bom")).catch(()=>toast(S.sala)); };
+  const bc = document.getElementById("bComp"); if(bc) bc.onclick = () => navigator.share({title:"Letrâmpago", text:`Bora jogar Letrâmpago! Código: ${S.sala}`, url:link}).catch(()=>{});
+  const bi = document.getElementById("bIni");
+  if(bi) bi.onclick = async () => {
+    bi.disabled = true;
+    const r = await txJogo((cur,c)=> cur.fase==="lobby" && c.online.length>=2 ? L.iniciar(cur,c) : undefined);
+    if(!r.ok) { bi.disabled=false; toast("Não deu para iniciar. Tente de novo.","ruim"); }
+  };
+}
+
+/* --- jogo --- */
+function telaJogo(){
+  const j = J(), c = cfgSala();
+  const jogo = arr(j.ordem).includes(S.uid);
+  // monta o esqueleto uma vez por rodada (preserva o campo de texto)
+  const chave = "jogo:"+j.rodada+":"+S.sala;
+  if(S.chave !== chave){
+    S.chave = chave; S.sel = null; S.erro="";
+    $app.innerHTML = `
+    <div class="barra"><span class="pill" id="pRod"></span><button class="ic" id="bSom2" style="width:36px;height:36px;font-size:16px">${S.som?"🔊":"🔇"}</button><span class="pill raio" id="pRaio"></span></div>
+    <div class="tema" id="tema"><span class="et">TEMA</span><div class="tx" id="temaTx"></div></div>
+    <div class="relogio"><div class="tb"><i id="tBar"></i></div><b id="tNum"></b></div>
+    <div class="status" id="status"></div>
+    <div class="mesa" id="mesa"></div>
+    <div class="placar" id="placar"></div>
+    <div id="zonaMao"></div>
+    <div id="veu"></div>
+    <div id="cont"></div>`;
+    document.getElementById("bSom2").onclick = e => { S.som=!S.som; gravaLS("som",S.som?"1":"0"); e.target.textContent=S.som?"🔊":"🔇"; };
+    montaZonaMao(jogo, c);
+  }
+  const contando = j.fase==="contagem";
+  document.getElementById("pRod").textContent = "Rodada " + j.rodada;
+  const meus = (j.totais||{})[S.uid]||0;
+  document.getElementById("pRaio").innerHTML = jogo ? `<i>⚡</i> ${meus} / ${c.limite}` : `👀 assistindo`;
+  document.getElementById("temaTx").textContent = contando ? "Prepare-se…" : j.tema;
+  document.getElementById("tema").classList.toggle("vazio", contando);
+  document.getElementById("cont").innerHTML = contando ? `<div class="contagem"><b id="cNum"></b></div>` : "";
+
+  // mesa
+  const jog = arr(j.jogadas);
+  const podeContestar = jogo && (j.fase==="jogando"||j.fase==="revisao");
+  document.getElementById("mesa").innerHTML = [0,1,2].map(i=>{
+    const p = jog[i];
+    if(!p) return `<div class="slot"><span class="num">${i+1}</span></div>`;
+    const q = pj(p.u);
+    return `<div class="slot cheio">${cartaHTML(p.c,"mini")}
+      <span class="quem">${esc(q.a)} ${esc(q.n)}</span>
+      ${p.w?`<span class="pal" title="${esc(p.w)}">${esc(p.w)}</span>`:""}
+      ${p.ok?`<span class="selo">✔ aceita</span>`:(podeContestar && p.u!==S.uid?`<button class="contestar" data-ci="${i}">⚠ Contestar</button>`:"")}
+    </div>`;
+  }).join("");
+  document.querySelectorAll("[data-ci]").forEach(b=>b.onclick=async()=>{
+    b.disabled = true;
+    const r = await txJogo((cur,cx)=>L.contestar(cur,cx,+b.dataset.ci));
+    if(!r.ok) toast("Não dá para contestar agora.");
+  });
+
+  // placar
+  const ord = arr(j.ordem);
+  document.getElementById("placar").innerHTML = ord.map(u=>{
+    const p = pj(u), n = tok((j.maos||{})[u]).length;
+    return `<span class="pj ${u===S.uid?"eu":""} ${p.on?"":"off"}">${avatar(p.a)}${esc(p.n)} <i>⚡${(j.totais||{})[u]||0}</i> <span class="q">🃏${n}</span></span>`;
+  }).join("");
+
+  atualizaMao(jogo, c);
+  atualizaVotacao(jogo);
+  atualizaRelogio();
+}
+
+function montaZonaMao(jogo, c){
+  const z = document.getElementById("zonaMao");
+  if(!jogo){ z.innerHTML = `<div class="espectador" style="margin-top:14px">👀 A partida já começou. Você entra na próxima!</div>`; return; }
+  z.innerHTML = `
+    <div class="maoTit">${c.modo==="online"?"Digite a palavra (ou toque numa carta e digite)":"Grite a palavra e toque na carta!"}</div>
+    <div class="mao" id="mao"></div>
+    ${c.modo==="online"?`<div class="envio" id="envio"><input class="campo" id="pal" maxlength="40" placeholder="Sua palavra…" autocomplete="off" autocapitalize="sentences" enterkeyhint="send"><button class="btn verde" id="bEnv">⚡</button></div>`:""}
+    <div class="erro" id="erro"></div>`;
+  if(c.modo==="online"){
+    const inp = document.getElementById("pal");
+    const envia = () => enviarOnline(inp);
+    document.getElementById("bEnv").onclick = envia;
+    inp.onkeydown = e => { if(e.key==="Enter"){ e.preventDefault(); envia(); } };
+    inp.oninput = () => { setErro(""); destacaSugestao(); };
+  }
+}
+function setErro(m){ S.erro=m; const e=document.getElementById("erro"); if(e) e.textContent=m; }
+
+function atualizaMao(jogo, c){
+  if(!jogo) return;
+  const j = J(), mao = tok((j.maos||{})[S.uid]);
+  const aberto = j.fase==="jogando" && arr(j.jogadas).length<JOGADAS_POR_RODADA;
+  if(S.sel && !mao.includes(S.sel)) S.sel=null;
+  const m = document.getElementById("mao");
+  m.className = "mao" + (aberto?"":" trava");
+  const semMao = !((j.maos||{})[S.uid]!=null);
+  m.innerHTML = semMao ? `<div class="vazia">Você recebe cartas na próxima rodada.</div>` : mao.length ? mao.map((t,i)=>cartaHTML(t, t===S.sel?"sel":"", `data-t="${t}" data-i="${i}"`)).join("") : `<div class="vazia">🎉 Sua mão está vazia — zero raios nesta rodada!</div>`;
+  m.querySelectorAll("[data-t]").forEach(el=>el.onclick=()=>{
+    if(!aberto) return;
+    const t = el.dataset.t;
+    if(c.modo==="presencial") return jogarCarta(t, "");
+    S.sel = S.sel===t ? null : t;
+    atualizaMao(true, c);
+    const inp = document.getElementById("pal"); if(inp){ inp.focus(); if(!inp.value && S.sel) inp.placeholder = `Palavra com ${letraDe(S.sel)}…`; }
+  });
+  const inp = document.getElementById("pal");
+  if(inp){ inp.disabled = !aberto; const b=document.getElementById("bEnv"); if(b) b.disabled=!aberto;
+    if(aberto && !inp._foc && matchMedia("(pointer:fine)").matches){ inp.focus(); inp._foc=1; } }
+  destacaSugestao();
+}
+function escolheCarta(palavra){
+  const j = J(), mao = tok((j.maos||{})[S.uid]);
+  const l = normal(palavra)[0]?.toUpperCase();
+  if(!l) return null;
+  if(S.sel && letraDe(S.sel)===l) return S.sel;
+  const op = mao.filter(t=>letraDe(t)===l).sort((a,b)=>raiosDe(b)-raiosDe(a));   // desce primeiro a que vale mais raios
+  return op[0]||null;
+}
+function destacaSugestao(){
+  const inp = document.getElementById("pal"); if(!inp) return;
+  const t = escolheCarta(inp.value);
+  document.querySelectorAll("#mao .carta").forEach(el=>el.style.outline = (t && el.dataset.t===t && !S.sel) ? "3px dashed #ffe36b" : "");
+}
+async function enviarOnline(inp){
+  const w = inp.value.trim();
+  if(!w) return setErro("Escreva uma palavra.");
+  const t = escolheCarta(w);
+  if(!t){ inp.classList.add("treme"); setTimeout(()=>inp.classList.remove("treme"),400); return setErro(`Você não tem a letra ${normal(w)[0].toUpperCase()} na mão.`); }
+  const ok = await jogarCarta(t, w);
+  if(ok){ inp.value=""; inp.placeholder="Sua palavra…"; S.sel=null; }
+}
+async function jogarCarta(t, w){
+  if(S.jogando) return false; S.jogando = true;
+  try{
+    const r = await txJogo((cur,c)=>L.jogar(cur,c,t,w));
+    if(!r.ok){ setErro(r.erro || "Não deu! Alguém foi mais rápido."); return false; }
+    setErro(""); return true;
+  } finally { S.jogando=false; }
+}
+
+function atualizaVotacao(jogo){
+  const j = J(), v = document.getElementById("veu");
+  if(j.fase!=="votacao" || !j.cont){ v.innerHTML=""; return; }
+  const p = arr(j.jogadas)[j.cont.i]; if(!p){ v.innerHTML=""; return; }
+  const autor = pj(p.u), el = arr(j.cont.eleitores), vt = j.cont.votos||{};
+  const souEleitor = el.includes(S.uid), votei = S.uid in vt;
+  const pal = p.w ? `A palavra <span style="color:var(--ouro)">“${esc(p.w)}”</span>` : `A palavra que ${esc(autor.n)} falou`;
+  v.innerHTML = `<div class="veu"><div class="modal">
+    <div class="faixa"><span>!</span>Resposta contestada!</div>
+    <div class="perg">${pal}<br>vale para o tema?
+      <div class="pq">${cartaHTML(p.c,"mini")}<span style="font-family:'Baloo 2';font-size:15px">de ${esc(autor.a)} ${esc(autor.n)}<br><small style="color:var(--suave)">Tema: ${esc(j.tema)}</small></span></div>
+    </div>
+    ${souEleitor && !votei ? `<div class="duas"><button class="btn verde" data-vt="1"><span>👍</span>VALE!</button><button class="btn verm" data-vt="0"><span>👎</span>NÃO VALE!</button></div>`
+      : `<div class="espectador">${p.u===S.uid?"😬 Sua resposta está em votação…":votei?"✔ Voto registrado. Aguardando os outros…":"Aguardando a votação…"}</div>`}
+    <div class="relogio"><div class="tb"><i id="vBar"></i></div><b id="vNum"></b></div>
+    <div class="rot" style="margin:4px 0 0">Votação</div>
+    <div class="votos">${el.map(u=>{const q=pj(u); const s = u in vt ? (vt[u]?'<b class="s">✓</b>':'<b class="n">✕</b>') : '<b class="e">…</b>'; return `<span class="voto" title="${esc(q.n)}">${avatar(q.a)}${s}</span>`}).join("")}</div>
+    <p class="info">Empate = vale. Quem contestou já votou “não vale”.</p>
+  </div></div>`;
+  v.querySelectorAll("[data-vt]").forEach(b=>b.onclick=async()=>{
+    v.querySelectorAll("[data-vt]").forEach(x=>x.disabled=true);
+    const r = await txJogo((cur,c)=>L.votar(cur,c,b.dataset.vt==="1"));
+    if(!r.ok) v.querySelectorAll("[data-vt]").forEach(x=>x.disabled=false);
+  });
+}
+
+function atualizaRelogio(){
+  if(S.tela!=="sala") return;
+  const j = J(), c = cfgSala(); if(!j.ate) return;
+  const ms = Math.max(0, j.ate - agora()), s = Math.ceil(ms/1000);
+  const st = document.getElementById("status");
+  if(j.fase==="contagem"){ const n=document.getElementById("cNum"); if(n) n.textContent = s>3?"3":(s||"JÁ!"); if(st) st.textContent="Prepare-se!"; }
+  const bar = document.getElementById("tBar"), num = document.getElementById("tNum");
+  if(bar && (j.fase==="jogando"||j.fase==="revisao"||j.fase==="contagem"||j.fase==="votacao")){
+    const tot = j.fase==="revisao" ? T_REVISAO : j.fase==="votacao" ? T_VOTO : j.fase==="contagem" ? T_CONTAGEM : Math.max(c.tempo*1000, j.restante||0, T_MIN_RETOMA);
+    const pct = j.fase==="votacao" ? Math.min(100, ((j.restante||0)/(c.tempo*1000))*100) : Math.min(100, ms/tot*100);
+    if(j.fase!=="votacao"){ bar.style.width = pct+"%"; bar.className = (j.fase==="jogando" && s<=10) || j.fase==="revisao" ? "alerta" : ""; num.textContent = "00:"+String(s).padStart(2,"0"); }
+    else { num.textContent = "⏸"; }
+  }
+  if(st){
+    const qtd = arr(j.jogadas).length;
+    if(j.fase==="jogando"){ st.className="status quente"; st.textContent = qtd ? `${qtd} de 3 cartas na mesa — rápido!` : "VALENDO! Desça uma carta!"; }
+    else if(j.fase==="revisao"){ st.className="status"; st.textContent = `3 cartas! Alguém contesta? (${s}s)`; }
+    else if(j.fase==="votacao"){ st.className="status"; st.textContent = "Votação em andamento…"; }
+    else if(j.fase!=="contagem"){ st.className="status"; st.textContent=""; }
+  }
+  const vb = document.getElementById("vBar"), vn = document.getElementById("vNum");
+  if(vb && j.fase==="votacao"){ vb.style.width = Math.min(100, ms/T_VOTO*100)+"%"; vn.textContent = "00:"+String(s).padStart(2,"0"); }
+  const rn = document.getElementById("rNum"); if(rn && j.fase==="fimRodada") rn.textContent = s;
+}
+
+/* --- resumo da rodada / fim de partida --- */
+function telaResumo(fim){
+  const j = J(), c = cfgSala();
+  const chave = (fim?"fim:":"res:")+j.rodada+":"+JSON.stringify(j.totais)+":"+souHost()+":"+Object.values(jogadores()).map(p=>p.on?1:0).join("");
+  if(S.chave===chave) return atualizaRelogio();
+  S.chave = chave;
+  const jog = arr(j.jogadas), ord = arr(j.ordem), tot = j.totais||{}, res = j.resumo||{};
+  const rk = ord.slice().sort((a,b)=>(tot[a]||0)-(tot[b]||0));
+  const perd = arr(j.perdedores);
+  const linhas = rk.map((u,i)=>{
+    const p = pj(u), t = tot[u]||0, perde = fim && perd.includes(u);
+    const cls = perde ? "perde" : fim ? (i<3?"p"+(i+1):"") : (i<3?"p"+(i+1):"");
+    return `<div class="rk ${cls}"><span class="pos">${i+1}${i>2?"º":""}</span>${avatar(p.a)}
+      <span class="nm">${esc(p.n)}${u===S.uid?" (você)":""}${perde?"<small>🌩️ atingiu o limite</small>":""}
+        <div class="bar"><i style="width:${Math.min(100,t/c.limite*100)}%"></i></div></span>
+      ${!fim?`<span class="mais">+${res[u]||0}</span>`:""}<span class="pt"><i>⚡</i>${t}</span></div>`;
+  }).join("");
+  const jogHTML = jog.length ? `<div class="jogadas">${jog.map(p=>`<div class="jl"><span class="v">✓</span>${cartaHTML(p.c,"mini")}<span>${p.w?esc(p.w):"(falada)"}</span><small>${esc(pj(p.u).a)} ${esc(pj(p.u).n)}</small></div>`).join("")}</div>`
+    : `<p class="info">Ninguém desceu carta a tempo! 😅</p>`;
+  const meuRes = res[S.uid];
+  if(fim){
+    const camp = pj(rk[0]);
+    $app.innerHTML = `
+    <div class="centro"><div class="trofeu">🏆</div><div class="faixaOuro">FIM DE PARTIDA!</div>
+      <p style="font-size:19px;font-weight:800;margin:14px 0 4px">${esc(camp.a)} ${esc(camp.n)} é o campeão com menos raios!</p>
+      <p class="info" style="margin-top:0">Tema da última rodada: ${esc(j.tema)}</p></div>
+    <div class="painel">${linhas}</div>
+    <div class="painel"><div class="rot">ÚLTIMA RODADA</div>${jogHTML}</div>
+    <div class="btns" style="margin-top:16px">
+      ${souHost()?`<button class="btn verde" id="bDenovo">▶ JOGAR NOVAMENTE</button>`:`<div class="espectador">⏳ Aguardando ${esc(pj(S.room.host).n)} começar outra…</div>`}
+      <button class="btn roxo" id="bCasa">🏠 Sair da sala</button>
+    </div>
+    ${rodape()}`;
+    const bd = document.getElementById("bDenovo");
+    if(bd) bd.onclick = () => txJogo(cur=>cur.fase==="fim" ? {fase:"lobby"} : undefined);
+    document.getElementById("bCasa").onclick = sairSala;
+    if(perd.length) confete();
+  } else {
+    $app.innerHTML = `
+    <div class="centro"><div class="faixaOuro">🏁 Rodada ${j.rodada} encerrada!</div></div>
+    <div class="painel" style="margin-top:16px"><div class="rot">CARTAS JOGADAS · ${esc(j.tema)}</div>${jogHTML}</div>
+    ${meuRes!=null?`<p class="centro" style="font-family:'Lilita One';font-size:22px;margin:12px 0 0">${meuRes?`Cartas restantes viraram <span style="color:var(--ouro)">+${meuRes} raio${meuRes>1?"s":""}</span>`:"Zero raios nesta rodada! 🎉"}</p>`:""}
+    <div class="painel" style="margin-top:12px"><div class="rot">PLACAR <small>limite: ${c.limite} raios · menos é melhor</small></div>${linhas}</div>
+    <p class="info">Próxima rodada em <b id="rNum">…</b>s</p>
+    ${souHost()?`<button class="btn" id="bJa" style="margin-top:6px">⚡ COMEÇAR JÁ</button>`:""}
+    <div style="margin-top:auto;padding-top:16px"><button class="btn roxo peq" id="bSai" style="margin:0 auto">Sair da sala</button></div>`;
+    const bj = document.getElementById("bJa");
+    if(bj) bj.onclick = () => { bj.disabled=true; txJogo((cur,cx)=>cur.fase==="fimRodada"?L.novaRodada(cur,cx):undefined); };
+    document.getElementById("bSai").onclick = sairSala;
+  }
+  atualizaRelogio();
+}
+
+function confete(){
+  const cv = document.createElement("canvas"); cv.style.cssText="position:fixed;inset:0;pointer-events:none;z-index:30";
+  document.body.appendChild(cv); const x=cv.getContext("2d"); cv.width=innerWidth; cv.height=innerHeight;
+  const cores=["#ffc928","#e8263d","#1f6bff","#2bc44a","#a96bff","#fff"];
+  const ps=Array.from({length:120},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*.5,v:2+Math.random()*3,a:Math.random()*6,c:cores[rnd(6)],s:6+Math.random()*6}));
+  let n=0; (function f(){ x.clearRect(0,0,cv.width,cv.height); ps.forEach(p=>{p.y+=p.v;p.x+=Math.sin((p.a+=.05))*1.5; x.fillStyle=p.c; x.fillRect(p.x,p.y,p.s,p.s*.6);});
+    if(++n<220) requestAnimationFrame(f); else cv.remove(); })();
+}
+
+/* ---------------- início ---------------- */
+(async function(){
+  $app.innerHTML = `<div style="margin:auto;text-align:center"><img class="marca" src="marca.webp" alt="Letrâmpago" width="640" height="532"><p class="info">Conectando…</p></div>`;
+  try{
+    S.db = MOCK ? conectarMock() : await conectarFirebase();
+    S.uid = S.db.uid;
+  }catch(e){
+    console.error(e);
+    $app.innerHTML = `<div style="margin:auto;text-align:center"><img class="marca" src="marca.webp" alt="Letrâmpago"><p>😕 Sem conexão com o servidor do jogo.</p><button class="btn" onclick="location.reload()">Tentar de novo</button></div>${rodape()}`;
+    return;
+  }
+  // volta para a sala em que estava (recarregou a página)
+  const salva = lerLS("sala","");
+  if(salva){
+    const s = await S.db.get("salas/"+salva).catch(()=>null);
+    if(s && s.jogadores && s.jogadores[S.uid] && s.jogadores[S.uid].n){ S.nome = S.nome || s.jogadores[S.uid].n; await abrirSala(salva); return; }
+    gravaLS("sala","");
+  }
+  if(PARAMS.get("sala")){ S.tela = S.nome ? "entrar" : "home"; if(!S.nome) setTimeout(()=>toast("Digite seu nome e toque em Entrar com código"),300); }
+  render();
+})();
+</script>
+<script src="https://carludix.com/cookies.js" defer></script>
+</body>
+</html>
