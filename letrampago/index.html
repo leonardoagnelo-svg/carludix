@@ -121,8 +121,9 @@ input.codigo{text-align:center;font-family:"Lilita One";font-size:34px;letter-sp
 .status{text-align:center;font-weight:800;font-size:17px;min-height:26px;margin:4px 0}
 .status.quente{color:var(--ouro);animation:pulsa .8s ease-in-out infinite}
 @keyframes pulsa{50%{transform:scale(1.06)}}
-.mesa{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
-.slot{min-height:132px;border:2px dashed rgba(255,255,255,.25);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px 4px;gap:4px;background:rgba(0,0,0,.15);text-align:center}
+.mesa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:6px 0 10px}
+.mesa .vaziaMesa{grid-column:1/-1;text-align:center;opacity:.6;padding:26px 0;border:2px dashed rgba(255,255,255,.2);border-radius:14px}
+.slot{min-width:0;min-height:118px;border:2px dashed rgba(255,255,255,.25);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px 4px;gap:4px;background:rgba(0,0,0,.15);text-align:center}
 .slot.cheio{border-style:solid;border-color:rgba(255,201,40,.5);background:rgba(0,0,0,.25);animation:entra .35s cubic-bezier(.2,1.6,.4,1)}
 @keyframes entra{from{transform:scale(.4) rotate(-12deg);opacity:0}}
 .slot .quem{font-size:13px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -356,7 +357,7 @@ const FAIXAS = [
   {nome:"Difíceis", letras:"HIJOQUZ",  copias:2, r:[0,1]},
   {nome:"Raras",    letras:"KWXY",     copias:1, r:[0,0]},
 ];
-const MAO = 5, JOGADAS_POR_RODADA = 3;
+const MAO = 5, MESA_VISIVEL = 6;
 const T_CONTAGEM = 3600, T_REVISAO = 6000, T_VOTO = 15000, T_FIMRODADA = 12000, T_MIN_RETOMA = 10000;
 const AVS = ["🦊","🐼","🐯","🦁","🐸","🐵","🐧","🦉","🐙","🦄","🐢","🐝","🐶","🐱","🐰","🐻"];
 
@@ -388,18 +389,18 @@ const L = {
   novaRodada(j, c){
     const b = novoBaralho(), maos = {};
     for(const u of arr(j.ordem)) if(c.online.includes(u)) maos[u] = b.splice(0,MAO).join(" ");
-    const pool = TEMAS.map((t,i)=>i).filter(i=>TEMAS[i].p==="g" || (TEMAS[i].p==="f"&&c.cfg.futebol) || (TEMAS[i].p==="c"&&c.cfg.catolico)).filter(i=>!c.cfg.robos || BANCO[TEMAS[i].t]);
+    const pool = TEMAS.map((t,i)=>i).filter(i=>(TEMAS[i].p==="g"&&c.cfg.diversos!==false) || (TEMAS[i].p==="f"&&c.cfg.futebol) || (TEMAS[i].p==="c"&&c.cfg.catolico)).filter(i=>!c.cfg.robos || BANCO[TEMAS[i].t]);
+    if(!pool.length) TEMAS.forEach((t,i)=>{ if(t.p==="g" && (!c.cfg.robos||BANCO[t.t])) pool.push(i); });
     let usados = arr(j.usados).filter(i=>pool.includes(i));
     let livres = pool.filter(i=>!usados.includes(i));
     if(!livres.length){usados=[];livres=pool}
     const ti = livres[rnd(livres.length)];
     return {...j, rodada:(j.rodada||0)+1, maos, jogadas:[], tema:TEMAS[ti].t, usados:[...usados,ti],
-      fase:"contagem", ate:c.now+T_CONTAGEM, restante:c.cfg.tempo*1000, cont:null, veredito:null, resumo:null};
+      fase:"contagem", ate:c.now+T_CONTAGEM, restante:c.cfg.tempo*1000, cont:null, veredito:null, resumo:null, zerou:null};
   },
   jogar(j, c, carta, palavra){
     if(j.fase!=="jogando" || c.now>j.ate) return c.erro="A rodada não está aberta agora.", undefined;
     const jog = arr(j.jogadas);
-    if(jog.length>=JOGADAS_POR_RODADA) return c.erro="Já desceram 3 cartas!", undefined;
     const mao = tok((j.maos||{})[c.uid]); const k = mao.indexOf(carta);
     if(k<0) return c.erro="Essa carta não está mais na sua mão.", undefined;
     if(c.cfg.modo==="online"){
@@ -412,7 +413,7 @@ const L = {
     const nova = {u:c.uid, c:carta, t:c.now}; if(c.cfg.modo==="online") nova.w = String(palavra).trim().slice(0,40);
     jog.push(nova);
     j = {...j, jogadas:jog, maos:{...j.maos, [c.uid]:mao.join(" ")}};
-    if(jog.length>=JOGADAS_POR_RODADA){ j.restante=Math.max(0,j.ate-c.now); j.fase="revisao"; j.ate=c.now+T_REVISAO; }
+    if(!mao.length){ j.restante=Math.max(0,j.ate-c.now); j.fase="revisao"; j.ate=c.now+T_REVISAO; j.zerou=c.uid; }
     return j;
   },
   contestar(j, c, i){
@@ -445,7 +446,8 @@ const L = {
       else { jog.splice(j.cont.i,1); maos[p.u] = tok(maos[p.u]).concat(p.c).join(" "); }
     }
     j = {...j, jogadas:jog, maos, cont:null, veredito:p?{u:p.u, c:p.c, w:p.w||"", ok:vale?1:0, s:sim, n:nao, t:c.now}:null};
-    if(jog.length>=JOGADAS_POR_RODADA){ j.fase="revisao"; j.ate=c.now+T_REVISAO; }
+    const zerou = arr(j.ordem).find(u=>maos[u]!=null && !tok(maos[u]).length);
+    if(zerou){ j.fase="revisao"; j.ate=c.now+T_REVISAO; j.zerou=zerou; }
     else { j.fase="jogando"; j.ate=c.now+Math.max(j.restante||0, T_MIN_RETOMA); }
     return j;
   },
@@ -549,9 +551,9 @@ function conectarLocal(){
 const S = {
   tela:"home", db:null, uid:null, sala:null, room:null, unsub:null, pararPresenca:null,
   nome: lerLS("nome","") , av: lerLS("av", AVS[rnd(AVS.length)]), som: lerLS("som","1")==="1",
-  cfg:{modo:"online", limite:30, max:8, tempo:60, futebol:true, catolico:false, ...JSON.parse(lerLS("cfg","{}")||"{}")},
+  cfg:{modo:"online", limite:30, max:8, tempo:90, diversos:true, futebol:true, catolico:false, ...JSON.parse(lerLS("cfg","{}")||"{}")},
   sel:null, ultimoVer:0, ultimaQtd:0, faseVista:"", erro:"",
-  cfgBot:{robos:2, nivel:"medio", limite:30, tempo:60, futebol:true, catolico:false, ...JSON.parse(lerLS("cfgbot","{}")||"{}")},
+  cfgBot:{robos:2, nivel:"medio", limite:30, tempo:90, diversos:true, futebol:true, catolico:false, ...JSON.parse(lerLS("cfgbot","{}")||"{}")},
   solo:null, dbRede:null
 };
 window.__S = S; window.__L = L;
@@ -659,24 +661,28 @@ function telaCriar(){
     ${seg("limite",[[20,"20","rápida"],[30,"30","normal"],[40,"40","longa"]])}
   </div>
   <div class="painel"><div class="rot">TEMPO DE CADA RODADA</div>
-    ${seg("tempo",[[45,"45s"],[60,"60s"],[90,"90s"]])}
+    ${seg("tempo",[[60,"60s"],[90,"90s"],[120,"2 min"]])}
   </div>
   <div class="painel"><div class="rot">MÁX. DE JOGADORES</div>
     <div class="stepper"><button data-st="-1">−</button><b id="mx">${c.max}</b><button data-st="1">+</button></div>
   </div>
-  <div class="painel"><div class="rot">TEMAS<small>os gerais sempre entram</small></div>
-    <label class="chk"><input type="checkbox" id="cF" ${c.futebol?"checked":""}> ⚽ Incluir temas de Futebol</label>
-    <label class="chk"><input type="checkbox" id="cC" ${c.catolico?"checked":""}> ✝️ Incluir temas da Fé Católica</label>
+  <div class="painel"><div class="rot">TEMAS<small>marque pelo menos um</small></div>
+    <label class="chk"><input type="checkbox" id="cD" ${c.diversos!==false?"checked":""}> 🎲 Diversos</label>
+    <label class="chk"><input type="checkbox" id="cF" ${c.futebol?"checked":""}> ⚽ Futebol</label>
+    <label class="chk"><input type="checkbox" id="cC" ${c.catolico?"checked":""}> ✝️ Fé Católica</label>
   </div>
   <div style="margin-top:16px"><button class="btn" id="bCria">👥 CRIAR SALA</button></div>`;
   document.getElementById("bVolta").onclick = () => { S.tela="home"; render(); };
   document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ const v=b.dataset.v; c[b.dataset.k] = isNaN(v)?v:+v; salvaCfg(); telaCriar(); });
   document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ c.max=Math.min(10,Math.max(2,c.max+ +b.dataset.st)); salvaCfg(); document.getElementById("mx").textContent=c.max; });
-  document.getElementById("cF").onchange = e => { c.futebol=e.target.checked; salvaCfg(); };
-  document.getElementById("cC").onchange = e => { c.catolico=e.target.checked; salvaCfg(); };
-  document.getElementById("bCria").onclick = criarSala;
+  ligaTemas(c, salvaCfg);
+  document.getElementById("bCria").onclick = () => { if(temaOk(c)) criarSala(); };
 }
 const salvaCfg = () => gravaLS("cfg", JSON.stringify(S.cfg));
+function ligaTemas(c, salva){
+  [["cD","diversos"],["cF","futebol"],["cC","catolico"]].forEach(([id,k])=>document.getElementById(id).onchange = e => { c[k]=e.target.checked; salva(); });
+}
+const temaOk = c => (c.diversos!==false || c.futebol || c.catolico) ? true : (toast("Marque pelo menos um tipo de tema 😉","ruim"), false);
 
 function telaRobos(){
   const c = S.cfgBot;
@@ -693,11 +699,12 @@ function telaRobos(){
     ${seg("limite",[[20,"20","rápida"],[30,"30","normal"],[40,"40","longa"]])}
   </div>
   <div class="painel"><div class="rot">TEMPO DE CADA RODADA</div>
-    ${seg("tempo",[[45,"45s"],[60,"60s"],[90,"90s"]])}
+    ${seg("tempo",[[60,"60s"],[90,"90s"],[120,"2 min"]])}
   </div>
-  <div class="painel"><div class="rot">TEMAS<small>os gerais sempre entram</small></div>
-    <label class="chk"><input type="checkbox" id="cF" ${c.futebol?"checked":""}> ⚽ Incluir temas de Futebol</label>
-    <label class="chk"><input type="checkbox" id="cC" ${c.catolico?"checked":""}> ✝️ Incluir temas da Fé Católica</label>
+  <div class="painel"><div class="rot">TEMAS<small>marque pelo menos um</small></div>
+    <label class="chk"><input type="checkbox" id="cD" ${c.diversos!==false?"checked":""}> 🎲 Diversos</label>
+    <label class="chk"><input type="checkbox" id="cF" ${c.futebol?"checked":""}> ⚽ Futebol</label>
+    <label class="chk"><input type="checkbox" id="cC" ${c.catolico?"checked":""}> ✝️ Fé Católica</label>
   </div>
   <p class="info">Você digita as palavras. Os robôs também podem ser contestados!</p>
   <div style="margin-top:10px"><button class="btn verde" id="bVai">▶ JOGAR</button></div>`;
@@ -705,9 +712,8 @@ function telaRobos(){
   document.getElementById("bVolta").onclick = () => { S.tela="home"; render(); };
   document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ const v=b.dataset.v; c[b.dataset.k] = isNaN(v)?v:+v; salva(); telaRobos(); });
   document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ c.robos=Math.min(ROBOS.length,Math.max(1,c.robos+ +b.dataset.st)); salva(); document.getElementById("nr").textContent=c.robos; });
-  document.getElementById("cF").onchange = e => { c.futebol=e.target.checked; salva(); };
-  document.getElementById("cC").onchange = e => { c.catolico=e.target.checked; salva(); };
-  document.getElementById("bVai").onclick = iniciarSolo;
+  ligaTemas(c, salva);
+  document.getElementById("bVai").onclick = () => { if(temaOk(c)) iniciarSolo(); };
 }
 async function iniciarSolo(){
   const c = S.cfgBot, t0 = Date.now();
@@ -715,7 +721,7 @@ async function iniciarSolo(){
   S.db = conectarLocal(); S.uid = S.db.uid;
   const jog = {[S.uid]:{n:S.nome, a:S.av, e:t0, on:true}};
   embaralha(ROBOS.slice()).slice(0,c.robos).forEach(([n,a],i)=>{ const u="robo"+(i+1); S.solo.bots.push(u); jog[u]={n:"Robô "+n, a, e:t0+i+1, on:true, bot:1}; });
-  const cfg = {modo:"online", limite:c.limite, tempo:c.tempo, max:c.robos+1, futebol:c.futebol, catolico:c.catolico, robos:c.robos, nivel:c.nivel};
+  const cfg = {modo:"online", limite:c.limite, tempo:c.tempo, max:c.robos+1, diversos:c.diversos!==false, futebol:c.futebol, catolico:c.catolico, robos:c.robos, nivel:c.nivel};
   await S.db.set("salas/SOLO", {cfg, host:S.uid, criada:t0, v:1, jogadores:jog, jogo:{fase:"lobby"}});
   await abrirSala("SOLO");
 }
@@ -750,11 +756,11 @@ function telaComo(){
     <ul><li><b>Online:</b> digite a palavra e aperte Enter. O jogo escolhe a carta certa da sua mão (ou toque na carta antes).</li>
     <li><b>Presencial:</b> grite a palavra e toque na carta ao mesmo tempo.</li>
     <li><b>Contra robôs:</b> jogue sozinho contra 1 a 5 robôs, no nível fácil, médio ou difícil.</li></ul>
-    <p>A rodada acaba quando <b>3 cartas</b> forem jogadas (pode ser tudo da mesma pessoa) ou quando o tempo acabar.</p>
+    <p>Desça quantas cartas conseguir! A rodada acaba quando <b>alguém zera a mão</b> (ou quando o tempo acaba). Não vale repetir palavra na mesma rodada.</p>
     <h3>⚠️ Contestar</h3>
     <p>Achou a resposta forçada? Toque em <b>Contestar</b>. Todos votam (menos quem jogou). Empate: a resposta vale. Se não valer, a carta volta para a mão de quem jogou.</p>
     <h3>🌩️ Raios</h3>
-    <p>No fim da rodada, as cartas que <b>sobraram na sua mão</b> viram raios. Raio é ruim! Todo mundo recebe 5 cartas novas.</p>
+    <p>Quem zerou não leva raio. Os outros somam os raios das cartas que <b>sobraram na mão</b>. Raio é ruim! Na rodada seguinte todo mundo recebe 5 cartas novas.</p>
     <div class="tabRaios">${faixa}</div>
     <h3>🏆 Fim</h3>
     <p>Quando alguém chega ao <b>limite de raios</b> (20, 30 ou 40), a partida acaba: essa pessoa perde e <b>quem tiver menos raios é o campeão</b>.</p>
@@ -943,7 +949,7 @@ function telaLobby(){
     <div class="tags">
       <span class="tag">${c.modo==="online"?"💻 Online":"🗣️ Presencial"}</span>
       <span class="tag">⚡ limite ${c.limite}</span><span class="tag">⏱ ${c.tempo}s</span>
-      ${c.futebol?`<span class="tag">⚽ Futebol</span>`:""}${c.catolico?`<span class="tag">✝️ Fé Católica</span>`:""}
+      ${c.diversos!==false?`<span class="tag">🎲 Diversos</span>`:""}${c.futebol?`<span class="tag">⚽ Futebol</span>`:""}${c.catolico?`<span class="tag">✝️ Fé Católica</span>`:""}
     </div>
   </div>
   <div style="margin-top:16px">
@@ -996,9 +1002,9 @@ function telaJogo(){
   // mesa
   const jog = arr(j.jogadas);
   const podeContestar = jogo && (j.fase==="jogando"||j.fase==="revisao");
-  document.getElementById("mesa").innerHTML = [0,1,2].map(i=>{
+  const idx = jog.map((p,i)=>i).reverse().slice(0, MESA_VISIVEL);   // mais recentes primeiro
+  document.getElementById("mesa").innerHTML = !jog.length ? `<div class="vaziaMesa">A mesa está vazia. Desça a primeira carta! ⚡</div>` : idx.map(i=>{
     const p = jog[i];
-    if(!p) return `<div class="slot"><span class="num">${i+1}</span></div>`;
     const q = pj(p.u);
     return `<div class="slot cheio">${cartaHTML(p.c,"mini")}
       <span class="quem">${esc(q.a)} ${esc(q.n)}</span>
@@ -1045,7 +1051,7 @@ function setErro(m){ S.erro=m; const e=document.getElementById("erro"); if(e) e.
 function atualizaMao(jogo, c){
   if(!jogo) return;
   const j = J(), mao = tok((j.maos||{})[S.uid]);
-  const aberto = j.fase==="jogando" && arr(j.jogadas).length<JOGADAS_POR_RODADA;
+  const aberto = j.fase==="jogando";
   if(S.sel && !mao.includes(S.sel)) S.sel=null;
   const m = document.getElementById("mao");
   m.className = "mao" + (aberto?"":" trava");
@@ -1130,13 +1136,13 @@ function atualizaRelogio(){
   if(bar && (j.fase==="jogando"||j.fase==="revisao"||j.fase==="contagem"||j.fase==="votacao")){
     const tot = j.fase==="revisao" ? T_REVISAO : j.fase==="votacao" ? T_VOTO : j.fase==="contagem" ? T_CONTAGEM : Math.max(c.tempo*1000, j.restante||0, T_MIN_RETOMA);
     const pct = j.fase==="votacao" ? Math.min(100, ((j.restante||0)/(c.tempo*1000))*100) : Math.min(100, ms/tot*100);
-    if(j.fase!=="votacao"){ bar.style.width = pct+"%"; bar.className = (j.fase==="jogando" && s<=10) || j.fase==="revisao" ? "alerta" : ""; num.textContent = "00:"+String(s).padStart(2,"0"); }
+    if(j.fase!=="votacao"){ bar.style.width = pct+"%"; bar.className = (j.fase==="jogando" && s<=10) || j.fase==="revisao" ? "alerta" : ""; num.textContent = String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
     else { num.textContent = "⏸"; }
   }
   if(st){
     const qtd = arr(j.jogadas).length;
-    if(j.fase==="jogando"){ st.className="status quente"; st.textContent = qtd ? `${qtd} de 3 cartas na mesa — rápido!` : "VALENDO! Desça uma carta!"; }
-    else if(j.fase==="revisao"){ st.className="status"; st.textContent = `3 cartas! Alguém contesta? (${s}s)`; }
+    if(j.fase==="jogando"){ st.className="status quente"; st.textContent = qtd ? `Quem zerar a mão primeiro fecha a rodada! (${qtd} na mesa)` : "VALENDO! Desça suas cartas!"; }
+    else if(j.fase==="revisao"){ st.className="status"; st.textContent = `${j.zerou?pj(j.zerou).n:"Alguém"} zerou a mão! Alguém contesta? (${s}s)`; }
     else if(j.fase==="votacao"){ st.className="status"; st.textContent = "Votação em andamento…"; }
     else if(j.fase!=="contagem"){ st.className="status"; st.textContent=""; }
   }
@@ -1184,7 +1190,8 @@ function telaResumo(fim){
     if(perd.length) confete();
   } else {
     $app.innerHTML = `
-    <div class="centro"><div class="faixaOuro">🏁 Rodada ${j.rodada} encerrada!</div></div>
+    <div class="centro"><div class="faixaOuro">🏁 Rodada ${j.rodada} encerrada!</div>
+      <p style="font-size:18px;font-weight:800;margin:10px 0 0">${j.zerou?`${esc(pj(j.zerou).a)} ${esc(pj(j.zerou).n)} zerou a mão! ⚡`:"⏱ O tempo acabou!"}</p></div>
     <div class="painel" style="margin-top:16px"><div class="rot">CARTAS JOGADAS · ${esc(j.tema)}</div>${jogHTML}</div>
     ${meuRes!=null?`<p class="centro" style="font-family:'Lilita One';font-size:22px;margin:12px 0 0">${meuRes?`Cartas restantes viraram <span style="color:var(--ouro)">+${meuRes} raio${meuRes>1?"s":""}</span>`:"Zero raios nesta rodada! 🎉"}</p>`:""}
     <div class="painel" style="margin-top:12px"><div class="rot">PLACAR <small>limite: ${c.limite} raios · menos é melhor</small></div>${linhas}</div>
