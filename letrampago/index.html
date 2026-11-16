@@ -242,6 +242,110 @@ const TEMAS = [
   ...TEMAS_F.split("|").map(t=>({t,p:"f"})),
   ...TEMAS_C.split("|").map(t=>({t,p:"c"}))
 ];
+/* ---------------- palavras dos robôs (uma linha por tema: Tema=palavra,palavra,…) ---------------- */
+const BANCO_TXT = `Fruta=abacaxi,abacate,acerola,amora,banana,caju,cereja,coco,damasco,figo,goiaba,graviola,jabuticaba,jaca,kiwi,laranja,limão,lichia,maçã,mamão,manga,maracujá,melancia,melão,mexerica,morango,nectarina,pera,pêssego,pitanga,pitaya,romã,tangerina,tâmara,uva,umbu,framboesa,bergamota,carambola,cupuaçu,ameixa,açaí,quiuí,embaúba,ingá,jambo,nêspera,sapoti,tamarindo,vergamota,yuzu,xixá,uvaia,oiti,groselha
+Legume ou verdura=abóbora,abobrinha,acelga,agrião,alface,alho,batata,berinjela,beterraba,brócolis,cebola,cenoura,chuchu,couve,ervilha,espinafre,inhame,jiló,mandioca,maxixe,milho,nabo,palmito,pepino,pimentão,quiabo,rabanete,repolho,rúcula,tomate,vagem,aipim,escarola,fava,gengibre,lentilha,mostarda,rábano,salsão,taioba,yacon,xuxu,cará,hortelã,ora-pro-nóbis,quinoa,jerimum
+Animal da fazenda=boi,bezerro,búfalo,burro,cabra,cachorro,carneiro,cavalo,codorna,coelho,égua,galinha,galo,ganso,gato,jumento,marreco,mula,novilho,ovelha,pato,peru,porco,pônei,touro,faisão,avestruz,iaque,zebu,tilápia,abelha,angorá,leitão,dromedário,ema,javali,hamster
+Animal selvagem=anta,arara,babuíno,camelo,canguru,capivara,chimpanzé,coala,crocodilo,elefante,gazela,girafa,gorila,guepardo,hiena,hipopótamo,iguana,jaguatirica,javali,leão,leopardo,lobo,lontra,macaco,onça,orangotango,panda,pantera,puma,raposa,rinoceronte,suricato,tamanduá,tatu,tigre,urso,veado,zebra,kudu,ocelote,ximango,wallaby,yak,bisão,dingo,furão,mico,nhandu,urubu,iaque
+Bicho que voa=abelha,águia,andorinha,arara,beija-flor,besouro,borboleta,canário,coruja,corvo,falcão,gaivota,garça,gavião,joaninha,libélula,maritaca,morcego,mosca,mosquito,papagaio,pardal,pato,pelicano,pernilongo,periquito,pombo,sabiá,tucano,urubu,vespa,vaga-lume,cegonha,ema,flamingo,harpia,inhambu,quero-quero,quiriquiri,tico-tico,zangão,kiwi,cigarra,noivinha,juriti,lavadeira,rouxinol
+Bicho que vive na água=arraia,atum,bacalhau,baleia,boto,camarão,caranguejo,cavalo-marinho,golfinho,lagosta,lula,lambari,manjuba,orca,peixe-boi,pescada,piranha,pirarucu,polvo,robalo,salmão,sardinha,siri,tartaruga,tilápia,tubarão,traíra,dourado,enguia,foca,hipocampo,krill,lontra,mexilhão,nemo,ouriço,quelônio,sapo,tambaqui,uçá,vieira,xaréu,yellowtail,zooplâncton,anêmona,badejo,corvina,garoupa,merluza,namorado
+Inseto=abelha,barata,besouro,borboleta,cigarra,cupim,escaravelho,formiga,gafanhoto,grilo,joaninha,libélula,louva-a-deus,mariposa,mosca,mosquito,percevejo,piolho,pulga,traça,vaga-lume,vespa,zangão,bicho-pau,cochonilha,taturana,lagarta,mamangava,marimbondo,pernilongo,tanajura,hemíptero,isóptero,uruçu,ninfa,efemérida,abelhão,carrapato,xilófago,vespão,quenquém,jequitiranaboia,karapanã
+Cor=amarelo,azul,bege,branco,bordô,caqui,cinza,ciano,coral,creme,dourado,esmeralda,fúcsia,grafite,índigo,laranja,lilás,magenta,marrom,mostarda,ocre,ouro,prata,preto,rosa,roxo,salmão,sépia,terracota,turquesa,verde,vermelho,vinho,violeta,jade,kaki,neon,quartzo,uva,xadrez,zinco,açafrão,ametista,carmim,gelo,hortelã,nude,pêssego,rubi,telha
+Profissão=advogado,arquiteto,astronauta,atleta,bombeiro,cabeleireiro,carpinteiro,carteiro,cozinheiro,dentista,eletricista,enfermeiro,engenheiro,escritor,farmacêutico,fotógrafo,garçom,geógrafo,historiador,jardineiro,jornalista,juiz,lixeiro,marceneiro,mecânico,médico,motorista,músico,nutricionista,oftalmologista,padeiro,pedreiro,piloto,pintor,policial,professor,psicólogo,químico,recepcionista,sapateiro,soldador,taxista,tradutor,urbanista,vendedor,veterinário,zelador,zootecnista,xerife,youtuber,ilustrador,instrutor,quiropraxista,web designer,ourives,obstetra,ufólogo
+País=Alemanha,Angola,Argentina,Austrália,Bélgica,Bolívia,Brasil,Canadá,Chile,China,Colômbia,Cuba,Dinamarca,Egito,Equador,Espanha,Estados Unidos,França,Grécia,Guatemala,Haiti,Holanda,Honduras,Índia,Inglaterra,Irlanda,Itália,Jamaica,Japão,Kuwait,Líbano,Marrocos,México,Moçambique,Nigéria,Noruega,Omã,Paraguai,Peru,Portugal,Quênia,Catar,Rússia,Senegal,Suécia,Suíça,Tailândia,Turquia,Ucrânia,Uruguai,Venezuela,Vietnã,Iêmen,Zâmbia,Zimbábue,Kosovo,Uganda,Islândia,Irã,Iraque,Jordânia,Quirguistão,Wallis
+Cidade brasileira=Aracaju,Belém,Belo Horizonte,Blumenau,Boa Vista,Brasília,Campinas,Campo Grande,Cuiabá,Curitiba,Florianópolis,Fortaleza,Goiânia,Gramado,Guarulhos,Indaiatuba,Itu,Jundiaí,João Pessoa,Joinville,Londrina,Macapá,Maceió,Manaus,Natal,Niterói,Olinda,Osasco,Palmas,Petrópolis,Porto Alegre,Recife,Ribeirão Preto,Rio de Janeiro,Salvador,Santos,São Paulo,Sorocaba,Teresina,Uberlândia,Vitória,Valinhos,Xique-Xique,Xapuri,Ubatuba,Hortolândia,Holambra,Imperatriz,Jaú,Quixadá,Queimados,Zé Doca,Wenceslau Braz,Ouro Preto,Diadema,Embu,Franca,Garopaba,Limeira,Mogi Mirim,Nova Iguaçu,Paraty,Registro
+Capital de um país=Amsterdã,Atenas,Assunção,Bagdá,Bangcoc,Berlim,Bogotá,Brasília,Bruxelas,Buenos Aires,Cairo,Caracas,Copenhague,Dublin,Doha,Estocolmo,Havana,Helsinque,Jerusalém,Kiev,Lima,Lisboa,Londres,Luanda,Madri,Manágua,Maputo,Moscou,Nairóbi,Nova Délhi,Oslo,Ottawa,Paris,Pequim,Praga,Quito,Roma,Santiago,Seul,Tóquio,Teerã,Varsóvia,Viena,Washington,Wellington,Islamabad,Iaundé,Zagreb,Kingston,Kampala,Ulan Bator,Yerevan,Montevidéu,Ancara,Gaborone,Hanói
+Estado brasileiro=Acre,Alagoas,Amapá,Amazonas,Bahia,Ceará,Espírito Santo,Goiás,Maranhão,Mato Grosso,Mato Grosso do Sul,Minas Gerais,Pará,Paraíba,Paraná,Pernambuco,Piauí,Rio de Janeiro,Rio Grande do Norte,Rio Grande do Sul,Rondônia,Roraima,Santa Catarina,São Paulo,Sergipe,Tocantins,Distrito Federal
+Marca famosa=Adidas,Amazon,Apple,Avon,Bauducco,Brahma,Boticário,Casas Bahia,Chevrolet,Coca-Cola,Colgate,Danone,Dell,Disney,Electrolux,Fiat,Ford,Google,Garoto,Havaianas,Honda,Heinz,Ikea,Itaú,Intel,Johnson,Kibon,Kellogg's,Lacta,Lego,Magalu,McDonald's,Microsoft,Natura,Nestlé,Netflix,Nike,Nintendo,Olympikus,Omo,Pepsi,Puma,Quaker,Renner,Riachuelo,Samsung,Sadia,Seara,Tang,Toyota,Tramontina,Uber,Unilever,Volkswagen,Visa,Walmart,Whirlpool,Xiaomi,Xbox,Yakult,YouTube,Zara,Ypê,Gillette,Hering,Perdigão,Sony
+Comida de festa junina=amendoim,arroz-doce,bolo de milho,bolo de fubá,broa,canjica,cocada,cuscuz,curau,espetinho,mungunzá,paçoca,pamonha,pé de moleque,pinhão,pipoca,quindim,maçã do amor,milho verde,cachorro-quente,doce de abóbora,jujuba,tapioca,vinho quente,bolo de aipim,queijo coalho,manuê,quebra-queixo,beiju,canjiquinha,olho de sogra,rapadura,galinhada,empada,yakisoba,xerém,umbuzada,hot dog,nega maluca,fubá,goiabada,leite quente,kafta,biscoito de polvilho
+Sobremesa=açaí,ambrosia,arroz-doce,banoffee,bolo,brigadeiro,brownie,cheesecake,churros,cocada,cuscuz doce,doce de leite,éclair,flan,frozen,gelatina,goiabada,manjar,merengue,mousse,musse,napolitano,olho de sogra,pavê,petit gâteau,pudim,quindim,romeu e julieta,sagu,sonho,sorvete,suspiro,tiramisu,torta,uva caramelizada,waffle,zabaione,banana split,canjica,profiterole,jujuba,kinder,halva,yogurte,palha italiana
+Comida de café da manhã=açúcar,aveia,bacon,banana,biscoito,bolo,café,cereal,chá,croissant,cuscuz,geleia,granola,leite,manteiga,mamão,mel,misto quente,ovo,panqueca,pão,pão de queijo,queijo,requeijão,suco,tapioca,torrada,waffle,achocolatado,beiju,cappuccino,frutas,jabuticaba,kiwi,nutella,presunto,ricota,salsicha,uva,yakult,salame,linhaça,danone
+Bebida sem álcool=água,água de coco,achocolatado,café,caldo de cana,cappuccino,chá,chimarrão,energético,guaraná,isotônico,kombucha,leite,limonada,milkshake,mate,néctar,refrigerante,suco,tereré,smoothie,quentão sem álcool,yakult,groselha,frapê,hortelã,laranjada,ovomaltine,pepsi,toddynho,tubaína,xarope,coca-cola,expresso,bebida láctea,kefir,ice tea,detox,cajuína
+Algo que tem na cozinha=abridor,açucareiro,armário,avental,batedeira,bule,caneca,chaleira,colher,concha,copo,cuscuzeira,escorredor,espátula,faca,fogão,forno,frigideira,funil,garfo,geladeira,jarra,leiteira,liquidificador,micro-ondas,mesa,panela,peneira,pia,prato,ralador,rolo,sal,saleiro,talher,tábua,tigela,torneira,travessa,vasilha,azeite,hashi,iogurteira,isqueiro,kit de facas,quebra-nozes,ovos,utensílio,wok,zester,descascador,esponja,detergente
+Algo que tem no banheiro=absorvente,banheira,box,chinelo,chuveiro,condicionador,cotonete,creme dental,desodorante,escova,esponja,espelho,fio dental,gel,hidratante,lixeira,maquiagem,papel higiênico,pente,perfume,pia,privada,ralo,sabonete,secador,shampoo,tapete,toalha,torneira,xampu,água,azulejo,balde,bidê,cesto,descarga,enxaguante,jarra,kit de barbear,lâmina,navalha,óleo,pomada,rodo,talco,umidificador,ventilador
+Algo que tem no quarto=abajur,almofada,armário,baú,berço,cama,cabide,cobertor,colchão,cômoda,cortina,criado-mudo,despertador,edredom,escrivaninha,espelho,estante,fronha,guarda-roupa,lençol,luminária,mesa,mochila,nicho,pijama,poltrona,prateleira,rede,relógio,roupa,sapateira,tapete,televisão,travesseiro,urso de pelúcia,ventilador,janela,headphone,iPad,kindle,livro,notebook,xale,gaveta,fotografia
+Material escolar=agenda,apagador,apontador,borracha,caderno,calculadora,caneta,canetinha,cartolina,clipe,cola,compasso,corretivo,dicionário,esquadro,estojo,etiqueta,fichário,giz,grampeador,guache,lancheira,lápis,lapiseira,livro,marca-texto,mochila,papel,pasta,pincel,régua,tesoura,transferidor,uniforme,atlas,bloco,diário,envelope,folha,hidrocor,ímã,jaleco,kit escolar,massinha,nanquim,post-it,squeeze,tinta,vade-mécum,washi tape,xerox
+Algo que você leva para a praia=água,baldinho,biquíni,boia,boné,bronzeador,cadeira,canga,chapéu,chinelo,cooler,frescobol,guarda-sol,lanche,maiô,máscara,óculos,pá,peteca,prancha,protetor solar,raquete,repelente,saída de praia,sunga,toalha,uva,viseira,bola,celular,dinheiro,frutas,garrafa,hidratante,kit de praia,livro,mochila,nadadeira,pipa,roupa,snorkel,tênis,ukulele,xampu,zinco
+Algo que você leva numa viagem=adaptador,bagagem,boné,carregador,câmera,carteira,casaco,celular,chinelo,documento,escova de dentes,fone,guarda-chuva,headphone,identidade,jaqueta,kit de higiene,lanche,livro,mala,mapa,meias,mochila,necessaire,notebook,óculos,passagem,passaporte,pijama,protetor solar,remédio,roupa,sapato,toalha,travesseiro,visto,xampu,bolsa,dinheiro,escova,filtro solar,garrafa,hidratante,ingresso,jogo de cartas,roteiro,seguro,tênis,uniforme,voucher,walkman
+Esporte=atletismo,automobilismo,badminton,basquete,beisebol,boxe,canoagem,ciclismo,críquete,esgrima,futebol,futsal,futevôlei,ginástica,golfe,handebol,hipismo,hóquei,judô,jiu-jitsu,kitesurf,luta livre,maratona,motocross,natação,nado sincronizado,parkour,patinação,polo aquático,queimada,rapel,remo,rúgbi,skate,squash,surfe,taekwondo,tênis,tiro com arco,triatlo,ultramaratona,vôlei,vela,wakeboard,xadrez,windsurf,zumba,escalada,frescobol,iatismo,levantamento de peso
+Instrumento musical=acordeão,agogô,atabaque,bandolim,banjo,bateria,berimbau,bumbo,cavaquinho,clarinete,contrabaixo,corneta,cuíca,flauta,gaita,guitarra,harpa,kalimba,oboé,órgão,pandeiro,piano,reco-reco,sanfona,saxofone,surdo,tamborim,tambor,teclado,triângulo,trombone,trompete,tuba,ukulele,viola,violino,violoncelo,xilofone,zabumba,apito,chocalho,djembê,escaleta,fagote,gongo,harmônica,ilú,maracas,nhamã,quena,repique,timbal,urucungo,vibrafone
+Peça de roupa=agasalho,bermuda,biquíni,blazer,blusa,boné,cachecol,calça,calcinha,camisa,camiseta,camisola,casaco,colete,cueca,jaqueta,legging,macacão,maiô,meia,moletom,paletó,pijama,poncho,regata,roupão,saia,shorts,sobretudo,sunga,suéter,terno,top,uniforme,vestido,xale,blusão,cardigã,gravata,kilt,túnica,body,colan,gorro,jeans,luva,obi,vestidinho,windbreaker
+Calçado=alpargata,bota,botina,chinelo,chuteira,coturno,crocs,galocha,havaianas,mocassim,mule,oxford,pantufa,papete,peep toe,rasteirinha,sandália,sapatênis,sapatilha,sapato,scarpin,tamanco,tênis,anabela,birkenstock,docksides,espadrille,flip-flop,salto alto,keds,loafer,ugg,vans,yeezy,all star,jordan,zueco,bota de cano,nike
+Acessório=anel,bolsa,boné,bracelete,brinco,broche,cachecol,carteira,chapéu,cinto,colar,corrente,echarpe,gargantilha,gravata,lenço,luva,mochila,óculos,pulseira,relógio,piercing,tiara,tornozeleira,xale,viseira,bandana,clutch,diadema,elástico,fivela,grampo,headband,joia,kit de joias,laço,meia,necessaire,piranha,quepe,rabicó,scrunchie,touca,véu,gorro,abotoadura
+Parte do corpo=abdômen,antebraço,axila,barriga,boca,bochecha,braço,cabeça,cabelo,calcanhar,canela,cílio,cintura,coluna,coração,costas,costela,cotovelo,coxa,dedo,dente,estômago,fígado,garganta,gengiva,joelho,lábio,língua,mão,nariz,nuca,olho,ombro,orelha,osso,palma,pálpebra,panturrilha,pé,peito,perna,pescoço,pulmão,pulso,queixo,quadril,rim,rosto,sobrancelha,tornozelo,testa,tórax,umbigo,unha,útero,veia,virilha,intestino,hálux,zigoma,xifoide
+Meio de transporte=avião,ambulância,balão,barco,bicicleta,bonde,caminhão,caminhonete,canoa,carro,carroça,charrete,dirigível,escada rolante,foguete,jangada,jet ski,kart,lancha,metrô,moto,motocicleta,navio,ônibus,patinete,patins,quadriciclo,riquixá,skate,submarino,táxi,teleférico,trator,trem,triciclo,trólebus,uber,van,veleiro,vespa,zepelim,BRT,gôndola,hovercraft,ultraleve,elevador,funicular
+Marca de carro=Audi,BMW,BYD,Chevrolet,Citroën,Dodge,Ferrari,Fiat,Ford,Honda,Hyundai,Jaguar,Jeep,Kia,Lamborghini,Land Rover,Lexus,Mazda,Mercedes,Mitsubishi,Nissan,Peugeot,Porsche,Renault,Subaru,Suzuki,Tesla,Toyota,Volkswagen,Volvo,Bugatti,Chery,GWM,Infiniti,JAC,Maserati,Mini,Opel,Gurgel,Troller,Xpeng,Lotus,Rolls-Royce,Aston Martin,Bentley,Cadillac,Seat,Skoda,Uaz,Willys,Alfa Romeo,Dacia
+Nome de menino=Arthur,Antônio,Bernardo,Bruno,Caio,Carlos,Daniel,Davi,Eduardo,Enzo,Felipe,Fernando,Gabriel,Gustavo,Heitor,Henrique,Igor,Isaac,João,José,Kauã,Kevin,Leonardo,Lucas,Luiz,Mateus,Miguel,Nicolas,Noah,Otávio,Oliver,Pedro,Paulo,Quirino,Rafael,Ricardo,Samuel,Sérgio,Thiago,Tomás,Ulisses,Vinícius,Victor,Wagner,William,Xavier,Yuri,Zeca,Benjamin,Diego,Emanuel,Fábio,Guilherme,Hugo,Ian,Jorge,Kaique,Lorenzo,Murilo,Nathan,Orlando,Pietro,Renato
+Nome de menina=Alice,Ana,Beatriz,Bianca,Bruna,Camila,Carolina,Cecília,Clara,Daniela,Débora,Elisa,Eduarda,Fernanda,Flávia,Gabriela,Giovanna,Helena,Heloísa,Isabela,Isadora,Júlia,Joana,Karina,Kátia,Laura,Lívia,Luísa,Manuela,Mariana,Maria,Natália,Nicole,Olívia,Patrícia,Paula,Quitéria,Rafaela,Rebeca,Sofia,Sara,Tatiana,Teresa,Úrsula,Valentina,Vitória,Wanda,Wendy,Xuxa,Yasmin,Yara,Zoe,Zélia,Amanda,Lorena,Melissa,Priscila,Raquel,Sabrina,Tainá,Vanessa
+Brinquedo=autorama,amarelinha,bambolê,bicicleta,bilboquê,bola,boneca,cata-vento,carrinho,corda,dominó,esconde-esconde,escorregador,fantoche,gangorra,ioiô,jogo da memória,lego,massinha,patinete,patins,peão,peteca,pião,pipa,pula-pula,quebra-cabeça,robô,skate,slime,trenzinho,triciclo,urso de pelúcia,velocípede,xadrez,bolinha de gude,cubo mágico,dado,elástico,fazendinha,gira-gira,hot wheels,kit de mágica,lousa,mola maluca,ovo surpresa,quadro mágico,tamagotchi,uno,vai e vem,walkie-talkie,xilofone
+Ferramenta=alicate,arco de serra,broca,cavadeira,chave de fenda,chave inglesa,chave philips,cinzel,enxada,esmerilhadeira,esquadro,estilete,formão,furadeira,grampeador,lixa,lima,machado,marreta,martelo,nível,parafusadeira,pá,pé de cabra,picareta,plaina,prumo,rastelo,régua,serra,serrote,soprador,tesoura,torno,trena,talhadeira,vanga,ventosa,torquês,ancinho,desempenadeira,foice,gadanho,hidrojato,kit de ferramentas,queimador,rebitadeira,soldador
+Eletrodoméstico=adega,air fryer,aspirador,batedeira,cafeteira,chaleira elétrica,churrasqueira elétrica,climatizador,coifa,cooktop,depurador,espremedor,ferro de passar,fogão,forno,freezer,fritadeira,geladeira,grill,iogurteira,lava-louças,lavadora,liquidificador,micro-ondas,mixer,máquina de lavar,panela elétrica,purificador,refrigerador,sanduicheira,secadora,torradeira,umidificador,ventilador,aquecedor,desumidificador,exaustor,juicer,kettle,nespresso,ozonizador,processador,robô aspirador,televisão,waffleira
+Móvel da casa=aparador,armário,banco,banqueta,beliche,baú,berço,biombo,buffet,cadeira,cama,cômoda,cristaleira,criado-mudo,divã,escrivaninha,estante,espreguiçadeira,gaveteiro,guarda-roupa,mesa,nicho,penteadeira,poltrona,prateleira,pufe,rack,rede,sapateira,sofá,sofá-cama,tamborete,tapete,vitrine,cabideiro,dormitório,futon,gabinete,home theater,longarina,marquesa,otomana,painel,recamier,trocador
+Planta ou flor=açucena,alecrim,antúrio,azaleia,babosa,begônia,bromélia,cacto,camomila,cravo,crisântemo,dália,dente-de-leão,erva-doce,girassol,gérbera,hibisco,hortênsia,ipê,íris,jasmim,lavanda,lírio,lótus,magnólia,manjericão,margarida,miosótis,narciso,orquídea,onze-horas,palmeira,papoula,petúnia,primavera,rosa,samambaia,suculenta,tulipa,trevo,urtiga,violeta,vitória-régia,xaxim,zínia,kalanchoe,quaresmeira,copo-de-leite,espada-de-são-jorge,flor de lis,gardênia,hera
+Árvore=abacateiro,acácia,angico,araucária,aroeira,baobá,bétula,cajueiro,carvalho,castanheira,cedro,cerejeira,cipreste,coqueiro,embaúba,eucalipto,figueira,flamboyant,goiabeira,ipê,jabuticabeira,jacarandá,jatobá,jequitibá,laranjeira,limoeiro,mangueira,mogno,nogueira,oliveira,palmeira,paineira,pau-brasil,pinheiro,quaresmeira,salgueiro,sequoia,seringueira,sibipiruna,tamarindeiro,umbuzeiro,urucum,videira,xique-xique,zimbro,olmo,kapok,hevea,imbuia,juazeiro,macieira,nespereira,pereira
+Tempero=açafrão,alecrim,alho,canela,cardamomo,cebolinha,coentro,colorau,cominho,cravo,cúrcuma,curry,endro,erva-doce,estragão,gengibre,hortelã,louro,manjericão,manjerona,mostarda,noz-moscada,orégano,páprica,pimenta,pimenta-do-reino,raiz-forte,sal,salsa,salsinha,sálvia,shoyu,tomilho,urucum,vinagre,wasabi,zaatar,baunilha,chimichurri,dill,feno-grego,gergelim,harissa,ketchup,limão,missô,nirá,quatro especiarias,ras el hanout,zimbro
+Doce brasileiro=ambrosia,bala de coco,beijinho,bem-casado,bolo de rolo,brigadeiro,cajuzinho,canjica,cocada,cuscuz doce,curau,doce de abóbora,doce de leite,goiabada,maria-mole,manjar,olho de sogra,paçoca,pamonha,pé de moleque,pudim,quindim,rapadura,romeu e julieta,sagu,suspiro,teta de nega,bolo souza leão,bananada,cartola,cajuína,docinho,espera-marido,fios de ovos,geleia de mocotó,mungunzá,nego bom,queijadinha,tapioca doce,umbuzada,bom-bocado,casadinho,arroz-doce,cuca
+Salgado de lanchonete=americano,bauru,bolinha de queijo,cachorro-quente,coxinha,croissant,croquete,empada,empadinha,enroladinho,esfiha,fogazza,hambúrguer,joelho,kibe,misto quente,pastel,pão de queijo,quibe,risoles,sanduíche,torta,x-burger,x-salada,x-tudo,bolinho de bacalhau,calzone,chipa,folhado,hot dog,italiano,lanche natural,mortadela,nuggets,pizza,queijo quente,salgadinho,tapioca,wrap,beirute,baguete,dog,enroladinho de salsicha
+Prato típico brasileiro=acarajé,arroz carreteiro,arroz com pequi,baião de dois,barreado,bobó de camarão,buchada,caruru,churrasco,cuscuz,escondidinho,feijão tropeiro,feijoada,frango com quiabo,galinhada,maniçoba,moqueca,pamonha,pão de queijo,pato no tucupi,picadinho,polenta,pirão,quibebe,rubacão,sarapatel,tacacá,tutu de feijão,tapioca,vaca atolada,virado à paulista,xinxim de galinha,arroz de cuxá,bauru,caldo de piranha,dobradinha,empadão goiano,mocotó,mexido,paçoca de carne,rabada,sopa paraguaia
+Comida italiana=antepasto,bruschetta,calzone,canelone,cannoli,capeletti,carpaccio,ciabatta,espaguete,fettuccine,focaccia,fusilli,gnocchi,gelato,lasanha,minestrone,mozzarella,ossobuco,panetone,panna cotta,parmegiana,penne,pesto,pizza,polenta,ravióli,risoto,rondelli,salame,talharim,tiramisu,tortellini,burrata,caponata,espresso,farfalle,grissini,involtini,linguine,macarrão,orecchiette,pancetta,prosciutto,quatro queijos,ricota,saltimbocca,tagliatelle,vitello tonnato,zabaione
+Sabor de sorvete=abacaxi,açaí,ameixa,baunilha,banana,brigadeiro,café,caramelo,chocolate,coco,creme,doce de leite,flocos,framboesa,goiaba,kiwi,leite condensado,limão,leite ninho,manga,maracujá,menta,morango,napolitano,nozes,ovomaltine,passas ao rum,pistache,queijo,romeu e julieta,tapioca,tutti frutti,uva,uva-passa,vinho,yogurte,zabaione,amendoim,cereja,chiclete,cookies,graviola,hortelã,jabuticaba,cupuaçu,nutella,pavê,quindim,sensação
+Sabor de pizza=aliche,atum,bacon,baiana,brócolis,calabresa,camarão,catupiry,chocolate,frango com catupiry,lombo,margherita,marguerita,mussarela,napolitana,portuguesa,palmito,peperoni,pepperoni,presunto,quatro queijos,rúcula,romeu e julieta,salame,toscana,vegetariana,banana,carne seca,escarola,frango,gorgonzola,havaiana,italiana,lombinho,milho,nordestina,ovo,parma,queijo,strogonoff,tomate seco,zucchini,abobrinha,bolonhesa,cinco queijos,dois queijos,funghi,veneza,muçarela
+Idioma=alemão,árabe,bengali,búlgaro,catalão,chinês,coreano,croata,dinamarquês,espanhol,esperanto,finlandês,francês,grego,guarani,hebraico,hindi,holandês,húngaro,indonésio,inglês,islandês,italiano,latim,libras,mandarim,norueguês,persa,polonês,português,quíchua,romeno,russo,sérvio,suaíli,sueco,tailandês,tupi,turco,ucraniano,urdu,vietnamita,xhosa,iídiche,zulu,basco,checo,galês,kikongo,quimbundo,tâmil,yorubá,wolof
+Matéria da escola=álgebra,artes,biologia,ciências,educação física,espanhol,ensino religioso,filosofia,física,geografia,geometria,gramática,história,inglês,informática,literatura,matemática,música,português,química,redação,robótica,sociologia,teatro,trigonometria,xadrez,zoologia,astronomia,cálculo,desenho,economia,francês,italiano,latim,japonês,lógica,programação,teologia
+Sentimento=afeto,alegria,amor,angústia,ansiedade,carinho,ciúme,compaixão,coragem,culpa,desejo,desânimo,empatia,entusiasmo,esperança,euforia,felicidade,frustração,gratidão,ódio,orgulho,paixão,paz,pena,preguiça,raiva,remorso,saudade,solidão,surpresa,susto,ternura,timidez,tristeza,tédio,vergonha,vingança,admiração,bondade,decepção,fé,generosidade,humildade,inveja,irritação,júbilo,leveza,medo,nostalgia,otimismo,rancor,satisfação,ufania,vaidade,zelo
+Algo do espaço=asteroide,astronauta,buraco negro,cometa,constelação,cosmos,eclipse,estação espacial,estrela,foguete,galáxia,gravidade,hubble,Júpiter,lua,Marte,Mercúrio,meteoro,meteorito,nebulosa,Netuno,órbita,planeta,Plutão,quasar,radiação,satélite,Saturno,sol,supernova,telescópio,Terra,universo,Urano,Vênus,via láctea,vácuo,anã branca,big bang,cinturão de Kuiper,disco voador,exoplaneta,gigante vermelha,hélio,kepler,luneta,magnetar,nuvem de Oort,óvni,pulsar,quarto crescente,radiotelescópio,sonda,tripulante,zênite,wormhole
+Fenômeno da natureza=arco-íris,aurora boreal,avalanche,brisa,chuva,ciclone,cheia,deslizamento,eclipse,enchente,erupção,estiagem,furacão,garoa,geada,granizo,inundação,maremoto,maré,monção,neblina,neve,nevasca,onda,pororoca,queimada,raio,relâmpago,seca,terremoto,tempestade,tornado,trovão,tsunami,tufão,vendaval,vento,vulcão,zéfiro,ventania,aguaceiro,bruma,calor,degelo,El Niño,frente fria,halo,iceberg,La Niña,nevoeiro,redemoinho,sismo,umidade,ressaca
+Animal de estimação=cachorro,calopsita,canário,chinchila,coelho,cágado,furão,gato,hamster,iguana,jabuti,lagarto,mini porco,papagaio,periquito,peixe,peixinho dourado,porquinho-da-índia,pônei,rato,serpente,tartaruga,tarântula,axolote,beta,cobra,degu,esquilo,feneco,gerbil,hurão,kinguio,manon,ninfa,ouriço,pato,roedor,sagui,agapornis,diamante-de-gould,mandarim
+Algo que você vê no céu=asa-delta,avião,arco-íris,balão,beija-flor,borboleta,cometa,constelação,drone,estrela,estrela cadente,eclipse,fogos de artifício,foguete,gaivota,lua,meteoro,nuvem,neblina,neve,pássaro,parapente,pipa,planeta,raio,relâmpago,satélite,sol,tempestade,urubu,via láctea,Vênus,zepelim,aurora,chuva,dirigível,granizo,horizonte,lua cheia,ovni,paraquedas,quero-quero,trovão,ultraleve,azul
+Algo encontrado no oceano=água-viva,alga,anêmona,arraia,baleia,barco,boia,cardume,caranguejo,cavalo-marinho,coral,concha,estrela-do-mar,foca,golfinho,iceberg,lula,lagosta,mergulhador,náufrago,navio,onda,orca,ouriço,peixe,petróleo,pérola,plâncton,polvo,recife,sal,submarino,tartaruga,tesouro,tubarão,tsunami,vulcão submarino,areia,baleia azul,correnteza,destroço,enguia,farol,garrafa,hipocampo,jangada,krill,lixo,maré,naufrágio,plataforma,quebra-mar,rede,sargaço,vieira,xaréu,zooplâncton
+Nome de cachorro=Amora,Apolo,Bidu,Bob,Bolinha,Belinha,Billy,Chico,Duque,Dudu,Fred,Faísca,Floquinho,Frida,Hulk,Jack,Kika,Lady,Lua,Luna,Max,Mel,Nina,Nino,Ozzy,Pandora,Pipoca,Pingo,Princesa,Rex,Scooby,Simba,Spike,Thor,Toby,Totó,Uli,Vida,Valente,Xuxa,Yoda,Zeus,Zezé,Zara,Bento,Cacau,Dora,Estopa,Gaia,Hachi,Ícaro,Jade,Laika,Marley,Nick,Oreo,Paçoca,Quinho,Rambo,Snoopy,Tobias,Willy
+Algo de Natal=anjo,árvore de Natal,bengala,biscoito,bola,cartão,ceia,chester,chocotone,estrela,enfeite,festão,guirlanda,gorro,jesus,laço,luzes,meia,menino Jesus,missa do galo,natal,neve,nozes,panetone,papai noel,pinheiro,pisca-pisca,presente,presépio,rabanada,rena,sino,tender,trenó,uva-passa,vela,visco,amigo secreto,bacalhau,champagne,duende,embrulho,globo de neve,José,Maria,peru,reis magos,salpicão,Belém,Rodolfo
+Algo de festa de aniversário=balão,bexiga,bolo,brigadeiro,beijinho,chapéu,confete,convite,coxinha,docinho,decoração,enfeite,forminha,guaraná,guardanapo,isopor,jujuba,kit festa,lembrancinha,língua de sogra,mesa,música,painel,parabéns,piñata,pipoca,presente,quindim,refrigerante,salgadinho,serpentina,suco,tema,toalha,vela,velinha,amigos,bombom,cachorro-quente,dança,esfiha,fotografia,garçom,happy birthday,ingresso,jogos,karaokê,lanche,mágico,palhaço,risoles,sorvete,trampolim,videokê
+Algo redondo=anel,azeitona,bambolê,bola,botão,bolinha de gude,biscoito,CD,círculo,disco,donut,ervilha,esfera,globo,laranja,lua,moeda,melancia,olho,ovo,pão de queijo,pérola,pizza,pneu,prato,pulseira,queijo,relógio,roda,rosquinha,sol,tampa,uva,volante,hambúrguer,iô-iô,jabuticaba,kiwi,limão,pião,quindim,roleta,tomate,umbigo,vinil,argola,cebola
+Algo gelado=açaí,água gelada,ar-condicionado,avalanche,congelador,cubo de gelo,freezer,frozen,geladeira,gelatina,geleira,gelo,granizo,iceberg,iglu,inverno,limonada,milkshake,neve,picolé,pinguim,polo norte,raspadinha,refrigerante,sacolé,sorvete,suco,vento,antártida,chupe-chupe,dindin,escarcha,frapê,geada,kibon,lagoa congelada,mar do ártico,nevasca,pedra de gelo,tundra,urso polar,zero grau
+Algo doce=açúcar,algodão-doce,bala,bolo,bombom,brigadeiro,caramelo,chiclete,chocolate,cocada,doce de leite,donut,fruta,geleia,goiabada,jujuba,leite condensado,manga,mel,melado,merengue,mousse,paçoca,pirulito,pudim,quindim,rapadura,sorvete,suspiro,torta,uva,xarope,beijinho,canjica,garapa,kinder,marshmallow,nutella,ovo de páscoa,pavê,sonho,trufa,waffle,abacaxi,banana,cupcake,dadinho,éclair,figo,jabuticaba,limonada,maçã do amor,nhá benta
+Material de construção=areia,argamassa,azulejo,brita,bloco,cal,cano,cerâmica,cimento,concreto,divisória,drywall,esquadria,ferro,gesso,granito,impermeabilizante,janela,lajota,madeira,mármore,massa corrida,pedra,piso,porcelanato,porta,prego,parafuso,rejunte,reboco,ripa,tábua,telha,tijolo,tinta,tubo,vergalhão,viga,zinco,aço,barra de ferro,caibro,dobradiça,eternit,fio,granilite,kit porta pronta,lã de vidro,manta,ônix,pastilha,quartzo,sarrafo,tela,verniz,xisto
+Algo que tem rodas=avião,ambulância,bicicleta,bonde,cadeira de rodas,caminhão,carrinho de bebê,carrinho de mão,carrinho de supermercado,carro,carroça,charrete,empilhadeira,kart,mala,moto,ônibus,patinete,patins,skate,trator,trem,triciclo,van,velocípede,cadeira de escritório,escavadeira,furgão,guindaste,jipe,limusine,mesa com rodinha,ônibus escolar,quadriciclo,rolimã,segway,tanque,uber,vagão,zorra,betoneira,dragster,gaiola
+Hobby=artesanato,bordado,cantar,colecionar,cozinhar,crochê,correr,dançar,desenhar,escrever,escalar,fotografar,fazer trilha,games,jardinagem,jogar xadrez,ler,meditar,montar quebra-cabeça,nadar,origami,pescar,pintar,patinar,pedalar,quebra-cabeça,surfar,tocar violão,tricô,viajar,zumba,acampar,bonsai,caminhar,dominó,esculpir,fazer pão,grafite,horta,ilustrar,jogar bola,karaokê,lego,marcenaria,navegar,observar pássaros,podcast,rapel,sudoku,teatro,ukulele,violino,xilogravura
+Verbo de ação=abrir,andar,beber,brincar,cantar,cair,chutar,comer,correr,dançar,dar,dormir,empurrar,escrever,falar,fazer,fugir,gritar,guardar,ir,jogar,jantar,lavar,ler,levantar,mexer,morder,nadar,olhar,pegar,pintar,pular,puxar,quebrar,queimar,rir,saltar,sentar,subir,trabalhar,tocar,usar,unir,varrer,ver,voar,xingar,zarpar,zoar,hesitar,iniciar,jejuar,lutar,mergulhar,nevar,orar,quicar,rodar,sorrir,tropeçar,urrar,vender,xeretar,zangar
+Adjetivo para elogiar alguém=admirável,amável,amigo,atencioso,bondoso,bonito,brilhante,carinhoso,charmoso,corajoso,criativo,dedicado,divertido,educado,elegante,encantador,engraçado,esforçado,esperto,fiel,forte,generoso,gentil,honesto,humilde,incrível,inteligente,justo,leal,legal,lindo,maravilhoso,meigo,nobre,ótimo,paciente,prestativo,querido,radiante,sábio,simpático,sincero,talentoso,tranquilo,único,valente,verdadeiro,zeloso,jovial,habilidoso,iluminado,kawaii,lindíssimo,magnífico,notável,organizado,perfeito,responsável,sensacional,top,útil,vibrante
+Algo de escritório=agenda,arquivo,bloco de notas,borracha,cadeira,calculadora,caneta,carimbo,clipe,computador,crachá,divisória,envelope,estilete,etiqueta,fax,fichário,grampeador,impressora,lápis,lixeira,mesa,monitor,mouse,notebook,pasta,papel,post-it,projetor,quadro branco,régua,relógio de ponto,scanner,teclado,telefone,tesoura,webcam,xerox,ar-condicionado,bebedouro,café,durex,extensão,fone,gaveteiro,headset,impressão,kit escritório,luminária,marca-texto,nobreak,organizador,porta-lápis,quadro de avisos,roteador,tinta,ventilador
+Algo que se vende na feira=abacaxi,abóbora,alface,alho,banana,batata,berinjela,beterraba,brócolis,caldo de cana,cebola,cenoura,chuchu,coentro,couve,ervilha,espinafre,frango,goiaba,hortelã,inhame,jiló,laranja,limão,mandioca,mamão,manga,maracujá,melancia,milho,morango,ovos,pastel,peixe,pepino,pimentão,quiabo,queijo,rabanete,repolho,rúcula,salsinha,tomate,tangerina,uva,vagem,xuxu,abacate,bolo,caqui,doce,flores,garapa,kiwi,nabo,ovo de codorna,pera,rapadura,salame,tempero
+Rede social ou site=Amazon,Bing,Blogger,Discord,Duolingo,Facebook,Flickr,Gmail,Google,Hotmail,Instagram,iFood,Kwai,LinkedIn,Mercado Livre,Netflix,Orkut,OLX,Pinterest,Quora,Reddit,Snapchat,Spotify,Telegram,Threads,TikTok,Tumblr,Twitch,Twitter,UOL,Vimeo,WhatsApp,Wikipédia,X,YouTube,Yahoo,Zoom,Badoo,Canva,Dropbox,Etsy,Fiverr,Globo,Habbo,Imgur,Jusbrasil,Kickstarter,Linktree,MySpace,Nubank,Outlook,PayPal,Shopee,Trello,Uber,Vagalume,Waze,Yelp,Zap Imóveis
+Palavra em inglês que todo mundo usa=app,backup,baby,bike,brother,cool,crush,delivery,design,download,email,fake,feedback,fitness,game,happy hour,home office,internet,job,ketchup,like,link,login,mouse,nerd,notebook,ok,online,play,post,print,quiz,reset,selfie,shopping,show,site,smartphone,sorry,spoiler,stalker,stories,top,upload,video game,web,wi-fi,xerox,yes,zoom,hot dog,insight,jeans,know-how,looks,marketing,network,off,party,shampoo,ticket,underground,vip,weekend,zip
+Time de futebol brasileiro=América,Athletico,Atlético Mineiro,Avaí,Bahia,Botafogo,Bragantino,Ceará,Chapecoense,Corinthians,Coritiba,Cruzeiro,CSA,Figueirense,Flamengo,Fluminense,Fortaleza,Goiás,Grêmio,Guarani,Internacional,Ituano,Juventude,Joinville,Londrina,Mirassol,Náutico,Novorizontino,Operário,Palmeiras,Paraná,Paysandu,Ponte Preta,Portuguesa,Remo,Sampaio Corrêa,Santa Cruz,Santos,São Paulo,Sport,Tombense,Vasco,Vila Nova,Vitória,XV de Piracicaba,Ypiranga,Bangu,Criciúma,Ferroviária,Juazeirense,Quinze de Jaú,Uberlândia,Volta Redonda,ABC,Brusque,Cuiabá,Democrata,Estrela do Norte,Hercílio Luz,Ibis,Linense,Madureira,Oeste,Red Bull Bragantino,Treze,União Barbarense,Xavante
+Time de futebol europeu=Ajax,Arsenal,Aston Villa,Atalanta,Atlético de Madrid,Barcelona,Bayern,Benfica,Borussia Dortmund,Celtic,Chelsea,Everton,Feyenoord,Fiorentina,Galatasaray,Inter de Milão,Juventus,Lazio,Leipzig,Liverpool,Lyon,Manchester City,Manchester United,Marseille,Milan,Mônaco,Napoli,Newcastle,Olympiacos,Porto,PSG,PSV,Rangers,Real Madrid,Roma,Sevilla,Sporting,Shakhtar,Tottenham,Valencia,Villarreal,West Ham,Wolfsburg,Zenit,Basel,Copenhague,Dínamo de Kiev,Eintracht Frankfurt,Getafe,Hamburgo,Inter,Krasnodar,Leverkusen,Mallorca,Nottingham Forest,Osasuna,Qarabag,Rayo Vallecano,Salzburg,Torino,Udinese,Young Boys,Brighton
+Seleção de futebol=Alemanha,Argentina,Austrália,Bélgica,Brasil,Camarões,Canadá,Chile,Colômbia,Coreia do Sul,Costa Rica,Croácia,Dinamarca,Egito,Equador,Escócia,Espanha,Estados Unidos,França,Gana,Grécia,Holanda,Honduras,Inglaterra,Irã,Irlanda,Islândia,Itália,Jamaica,Japão,Marrocos,México,Nigéria,Noruega,Nova Zelândia,Panamá,Paraguai,Peru,Polônia,Portugal,Qatar,Rússia,Senegal,Sérvia,Suécia,Suíça,Tunísia,Turquia,Ucrânia,Uruguai,Venezuela,Zâmbia,Kosovo,Iraque,Bolívia,Arábia Saudita,Gales,Hungria,Omã,Quênia
+Jogador brasileiro=Adriano,Alisson,Bebeto,Casemiro,Cafu,Careca,Dida,Djalma Santos,Dunga,Edmundo,Endrick,Éder Militão,Falcão,Firmino,Fred,Gabigol,Garrincha,Gérson,Hulk,Jairzinho,Juninho,Kaká,Lucas Moura,Marcelo,Marta,Neymar,Oscar,Paquetá,Pelé,Raí,Raphinha,Rivaldo,Rivellino,Roberto Carlos,Romário,Ronaldinho,Ronaldo,Rodrygo,Sócrates,Taffarel,Thiago Silva,Tostão,Vampeta,Vinicius Júnior,Zagallo,Zico,Zé Roberto,Ademir da Guia,Branco,Cássio,Denílson,Ederson,Fabinho,Gilberto Silva,Hernanes,Edílson,Jô,Luís Fabiano,Mauro Silva,Nilton Santos,Pato,Quarentinha,Renato Gaúcho,Savinho,Thiago Motta,Washington,Yuri Alberto
+Jogador estrangeiro=Agüero,Benzema,Beckham,Bale,Buffon,Cristiano Ronaldo,Cruyff,De Bruyne,Di María,Drogba,Eto'o,Figo,Griezmann,Haaland,Henry,Ibrahimović,Iniesta,Kane,Kroos,Lewandowski,Messi,Maradona,Mbappé,Modrić,Neuer,Owen,Pirlo,Puyol,Pogba,Ramos,Rooney,Salah,Suárez,Totti,Valverde,Vieira,Xavi,Yamal,Zidane,Zlatan,Arda Güler,Batistuta,Cavani,Dybala,Eriksen,Forlán,Gerrard,Hazard,Isco,Jude Bellingham,Klose,Lampard,Mané,Nedvěd,Oblak,Pedri,Quaresma,Riquelme,Son,Torres,Undav,Van Basten,Weah,Xhaka,Yashin,Zamorano
+Goleiro famoso=Alisson,Bento,Buffon,Cássio,Casillas,Courtois,Dida,Donnarumma,Ederson,Emiliano Martínez,Fábio,Gilmar,Higuita,Hugo Lloris,Júlio César,Kahn,Kepa,Leão,Marcos,Manuel Neuer,Navas,Oblak,Ochoa,Pickford,Rogério Ceni,Ronaldo Giovanelli,Schmeichel,Taffarel,Ter Stegen,Victor,Weverton,Yashin,Zetti,Zoff,Barthez,Chilavert,De Gea,Felipe,Gianluigi,Helton,Iker Casillas,Jefferson,Keylor Navas,Lev Yashin,Maignan,Neto,Onana,Sommer,Valdir Peres,Walter,Zé Carlos
+Técnico de futebol=Abel Ferreira,Ancelotti,Bielsa,Cuca,Conte,Dorival,Diniz,Felipão,Ferguson,Flick,Guardiola,Klopp,Luxemburgo,Luiz Felipe Scolari,Mano Menezes,Mourinho,Muricy,Nagelsmann,Parreira,Pochettino,Renato Gaúcho,Rogério Ceni,Sampaoli,Simeone,Telê Santana,Tite,Tuchel,Valverde,Wenger,Xabi Alonso,Zagallo,Zidane,Arteta,Cholo,Dunga,Enrique,Fernando Diniz,Gallardo,Hansi Flick,Inzaghi,Jesus,Jorge Jesus,Klinsmann,Luis Enrique,Menotti,Nuno Espírito Santo,Oswaldo de Oliveira,Pep,Queiroz,Ramón Díaz,Slot,Unai Emery,Vanderlei Luxemburgo,Ten Hag
+Estádio de futebol=Allianz Parque,Arena Corinthians,Arena da Baixada,Arena do Grêmio,Arena Pernambuco,Anfield,Beira-Rio,Bombonera,Brinco de Ouro,Camp Nou,Castelão,Couto Pereira,Fonte Nova,Itaquerão,Independência,Maracanã,Mineirão,Monumental,Morumbi,Moisés Lucarelli,Neo Química Arena,Nilton Santos,Old Trafford,Pacaembu,Parque Antártica,Santiago Bernabéu,San Siro,São Januário,Serra Dourada,Signal Iduna Park,Stamford Bridge,Vila Belmiro,Vila Capanema,Wembley,Westfalenstadion,Allianz Arena,Ilha do Retiro,Joaquim Américo,Kléber Andrade,Mané Garrincha,Orlando Scarpelli,Parc des Princes,Ressacada,Rei Pelé,Engenhão,Etihad,Hernando Siles,Urbano Caldeira,Velódromo,Zerão,Arruda,Estádio da Luz
+Posição em campo=atacante,ala,armador,beque,camisa 10,centroavante,centromédio,goleiro,lateral,lateral-direito,lateral-esquerdo,líbero,meia,meio-campista,meia-atacante,ponta,ponta-direita,ponta-esquerda,primeiro volante,quarto zagueiro,segundo volante,volante,zagueiro,falso nove,extremo,winger,pivô,regista,trequartista,interior,jogador de área,box-to-box,defensor,enganche,médio,nove,ofensivo,quarto-zagueiro,reserva,sweeper,titular,último homem,xerife,zagueirão
+Palavra do futebol (drible, pênalti…)=abafa,artilheiro,assistência,bicicleta,banco,cabeçada,caneta,cartão,chapéu,chute,cobrança,contra-ataque,córner,drible,escanteio,expulsão,falta,finta,gol,goleada,golaço,hat-trick,impedimento,juiz,lance,lateral,letra,matada,olímpico,pedalada,pênalti,placar,prorrogação,quadrado,rabona,replay,substituição,tabela,tiro de meta,trave,uniforme,vaia,var,videoarbitragem,voleio,xerife,zagueiro,zebra,apito,barreira,carrinho,defesa,elástico,frango,gandula,hino,invasão,jogada,kick-off,linha de fundo,meia-lua,nó tático,offside,passe,quique,rebote,sombrero,torcida,virada
+Campeonato ou copa=Brasileirão,Champions League,Copa América,Copa do Brasil,Copa do Mundo,Copa do Nordeste,Copa Sul-Americana,Campeonato Paulista,Carioca,Eurocopa,Gauchão,Libertadores,La Liga,Liga Europa,Mundial de Clubes,Mineiro,Olimpíadas,Premier League,Paulistão,Recopa,Serie A,Supercopa,Bundesliga,Copa da Inglaterra,Eliminatórias,FA Cup,Ligue 1,Nations League,Pan-Americano,Copa Verde,Copa São Paulo,Taça Guanabara,Copa Ouro,Intercontinental,Copa do Rei,Kings League,Liga MX,MLS,Olimpíada,Primeira Liga,Rio-São Paulo,Série B,Torneio Início,UEFA,Copa Africana,Eredivisie,Hexagonal
+Esporte olímpico=atletismo,badminton,basquete,beisebol,boxe,breaking,canoagem,ciclismo,escalada,esgrima,futebol,ginástica,golfe,handebol,hipismo,hóquei,judô,levantamento de peso,luta olímpica,maratona aquática,mountain bike,nado artístico,natação,pentatlo,polo aquático,remo,rúgbi,saltos ornamentais,skate,softbol,surfe,taekwondo,tênis,tênis de mesa,tiro esportivo,tiro com arco,trampolim,triatlo,vela,vôlei,vôlei de praia,wrestling,BMX,caratê,decatlo,lançamento de dardo,obstáculos,revezamento,salto com vara,velocidade,iatismo,arremesso de peso
+Atleta brasileiro (qualquer esporte)=Ayrton Senna,Adhemar Ferreira,Arthur Zanetti,Bernardinho,Bia Haddad,Daiane dos Santos,Diego Hypólito,Emerson Fittipaldi,Fofão,Ana Marcela,Gabriel Medina,Guga,Giba,Hortência,Isaquias Queiroz,Ítalo Ferreira,Joaquim Cruz,Jade Barbosa,João do Pulo,Rebeca Andrade,Marta,Maria Esther Bueno,Magic Paula,Nelson Piquet,Oscar Schmidt,Pelé,Popó,Rayssa Leal,Robert Scheidt,Rubens Barrichello,Sarah Menezes,Serginho,Thiago Braz,Torben Grael,Vanderlei Cordeiro,Wanderlei Silva,Yane Marques,Zé Roberto,Anderson Silva,Bruninho,César Cielo,Daniele Hypólito,Esquiva Falcão,Fabiana Murer,Gustavo Kuerten,Hugo Calderano,Ketleyn Quadros,Lars Grael,Mayra Aguiar,Neymar,Oscar,Poliana Okimoto,Rafaela Silva,Thiago Pereira,Vitor Belfort,Zanetti,Kaká
+Santo ou santa=Afonso de Ligório,Agostinho,Ambrósio,Antônio,Bento,Benedito,Bernadete,Brás,Camilo,Carlo Acutis,Catarina,Cecília,Clara,Cosme,Damião,Domingos,Dulce dos Pobres,Edwiges,Expedito,Estêvão,Faustina,Francisco,Frei Galvão,Filomena,Gabriel,Gertrudes,Gianna,Helena,Hilário,Inácio de Loyola,Isidoro,Jerônimo,João Paulo II,Joana d'Arc,Jorge,José,Judas Tadeu,Kizito,Luzia,Lourenço,Luís Gonzaga,Martinho,Maximiliano Kolbe,Mônica,Nicolau,Norberto,Olga,Paulo,Pedro,Padre Pio,Patrício,Quitéria,Rita de Cássia,Roque,Rosa de Lima,Sebastião,Teresinha,Tomás de Aquino,Terezinha,Úrsula,Valentim,Vicente de Paulo,Wenceslau,Xavier,Zita,Zélia Martin,Irineu,Ignácio
+Livro da Bíblia=Atos,Abdias,Ageu,Amós,Apocalipse,Baruc,Cântico dos Cânticos,Colossenses,Coríntios,Crônicas,Daniel,Deuteronômio,Eclesiastes,Eclesiástico,Efésios,Esdras,Ester,Êxodo,Ezequiel,Filêmon,Filipenses,Gálatas,Gênesis,Habacuc,Hebreus,Isaías,Jeremias,Jó,João,Joel,Jonas,Josué,Judite,Judas,Juízes,Lamentações,Levítico,Lucas,Macabeus,Malaquias,Marcos,Mateus,Miqueias,Naum,Neemias,Números,Oseias,Provérbios,Pedro,Reis,Rute,Romanos,Salmos,Samuel,Sabedoria,Sofonias,Tiago,Timóteo,Tito,Tobias,Tessalonicenses,Zacarias
+Personagem do Antigo Testamento=Abel,Abraão,Absalão,Adão,Aarão,Betsabé,Booz,Caim,Calebe,Daniel,Davi,Débora,Dalila,Elias,Eliseu,Esaú,Ester,Eva,Ezequiel,Gedeão,Golias,Isaac,Isaías,Ismael,Jacó,Jeremias,Jó,Jonas,José,Josué,Judite,Labão,Lia,Ló,Moisés,Matusalém,Noé,Neemias,Oseias,Rebeca,Raquel,Rute,Salomão,Samuel,Sansão,Sara,Saul,Tobias,Urias,Zacarias,Zorobabel,Naamã,Ana,Benjamim,Caleb,Dã,Enoque,Faraó,Habacuc,Hagar,Jezabel,Miriam,Nabucodonosor,Raabe,Sem,Tamar,Uzias,Vasti
+Personagem do Novo Testamento=André,Ana,Barnabé,Bartolomeu,Barrabás,Caifás,Cornélio,Estêvão,Filipe,Gabriel,Isabel,Jairo,João Batista,João,José,José de Arimateia,Judas,Lázaro,Lucas,Maria,Maria Madalena,Marta,Mateus,Marcos,Matias,Nicodemos,Pedro,Paulo,Pilatos,Priscila,Salomé,Simão,Silas,Simeão,Tiago,Timóteo,Tito,Tomé,Zaqueu,Zacarias,Ananias,Bartimeu,Cleofas,Dorcas,Elizabete,Felipe,Gamaliel,Herodias,Joana,Lídia,Malco,Natanael,Onésimo,Áquila,Quirino,Rode,Saulo,Tabita,Verônica
+Apóstolo de Jesus=André,Bartolomeu,Filipe,João,Judas Iscariotes,Judas Tadeu,Mateus,Matias,Natanael,Pedro,Paulo,Simão,Simão Pedro,Simão Zelote,Tadeu,Tiago,Tiago Maior,Tiago Menor,Tomé,Levi,Cefas,Barnabé
+Papa=Adriano,Alexandre,Bento XVI,Bento,Bonifácio,Celestino,Clemente,Dâmaso,Eugênio,Francisco,Gregório,Gelásio,Honório,Inocêncio,João Paulo II,João XXIII,João Paulo I,Júlio,Leão XIV,Leão XIII,Leão Magno,Lino,Marcelino,Martinho,Nicolau,Paulo VI,Pedro,Pio XII,Pio X,Pio IX,Sisto,Silvestre,Telésforo,Urbano,Vítor,Valentim,Zacarias,Zeferino,Anacleto,Calisto,Ceferino,Estêvão,Fabiano,Higino,Hormisdas,Lúcio,Marcos,Pascoal,Sixto,Teodoro,Vigílio
+Oração=Ave-Maria,Angelus,Anjo da Guarda,Ato de contrição,Credo,Consagração a Nossa Senhora,Glória,Glória ao Pai,Ladainha,Magnificat,Oração de São Francisco,Oração do Pai-Nosso,Pai-Nosso,Rosário,Regina Caeli,Salve Rainha,Santo Anjo,Terço,Vinde Espírito Santo,Te Deum,Benedictus,Bendita sejais,Confiteor,Divino Espírito Santo,Eu pecador,Hino,Jaculatória,Kyrie,Lembrai-vos,Miserere,Novena,Ofício,Pai Nosso,Responsório,Sinal da Cruz,Trezena,Via-Sacra,Angelus Domini
+Algo que tem numa igreja=altar,ambão,anjo,banco,batistério,bíblia,cálice,campanário,candelabro,castiçal,coro,confessionário,crucifixo,cruz,círio pascal,flores,genuflexório,harmônio,imagem,incenso,lecionário,lustre,missal,órgão,ostensório,púlpito,pia batismal,presbitério,relicário,sacrário,sacristia,santo,sino,tabernáculo,toalha,turíbulo,vela,vitral,via-sacra,altar-mor,água benta,capela,folheto,hinário,jarro,livro,mesa,nicho,ofertório,padre,quadro da via-sacra,rosário
+Objeto usado na Missa=âmbula,alva,cálice,casula,círio,corporal,cruz processional,estola,galheta,hóstia,incenso,lecionário,lavabo,manustérgio,missal,naveta,ostensório,pala,patena,purificador,sanguíneo,sino,turíbulo,vela,vinho,água,ambão,bíblia,campainha,dalmática,evangeliário,folheto,hinário,jarra,livro,matraca,toalha,umbela,véu,zucchetto,báculo,mitra,píxide,relicário,solidéu,teca
+Título de Nossa Senhora=Aparecida,Auxiliadora,Assunção,Boa Morte,Bom Parto,Candelária,Conceição,Consolata,Desatadora dos Nós,Dores,Fátima,Graças,Guadalupe,Imaculada Conceição,Lourdes,Luz,Mãe de Deus,Medianeira,Misericórdia,Nazaré,Navegantes,Penha,Perpétuo Socorro,Piedade,Rainha da Paz,Rosário,Salete,Saúde,Soledade,Glória,Abadia,Belém,Carmo,Desterro,Esperança,Fé,Imaculada,Kibeho,Loreto,Montserrat,Natividade,Pilar,Rainha do Céu,Vitória,Visitação,Estrela da Manhã
+Lugar citado na Bíblia=Babilônia,Belém,Betânia,Betel,Cafarnaum,Caná,Canaã,Corinto,Damasco,Éfeso,Egito,Emaús,Galileia,Getsêmani,Gólgota,Gomorra,Hebron,Jericó,Jerusalém,Jordão,Judeia,Macedônia,Mar Vermelho,Monte Sinai,Nazaré,Nínive,Patmos,Roma,Samaria,Sinai,Sodoma,Tarso,Tiberíades,Ur,Antioquia,Atenas,Babel,Calvário,Decápolis,Edom,Filipos,Gaza,Horebe,Israel,Jope,Kedron,Líbano,Moab,Naim,Ofir,Pérsia,Quiriat-Jearim,Rama,Siló,Tiro,Ur dos Caldeus,Zion,Sião,Efraim
+Virtude=amor,bondade,caridade,castidade,coragem,diligência,esperança,fé,fidelidade,fortaleza,generosidade,gratidão,honestidade,humildade,justiça,lealdade,mansidão,misericórdia,modéstia,obediência,paciência,perdão,perseverança,piedade,prudência,pureza,sabedoria,simplicidade,temperança,ternura,verdade,zelo,alegria,benevolência,compaixão,docilidade,equidade,firmeza,graça,honra,integridade,jovialidade,laboriosidade,magnanimidade,nobreza,paz,retidão,serenidade,tolerância,união,veracidade
+Sacramento=batismo,crisma,confirmação,confissão,eucaristia,comunhão,matrimônio,casamento,ordem,ordenação,penitência,reconciliação,unção dos enfermos,extrema-unção,primeira comunhão
+Profeta=Abdias,Ageu,Amós,Baruc,Daniel,Débora,Elias,Eliseu,Ezequiel,Habacuc,Isaías,Jeremias,Joel,Jonas,João Batista,Malaquias,Miqueias,Moisés,Naum,Natã,Oseias,Samuel,Sofonias,Zacarias,Ana,Agabo,Balaão,Gade,Hulda,Miriam,Simeão,Urias,Enoque
+Anjo ou arcanjo=Anjo da Guarda,Barachiel,Gabriel,Jofiel,Miguel,Rafael,Uriel,Querubim,Serafim,Selafiel,Arcanjo,Potestades,Principados,Tronos,Virtudes,Dominações,Chamuel,Anjo Gabriel
+Animal citado na Bíblia=águia,asno,baleia,boi,bode,burro,camelo,cabra,carneiro,cavalo,cobra,codorna,corvo,cordeiro,escorpião,gafanhoto,galo,jumento,javali,leão,leopardo,lobo,mula,ovelha,peixe,pomba,pardal,raposa,rã,serpente,touro,urso,víbora,abelha,bezerro,cão,dromedário,formiga,gado,hiena,lagarta,mosca,novilho,pelicano,quebra-ossos,rola,sapo,traça,unicórnio,verme
+Parte da Missa=abraço da paz,aclamação,ato penitencial,bênção final,canto de entrada,comunhão,consagração,coleta,credo,despedida,doxologia,epiclese,evangelho,glória,homilia,kyrie,liturgia da palavra,liturgia eucarística,leituras,oração do dia,oração dos fiéis,oferendas,ofertório,pai-nosso,prefácio,profissão de fé,ritos iniciais,salmo,santo,saudação,sinal da cruz,anamnese,amém,bênção,cordeiro de Deus,elevação,fração do pão,intercessões,ite missa est,narrativa da instituição,ósculo,purificação,rito da paz,segunda leitura,primeira leitura`;
+const BANCO = {}; BANCO_TXT.split("\n").forEach(l=>{ const k=l.indexOf("="); if(k>0) BANCO[l.slice(0,k)] = l.slice(k+1).split(",").filter(Boolean); });
+const ROBOS = [["Faísca","🤖"],["Trovão","👾"],["Chispa","🦾"],["Ventania","🛸"],["Turbina","⚙️"]];
+const NIVEIS = {facil:{d:[9000,17000],esq:.35,n:"Fácil"}, medio:{d:[5500,11000],esq:.2,n:"Médio"}, dificil:{d:[3000,6500],esq:.08,n:"Difícil"}};
 
 /* ---------------- baralho de letras ----------------
    Raios = pontos ruins. Letras fáceis (que saem rápido) valem mais;
@@ -284,7 +388,7 @@ const L = {
   novaRodada(j, c){
     const b = novoBaralho(), maos = {};
     for(const u of arr(j.ordem)) if(c.online.includes(u)) maos[u] = b.splice(0,MAO).join(" ");
-    const pool = TEMAS.map((t,i)=>i).filter(i=>TEMAS[i].p==="g" || (TEMAS[i].p==="f"&&c.cfg.futebol) || (TEMAS[i].p==="c"&&c.cfg.catolico));
+    const pool = TEMAS.map((t,i)=>i).filter(i=>TEMAS[i].p==="g" || (TEMAS[i].p==="f"&&c.cfg.futebol) || (TEMAS[i].p==="c"&&c.cfg.catolico)).filter(i=>!c.cfg.robos || BANCO[TEMAS[i].t]);
     let usados = arr(j.usados).filter(i=>pool.includes(i));
     let livres = pool.filter(i=>!usados.includes(i));
     if(!livres.length){usados=[];livres=pool}
@@ -420,12 +524,35 @@ function conectarMock(){
   };
 }
 
+/* banco em memória: partida contra robôs, sem internet */
+function conectarLocal(){
+  let dados = {}; const ouv = [];
+  const ks = p => p.split("/").filter(Boolean);
+  const pega = (d,p) => ks(p).reduce((o,k)=>o==null?null:(o[k]??null), d);
+  const poe = (d,p,v) => { const k=ks(p); let o=d; for(let i=0;i<k.length-1;i++){ if(o[k[i]]==null||typeof o[k[i]]!=="object") o[k[i]]={}; o=o[k[i]]; }
+    if(v==null) delete o[k.at(-1)]; else o[k.at(-1)] = JSON.parse(JSON.stringify(v)); };
+  const dispara = () => { for(const l of ouv.slice()){ const s=JSON.stringify(pega(dados,l.p)); if(s!==l.u){ l.u=s; l.cb(JSON.parse(s)); } } };
+  return {
+    uid:"eu", local:true, agora:()=>Date.now(),
+    on:(p,cb)=>{ const l={p,cb}; ouv.push(l); setTimeout(dispara); return ()=>{ const i=ouv.indexOf(l); if(i>=0) ouv.splice(i,1); }; },
+    get:async p=>pega(dados,p),
+    set:async(p,v)=>{ poe(dados,p,v); dispara(); },
+    update:async(p,o)=>{ for(const k in o) poe(dados,p+"/"+k,o[k]); dispara(); },
+    remove:async p=>{ poe(dados,p,null); dispara(); },
+    tx:async(p,fn)=>{ const cur=pega(dados,p); const nv=fn(cur==null?null:JSON.parse(JSON.stringify(cur)));
+      if(nv===undefined) return {ok:false,val:cur}; poe(dados,p,nv); dispara(); return {ok:true,val:nv}; },
+    presenca(p){ poe(dados,p,true); dispara(); return async()=>{}; }
+  };
+}
+
 /* ---------------- estado do app ---------------- */
 const S = {
   tela:"home", db:null, uid:null, sala:null, room:null, unsub:null, pararPresenca:null,
   nome: lerLS("nome","") , av: lerLS("av", AVS[rnd(AVS.length)]), som: lerLS("som","1")==="1",
   cfg:{modo:"online", limite:30, max:8, tempo:60, futebol:true, catolico:false, ...JSON.parse(lerLS("cfg","{}")||"{}")},
-  sel:null, ultimoVer:0, ultimaQtd:0, faseVista:"", erro:""
+  sel:null, ultimoVer:0, ultimaQtd:0, faseVista:"", erro:"",
+  cfgBot:{robos:2, nivel:"medio", limite:30, tempo:60, futebol:true, catolico:false, ...JSON.parse(lerLS("cfgbot","{}")||"{}")},
+  solo:null, dbRede:null
 };
 window.__S = S; window.__L = L;
 function lerLS(k,d){ try{ const v=localStorage.getItem(PREF+k); return v==null?d:v }catch(e){ return d } }
@@ -459,6 +586,11 @@ const souHost = () => S.room && S.room.host===S.uid;
 const ctx = () => ({now:agora(), uid:S.uid, online:online(), cfg:cfgSala(), erro:""});
 const caminho = () => "salas/"+S.sala;
 
+async function txComo(uid, fn){
+  const c = ctx(); c.uid = uid;
+  const r = await S.db.tx(caminho()+"/jogo", cur => { if(!cur) return undefined; c.now = agora(); c.erro=""; return fn(cur, c); });
+  return {...r, erro:c.erro};
+}
 async function txJogo(fn){
   const c = ctx();
   const r = await S.db.tx(caminho()+"/jogo", cur => { if(!cur) return undefined; c.now = agora(); c.erro=""; return fn(cur, c); });
@@ -473,6 +605,7 @@ function render(){
     case "criar": return telaCriar();
     case "entrar": return telaEntrar();
     case "como": return telaComo();
+    case "robos": return telaRobos();
     case "sala": return telaSala();
   }
 }
@@ -496,6 +629,7 @@ function telaHome(){
   <div class="btns" style="margin-top:16px">
     <button class="btn" id="bCriar">⚡ CRIAR SALA</button>
     <button class="btn roxo" id="bEntrar">🔑 ENTRAR COM CÓDIGO</button>
+    <button class="btn roxo" id="bRobos">🤖 JOGAR CONTRA ROBÔS</button>
     <button class="btn roxo" id="bComo">❓ COMO JOGAR</button>
   </div>
   <div class="icones"><button class="ic" id="bSom" title="Som">${S.som?"🔊":"🔇"}</button></div>
@@ -505,8 +639,10 @@ function telaHome(){
   document.getElementById("avBtn").onclick = () => document.getElementById("avs").classList.toggle("hide");
   document.querySelectorAll("[data-av]").forEach(b=>b.onclick=()=>{ S.av=b.dataset.av; gravaLS("av",S.av); telaHome(); });
   const precisaNome = () => { if(!S.nome){ nome.classList.add("treme"); nome.focus(); setTimeout(()=>nome.classList.remove("treme"),400); toast("Digite seu nome primeiro 😉"); return true; } };
-  document.getElementById("bCriar").onclick = () => { if(!precisaNome()){ S.tela="criar"; render(); } };
-  document.getElementById("bEntrar").onclick = () => { if(!precisaNome()){ S.tela="entrar"; render(); } };
+  const semRede = () => { if(!S.dbRede){ toast("Sem conexão com o servidor do jogo. Jogue contra os robôs! 🤖","ruim",3500); return true; } };
+  document.getElementById("bCriar").onclick = () => { if(!precisaNome() && !semRede()){ S.tela="criar"; render(); } };
+  document.getElementById("bEntrar").onclick = () => { if(!precisaNome() && !semRede()){ S.tela="entrar"; render(); } };
+  document.getElementById("bRobos").onclick = () => { if(!precisaNome()){ S.tela="robos"; render(); } };
   document.getElementById("bComo").onclick = () => { S.tela="como"; render(); };
   document.getElementById("bSom").onclick = () => { S.som=!S.som; gravaLS("som",S.som?"1":"0"); telaHome(); };
 }
@@ -542,6 +678,51 @@ function telaCriar(){
 }
 const salvaCfg = () => gravaLS("cfg", JSON.stringify(S.cfg));
 
+function telaRobos(){
+  const c = S.cfgBot;
+  const seg = (k, ops) => `<div class="seg">${ops.map(([v,l,s])=>`<button data-k="${k}" data-v="${v}" class="${c[k]==v?"on":""}">${l}${s?`<small>${s}</small>`:""}</button>`).join("")}</div>`;
+  $app.innerHTML = `
+  <div class="topo"><button class="voltar" id="bVolta">←</button><h2 class="tit">CONTRA ROBÔS</h2></div>
+  <div class="painel"><div class="rot">QUANTOS ROBÔS</div>
+    <div class="stepper"><button data-st="-1">−</button><b id="nr">${c.robos}</b><button data-st="1">+</button></div>
+  </div>
+  <div class="painel"><div class="rot">DIFICULDADE<small>quanto mais difícil, mais rápido eles descem</small></div>
+    ${seg("nivel",[["facil","🐢 Fácil"],["medio","⚡ Médio"],["dificil","🔥 Difícil"]])}
+  </div>
+  <div class="painel"><div class="rot">LIMITE DE RAIOS<small>quem chegar, perde</small></div>
+    ${seg("limite",[[20,"20","rápida"],[30,"30","normal"],[40,"40","longa"]])}
+  </div>
+  <div class="painel"><div class="rot">TEMPO DE CADA RODADA</div>
+    ${seg("tempo",[[45,"45s"],[60,"60s"],[90,"90s"]])}
+  </div>
+  <div class="painel"><div class="rot">TEMAS<small>os gerais sempre entram</small></div>
+    <label class="chk"><input type="checkbox" id="cF" ${c.futebol?"checked":""}> ⚽ Incluir temas de Futebol</label>
+    <label class="chk"><input type="checkbox" id="cC" ${c.catolico?"checked":""}> ✝️ Incluir temas da Fé Católica</label>
+  </div>
+  <p class="info">Você digita as palavras. Os robôs também podem ser contestados!</p>
+  <div style="margin-top:10px"><button class="btn verde" id="bVai">▶ JOGAR</button></div>`;
+  const salva = () => gravaLS("cfgbot", JSON.stringify(c));
+  document.getElementById("bVolta").onclick = () => { S.tela="home"; render(); };
+  document.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{ const v=b.dataset.v; c[b.dataset.k] = isNaN(v)?v:+v; salva(); telaRobos(); });
+  document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ c.robos=Math.min(ROBOS.length,Math.max(1,c.robos+ +b.dataset.st)); salva(); document.getElementById("nr").textContent=c.robos; });
+  document.getElementById("cF").onchange = e => { c.futebol=e.target.checked; salva(); };
+  document.getElementById("cC").onchange = e => { c.catolico=e.target.checked; salva(); };
+  document.getElementById("bVai").onclick = iniciarSolo;
+}
+async function iniciarSolo(){
+  const c = S.cfgBot, t0 = Date.now();
+  S.solo = {bots:[], prox:{}, votos:{}, ocupado:{}, nivel:NIVEIS[c.nivel]||NIVEIS.medio};
+  S.db = conectarLocal(); S.uid = S.db.uid;
+  const jog = {[S.uid]:{n:S.nome, a:S.av, e:t0, on:true}};
+  embaralha(ROBOS.slice()).slice(0,c.robos).forEach(([n,a],i)=>{ const u="robo"+(i+1); S.solo.bots.push(u); jog[u]={n:"Robô "+n, a, e:t0+i+1, on:true, bot:1}; });
+  const cfg = {modo:"online", limite:c.limite, tempo:c.tempo, max:c.robos+1, futebol:c.futebol, catolico:c.catolico, robos:c.robos, nivel:c.nivel};
+  await S.db.set("salas/SOLO", {cfg, host:S.uid, criada:t0, v:1, jogadores:jog, jogo:{fase:"lobby"}});
+  await abrirSala("SOLO");
+}
+function sairSolo(){
+  S.solo = null; S.db = S.dbRede; S.uid = S.dbRede ? S.dbRede.uid : null;
+}
+
 function telaEntrar(){
   $app.innerHTML = `
   <div class="topo"><button class="voltar" id="bVolta">←</button><h2 class="tit">ENTRAR NA SALA</h2></div>
@@ -567,7 +748,8 @@ function telaComo(){
     <h3>⚡ Desça rápido</h3>
     <p>Para jogar uma carta, diga uma palavra do tema que comece com a letra dela. “Lua!” → desce o <b>L</b>.</p>
     <ul><li><b>Online:</b> digite a palavra e aperte Enter. O jogo escolhe a carta certa da sua mão (ou toque na carta antes).</li>
-    <li><b>Presencial:</b> grite a palavra e toque na carta ao mesmo tempo.</li></ul>
+    <li><b>Presencial:</b> grite a palavra e toque na carta ao mesmo tempo.</li>
+    <li><b>Contra robôs:</b> jogue sozinho contra 1 a 5 robôs, no nível fácil, médio ou difícil.</li></ul>
     <p>A rodada acaba quando <b>3 cartas</b> forem jogadas (pode ser tudo da mesma pessoa) ou quando o tempo acabar.</p>
     <h3>⚠️ Contestar</h3>
     <p>Achou a resposta forçada? Toque em <b>Contestar</b>. Todos votam (menos quem jogou). Empate: a resposta vale. Se não valer, a carta volta para a mão de quem jogou.</p>
@@ -609,7 +791,7 @@ async function entrarSala(code, errEl){
 }
 async function abrirSala(code){
   if(S.unsub) S.unsub();
-  S.sala = code; S.tela = "sala"; gravaLS("sala", code);
+  S.sala = code; S.tela = "sala"; if(!S.solo) gravaLS("sala", code);
   history.replaceState(null,"", location.pathname + (MOCK?"?mock&uid="+S.uid:"") );
   S.pararPresenca = S.db.presenca(caminho()+"/jogadores/"+S.uid+"/on");
   S.unsub = S.db.on(caminho(), v => { S.room = v; aoMudarSala(); });
@@ -623,7 +805,7 @@ async function sairSala(){
     else await S.db.set(caminho()+"/jogadores/"+S.uid+"/on", false);
   }catch(e){}
   if(S.unsub) S.unsub();
-  S.unsub=null; S.sala=null; S.room=null; gravaLS("sala","");
+  S.unsub=null; S.sala=null; S.room=null; if(S.solo) sairSolo(); else gravaLS("sala","");
   S.tela="home"; render();
 }
 
@@ -640,6 +822,11 @@ function aoMudarSala(){
   if(!h || !h.on){ const on = online(); if(on[0]===S.uid) S.db.set(caminho()+"/host", S.uid); }
 
   const j = J();
+  if(S.solo && j.fase==="lobby"){   // contra robôs: sem sala de espera, já começa
+    $app.innerHTML = `<div style="margin:auto;text-align:center"><img class="marca" src="marca.webp" alt="Letrâmpago" width="640" height="532"><p class="info">Embaralhando as cartas…</p></div>`;
+    txJogo((cur,c)=> cur.fase==="lobby" ? L.iniciar(cur,c) : undefined);
+    return;
+  }
   // efeitos sonoros e avisos
   const qtd = arr(j.jogadas).length;
   if(j.fase!==S.faseVista){
@@ -675,6 +862,48 @@ setInterval(()=>{
     txJogo((cur,c)=> cur.fase===fase && cur.ate===ate ? L.avancar(cur,c) : undefined).finally(()=>S.avancando=false);
   }
 }, 250);
+
+/* robôs: só rodam na partida local (contra robôs) */
+const entre = ([a,b]) => a + Math.random()*(b-a);
+function jogadaDoRobo(j, u){
+  const banco = BANCO[j.tema] || [];
+  const usadas = new Set(arr(j.jogadas).map(x=>normal(x.w)));
+  const mao = tok((j.maos||{})[u]).sort((x,y)=>raiosDe(y)-raiosDe(x));
+  for(const t of mao){
+    const ops = banco.filter(w=>{ const n=normal(w); return n[0] && n[0].toUpperCase()===letraDe(t) && !usadas.has(n); });
+    if(ops.length) return [t, ops[rnd(ops.length)]];
+  }
+  return null;
+}
+setInterval(()=>{
+  const so = S.solo;
+  if(!so || S.tela!=="sala" || !S.room) return;
+  const j = J(), now = agora(), nv = so.nivel;
+  for(const u of so.bots){
+    if(j.fase==="jogando"){
+      let p = so.prox[u];
+      if(!p || p.r!==j.rodada){ p = so.prox[u] = {r:j.rodada, t:now+entre(nv.d)}; }
+      if(now < p.t || so.ocupado[u]) continue;
+      p.t = now + entre(nv.d);
+      if(Math.random() < nv.esq) continue;               // "deu branco"
+      const op = jogadaDoRobo(j, u); if(!op) continue;
+      so.ocupado[u] = 1;
+      txComo(u, (cur,c)=>L.jogar(cur,c,op[0],op[1])).finally(()=>so.ocupado[u]=0);
+    } else {
+      const p = so.prox[u]; if(p) p.t = Math.max(p.t, now+1500);   // depois de votação, respira antes de jogar
+      if(j.fase==="votacao" && j.cont && arr(j.cont.eleitores).includes(u) && !(u in (j.cont.votos||{}))){
+        const k = u+":"+j.cont.i+":"+j.ate;
+        if(!so.votos[k]) so.votos[k] = now + entre([1200,3200]);
+        else if(now >= so.votos[k] && !so.ocupado[u]){
+          const jp = arr(j.jogadas)[j.cont.i];
+          const vale = !jp ? true : so.bots.includes(jp.u) ? true : (BANCO[j.tema]||[]).some(w=>normal(w)===normal(jp.w)) ? true : Math.random()<.7;
+          so.ocupado[u] = 1;
+          txComo(u, (cur,c)=>L.votar(cur,c,vale)).finally(()=>so.ocupado[u]=0);
+        }
+      }
+    }
+  }
+}, 300);
 
 /* ---------------- tela da sala (lobby / jogo / resumo / fim) ---------------- */
 function telaSala(){
@@ -982,11 +1211,12 @@ function confete(){
 (async function(){
   $app.innerHTML = `<div style="margin:auto;text-align:center"><img class="marca" src="marca.webp" alt="Letrâmpago" width="640" height="532"><p class="info">Conectando…</p></div>`;
   try{
-    S.db = MOCK ? conectarMock() : await conectarFirebase();
+    S.db = S.dbRede = MOCK ? conectarMock() : await conectarFirebase();
     S.uid = S.db.uid;
   }catch(e){
-    console.error(e);
-    $app.innerHTML = `<div style="margin:auto;text-align:center"><img class="marca" src="marca.webp" alt="Letrâmpago"><p>😕 Sem conexão com o servidor do jogo.</p><button class="btn" onclick="location.reload()">Tentar de novo</button></div>${rodape()}`;
+    console.error(e);   // sem servidor: ainda dá para jogar contra os robôs
+    S.db = S.dbRede = null; gravaLS("sala",""); render();
+    setTimeout(()=>toast("Sem conexão com o servidor. O modo contra robôs funciona normalmente! 🤖","",4000),300);
     return;
   }
   // volta para a sala em que estava (recarregou a página)
