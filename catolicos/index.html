@@ -407,7 +407,7 @@ function card(g){
     ? `<a class="link" href="${g.url}">Jogar ${arrow}</a>`
     : `<button class="link soon" data-game="${g.id}">Em breve</button>`;
   return `<article class="card${live?' is-live':''}">
-    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611161311" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}<span class="status${live?' live':''}">${live?'Disponível':'Em desenvolvimento'}</span></div>
+    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611161632" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}${live?'':'<span class="status">Em breve</span>'}</div>
     <h3>${g.name}</h3><p>${g.desc}</p>
     <div class="card-foot"><span class="meta">${g.meta}</span>${action}</div>
   </article>`;
