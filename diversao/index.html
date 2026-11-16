@@ -173,7 +173,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
 @media (max-width:560px){
   .nav{height:60px;gap:12px}.brand img{height:40px}
   .nav > .btn{display:none}
-  .links{gap:14px;font-size:13px}
+  .links{gap:14px;font-size:13px;overflow-x:auto;scrollbar-width:none;min-width:0;padding-bottom:8px;margin-bottom:-8px}
+  .links::-webkit-scrollbar{display:none}
+  .links a{white-space:nowrap}
   .links a[href="/"]{display:none}
   .hero{padding:48px 0}
   .section{padding:52px 0}
@@ -193,6 +195,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
       <a href="/futebol/">Futebol</a>
       <a href="/catolicos/">Fé Católica</a>
       <a href="/diversao/" class="active">Diversão</a>
+      <a href="/cartas/">Cartas &amp; Mesa</a>
     </div>
     <a class="btn btn-red btn-sm" href="#jogos">Jogar agora</a>
   </nav>
@@ -279,6 +282,7 @@ const ICONS = {
   mapa:'<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/>',
   trilha:'<circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="5" r="1.6"/><path d="M6.2 17.8 10.8 13.2M13.2 10.8l4.6-4.6"/>',
   degraus:'<path d="M4 20h5v-5h5v-5h5V5"/><path d="M4 20h16"/>',
+  baralho:'<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M12 8.2c-1.6-1.9-4.2-.6-3.6 1.4.5 1.6 3.6 4.2 3.6 4.2s3.1-2.6 3.6-4.2c.6-2-2-3.3-3.6-1.4z"/>',
   raio:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
   cartas:'<rect x="3" y="6" width="11" height="15" rx="2"/><path d="M10 3h9a2 2 0 0 1 2 2v13"/><path d="m8.5 11 1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2L5.5 13.3l2-.3z"/>'
 };
@@ -349,7 +353,7 @@ function card(g){
     ? `<a class="link" href="${g.url}">Jogar ${arrow}</a>`
     : `<button class="link soon" data-game="${g.id}">Em breve</button>`;
   return `<article class="card${live?' is-live':''}">
-    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611161237" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}<span class="status${live?' live':''}">${live?'Disponível':'Em desenvolvimento'}</span></div>
+    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611161311" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}<span class="status${live?' live':''}">${live?'Disponível':'Em desenvolvimento'}</span></div>
     <h3>${g.name}</h3><p>${g.desc}</p>
     <div class="card-foot"><span class="meta">${g.meta}</span>${action}</div>
   </article>`;
