@@ -281,7 +281,7 @@ footer strong{color:var(--gold);letter-spacing:.06em}
       <li>➖ Cada erro ou dica pedida tira 1 ponto.</li>
       <li>💡 As dicas são liberadas em ordem. A primeira vem de presente.</li>
       <li>😇 Em Santos, os emojis mostram os símbolos e a história do santo.</li>
-      <li>✍️ Na Bíblia e em Santos aparecem sugestões enquanto você digita. Em Músicas, não: você escreve o título sozinho.</li>
+      <li>✍️ Na Bíblia aparecem sugestões enquanto você digita. Em Músicas e Santos, não: você escreve a resposta sozinho.</li>
       <li>🔢 Quando as dicas acabam, surgem 4 alternativas para escolher.</li>
       <li>✅ A resposta aceita variações e dispensa acento.</li>
       <li>📅 O Desafio do Dia é da Bíblia: só o sábado é difícil. Músicas e Santos ficam no treino por nível.</li>
@@ -859,7 +859,7 @@ function next(){if(pos<deck.length-1){pos++;newRound(deck[pos]);render();window.
 
 /* ---------- sugestões ---------- */
 const titulos=()=>[...new Set(P.map(p=>p.a))].sort((a,b)=>a.localeCompare(b,'pt'));
-function sugerir(){const box=$('sug'),q=norm($('g').value);if(tema==='musica'||q.length<2){box.innerHTML='';return}
+function sugerir(){const box=$('sug'),q=norm($('g').value);if(tema!=='biblia'||q.length<2){box.innerHTML='';return}
   const hits=titulos().filter(t=>norm(t).startsWith(q)||norm(t).split(' ').some(w=>w.length>2&&w.startsWith(q))).filter(t=>!cur.tried.includes(t)).slice(0,4);
   box.innerHTML=hits.map(t=>`<button type="button" class="chip" data-t="${esc(t)}">${esc(t)}</button>`).join('');
   box.querySelectorAll('.chip').forEach(b=>b.onclick=()=>guess(b.dataset.t))}
