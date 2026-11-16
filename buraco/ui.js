@@ -614,7 +614,7 @@
   /* =================== PERFIL (apelido e avatar, compartilhados entre os jogos) =================== */
   const AVATARES = ['🦊', '🐶', '🐱', '🐼', '🐸', '🐯', '🦁', '🐵', '🐧', '🦉', '🐢', '🐙', '🦄', '🐝', '🐞', '🐬', '⚽', '🏀', '🎾', '🃏', '♠️', '♥️', '♦️', '♣️', '🎲', '⭐', '🚀', '🌻'];
   const REACOES = ['👏', '😂', '🔥', '😮', '🙏', 'Boa jogada!', 'Boa sorte!', 'GG!'];
-  const PROIBIDAS = ['porra', 'caralho', 'karalho', 'krl', 'merda', 'bosta', 'puta', 'puto', 'putinha', 'putaria', 'prostitut', 'buceta', 'boceta', 'bct', 'xereca', 'xoxota', 'cu', 'cuzao', 'cusao', 'foda', 'fode', 'foder', 'fuder', 'fdp', 'pqp', 'vsf', 'tnc', 'kct', 'cacete', 'kacete', 'piroca', 'penis', 'vagina', 'bunda', 'sexo', 'porno', 'punheta', 'siririca', 'tesao', 'gostosa', 'safad', 'vagabund', 'vadia', 'piranha', 'arromb', 'otario', 'idiota', 'imbecil', 'babaca', 'retardad', 'corno', 'chifrud', 'viado', 'bicha', 'boiola', 'baitola', 'traveco', 'sapatao', 'crioulo', 'nazi', 'hitler', 'estupr', 'pedofil', 'maconha', 'cocaina', 'desgraca', 'lixo humano'];
+  const PROIBIDAS = ['porra', 'caralho', 'karalho', 'krl', 'merda', 'merd', 'bosta', 'puta', 'puto', 'putinha', 'putaria', 'prostitut', 'buceta', 'boceta', 'bct', 'xereca', 'xoxota', 'cu', 'cuzao', 'cusao', 'foda', 'fode', 'foder', 'fuder', 'fdp', 'pqp', 'vsf', 'tnc', 'kct', 'cacete', 'kacete', 'piroca', 'penis', 'vagina', 'bunda', 'sexo', 'porno', 'punheta', 'siririca', 'tesao', 'gostosa', 'safad', 'vagabund', 'vadia', 'piranha', 'arromb', 'otario', 'idiota', 'imbecil', 'babaca', 'retardad', 'corno', 'chifrud', 'viado', 'bicha', 'boiola', 'baitola', 'traveco', 'sapatao', 'crioulo', 'nazi', 'hitler', 'estupr', 'pedofil', 'maconha', 'cocaina', 'desgraca', 'lixo humano'];
   const TESTE = (new URLSearchParams(location.search).get('teste') || '').replace(/[^a-z0-9]/gi, '').slice(0, 8);
   function perfil() {
     if (TESTE) return { apelido: 'Teste ' + TESTE.toUpperCase(), avatar: '🐸' };
@@ -628,8 +628,9 @@
     if (!/^[A-Za-zÀ-ÖØ-öø-ÿ0-9 ]+$/.test(a) || a.trim().length < 2 || a.length > 14) return 'Use de 2 a 14 caracteres: só letras, números e espaço.';
     const n = semAcento(a);
     const palavras = n.split(/[^a-z0-9]+/).filter(Boolean);
-    const junto = n.replace(/[^a-z0-9]/g, '');
-    const leet = junto.replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e').replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't');
+    const PERMITIDAS = /computa|disputa|reputa|imputa/g; // palavras comuns que contêm um termo proibido
+    const junto = n.replace(/[^a-z0-9]/g, '').replace(PERMITIDAS, '');
+    const leet = n.replace(/[^a-z0-9]/g, '').replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e').replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't').replace(PERMITIDAS, '');
     const ruim = PROIBIDAS.some(p => {
       const q = p.replace(/ /g, '');
       if (q.length <= 3) return palavras.includes(q) || junto === q || leet === q;
@@ -731,9 +732,12 @@
     app.onclick = e => { if (e.target.closest('[data-a="voltar"]')) { cancelado = true; telaSalas(); } };
     try {
       const lista = await new Promise((res, rej) => {
-        let feito = false;
-        R.ouvirSalas((l, err) => { if (feito) return; feito = true; if (!l) rej(err); else res(l); })
-          .then(off => setTimeout(off, 0)).catch(rej);
+        let feito = false, off = null;
+        R.ouvirSalas((l, err) => {
+          if (feito) return; feito = true;
+          if (off) off();
+          if (!l) rej(err); else res(l);
+        }).then(o => { off = o; if (feito) o(); }).catch(rej);
       });
       if (cancelado) return;
       if (lista.length) return entrarSala(lista[0].codigo, true);
