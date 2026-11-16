@@ -282,7 +282,7 @@ footer strong{color:var(--gold);letter-spacing:.06em}
       <li>💡 As dicas são liberadas em ordem. A primeira vem de presente.</li>
       <li>😇 Em Santos, os emojis mostram os símbolos e a história do santo.</li>
       <li>✍️ Na Bíblia aparecem sugestões enquanto você digita. Em Músicas e Santos, não: você escreve a resposta sozinho.</li>
-      <li>🔢 Quando as dicas acabam, surgem 4 alternativas para escolher.</li>
+      <li>🔢 Na Bíblia, as 4 alternativas surgem junto com a última dica. Em Músicas e Santos, você ainda tenta digitar depois da última dica, e só então surgem as alternativas.</li>
       <li>✅ A resposta aceita variações e dispensa acento.</li>
       <li>📅 O Desafio do Dia é da Bíblia: só o sábado é difícil. Músicas e Santos ficam no treino por nível.</li>
     </ul>
@@ -768,7 +768,7 @@ function render(){
   const p=cur.p, box=$('jogo');
   if(fimDeck){renderFim();return}
   if(!cur.done){
-    const r=revealed(), alt=used()>=2;
+    const r=revealed(), alt=used()>=altEm();
     const H=T().dicas.map(([n,k,i])=>[n,p[k],i]);
     box.innerHTML=`<div class="tela">${cabecalho()}${enigma(p.e)}
       <p class="pergunta">${T().pergunta}</p>
@@ -837,6 +837,8 @@ function renderFim(){const max=deck.length*(MAX+(tema==='musica'?1:0));
 
 /* ---------- ações ---------- */
 const NOMES=()=>T().dicas.map(d=>d[0]);
+/* Bíblia: alternativas junto com a última dica. Músicas e Santos: a pessoa ainda tenta digitar depois da última dica */
+const altEm=()=>tema==='biblia'?2:3;
 function mostrarDica(titulo){const H=T().dicas[lastHint],p=cur.p;
   $('dica-t').textContent=`💡 Dica ${lastHint+1}`;$('dica-msg').textContent=titulo;$('dica-i').textContent=H[2];$('dica-n').textContent=H[0];$('dica-v').textContent=p[H[1]];abrir('dica')}
 function guess(v){if(!v.trim())return;
@@ -844,7 +846,7 @@ function guess(v){if(!v.trim())return;
   cur.tried.push(v.trim());cur.wrong=used()+1;
   if(cur.wrong>=MAX){cur.done=true;save();render();return}
   const nova=revealed()-1;const novaDica=nova>lastHint&&nova<3;lastHint=nova;
-  msg=used()>=2?'Não é essa. Agora escolha entre 4 alternativas.':'Não é essa. Tente de novo.';
+  msg=used()>=altEm()?'Não é essa. Última chance: escolha entre 4 alternativas.':(used()>=2?'Não é essa. Última dica liberada: tente mais uma vez.':'Não é essa. Tente de novo.');
   save();render();const g=$('g');if(g)g.classList.add('shake');
   if(novaDica)mostrarDica('Não é essa! Nova dica liberada:');
 }
