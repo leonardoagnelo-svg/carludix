@@ -417,9 +417,10 @@
         <div class="avatar">${esc(avatarDe(st, s))}${st.jogadores[s].tipo === 'bot' ? '<i class="selo-bot">🤖</i>' : ''}<b class="qt-cartas">${k}</b></div>
         <div class="nome-assento">${esc(st.jogadores[s].nome)}${s % 2 === meuT && n === 4 ? '<span class="chip-parc">parceiro</span>' : ''}</div>${sub ? `<div class="sub-assento">${sub}</div>` : (falaHTML(s) || '<div class="sub-assento">&nbsp;</div>')}</div>`;
     };
+    // cada um numa ponta da mesa: adversários nas laterais, parceiro em cima (no 1x1 o adversário fica em cima)
     const assentosHTML = n === 2
-      ? `<div class="assentos dois">${assento((eu + 1) % 2, 'topo')}</div>`
-      : `<div class="assentos quatro">${assento((eu + 1) % 4, 'esq')}${assento((eu + 2) % 4, 'topo')}${assento((eu + 3) % 4, 'dir')}</div>`;
+      ? assento((eu + 1) % 2, 'topo')
+      : assento((eu + 1) % 4, 'esq') + assento((eu + 2) % 4, 'topo') + assento((eu + 3) % 4, 'dir');
 
     // jogos
     const topo = st.lixo.length ? st.lixo[st.lixo.length - 1] : null;
@@ -427,9 +428,11 @@
     if (vez && st.fase === 'jogar' && P.sel.length) cabe = cartasQueCabem(st, meuT, P.sel);
     else if (vez && st.fase === 'comprar' && st.cfg.lixo === 'fechado' && topo !== null && !M.ehCoringa(topo)) cabe = cartasQueCabem(st, meuT, P.sel.concat([topo]));
     if (P.dica && P.dica.jogo >= 0) cabe = [P.dica.jogo];
+    const formaNovo = vez && st.fase === 'jogar' && P.sel.length >= 3 && !!M.analisarJogo(P.sel, null, st.cfg);
+    const vagaNova = `<div class="vaga-nova" data-a="baixar-mesa">＋ Toque aqui para baixar</div>`;
     const jogosHTML = (t, meus) => {
       const js = st.jogos[t];
-      if (!js.length) return `<div class="sem-jogos">${meus ? 'Nenhum jogo baixado ainda' : 'Nada baixado ainda'}</div>`;
+      if (!js.length) return meus && formaNovo ? vagaNova : `<div class="sem-jogos">${meus ? 'Nenhum jogo baixado ainda' : 'Nada baixado ainda'}</div>`;
       const antes = (ant.jogos || [[], []])[t] || [];
       return js.map((j, i) => {
         const r = rotuloJogo(j);
@@ -446,7 +449,7 @@
         return `<button class="jg ${r.cls} ${compacto ? 'compacto' : ''} ${meus && cabe.includes(i) ? 'cabe' : ''} ${mudou && ant.jogos ? 'brilha' : ''}" data-jogo="${i}">
           <span class="etq ${r.cls}">${r.txt}<em>${M.ehCanastra(j) ? j.c.length : j.c.length + '/7'}</em></span>
           <span class="cartas-jg">${cartasH}</span></button>`;
-      }).join('');
+      }).join('') + (meus && formaNovo ? vagaNova : '');
     };
 
     // centro da mesa
@@ -457,15 +460,15 @@
     const mortoHTML = (t, rot) => {
       const pego = st.pegouMorto[t];
       const existe = !pego && st.mortos.length > 0;
-      return `<div class="morto ${pego ? 'pego' : ''}"><div class="pilha-cartas">${existe ? cartaHTML(null) + cartaHTML(null) : '<div class="vazio-l">✓</div>'}</div><span class="rotulo">${rot}</span>${pego ? '<span class="rotulo-sub">já pegou ✓</span>' : ''}</div>`;
+      return `<div class="morto ${pego ? 'pego' : ''}" title="${esc(rot)}${pego ? ' (já pegou)' : ''}"><div class="pilha-cartas">${existe ? cartaHTML(null) + cartaHTML(null) : '<div class="vazio-l">✓</div>'}</div><span class="rotulo">${rot}</span></div>`;
     };
     const lixoTopoMudou = ant.lixoTopo !== topo;
     let lixoHTML;
     if (st.cfg.lixo === 'aberto' && st.lixo.length > 1) {
       lixoHTML = `<div class="lixo-aberto">${st.lixo.map((c, i) => cartaHTML(c, i === st.lixo.length - 1 && lixoTopoMudou ? 'cai' : '')).join('')}</div>`;
     } else lixoHTML = `<div class="pilha-cartas">${st.lixo.length > 1 ? cartaHTML(st.lixo[st.lixo.length - 2], 'baixo') : ''}${topo !== null ? cartaHTML(topo, lixoTopoMudou ? 'cai' : '') : '<div class="vazio-l"></div>'}</div>`;
-    const rotMortoMeu = n === 2 ? (P.modo === 'local' ? 'Morto ' + st.jogadores[meuT].nome : 'Seu morto') : 'Nosso morto';
-    const rotMortoDeles = n === 2 ? 'Morto dele' : 'Morto deles';
+    const rotMortoMeu = n === 2 ? (P.modo === 'local' ? st.jogadores[meuT].nome : 'Seu') : 'Nosso';
+    const rotMortoDeles = n === 2 ? (P.modo === 'local' ? st.jogadores[advT].nome : 'Dele') : 'Deles';
 
     // faixa da vez
     let faixa, faixaCls = '';
@@ -502,10 +505,10 @@
       else if (P.confirmarLixo) dica = 'As cartas destacadas formam jogo com ' + M.nomeCarta(topo) + ': toque em Confirmar.';
       else dica = opcaoLixo ? 'O ' + M.nomeCarta(topo) + ' do lixo serve para você: toque em Pegar lixo, ou compre do monte.' : 'O ' + M.nomeCarta(topo) + ' do lixo não serve para você agora: compre do monte.';
     } else if (emJogo) {
-      if (!k) dica = 'Escolha cartas para baixar, ou 1 para descartar.' + (M.podeBater(st, meuT) ? ' Já pode bater!' : '');
+      if (!k) dica = 'Escolha cartas e toque na mesa para baixar, ou toque no lixo para descartar.' + (M.podeBater(st, meuT) ? ' Já pode bater!' : '');
       else if (cabe.length > 1) dica = 'Encaixa em mais de um jogo: toque no jogo que você quer.';
-      else if (cabe.length) dica = 'Encaixa no jogo destacado: toque em Baixar ou no jogo.';
-      else if (k >= 3) dica = M.analisarJogo(P.sel, null, st.cfg) ? 'Forma um jogo novo: toque em Baixar.' : 'Essas cartas não formam jogo.';
+      else if (cabe.length) dica = 'Encaixa no jogo destacado: toque nele (ou em Baixar).';
+      else if (k >= 3) dica = M.analisarJogo(P.sel, null, st.cfg) ? 'Forma um jogo: toque na mesa para baixar.' : 'Essas cartas não formam jogo.';
       else dica = k === 1 ? 'Descarte (botão ou toque no lixo) para passar a vez.' : 'Escolha pelo menos 3 cartas para um jogo novo.';
     } else if (P.modo === 'online' && !fim) dica = 'Sala ' + esc(P.mesa.codigo) + (ausente(st.vez) ? ' · ' + esc(st.jogadores[st.vez].nome) + ' saiu: um bot joga no lugar.' : '');
 
@@ -518,16 +521,15 @@
         ${P.modo === 'online' ? '<button class="ic-btn" data-a="reagir" aria-label="Reações">😊</button>' : `<button class="ic-btn" data-a="som" aria-label="Som">${store.get('som', true) ? '🔊' : '🔇'}</button>`}
       </div>
       <div class="faixa">${mao.length > 1 && !esconder ? `<button class="tx-btn" data-a="ordem" title="Ordenar ${P.ordem === 'naipe' ? 'por valor' : 'por naipe'}">↕ Ordem</button>` : '<span></span>'}<b class="${faixaCls}">${faixa}</b>${vez && !esconder ? '<button class="tx-btn" data-a="dica">💡 Dica</button>' : '<span></span>'}</div>
-      <div class="mesa">
+      <div class="mesa ${n === 2 ? 'mesa-dois' : 'mesa-quatro'}">
         ${assentosHTML}
         <div class="area-deles"><div class="fita pequena">Jogos ${n === 4 ? 'deles' : 'de ' + esc(st.jogadores[advT].nome)}</div><div class="lista-jogos deles">${jogosHTML(advT, false)}</div></div>
+        <div class="mortos-canto"><span class="tit-mortos">Mortos</span><div class="dupla-mortos">${mortoHTML(meuT, rotMortoMeu)}${mortoHTML(advT, rotMortoDeles)}</div></div>
         <div class="centro2">
-          ${mortoHTML(meuT, rotMortoMeu)}
           <button class="monte2 ${podeComprar ? 'pode' : ''}" data-a="comprar"><div class="pilha-cartas">${st.monte.length ? cartaHTML(null, 'baixo') + cartaHTML(null) : '<div class="vazio-l"></div>'}</div><span class="rotulo">Monte <b>${st.monte.length}</b></span></button>
           <button class="lixo2 ${podeLixo || podeDescartarNoLixo ? 'pode' : ''}" data-a="lixo-mesa">${lixoHTML}<span class="rotulo">Lixo <b>${st.lixo.length}</b>${st.cfg.lixo === 'aberto' && st.lixo.length > 1 ? ' 🔍' : ''}</span></button>
-          ${mortoHTML(advT, rotMortoDeles)}
         </div>
-        <div class="area-nossa meus"><div class="fita">${n === 4 ? 'Nossas canastras e jogos' : 'Suas canastras e jogos'}</div><div class="lista-jogos">${jogosHTML(meuT, true)}</div></div>
+        <div class="area-nossa meus ${formaNovo || (vez && st.fase === 'jogar' && cabe.length === 1) ? 'alvo' : ''}" data-a="baixar-mesa"><div class="fita">${n === 4 ? 'Nossas canastras e jogos' : 'Suas canastras e jogos'}</div><div class="lista-jogos">${jogosHTML(meuT, true)}</div></div>
         <div class="linha-balao"><div class="balao ${vez ? 'fixo' : ''}">${esc((P.dica && P.dica.texto) || (vez && dica ? dica : ((st.ultimo && st.ultimo.texto) || dica || '')))}</div>${k && !esconder ? '<button class="tx-btn" data-a="limpar">✕ Desmarcar</button>' : ''}</div>
         <div class="mao-wrap"><div class="mao2" id="mao">${maoHTML}</div></div>
       </div>
@@ -686,6 +688,16 @@
       if (idx >= 0) return agir({ t: 'lixo', cartas: [], jogo: idx });
       som('erro');
       toast(M.nomeCarta(topo) + ' não forma jogo com essas cartas.');
+    }
+    if (a === 'baixar-mesa' && st.fase === 'jogar') {
+      if (!P.sel.length) return;
+      const t = P.eu % 2;
+      if (P.sel.length >= 3 && M.analisarJogo(P.sel, null, st.cfg)) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: -1 });
+      const cabem = cartasQueCabem(st, t, P.sel);
+      if (cabem.length === 1) return agir({ t: 'baixar', cartas: P.sel.slice(), jogo: cabem[0] });
+      if (cabem.length > 1) { toast('Toque no jogo onde quer encaixar (os que piscam).'); return; }
+      som('erro'); toast(P.sel.length < 3 ? 'Para um jogo novo, escolha pelo menos 3 cartas.' : 'Essas cartas não formam jogo.');
+      return;
     }
     if (a === 'baixar' && st.fase === 'jogar') {
       const t = P.eu % 2;

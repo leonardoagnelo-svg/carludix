@@ -607,3 +607,59 @@ button.jogador-sala:hover{opacity:1;background:rgba(245,196,81,.12)}
 
 /* placar da mão: mãos anteriores */
 .tab-res tr.ant td{font-size:12.5px;color:#cfe6d6;white-space:normal;word-break:break-word}
+/* baixar tocando na mesa */
+.vaga-nova{align-self:stretch;display:flex;align-items:center;justify-content:center;min-width:120px;min-height:calc(var(--mh) + 14px);padding:6px 12px;border:2px dashed #7dff9b;border-radius:14px;color:#c9ffd6;font-weight:800;font-size:13px;background:rgba(125,255,155,.1);cursor:pointer;animation:pulsa 1s infinite;font-family:"Nunito",Inter,sans-serif}
+.area-nossa.alvo{cursor:pointer}
+.area-nossa.alvo .fita{box-shadow:0 0 0 2px #7dff9b,0 2px 6px rgba(0,0,0,.35)}
+
+/* =================== mesa com jogadores nas pontas e mortos no canto =================== */
+.mesa{display:grid;grid-template-columns:var(--lado,64px) minmax(0,1fr) var(--lado,64px);grid-template-rows:auto auto auto minmax(0,1fr) auto auto;
+  grid-template-areas:"esq topo dir" "esq deles dir" "esq centro dir" "esq nossa dir" "bal bal bal" "mao mao mao";column-gap:6px;row-gap:6px;position:relative}
+.mesa.mesa-dois{--lado:0px;column-gap:0}
+.assento.esq{grid-area:esq;align-self:center}
+.assento.topo{grid-area:topo;justify-self:center}
+.assento.dir{grid-area:dir;align-self:center}
+.mesa .area-deles{grid-area:deles;min-height:0}
+.mesa .centro2{grid-area:centro;display:flex;justify-content:center;align-items:flex-end;gap:14px}
+.mesa .area-nossa{grid-area:nossa;min-height:0}
+.mesa .linha-balao{grid-area:bal}
+.mesa .mao-wrap{grid-area:mao}
+.assento{max-width:none;min-width:0}
+.assento.esq .nome-assento,.assento.dir .nome-assento{font-size:12px;max-width:64px}
+.assento.esq .fala,.assento.dir .fala{white-space:normal;max-width:64px;font-size:10.5px;line-height:1.2;text-align:center;flex-wrap:wrap;justify-content:center}
+.assento.esq .chip-parc,.assento.dir .chip-parc{display:none}
+.assento.esq .leque-costas,.assento.dir .leque-costas{width:46px}
+
+/* mortos no canto */
+.mortos-canto{position:absolute;left:10px;top:8px;z-index:5;display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(0,0,0,.18);border:1px solid rgba(245,196,81,.25);border-radius:14px;padding:4px 6px 5px}
+.tit-mortos{font-family:"Nunito",Inter,sans-serif;font-weight:900;font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:#ffe7a6}
+.dupla-mortos{display:flex;gap:6px}
+.mortos-canto .morto .pilha-cartas{--pw:24px;min-height:34px}
+.mortos-canto .morto .pilha-cartas .carta + .carta{margin-left:-20px;transform:rotate(10deg)}
+.mortos-canto .vazio-l{width:24px;height:34px;font-size:12px;border-width:1.5px}
+.mortos-canto .morto .rotulo{font-size:10px;padding:0 5px;background:none;border:0}
+.mortos-canto .morto.pego{opacity:.5}
+.mesa-quatro .mortos-canto{left:auto;right:10px} /* no celular com duplas: canto de cima, livre */
+
+/* computador em paisagem: mortos no canto de baixo à esquerda, como na mesa de verdade */
+@media (min-width:1000px) and (orientation:landscape){
+  .mesa{--lado:120px;grid-template-columns:var(--lado) minmax(0,1fr) auto minmax(0,1fr) var(--lado);grid-template-rows:auto minmax(0,1fr) auto auto;
+    grid-template-areas:"esq topo topo topo dir" "esq deles centro nossa dir" "bal bal bal bal bal" "mao mao mao mao mao"}
+  .mesa.mesa-dois{--lado:0px}
+  .mesa .centro2{align-self:center;flex-direction:row}
+  .assento.esq .nome-assento,.assento.dir .nome-assento{max-width:120px;font-size:13px}
+  .assento.esq .fala,.assento.dir .fala{max-width:120px;font-size:11.5px}
+  .assento.esq .chip-parc,.assento.dir .chip-parc{display:inline-block}
+  .mortos-canto,.mesa-quatro .mortos-canto{top:auto;bottom:14px;left:14px;right:auto;padding:8px 10px}
+  .mortos-canto .morto .pilha-cartas{--pw:40px;min-height:57px}
+  .mortos-canto .morto .pilha-cartas .carta + .carta{margin-left:-34px}
+  .mortos-canto .vazio-l{width:40px;height:57px}
+  .mortos-canto .morto .rotulo{font-size:11px}
+  .tit-mortos{font-size:11px}
+}
+.mortos-canto .pilha-cartas .carta{--cw:24px !important}
+.mortos-canto .pilha-cartas .carta.verso::after{font-size:11px}
+@media (min-width:1000px) and (orientation:landscape){ .mortos-canto .pilha-cartas .carta{--cw:40px !important} .mortos-canto .pilha-cartas .carta.verso::after{font-size:17px} }
+.assento.esq .fala,.assento.dir .fala{max-height:5.2em;overflow:hidden}
+.pilha-cartas .carta{height:calc(var(--cw)*1.42)}
+.assento.esq .fala,.assento.dir .fala{max-height:7em}
