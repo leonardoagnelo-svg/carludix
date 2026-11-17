@@ -48,7 +48,7 @@
     st.jogadores.forEach(j => {
       st.descarte.push(...j.nums, ...j.mods);
       if (j.escudo != null) st.descarte.push(j.escudo);
-      Object.assign(j, { nums: [], mods: [], escudo: null, estado: 'ativo', pts: 0, cheio: false });
+      Object.assign(j, { nums: [], mods: [], escudo: null, estado: 'ativo', pts: 0, cheio: false, congelado: null, perdeu: 0 });
     });
     st.rodada++;
     st.fase = 'jogo';
@@ -110,6 +110,7 @@
           evento(st, { tipo: 'salvo', j: i, id, txt: `${j.nome} tirou outro ${c.v}, mas o Escudo salvou!` });
           return false;
         }
+        j.perdeu = pontos(j);
         j.nums.push(id);
         j.estado = 'estourou';
         j.pts = 0;
@@ -191,7 +192,7 @@
           continue;
         }
         if (item.a === 'escudoDar' && ops.length === 1) { st.fila.shift(); darEscudo(st, item.de, ops[0], item.id); continue; }
-        if ((item.a === 'gelo' || item.a === 'rajada') && ops.length === 1) { st.fila.shift(); if (aplicarAlvo(st, item, ops[0])) return fimRodada(st); continue; }
+        if ((item.a === 'gelo' || item.a === 'rajada') && ops.length === 1) { st.fila.shift(); if (aplicarAlvo(st, item, ops[0], true)) return fimRodada(st); continue; }
         st.pend = { tipo: item.a === 'troca' ? 'troca' : 'alvo', a: item.a, de: item.de, id: item.id, ops };
         return;
       }
@@ -239,14 +240,14 @@
   }
 
   // aplica Gelo/Rajada no alvo; devolve true se a rodada acabou
-  function aplicarAlvo(st, item, alvo) {
+  function aplicarAlvo(st, item, alvo, auto) {
     const de = st.jogadores[item.de], j = st.jogadores[alvo];
     st.descarte.push(item.id);
     if (item.a === 'gelo') {
-      j.estado = 'parou'; j.pts = pontos(j);
-      evento(st, { tipo: 'gelo', j: alvo, de: item.de, txt: alvo === item.de ? `❄️ ${de.nome} usou o Gelo em si mesmo e parou com ${j.pts}.` : `❄️ ${de.nome} congelou ${j.nome} com ${j.pts} pontos.` });
+      j.estado = 'parou'; j.pts = pontos(j); j.congelado = alvo === item.de ? (auto ? 'auto' : 'si') : de.nome;
+      evento(st, { tipo: 'gelo', j: alvo, de: item.de, txt: alvo === item.de ? (auto ? `❄️ Só sobrou ${de.nome} na rodada: o Gelo o fez parar com ${j.pts}.` : `❄️ ${de.nome} usou o Gelo em si mesmo e parou com ${j.pts}.`) : `❄️ ${de.nome} congelou ${j.nome} com ${j.pts} pontos.` });
     } else if (item.a === 'rajada') {
-      evento(st, { tipo: 'rajada', j: alvo, de: item.de, txt: alvo === item.de ? `💨 ${de.nome} usou a Rajada em si mesmo!` : `💨 ${de.nome} mandou ${j.nome} puxar 3 cartas!` });
+      evento(st, { tipo: 'rajada', j: alvo, de: item.de, txt: alvo === item.de ? (auto ? `💨 Só sobrou ${de.nome}: a Rajada o faz puxar 3 cartas!` : `💨 ${de.nome} usou a Rajada em si mesmo!`) : `💨 ${de.nome} mandou ${j.nome} puxar 3 cartas!` });
       st.rajada = { alvo, faltam: 3 };
     }
     return false;

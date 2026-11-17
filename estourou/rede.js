@@ -246,8 +246,10 @@
         offs.forEach(f => { try { f(); } catch (e) {} });
         if (pedidosOff) { pedidosOff(); pedidosOff = null; }
         try {
+          // remove primeiro: ao fechar a aba só dá tempo de mandar a primeira mensagem
+          const rm = D.remove(minhaRef);
+          await rm;
           await D.onDisconnect(minhaRef).cancel();
-          await D.remove(minhaRef);
           const s = await D.get(RS());
           if (s.exists() && !humanosDe(s.val()).length) await api.apagar(); // sala sem pessoas: apaga
         } catch (e) {}

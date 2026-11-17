@@ -33,15 +33,24 @@
   }
   function veu(html, aoFechar) {
     fecharVeu();
+    document.querySelectorAll('.toast:not(.erro),.boom,.faisca').forEach(x => x.remove());
     const d = document.createElement('div');
     d.className = 'veu'; d.id = 'veu';
+    d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
     d.innerHTML = html;
     document.body.appendChild(d);
-    if (aoFechar) d.addEventListener('click', e => { if (e.target === d) { fecharVeu(); aoFechar(); } });
+    if (aoFechar) {
+      d.addEventListener('click', e => { if (e.target === d) { fecharVeu(); aoFechar(); } });
+      d._esc = e => { if (e.key === 'Escape') { fecharVeu(); aoFechar(); } };
+      document.addEventListener('keydown', d._esc);
+    }
+    setTimeout(() => { const b = d.querySelector('button:not([disabled])'); if (b && document.body.contains(d)) b.focus({ preventScroll: true }); }, 30);
     return d;
   }
-  function fecharVeu() { const v = document.getElementById('veu'); if (v) v.remove(); }
+  function fecharVeu() { const v = document.getElementById('veu'); if (v) { if (v._esc) document.removeEventListener('keydown', v._esc); v.remove(); } }
+  const semMovimento = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function boom(txt) {
+    if (semMovimento()) return;
     const d = document.createElement('div');
     d.className = 'boom';
     d.innerHTML = `<span>${esc(txt)}</span>`;
@@ -68,10 +77,10 @@
     cls = cls || ''; extra = extra || '';
     if (id == null) return `<div class="carta verso ${cls}" ${extra}></div>`;
     const c = C(id);
-    if (c.t === 'n') return `<div class="carta n${c.v} ${cls}" data-id="${id}" ${extra}><span class="cn">${c.v}</span><span class="v">${c.v}</span></div>`;
-    if (c.t === 'm') return `<div class="carta mod ${c.v === 'x2' ? 'x2' : ''} ${cls}" data-id="${id}" ${extra}><span class="v">${c.v === 'x2' ? '×2' : '+' + c.v}</span></div>`;
+    if (c.t === 'n') return `<div class="carta n${c.v} ${cls}" data-id="${id}" ${extra} role="img" aria-label="${c.v}"><span class="cn" aria-hidden="true">${c.v}</span><span class="v" aria-hidden="true">${c.v}</span></div>`;
+    if (c.t === 'm') return `<div class="carta mod ${c.v === 'x2' ? 'x2' : ''} ${cls}" data-id="${id}" ${extra} role="img" aria-label="${c.v === 'x2' ? 'vezes 2' : 'mais ' + c.v}"><span class="v">${c.v === 'x2' ? '×2' : '+' + c.v}</span></div>`;
     const I = M.INFO_ACAO[c.a];
-    return `<div class="carta acao a-${c.a} ${cls}" data-id="${id}" ${extra} title="${esc(I.nome + ': ' + I.txt)}"><span class="ic">${I.ic}</span><span class="nm">${esc(I.nome)}</span></div>`;
+    return `<div class="carta acao a-${c.a} ${cls}" data-id="${id}" ${extra} role="img" aria-label="${esc(I.nome)}" title="${esc(I.nome + ': ' + I.txt)}"><span class="ic">${I.ic}</span><span class="nm">${esc(I.nome)}</span></div>`;
   }
 
   /* =================== INÍCIO =================== */
@@ -239,7 +248,12 @@
 
   function aplicar(a, quem) {
     if (!J) return;
-    if (J.modo === 'online' && !J.host) { J.mesa.pedir(a).catch(() => toast('Não deu para enviar a jogada. Confira a internet.', 'erro')); return; }
+    if (J.modo === 'online' && !J.host) {
+      const seq = J.st.seq, jj = J;
+      J.mesa.pedir(a).catch(() => toast('Não deu para enviar a jogada. Confira a internet.', 'erro'));
+      setTimeout(() => { if (J === jj && J.st.seq === seq) { toast('O anfitrião está demorando para responder. Aguarde um pouco…', 'erro'); desenharMesa(); } }, 7000);
+      return;
+    }
     const err = M.jogar(J.st, quem, a);
     if (err) { toast(err, 'erro'); return; }
     if (J.modo === 'online') J.mesa.publicar(J.st).catch(() => toast('Falha ao enviar para a sala.', 'erro'));
@@ -267,28 +281,36 @@
     const dupV = eu.estado === 'estourou' && eu.nums.length ? C(eu.nums[eu.nums.length - 1]).v : null;
     const cartaAnim = (id, cls) => { const n = novos.has(id); return cartaHTML(id, (cls || '') + (n ? ' nova' : ''), n ? `style="--d:${novos.get(id)}ms"` : ''); };
 
-    const rivais = st.jogadores.map((j, i) => {
-      if (i === foco) return '';
+    const nJ = st.jogadores.length;
+    const ordemRivais = Array.from({ length: nJ - 1 }, (_, k) => (foco + 1 + k) % nJ);
+    const rivais = ordemRivais.map(i => {
+      const j = st.jogadores[i];
       const selo = j.estado === 'estourou' ? '<span class="selo verm">ESTOUROU 💥</span>' : j.cheio ? '<span class="selo verde">SETE CHEIO 🎉</span>' : j.estado === 'parou' ? '<span class="selo azul">PAROU ✋</span>' : i === vezDe && st.fase === 'jogo' ? '<span class="selo">VEZ</span>' : '';
-      const minis = j.nums.concat(j.mods).map(id => cartaAnim(id, 'mini')).join('') + (j.escudo != null ? cartaAnim(j.escudo, 'mini') : '');
-      return `<div class="rival ${j.estado} ${i === vezDe && st.fase === 'jogo' ? 'vez' : ''}" data-j="${i}">${selo}
+      const dupR = j.estado === 'estourou' && j.nums.length ? C(j.nums[j.nums.length - 1]).v : null;
+      const minis = j.nums.map(id => cartaAnim(id, 'mini' + (C(id).v === dupR ? ' dup' : ''))).join('') + j.mods.map(id => cartaAnim(id, 'mini')).join('') + (j.escudo != null ? cartaAnim(j.escudo, 'mini') : '');
+      return `<div class="rival ${j.estado} ${i === vezDe && st.fase === 'jogo' ? 'vez' : ''} ${J.afetados && J.afetados.has(i) ? 'flash' : ''}" data-j="${i}">${selo}
         <div class="cab"><span class="av">${esc(j.avatar || '🙂')}</span><span class="nm">${esc(j.nome)}</span></div>
         <div class="pts"><span>Total <b>${j.total}</b></span><span>Rodada <b>${j.estado === 'estourou' ? 0 : j.pts}</b></span></div>
         <div class="minis">${minis || '<span class="nota">sem cartas</span>'}</div></div>`;
     }).join('');
 
-    const topoDesc = st.descarte.length ? st.descarte[st.descarte.length - 1] : null;
     const risco = Math.round(M.riscoEstouro(st, foco) * 100);
     const unicos = meus.size;
-    const minhaVez = p && p.tipo === 'vez' && p.de === foco && controla(foco);
+    const minhaVez = p && p.tipo === 'vez' && p.de === foco && controla(foco) && (J.modo !== 'local' || J.mostrado === p.de);
     let espera = '';
     if (st.fase === 'jogo' && p && !minhaVez) {
       const q = st.jogadores[p.de];
       const oque = p.tipo === 'vez' ? 'decidindo' : p.tipo === 'espiar' ? 'espiando o baralho' : p.tipo === 'troca' ? 'escolhendo a troca' : 'escolhendo o alvo';
       espera = controla(p.de) ? '' : `${esc(q.avatar || '')} ${esc(q.nome)} está ${oque}…`;
     }
-    const aviso = st.log.length ? esc(st.log[st.log.length - 1]) : 'Boa sorte!';
-    const estadoEu = eu.estado === 'estourou' ? '💥 Você estourou nesta rodada' : eu.cheio ? '🎉 Sete Cheio!' : eu.estado === 'parou' ? `✋ Parou com ${eu.pts} pontos` : '';
+    const suaVez = J.modo === 'local' ? `👉 Vez de ${esc(eu.nome)}!` : '👉 Sua vez!';
+    const aviso = J.avisoNovo ? esc(J.avisoNovo) + (minhaVez ? `<small>${suaVez}</small>` : '') : minhaVez ? (J.modo === 'local' ? `👉 Vez de ${esc(eu.nome)}! Puxar ou parar?` : '👉 Sua vez! Puxar ou parar?') : espera || (st.log.length ? esc(st.log[st.log.length - 1]) : 'Boa sorte!');
+    const voce = J.modo === 'local' ? eu.nome : 'Você';
+    const estadoEu = eu.estado === 'estourou' ? `💥 ${voce} estourou${eu.perdeu ? ` e perdeu ${eu.perdeu} pontos` : ''} nesta rodada`
+      : eu.cheio ? '🎉 Sete Cheio!'
+      : eu.congelado === 'auto' ? `❄️ Só sobrou ${J.modo === 'local' ? esc(eu.nome) : 'você'}: o Gelo fez parar com ${eu.pts} pontos`
+      : eu.congelado && eu.congelado !== 'si' ? `❄️ ${esc(eu.congelado)} congelou ${J.modo === 'local' ? esc(eu.nome) : 'você'} com ${eu.pts} pontos`
+      : eu.estado === 'parou' ? `✋ Parou com ${eu.pts} pontos` : '';
     const nomeEu = J.modo === 'local' ? eu.nome : (J.modo === 'bots' || controla(foco) ? 'Você' : eu.nome);
 
     box.innerHTML = `
@@ -298,11 +320,11 @@
         ${J.modo === 'online' ? `<span class="tag">Sala ${esc(J.mesa.codigo)}</span>` : ''}
         <button class="ic-btn" data-a="regras" aria-label="Como jogar" title="Como jogar">?</button>
       </div>
-      <div class="rivais">${rivais}</div>
+      <div class="rivais ${nJ > 4 ? 'muitos' : ''}">${rivais}</div>
       <div class="centro-mesa">
         <div class="monte"><div class="pilha">${cartaHTML(null)}${st.baralho.length > 1 ? cartaHTML(null) : ''}${st.baralho.length > 2 ? cartaHTML(null) : ''}</div>${st.baralho.length} cartas</div>
-        <div class="aviso">${aviso}</div>
-        <div class="monte"><div class="pilha">${topoDesc != null ? cartaHTML(topoDesc) : '<div class="carta" style="opacity:.15"></div>'}</div>descarte</div>
+        <div class="aviso ${J.avisoNovo ? 'novo' : ''}" aria-live="polite">${aviso}</div>
+        <div class="monte saiu"><b>${st.descarte.length}</b>já saíram</div>
       </div>
       <div class="eu ${eu.estado} ${vezDe === foco && st.fase === 'jogo' ? 'vez' : ''}" id="eu">
         <div class="cab"><span class="av">${esc(eu.avatar || '😎')}</span><span>${esc(nomeEu)}</span><span class="tot">Total <b>${eu.total}</b></span></div>
@@ -310,12 +332,12 @@
         <div class="placa">
           <div>Pontos da rodada<b>${eu.estado === 'estourou' ? 0 : eu.pts}</b></div>
           <div class="risco ${risco >= 30 ? 'alto' : ''}">Risco de estourar<b>${eu.estado === 'ativo' ? (eu.escudo != null ? '🛡️ 0' : risco) + '%' : '—'}</b></div>
-          <div>Sete Cheio<b>${unicos}/7</b></div>
+          ${eu.estado === 'estourou' ? '<div>Total<b>' + eu.total + '</b></div>' : `<div class="${eu.total + eu.pts >= st.cfg.meta ? 'meta' : ''}">${eu.estado === 'ativo' ? 'Se parar agora' : 'Total + rodada'}<b>${eu.total + eu.pts >= st.cfg.meta ? '🏆 ' : ''}${eu.total + eu.pts}</b></div>`}
         </div>
-        <div class="sete">${Array.from({ length: 7 }, (_, k) => `<i class="${k < unicos ? 'on' : ''}"></i>`).join('')}</div>
+        ${eu.estado === 'estourou' ? '' : `<div class="sete" title="Sete Cheio: ${unicos}/7">${Array.from({ length: 7 }, (_, k) => `<i class="${k < unicos ? 'on' : ''}"></i>`).join('')}<span>Sete Cheio ${unicos}/7</span></div>`}
         ${estadoEu ? `<div class="espera">${estadoEu}</div>` : ''}
+        ${minhaVez && !store.get('dica', false) ? `<div class="dica">💡 <b>Dica:</b> o <b>Risco</b> é a chance de a próxima carta repetir um número seu. Pare antes que fique alto demais! <button class="btn peq claro" data-a="dica-ok">Entendi</button></div>` : ''}
         ${minhaVez ? `<div class="acoes"><button class="btn fogo" data-a="puxar">PUXAR</button><button class="btn" data-a="parar">✋ PARAR</button></div>` : ''}
-        ${espera ? `<div class="espera">${espera}</div>` : ''}
       </div>
       ${J.modo === 'online' ? `<div class="reacoes">${REACOES.map(r => `<button data-reacao="${esc(r)}">${esc(r)}</button>`).join('')}</div>` : ''}
       <div class="log">${st.log.slice(-8).map(l => `<div>${esc(l)}</div>`).join('')}</div>`;
@@ -325,7 +347,7 @@
     clearTimeout(J.veuT);
     const espera2 = Math.max(0, animAte - Date.now());
     if (st.fase === 'fimJogo') { const jj = J; J.veuT = setTimeout(() => { if (J === jj && J.st.fase === 'fimJogo') telaFim(); }, espera2 + 1600); return; }
-    J.veuT = setTimeout(abrirJanela, espera2 + (espera2 ? 250 : 0));
+    J.veuT = setTimeout(abrirJanela, espera2 + (st.fase === 'fimRodada' ? 1300 : espera2 ? 250 : 0));
     agendarBots(espera2);
   }
 
@@ -336,15 +358,24 @@
     const evs = st.ev.filter(e => e.seq > J.ultimoSeq);
     const primeira = J.ultimoSeq === 0 && st.rodada > 1; // entrou no meio (online)
     J.ultimoSeq = st.seq;
+    J.avisoNovo = null; J.afetados = null;
     if (!evs.length || primeira) return novos;
     let t = 0;
     let destaque = null;
+    const afetados = new Set();
     evs.forEach(e => {
       if ((e.tipo === 'carta' || e.tipo === 'estourou' || e.tipo === 'acao') && e.id != null) { novos.set(e.id, t); t += 260; }
       if (e.tipo === 'estourou') destaque = destaque || e;
       if (e.tipo === 'cheio') destaque = e;
       if (e.tipo === 'salvo' && !destaque) destaque = e;
+      if (e.j != null && e.tipo !== 'carta') afetados.add(e.j);
+      if (e.alvo != null) afetados.add(e.alvo);
     });
+    // o aviso do centro da mesa é o único anunciador (os toasts ficam para erros)
+    const comTexto = evs.filter(e => e.txt);
+    const principal = destaque || comTexto.filter(e => e.tipo !== 'acao').pop() || comTexto.pop();
+    if (principal) J.avisoNovo = principal.txt;
+    J.afetados = afetados;
     animAte = Date.now() + t + 350;
     const foco = meuIndice();
     if (destaque) {
@@ -352,13 +383,8 @@
         if (destaque.tipo === 'estourou') {
           boom('ESTOUROU!');
           if (destaque.j === foco) { const el = document.getElementById('eu'); if (el) { el.classList.add('treme'); setTimeout(() => el.classList.remove('treme'), 500); } if (navigator.vibrate) navigator.vibrate(160); }
-          else toast(destaque.txt);
-        } else if (destaque.tipo === 'cheio') { boom('SETE CHEIO!'); toast(destaque.txt, 'festa'); }
-        else toast(destaque.txt);
+        } else if (destaque.tipo === 'cheio') boom('SETE CHEIO!');
       }, Math.max(0, t - 200));
-    } else {
-      const ult = evs.filter(e => e.txt && e.tipo !== 'acao').pop();
-      if (ult && evs.length > 1) setTimeout(() => toast(ult.txt), Math.max(0, t - 200));
     }
     return novos;
   }
@@ -368,11 +394,24 @@
     const st = J.st;
     if (st.fase === 'fimRodada') return janelaFimRodada();
     const p = st.pend;
+    if (J.modo === 'local' && p && controla(p.de) && J.mostrado !== p.de) return janelaPassar(p.de);
     if (!p || p.tipo === 'vez' || !controla(p.de)) { fecharVeu(); return; }
     if (J.modo === 'local') J.foco = p.de;
     if (p.tipo === 'alvo') return janelaAlvo(p);
     if (p.tipo === 'troca') return janelaTroca(p);
     if (p.tipo === 'espiar') return janelaEspiar(p);
+  }
+
+  // mesmo aparelho: pede para passar o celular antes de cada vez
+  function janelaPassar(i) {
+    const j = J.st.jogadores[i];
+    const d = veu(`<div class="painel centro">
+        <div class="trofeu">📱</div>
+        <h2 class="titulo">Vez de ${esc(j.avatar || '')} ${esc(j.nome)}</h2>
+        <p class="sub">Passe o celular para ${esc(j.nome)}.</p>
+        <button class="btn fogo grande larga" data-a="mostrar">Sou eu, mostrar</button>
+      </div>`);
+    d.onclick = e => { if (e.target.closest('[data-a="mostrar"]')) { J.mostrado = i; fecharVeu(); desenharMesa(); } };
   }
 
   const quemSou = i => (J.modo !== 'local' && controla(i)) ? 'Você' : J.st.jogadores[i].nome;
@@ -428,18 +467,27 @@
 
   function janelaEspiar(p) {
     let ordem = p.cartas.slice();
+    let revelado = J.modo !== 'local';
+    const prox = J.st.jogadores[(function () { const n = J.st.jogadores.length; for (let k = 1; k <= n; k++) { const x = (p.de + k) % n; if (J.st.jogadores[x].estado === 'ativo') return x; } return p.de; })()];
     const d = veu('');
     const desenhar = () => {
+      if (!revelado) {
+        d.innerHTML = `<div class="painel centro"><h2 class="titulo">👁️ Espiar</h2>
+          <p class="sub">Só <b>${esc(J.st.jogadores[p.de].nome)}</b> pode olhar! Os outros, virem o rosto.</p>
+          <div class="espiar-cartas">${ordem.map(() => cartaHTML(null, 'grande-carta')).join('')}</div>
+          <button class="btn fogo larga" data-a="ver">Ver cartas (só ${esc(J.st.jogadores[p.de].nome)})</button></div>`;
+        return;
+      }
       d.innerHTML = `<div class="painel centro">
         <h2 class="titulo">👁️ Espiar</h2>
-        <p class="sub">Estas são as próximas cartas do baralho. A da esquerda sai primeiro. Mude a ordem como quiser.</p>
-        ${J.modo === 'local' ? `<p class="nota">Só <b>${esc(J.st.jogadores[p.de].nome)}</b> pode olhar!</p>` : ''}
+        <p class="sub">Estas são as próximas cartas do baralho. A 1ª vai para quem puxar a seguir (provavelmente ${esc(prox.nome)}). Mude a ordem como quiser.</p>
         <div class="espiar-cartas">${ordem.map((id, k) => `<div class="slot"><small>${k + 1}ª</small>${cartaHTML(id, 'grande-carta')}<div class="setas"><button data-mv="${k}" data-d="-1" ${k === 0 ? 'disabled' : ''}>◀</button><button data-mv="${k}" data-d="1" ${k === ordem.length - 1 ? 'disabled' : ''}>▶</button></div></div>`).join('')}</div>
         <button class="btn fogo larga" data-a="ok">Pronto</button>
       </div>`;
     };
     desenhar();
     d.onclick = e => {
+      if (e.target.closest('[data-a="ver"]')) { revelado = true; return desenhar(); }
       const s = e.target.closest('[data-mv]');
       if (s) { const k = +s.dataset.mv, q = k + +s.dataset.d; if (q >= 0 && q < ordem.length) { [ordem[k], ordem[q]] = [ordem[q], ordem[k]]; desenhar(); } return; }
       if (e.target.closest('[data-a="ok"]')) { fecharVeu(); aplicar({ a: 'espiar', ordem }, p.de); }
@@ -458,7 +506,7 @@
       det = partes.join(' · ');
     }
     const pct = Math.min(100, Math.round(j.total / st.cfg.meta * 100));
-    return `<tr class="${r.estado === 'estourou' ? 'est' : ''} ${r.cheio ? 'cheio' : ''}"><td>${esc(j.avatar || '')} ${esc(j.nome)}${r.cheio ? ' <span class="selo-in">SETE CHEIO 🎉</span>' : ''}<span class="det">${det}</span><span class="barra"><i style="width:${pct}%"></i></span></td><td class="n">${r.estado === 'estourou' ? 0 : '+' + r.pts}</td><td class="n">${j.total}</td></tr>`;
+    return `<tr class="${r.estado === 'estourou' ? 'est' : ''} ${r.cheio ? 'cheio' : ''}"><td>${esc(j.avatar || '')} ${esc(quemSou(i))}${r.cheio ? ' <span class="selo-in">SETE CHEIO 🎉</span>' : ''}<span class="det">${det}</span><span class="barra"><i style="width:${pct}%"></i></span></td><td class="n">${r.estado === 'estourou' ? 0 : '+' + r.pts}</td><td class="n">${j.total}</td></tr>`;
   }
 
   function janelaFimRodada() {
@@ -487,15 +535,14 @@
     tela(`<div class="painel centro" style="max-width:520px;margin:14px auto">
         <div class="trofeu">🏆</div>
         <h2 class="titulo">${ganhei ? 'Você venceu!' : esc(v.nome) + ' venceu!'}</h2>
-        <p class="sub">${v.total} pontos em ${st.rodada} ${st.rodada === 1 ? 'rodada' : 'rodadas'}</p>
-        <table class="tabela"><tr><th>Jogador</th><th style="text-align:right">Última</th><th style="text-align:right">Total</th></tr>
+        <p class="sub">${v.total} pontos em ${st.rodada} ${st.rodada === 1 ? 'rodada' : 'rodadas'}${J.modo !== 'local' && !ganhei ? ` · você ficou em ${ordem.findIndex(i => controla(i)) + 1}º` : ''}</p>
+        <table class="tabela"><tr><th>Jogador</th><th style="text-align:right">Últ. rodada</th><th style="text-align:right">Total</th></tr>
         ${ordem.map(i => linhaResultado(st, i, res[i] || { pts: 0, estado: 'parou', det: { base: 0 } })).join('')}</table>
         <div class="cdx-ad" data-ad="jogo-resultado"></div>
         <div class="linha c" style="margin-top:12px">
           ${J.modo === 'online' ? (J.host ? '<button class="btn fogo grande" data-a="denovo">Jogar de novo</button>' : '<p class="espera">O anfitrião pode começar outra partida.</p>') : '<button class="btn fogo grande" data-a="denovo">Jogar de novo</button>'}
           <button class="btn claro" data-a="inicio">Início</button>
         </div>
-        <p class="nota" style="margin-top:14px"><a href="${URL_SUG}" target="_blank" rel="noopener">💡 Enviar sugestão</a></p>
       </div>${rodape()}`);
     if (window.CarludixAds) window.CarludixAds.render();
     app.onclick = e => {
@@ -514,6 +561,7 @@
     const b = e.target.closest('[data-a]'); if (!b || !J) return;
     const a = b.dataset.a;
     const p = J.st.pend;
+    if (a === 'dica-ok') { store.set('dica', true); const d = app.querySelector('.dica'); if (d) d.remove(); return; }
     if (a === 'puxar' || a === 'parar') {
       if (!p || p.tipo !== 'vez' || !controla(p.de)) return;
       b.disabled = true;
