@@ -299,6 +299,19 @@ const games = [
   ],
   "meta": "1x1 · Duplas · Online",
   "desc": "O clássico das cartas: Fechado, Aberto ou STBL. Jogue contra o computador, no mesmo aparelho ou online com os amigos."
+ },
+ {
+  "id": "estourou",
+  "name": "Estourou!",
+  "icon": "raio",
+  "url": "/estourou/",
+  "pasta": "estourou",
+  "cats": [
+   "cartas",
+   "grupo"
+  ],
+  "meta": "Sorte · Online",
+  "desc": "Puxe cartas, pare na hora certa e não repita número! Contra o computador, no mesmo aparelho ou online com os amigos."
  }
 ];
 const TABS = [{"id": "todos", "label": "Todos"}, {"id": "cartas", "label": "Cartas"}, {"id": "grupo", "label": "Em grupo"}];
@@ -316,7 +329,7 @@ function card(g){
     ? `<a class="link" href="${g.url}">Jogar ${arrow}</a>`
     : `<button class="link soon" data-game="${g.id}">Em breve</button>`;
   return `<article class="card${live?' is-live':''}">
-    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611161701" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}${live?'':'<span class="status">Em breve</span>'}</div>
+    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611171133" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}${live?'':'<span class="status">Em breve</span>'}</div>
     <h3>${g.name}</h3><p>${g.desc}</p>
     <div class="card-foot"><span class="meta">${g.meta}</span>${action}</div>
   </article>`;
