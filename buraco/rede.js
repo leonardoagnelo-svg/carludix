@@ -239,8 +239,9 @@
         offs.forEach(f => { try { f(); } catch (e) {} });
         if (pedidosOff) { pedidosOff(); pedidosOff = null; }
         try {
-          await D.onDisconnect(minhaRef).cancel();
+          // remove primeiro: se a remoção falhar, o aviso de desconexão ainda tira o jogador da sala
           await D.remove(minhaRef);
+          await D.onDisconnect(minhaRef).cancel();
           const s = await D.get(RS());
           if (s.exists() && !humanosDe(s.val()).length) await api.apagar(); // sala sem pessoas: apaga
         } catch (e) {}

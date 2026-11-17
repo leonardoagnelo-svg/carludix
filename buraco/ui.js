@@ -724,7 +724,15 @@
     if (P.modo === 'online' && !P.mesa.souAnfitriao()) {
       P.ocupado = true; desenharJogo();
       P.mesa.pedir(a).catch(() => { P.ocupado = false; toast('Sem conexão. Tente de novo.', 'erro'); desenharJogo(); });
-      clearTimeout(P.ocupT); P.ocupT = setTimeout(() => { if (P && P.ocupado) { P.ocupado = false; desenharJogo(); } }, 6000);
+      // se o anfitrião não responder em 7s (celular bloqueado, aba em segundo plano), avisa e libera os botões
+      const seqPedido = P.st.seq, mesaPedido = P.mesa;
+      clearTimeout(P.ocupT);
+      P.ocupT = setTimeout(() => {
+        if (!P || P.mesa !== mesaPedido || P.st.seq !== seqPedido) return;
+        P.ocupado = false;
+        toast('O anfitrião está demorando para responder. Aguarde um pouco…');
+        desenharJogo();
+      }, 7000);
       return;
     }
     executar(P.eu, a, false);
