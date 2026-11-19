@@ -1642,6 +1642,8 @@ async function startOnline(force){
   MR().distribuirLugares(sala).forEach((e,i)=>{if(!e)return;const[uid,j]=e;
     if(j.bot)seats.push({human:false,name:(THEMES[cfg.theme]||THEMES.mansao).sus[i].n,sus:i});
     else if(NET.api.presente(uid))seats.push({human:true,uid,name:cleanNick(j.apelido)||'Detetive',sus:i})});
+  // quem jogou a partida anterior e caiu por alguns segundos continua na mesa (se sair de vez, um robô assume)
+  if(G&&G.net&&!G.client)G.players.forEach(p=>{if(p.isHuman&&p.uid&&!p.left&&!seats.some(x=>x.uid===p.uid)&&!seats.some(x=>x.sus===p.sus))seats.push({human:true,uid:p.uid,name:p.name,sus:p.sus})});
   if(seats.length<2){toast('Precisa de pelo menos 2 detetives');return}
   if(quickT){clearInterval(quickT);quickT=null}
   closeModal();
