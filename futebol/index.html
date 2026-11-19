@@ -196,6 +196,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
   .grid{grid-template-columns:1fr}
   .facts{gap:20px}
 }
+.card-foot .acts{display:flex;align-items:center;gap:14px}.card-foot .rules{font-size:13px;color:var(--muted,#a3adc2);text-decoration:underline;text-underline-offset:3px}.card-foot .rules:hover{color:#fff}
 </style>
 </head>
 <body>
@@ -257,7 +258,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
         </div>
         <div class="tabs" role="group" aria-label="Filtrar jogos" id="tabs"></div>
       </div>
-      <div class="grid" id="games" aria-live="polite"></div>
+      <div class="grid" id="games" aria-live="polite"><article class="card is-live"><div class="card-top"><img class="logo" src="/artilhetra/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Artilhetra</h3><p>Letras sorteadas: escale um time com craques que começam com cada uma delas.</p><div class="card-foot"><span class="meta">Com amigos</span><span class="acts"><a class="rules" href="/como-jogar/artilhetra/">Como jogar</a><a class="link" href="/artilhetra/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/caminho-do-craque/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Caminho do Craque</h3><p>Os clubes aparecem um a um. Descubra o jogador com o menor número de pistas.</p><div class="card-foot"><span class="meta">Carreira</span><span class="acts"><a class="rules" href="/como-jogar/caminho-do-craque/">Como jogar</a><a class="link" href="/caminho-do-craque/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/mais-ou-menos/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Mais ou Menos</h3><p>Quem tem mais gols, títulos ou valor de mercado? Acerte em sequência até errar.</p><div class="card-foot"><span class="meta">Sequência</span><span class="acts"><a class="rules" href="/como-jogar/mais-ou-menos/">Como jogar</a><a class="link" href="/mais-ou-menos/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/grade-dos-craques/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Grade dos Craques</h3><p>Complete a grade 3×3 com jogadores que atendam aos critérios da linha e da coluna.</p><div class="card-foot"><span class="meta">Diário</span><span class="acts"><a class="rules" href="/como-jogar/grade-dos-craques/">Como jogar</a><a class="link" href="/grade-dos-craques/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/quem-e-o-jogador/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Quem é o Jogador?</h3><p>Um jogador misterioso por dia. Use as pistas e acerte em até oito tentativas.</p><div class="card-foot"><span class="meta">Diário</span><span class="acts"><a class="rules" href="/como-jogar/quem-e-o-jogador/">Como jogar</a><a class="link" href="/quem-e-o-jogador/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/racha-dos-campeoes/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Racha dos Campeões</h3><p>Tire jogadores de elencos campeões, use cartas especiais e monte o melhor time.</p><div class="card-foot"><span class="meta">Online · Mesma tela</span><span class="acts"><a class="rules" href="/como-jogar/racha-dos-campeoes/">Como jogar</a><a class="link" href="/racha-dos-campeoes/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article></div>
     </div>
   </section>
 
@@ -310,7 +311,8 @@ const games = [
    "quiz"
   ],
   "meta": "Com amigos",
-  "desc": "Letras sorteadas: escale um time com craques que começam com cada uma delas."
+  "desc": "Letras sorteadas: escale um time com craques que começam com cada uma delas.",
+  "guia": "/como-jogar/artilhetra/"
  },
  {
   "id": "caminho",
@@ -321,7 +323,8 @@ const games = [
    "quiz"
   ],
   "meta": "Carreira",
-  "desc": "Os clubes aparecem um a um. Descubra o jogador com o menor número de pistas."
+  "desc": "Os clubes aparecem um a um. Descubra o jogador com o menor número de pistas.",
+  "guia": "/como-jogar/caminho-do-craque/"
  },
  {
   "id": "mais-menos",
@@ -332,7 +335,8 @@ const games = [
    "quiz"
   ],
   "meta": "Sequência",
-  "desc": "Quem tem mais gols, títulos ou valor de mercado? Acerte em sequência até errar."
+  "desc": "Quem tem mais gols, títulos ou valor de mercado? Acerte em sequência até errar.",
+  "guia": "/como-jogar/mais-ou-menos/"
  },
  {
   "id": "grade",
@@ -344,7 +348,8 @@ const games = [
    "diario"
   ],
   "meta": "Diário",
-  "desc": "Complete a grade 3×3 com jogadores que atendam aos critérios da linha e da coluna."
+  "desc": "Complete a grade 3×3 com jogadores que atendam aos critérios da linha e da coluna.",
+  "guia": "/como-jogar/grade-dos-craques/"
  },
  {
   "id": "quem",
@@ -356,7 +361,8 @@ const games = [
    "diario"
   ],
   "meta": "Diário",
-  "desc": "Um jogador misterioso por dia. Use as pistas e acerte em até oito tentativas."
+  "desc": "Um jogador misterioso por dia. Use as pistas e acerte em até oito tentativas.",
+  "guia": "/como-jogar/quem-e-o-jogador/"
  },
  {
   "id": "racha",
@@ -367,7 +373,8 @@ const games = [
    "estrategia"
   ],
   "meta": "Online · Mesma tela",
-  "desc": "Tire jogadores de elencos campeões, use cartas especiais e monte o melhor time."
+  "desc": "Tire jogadores de elencos campeões, use cartas especiais e monte o melhor time.",
+  "guia": "/como-jogar/racha-dos-campeoes/"
  }
 ];
 const TABS = [
@@ -390,9 +397,9 @@ function card(g){
     ? `<a class="link" href="${g.url}">Jogar ${arrow}</a>`
     : `<button class="link soon" data-game="${g.id}">Em breve</button>`;
   return `<article class="card${live?' is-live':''}">
-    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611161701" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}${live?'':'<span class="status">Em breve</span>'}</div>
+    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}${live?'':'<span class="status">Em breve</span>'}</div>
     <h3>${g.name}</h3><p>${g.desc}</p>
-    <div class="card-foot"><span class="meta">${g.meta}</span>${action}</div>
+    <div class="card-foot"><span class="meta">${g.meta}</span><span class="acts">${g.guia?`<a class="rules" href="${g.guia}">Como jogar</a>`:''}${action}</span></div>
   </article>`;
 }
 function render(){
