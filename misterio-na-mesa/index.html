@@ -1513,7 +1513,7 @@ async function enterRoom(code,opt){
     if(!$('#lobby:not(.hidden)'))openLobby();
   }
 }
-function resetNet(){if(quickT){clearInterval(quickT);quickT=null}NET=null;G=null;history.replaceState(null,'',location.pathname)}
+function resetNet(){if(quickT){clearInterval(quickT);quickT=null}if(presT){clearInterval(presT);presT=null}const hw=$('#hostWait');if(hw)hw.remove();NET=null;G=null;history.replaceState(null,'',location.pathname)}
 async function leaveRoom(){
   const n=NET;resetNet();
   try{n&&await n.api.sair()}catch(e){}
@@ -1537,21 +1537,36 @@ let quickT=null;
 function onSala(sala){
   if(!NET||!sala)return;
   const api=NET.api;
-  // anfitrião saiu?
-  if(!api.presente(sala.anfitriao)){
-    if(sala.status==='esperando'){api.conferirAnfitriao().then(ok=>{if(ok){NET.host=true;listenActions();toast('👑 Agora você é o anfitrião da sala')}})}
-    else if(G&&G.client&&!G.over){
-      modal(`<h2>😕 O anfitrião saiu</h2><p>A partida dependia do aparelho do anfitrião e não pode continuar.</p><div class="btns"><button class="btn" id="bOut">Voltar</button></div>`,false);
-      $('#bOut').onclick=()=>leaveRoom();
-      return;
-    }
+  // anfitrião saiu? (na sala de espera outro assume; na partida espera ele reconectar)
+  if(sala.anfitriao&&!api.presente(sala.anfitriao)&&sala.status==='esperando'){
+    api.conferirAnfitriao().then(ok=>{if(ok){NET.host=true;listenActions();toast('👑 Agora você é o anfitrião da sala')}});
   }
   NET.host=api.souAnfitriao();
-  // jogador saiu durante a partida: um robô assume
-  if(G&&G.net&&!G.client&&!G.over){
-    G.players.forEach((p,i)=>{if(p.remote&&!api.presente(p.uid))botify(i)});
-  }
+  checkPresence();
   if($('#sala:not(.hidden)'))renderSala(sala);
+}
+// presença durante a partida, com tolerância para quedas rápidas de conexão
+const GRACE_HOST=60000,GRACE_PLAYER=40000;
+let presT=null;
+function checkPresence(){
+  if(!NET||!G||!G.net||G.over){return}
+  if(!presT)presT=setInterval(checkPresence,5000);
+  const api=NET.api,sala=api.sala,now=Date.now();
+  NET.absent=NET.absent||{};
+  const seen=(uid,ok)=>{if(ok){delete NET.absent[uid];return 0}NET.absent[uid]=NET.absent[uid]||now;return now-NET.absent[uid]};
+  if(G.client){
+    const gone=seen('host',sala&&api.presente(sala.anfitriao));
+    const bar=$('#hostWait');
+    if(gone>4000&&gone<GRACE_HOST){if(!bar)document.body.insertAdjacentHTML('beforeend','<div class="toast" id="hostWait">📡 Reconectando com o anfitrião…</div>')}
+    else if(bar)bar.remove();
+    if(gone>=GRACE_HOST&&!NET.hostGoneShown){
+      NET.hostGoneShown=true;
+      modal(`<h2>😕 O anfitrião saiu</h2><p>A partida dependia do aparelho do anfitrião e não pode continuar.</p><div class="btns"><button class="btn sec" id="bOut">Sair da sala</button></div>`,false);
+      $('#bOut').onclick=()=>leaveRoom();
+    }
+  }else{
+    G.players.forEach((p,i)=>{if(p.remote&&seen(p.uid,api.presente(p.uid))>=GRACE_PLAYER)botify(i)});
+  }
 }
 function botify(i){
   const p=P(i);if(!p.remote)return;

@@ -243,7 +243,9 @@
           await D.remove(minhaRef);
           await D.onDisconnect(minhaRef).cancel();
           const s = await D.get(RS());
-          if (s.exists() && !humanosDe(s.val()).length) await api.apagar(); // sala sem pessoas: apaga
+          const v = s.exists() ? s.val() : null;
+          // só apaga sala vazia na espera ou se quem sai é o anfitrião (uma queda rápida do anfitrião não apaga a partida)
+          if (v && !humanosDe(v).length && (v.status === 'esperando' || v.anfitriao === uid)) await api.apagar();
         } catch (e) {}
       },
     };
