@@ -182,6 +182,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
   .grid{grid-template-columns:1fr}
   .facts{gap:20px}
 }
+.card-foot .acts{display:flex;align-items:center;gap:14px}.card-foot .rules{font-size:13px;color:var(--muted,#a3adc2);text-decoration:underline;text-underline-offset:3px}.card-foot .rules:hover{color:#fff}
 </style>
 </head>
 <body>
@@ -243,7 +244,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff;
         </div>
         <div class="tabs" role="group" aria-label="Filtrar jogos" id="tabs"></div>
       </div>
-      <div class="grid" id="games" aria-live="polite"></div>
+      <div class="grid" id="games" aria-live="polite"><article class="card is-live"><div class="card-top"><img class="logo" src="/quizarena/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>QuizArena</h3><p>Quiz ao vivo: o apresentador projeta as perguntas na TV e cada um responde pelo celular. Use os quizzes prontos ou crie os seus.</p><div class="card-foot"><span class="meta">Ao vivo · Celulares</span><span class="acts"><a class="rules" href="/como-jogar/quizarena/">Como jogar</a><a class="link" href="/quizarena/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/sintonia/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Sintonia</h3><p>Um dá a dica, o grupo acha o ponto certo entre dois extremos. Futebol, fé, Brasil e mais.</p><div class="card-foot"><span class="meta">Mesma tela</span><span class="acts"><a class="rules" href="/como-jogar/sintonia/">Como jogar</a><a class="link" href="/sintonia/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/letrampago/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Letrâmpago</h3><p>Um tema na mesa, cinco letras na mão: fale uma palavra e desça a carta antes de todo mundo. Quem chegar ao limite de raios perde!</p><div class="card-foot"><span class="meta">Rápido · Online</span><span class="acts"><a class="rules" href="/como-jogar/letrampago/">Como jogar</a><a class="link" href="/letrampago/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article><article class="card is-live"><div class="card-top"><img class="logo" src="/doidodromo/logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy"></div><h3>Doidódromo</h3><p>Corrida de tabuleiro maluca: monte um time de 4 corredores com poderes e dispute 4 corridas, no mesmo aparelho ou online.</p><div class="card-foot"><span class="meta">2 a 6 · Online</span><span class="acts"><a class="rules" href="/como-jogar/doidodromo/">Como jogar</a><a class="link" href="/doidodromo/">Jogar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></span></div></article></div>
     </div>
   </section>
 
@@ -298,7 +299,8 @@ const games = [
    "grupo"
   ],
   "meta": "Ao vivo · Celulares",
-  "desc": "Quiz ao vivo: o apresentador projeta as perguntas na TV e cada um responde pelo celular. Use os quizzes prontos ou crie os seus."
+  "desc": "Quiz ao vivo: o apresentador projeta as perguntas na TV e cada um responde pelo celular. Use os quizzes prontos ou crie os seus.",
+  "guia": "/como-jogar/quizarena/"
  },
  {
   "id": "sintonia",
@@ -310,7 +312,8 @@ const games = [
    "grupo"
   ],
   "meta": "Mesma tela",
-  "desc": "Um dá a dica, o grupo acha o ponto certo entre dois extremos. Futebol, fé, Brasil e mais."
+  "desc": "Um dá a dica, o grupo acha o ponto certo entre dois extremos. Futebol, fé, Brasil e mais.",
+  "guia": "/como-jogar/sintonia/"
  },
  {
   "id": "letrampago",
@@ -322,7 +325,8 @@ const games = [
    "grupo"
   ],
   "meta": "Rápido · Online",
-  "desc": "Um tema na mesa, cinco letras na mão: fale uma palavra e desça a carta antes de todo mundo. Quem chegar ao limite de raios perde!"
+  "desc": "Um tema na mesa, cinco letras na mão: fale uma palavra e desça a carta antes de todo mundo. Quem chegar ao limite de raios perde!",
+  "guia": "/como-jogar/letrampago/"
  },
  {
   "id": "doidodromo",
@@ -335,7 +339,8 @@ const games = [
    "estrategia"
   ],
   "meta": "2 a 6 · Online",
-  "desc": "Corrida de tabuleiro maluca: monte um time de 4 corredores com poderes e dispute 4 corridas, no mesmo aparelho ou online."
+  "desc": "Corrida de tabuleiro maluca: monte um time de 4 corredores com poderes e dispute 4 corridas, no mesmo aparelho ou online.",
+  "guia": "/como-jogar/doidodromo/"
  }
 ];
 const TABS = [{"id": "todos", "label": "Todos"}, {"id": "grupo", "label": "Em grupo"}, {"id": "quiz", "label": "Quiz"}, {"id": "estrategia", "label": "Estratégia"}];
@@ -353,9 +358,9 @@ function card(g){
     ? `<a class="link" href="${g.url}">Jogar ${arrow}</a>`
     : `<button class="link soon" data-game="${g.id}">Em breve</button>`;
   return `<article class="card${live?' is-live':''}">
-    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611161701" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}${live?'':'<span class="status">Em breve</span>'}</div>
+    <div class="card-top">${live?`<img class="logo" src="${g.url}logo.png?v=202611191714" alt="" width="56" height="56" loading="lazy">`:`<span class="ico">${svg(ICONS[g.icon])}</span>`}${live?'':'<span class="status">Em breve</span>'}</div>
     <h3>${g.name}</h3><p>${g.desc}</p>
-    <div class="card-foot"><span class="meta">${g.meta}</span>${action}</div>
+    <div class="card-foot"><span class="meta">${g.meta}</span><span class="acts">${g.guia?`<a class="rules" href="${g.guia}">Como jogar</a>`:''}${action}</span></div>
   </article>`;
 }
 function render(){
