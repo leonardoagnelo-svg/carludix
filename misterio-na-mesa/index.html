@@ -82,7 +82,7 @@ button{cursor:pointer;border:none}
 .note{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.4}
 
 /* ---------- JOGO ---------- */
-#game{max-width:1200px;margin:0 auto;padding:0 12px 24px}
+#game{max-width:1400px;margin:0 auto;padding:0 12px 24px}
 .casebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .casebar h2{font-family:Georgia,serif;color:var(--gold2);font-size:clamp(17px,2.6vw,22px)}
 .casebar .rd{font-size:13px;color:var(--muted);border:1px solid rgba(227,181,74,.4);padding:3px 10px;border-radius:999px}
@@ -93,8 +93,8 @@ button{cursor:pointer;border:none}
 .pl.out{opacity:.45}
 .pl.out span{text-decoration:line-through}
 .pl small{color:var(--muted)}
-.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(310px,1fr);gap:14px;align-items:start}
-@media (max-width:880px){.layout{grid-template-columns:1fr}}
+.layout{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(300px,1fr);gap:14px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:1fr}}
 
 .mapwrap{padding:10px;border-radius:20px;background:linear-gradient(145deg,#6a4a14,#2d1e06 40%,#6a4a14);box-shadow:0 0 0 2px var(--gold),0 18px 40px rgba(0,0,0,.6)}
 .map{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;aspect-ratio:1/0.88;background:#0b1028;border-radius:12px;padding:7px}
@@ -196,6 +196,19 @@ button{cursor:pointer;border:none}
 .score{font-family:Georgia,serif;font-size:22px;color:var(--gold2);margin:6px 0}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#000d;color:#fff;padding:10px 16px;border-radius:10px;z-index:80;font-size:14px;border:1px solid var(--gold3)}
 .cdx-ad{margin:18px auto}
+/* tabuleiro */
+.board{position:relative;width:100%;aspect-ratio:3/2;background:#1b2a14 center/cover no-repeat;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 0 2px rgba(227,181,74,.6)}
+.board .rhot{position:absolute;border-radius:12px;border:3px solid transparent;transition:box-shadow .2s}
+.board .rhot.here{border-color:rgba(255,255,255,.7)}
+.board .rhot.can{cursor:pointer;border-color:var(--gold2);background:rgba(255,217,119,.14);animation:glow 1.3s infinite}
+.board .bpass{position:absolute;bottom:4px;left:4px;font-size:clamp(8px,1vw,11px);background:rgba(10,15,40,.8);color:var(--gold2);padding:1px 6px;border-radius:6px;white-space:nowrap}
+.board .steps{position:absolute;left:4px;top:4px;background:var(--wine);color:#fff;font-size:11px;border-radius:6px;padding:0 5px}
+.board .pt{position:absolute;width:3.4%;aspect-ratio:1.25/1;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;font-size:clamp(8px,1vw,12px);font-weight:800;color:#3a2405}
+.board .pt.can{cursor:pointer;background:rgba(255,217,119,.75);box-shadow:0 0 0 3px var(--gold2),0 0 16px var(--gold2);animation:glow 1.3s infinite}
+.board .pawn.bp{position:absolute;transform:translate(-50%,-60%);width:clamp(20px,3.3vw,40px);height:clamp(20px,3.3vw,40px);z-index:3;transition:left .35s,top .35s}
+.die{display:inline-flex;align-items:center;gap:6px;font-size:28px;font-weight:900;color:#2b1a05;background:linear-gradient(#ffd977,#d29b2a);border-radius:12px;padding:4px 14px;margin-bottom:8px;box-shadow:0 4px 0 #8a5d12}
+.timer{text-transform:none}
+.mapwrap{padding:8px}
 /* cartas com arte */
 .card.art{padding:0;overflow:hidden;background:#f6e6b8;justify-content:flex-start}
 .card.art img{width:100%;height:100%;object-fit:cover;display:block}
@@ -501,8 +514,54 @@ const SPEC={
   troca:{n:'Troca de Informações',e:'🔁',d:'Você e outro jogador veem uma carta da mão um do outro.',when:'any',alvo:true},
   falsa:{n:'Falsa Pista',e:'⚠️',d:'Quando tiver que mostrar uma carta, pode responder com uma Falsa Pista (a mesa vê que foi usada).',when:'never'}};
 const SPK=Object.keys(SPEC);
-const PASS={0:8,8:0,2:6,6:2};
-const START=[0,2,6,8,3,5];
+/* TABULEIROS: cômodos (R0..R8, índice igual ao de THEMES.rms) e pontos de movimentação (P..) */
+const BOARDS={
+  mansao:{img:'mansao/tabuleiro.webp',W:1536,H:1024,
+    // retângulos dos cômodos no desenho [x1,y1,x2,y2] — índice = THEMES.mansao.rms (Lavabo, Capela, Sala de Estar e Sala de Jantar são decoração)
+    rects:[[1100,60,1400,320],[215,150,500,330],[180,340,480,555],[620,60,975,240],[690,280,900,635],[1110,330,1400,545],[650,780,950,980],[70,580,365,795],[400,590,645,790]],
+    pts:{P2:[797,252],P4:[516,348],P5:[611,348],P6:[974,348],P7:[1069,348],P8:[513,448],P9:[1074,448],P10:[513,540],P11:[656,550],P12:[934,550],P13:[1078,540],P14:[390,573],P15:[1218,573],P16:[384,669],P17:[702,685],P18:[797,678],P19:[890,685],P20:[1210,667]},
+    edges:[['P2','P5'],['P2','P6'],['P5','P4'],['P4','P8'],['P8','P10'],['P10','P11'],['P10','P14'],['P14','P16'],['P11','P17'],['P17','P18'],['P18','P19'],['P19','P12'],['P12','P13'],['P13','P9'],['P9','P7'],['P7','P6'],['P13','P15'],['P15','P20'],['P19','P20'],
+      ['R1','P4'],['R1','P5'],['R3','P2'],['R0','P7'],['R2','P8'],['R4','P2'],['R4','P11'],['R4','P12'],['R4','P18'],['R5','P9'],['R7','P16'],['R7','P14'],['R8','P17'],['R6','P18']],
+    pass:[[0,7],[3,6]],
+    start:['P5','P6','P16','P15','P18','P8']},
+  fazenda:{img:'fazenda/tabuleiro.webp',W:1536,H:1024,
+    // índice = THEMES.fazenda.rms: Celeiro, Galinheiro, Moinho, Horta, Sala da Fazenda (Sala de Jantar), Cozinha, Pomar, Varanda, Estábulo
+    rects:[[360,75,610,250],[650,75,860,225],[390,600,700,790],[920,100,1200,235],[1150,470,1510,680],[20,440,385,645],[1220,95,1460,285],[1140,290,1500,460],[70,235,390,425]],
+    pts:{F1:[612,237],F2:[787,263],F3:[966,229],F4:[1076,273],F5:[489,292],F6:[416,358],F7:[1125,358],F8:[421,508],F9:[1105,508],F10:[510,572],F11:[642,601],F12:[777,621],F13:[961,582],F14:[1064,587],F15:[390,618],F16:[1160,647],F17:[322,710],F18:[1219,731],F19:[766,741],F20:[408,804],F21:[544,838],F22:[701,820],F23:[859,826],F24:[1003,838],F25:[1139,806]},
+    edges:[['F1','F2'],['F2','F3'],['F3','F4'],['F1','F5'],['F5','F6'],['F6','F8'],['F8','F10'],['F8','F15'],['F10','F11'],['F11','F12'],['F12','F13'],['F13','F14'],['F14','F9'],['F9','F7'],['F7','F4'],['F14','F16'],['F16','F18'],['F18','F25'],['F25','F24'],['F24','F23'],['F23','F22'],['F22','F21'],['F21','F20'],['F20','F17'],['F17','F15'],['F12','F19'],['F19','F22'],['F19','F23'],
+      ['R0','F1'],['R1','F2'],['R3','F3'],['R6','F4'],['R8','F6'],['R5','F15'],['R5','F8'],['R7','F7'],['R7','F9'],['R4','F16'],['R2','F10'],['R2','F21']],
+    pass:[[5,6],[2,3]],
+    start:['F12','F2','F17','F25','F9','F5']}
+};
+function genGridBoard(){
+  const W=1500,H=1000,cx=[230,750,1270],cy=[170,500,830],rw=330,rh=250;
+  const rects=[],pts={},edges=[];
+  for(let r=0;r<9;r++){const x=cx[r%3],y=cy[Math.floor(r/3)];rects.push([x-rw/2,y-rh/2,x+rw/2,y+rh/2])}
+  let k=0;
+  const link=(a,b,horiz)=>{const A=rects[a],B=rects[b];
+    const p1=horiz?[A[2]+(B[0]-A[2])*.3,(A[1]+A[3])/2]:[(A[0]+A[2])/2,A[3]+(B[1]-A[3])*.3];
+    const p2=horiz?[A[2]+(B[0]-A[2])*.7,(A[1]+A[3])/2]:[(A[0]+A[2])/2,A[3]+(B[1]-A[3])*.7];
+    const n1='P'+(++k),n2='P'+(++k);pts[n1]=p1;pts[n2]=p2;edges.push(['R'+a,n1],[n1,n2],[n2,'R'+b]);return [n1,n2]};
+  const hs=[],vs=[];
+  for(let r=0;r<9;r++){if(r%3<2)hs.push(link(r,r+1,true));if(r<6)vs.push(link(r,r+3,false))}
+  return {img:null,W,H,rects,pts,edges,pass:[[0,8],[2,6]],start:[hs[0][0],hs[1][1],vs[0][1],vs[2][0],hs[4][1],hs[5][0]]};
+}
+function buildBoard(theme){
+  const D=BOARDS[theme]||genGridBoard();
+  const nodes={},adj={};
+  D.rects.forEach((b,r)=>{nodes['R'+r]={room:r,x:(b[0]+b[2])/2/D.W*100,y:(b[1]+(b[3]-b[1])*.62)/D.H*100};adj['R'+r]=[]});
+  Object.entries(D.pts).forEach(([id,[x,y]])=>{nodes[id]={room:-1,x:x/D.W*100,y:y/D.H*100};adj[id]=[]});
+  D.edges.forEach(([a,b])=>{adj[a].push(b);adj[b].push(a)});
+  const pass={};D.pass.forEach(([a,b])=>{pass[a]=b;pass[b]=a});
+  return {img:D.img,W:D.W,H:D.H,rects:D.rects,pts:D.pts,edges:D.edges,nodes,adj,pass,start:D.start};
+}
+// distâncias: os cômodos não se atravessam (entrar num cômodo encerra o caminho)
+function distFrom(B,src){
+  const d={[src]:0},q=[src];
+  while(q.length){const x=q.shift();if(x!==src&&B.nodes[x].room>=0)continue;for(const y of B.adj[x])if(d[y]==null){d[y]=d[x]+1;q.push(y)}}
+  return d;
+}
+function reachFrom(B,src,steps){const d=distFrom(B,src),out={};Object.entries(d).forEach(([n,v])=>{if(n!==src&&v<=steps)out[n]=v});return out}
 const TURN_SECS=90;
 const AVATARS=['🕵️','🎩','👒','🧑‍🍳','👩‍🔬','🧑‍🌾','🎭','🦊','🐱','🐶','🦉','⭐','🐔','🍰'];
 const BAD=['porra','caralho','merda','puta','buceta','cu ','viado','fdp','foda','bosta','cacete','piroca','pinto','otario','otário','idiota','burro','arrombado','corno'];
@@ -536,13 +595,6 @@ function avHTML(si,size,T){T=T||curT();const s=T.sus[si];const st=size?`;width:$
   return `<div class="av pic" title="${esc(s.n)}" style="border-color:${s.c};background-image:url(${susImg(T,si)})${st}">${s.e}</div>`}
 
 /* ================= TABULEIRO / CARTAS ================= */
-function nbrs(r,noPass){
-  const a=[],row=Math.floor(r/3),col=r%3;
-  if(row>0)a.push(r-3);if(row<2)a.push(r+3);if(col>0)a.push(r-1);if(col<2)a.push(r+1);
-  if(!noPass&&PASS[r]!==undefined)a.push(PASS[r]);
-  return a;
-}
-const DIST=(()=>{const d=[];for(let s=0;s<9;s++){const D=Array(9).fill(99);D[s]=0;const q=[s];while(q.length){const x=q.shift();for(const y of nbrs(x))if(D[y]>D[x]+1){D[y]=D[x]+1;q.push(y)}}d.push(D)}return d})();
 let G=null,NET=null;
 function card(id){
   const T=G.T,ni=G.nItm;
@@ -643,12 +695,13 @@ function newGame(seats,cfg){
   G={T,themeKey:cfg.theme,lv:cfg.level,diff:cfg.diff,mode:cfg.mode,specials:!!cfg.specials,nItm,RO,total,CATS,n,env,sizes,
     over:false,turn:0,round:1,phase:'wait',viewer:null,event:null,usedSp:false,extraUsed:false,
     caseT:cs[0],caseD:`${cs[1]} ${tw.join(' ')} ${T.tail}`,auto,gameId:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
-    pawn:START.slice(),log:[],logId:0,pend:null,flash:{},lastMsg:'',
+    board:buildBoard(cfg.theme),pawn:null,roll:null,reach:null,log:[],logId:0,pend:null,flash:{},lastMsg:'',
     net:cfg.mode==='online',client:false,
     players:seats.map((s,i)=>({sus:s.sus,isHuman:s.human,uid:s.uid||null,name:s.name,hand:hands[i].sort((a,b)=>a-b),out:false,dragged:false,
       remote:false,sp:cfg.specials?[rnd(SPK),rnd(SPK)]:[],
       know:s.human?null:new Know(n,i,sizes,hands[i],cfg.diff,total,CATS),
       notes:s.human?[...Array(total)].map(()=>Array(n).fill('')):null,strike:s.human?Array(total).fill(false):null}))};
+  G.pawn=G.board.start.slice();
   G.humans=G.players.map((p,i)=>i).filter(i=>P(i).isHuman);
   if(G.net){G.players.forEach(p=>{p.remote=p.isHuman&&p.uid!==NET.uid});G.viewer=G.players.findIndex(p=>p.uid===NET.uid)}
   else if(G.mode==='bots')G.viewer=G.humans[0];
@@ -659,7 +712,9 @@ function newGame(seats,cfg){
   return new Promise(res=>showCase(()=>{res();runTurns()}));
 }
 const P=i=>G.players[i];
-const proom=i=>G.pawn[P(i).sus];
+const nodeRoom=n=>G.board.nodes[n]?G.board.nodes[n].room:-1;
+const proom=i=>nodeRoom(G.pawn[P(i).sus]);
+const pnode=i=>G.pawn[P(i).sus];
 const isLocal=()=>G&&G.mode==='local';
 function enterGameScreen(){show('game');$('#caseTitle').textContent='🔎 '+G.caseT;startTick()}
 
@@ -679,26 +734,46 @@ function renderPlayers(){
   $('#players').innerHTML=G.players.map((p,i)=>`<div class="pl ${i===G.turn&&!G.over?'turn':''} ${p.out?'out':''}">${avHTML(p.sus)}
     <span>${i===G.viewer?'<b>'+esc(p.name)+'</b>':esc(p.name)} <small>${p.isHuman?'':'🤖'} ${p.n!=null?p.n:p.hand.length}🃏${G.specials?' '+(p.nsp!=null?p.nsp:p.sp.length)+'⭐':''}${p.out?' · fora':''}</small></span></div>`).join('');
 }
-function movable(pi){
-  if(pi==null)pi=G.viewer;
-  if(!G||G.over||pi==null||G.turn!==pi||G.phase!=='move')return[];
-  const cur=proom(pi),ev=G.event&&G.event.k;
-  if(ev==='apagao')return[];
-  let a=nbrs(cur,ev==='portas');
-  if(ev==='pressa'){const s=new Set(a);a.forEach(x=>nbrs(x).forEach(y=>s.add(y)));s.delete(cur);a=[...s]}
-  return a;
-}
-function canStay(pi){const p=P(pi);return p.dragged||(G.event&&G.event.k==='apagao')||!movable(pi).length}
+function passOK(){return !(G.event&&G.event.k==='portas')}
+function passTarget(pi){const r=proom(pi);if(r<0||!passOK())return -1;const t=G.board.pass[r];return t==null?-1:t}
+function canStay(pi){const p=P(pi);return proom(pi)>=0&&(p.dragged||(G.event&&G.event.k==='apagao'))}
+function canRoll(pi){return !(G.event&&G.event.k==='apagao')}
+function rollDie(){return 1+Math.floor(Math.random()*6)+(G.event&&G.event.k==='pressa'?2:0)}
 function renderMap(){
-  const can=G.passMode?[0,1,2,3,4,5,6,7,8].filter(r=>r!==proom(G.viewer)):movable(),here=G.viewer!=null?proom(G.viewer):-1,T=G.T;
-  $('#map').innerHTML=T.rms.map((r,i)=>{
-    const pw=T.sus.map((s,si)=>G.pawn[si]===i?`<div class="pawn pic ${G.viewer!=null&&si===P(G.viewer).sus?'me':''}" title="${esc(s.n)}" style="border-color:${s.c};background-image:url(${susImg(T,si)})">${s.e}</div>`:'').join('');
-    const pass=PASS[i]!==undefined?`<div class="pass" style="${i<3?'bottom':'top'}:5px;${i%3===0?'right':'left'}:5px">🚪 → ${esc(T.rms[PASS[i]].n)}</div>`:'';
-    return `<div class="room pic ${can.includes(i)?'can':''} ${i===here?'here':''}" data-r="${i}" title="${esc(r.n)}" style="--bg:${r.bg};--bg2:${r.bg2};--img:url(${T.dir}/${r.img}.webp)">
-      <div class="rn">${r.e} ${esc(r.n)}</div><div class="re">${r.e}</div>${pass}<div class="pawns">${pw}</div></div>`}).join('');
-  $('#map').querySelectorAll('.room.can').forEach(el=>el.onclick=()=>{
-    const r=+el.dataset.r;
-    if(G.passMode){G.passMode=false;act({t:'especial',k:'passagem',r})}else act({t:'mover',r})});
+  const B=G.board,T=G.T,me=G.viewer;
+  const myTurn=me!=null&&G.turn===me&&!G.over;
+  const reach=myTurn&&G.phase==='walk'&&G.reach?G.reach:{};
+  const passMode=myTurn&&G.passMode;
+  const here=me!=null&&me>=0&&G.pawn?pnode(me):null;
+  let h='';
+  // cômodos (área clicável)
+  B.rects.forEach((b,r)=>{
+    const id='R'+r,can=passMode?(id!==here):reach[id]!=null;
+    const st=`left:${b[0]/B.W*100}%;top:${b[1]/B.H*100}%;width:${(b[2]-b[0])/B.W*100}%;height:${(b[3]-b[1])/B.H*100}%`;
+    const ps=B.pass[r]!=null?`<span class="bpass" title="Passagem secreta">🚪→ ${esc(T.rms[B.pass[r]].n)}</span>`:'';
+    h+=`<div class="rhot ${can?'can':''} ${id===here?'here':''}" data-n="${id}" style="${st}" title="${esc(T.rms[r].n)}">${ps}${can&&reach[id]!=null?`<span class="steps">${reach[id]}</span>`:''}</div>`;
+  });
+  // pontos de movimentação
+  Object.keys(B.pts).forEach(id=>{
+    const nd=B.nodes[id],can=reach[id]!=null&&!passMode;
+    h+=`<div class="pt ${can?'can':''}" data-n="${id}" style="left:${nd.x}%;top:${nd.y}%">${can?reach[id]:''}</div>`;
+  });
+  // peões
+  const by={};T.sus.forEach((s,si)=>{const n=G.pawn[si];(by[n]=by[n]||[]).push(si)});
+  Object.entries(by).forEach(([n,list])=>{
+    const nd=B.nodes[n];if(!nd)return;
+    const room=nd.room>=0;
+    list.forEach((si,k)=>{
+      const s=T.sus[si],cols=room?3:2,dx=room?((k%cols)-(Math.min(list.length,cols)-1)/2)*4.2:(k%2?1.6:-1.6)*(list.length>1?1:0),dy=room?Math.floor(k/cols)*6.2:(k>1?2.2:0);
+      h+=`<div class="pawn pic bp ${me!=null&&me>=0&&si===P(me).sus?'me':''}" title="${esc(s.n)}" style="left:calc(${nd.x+dx}% );top:calc(${nd.y+dy}% );border-color:${s.c};background-image:url(${susImg(T,si)})">${s.e}</div>`;
+    });
+  });
+  const el=$('#map');
+  el.className='board';el.style.backgroundImage=B.img?`url(${B.img})`:'';
+  el.innerHTML=h;
+  el.querySelectorAll('.rhot.can,.pt.can').forEach(x=>x.onclick=()=>{
+    const n=x.dataset.n;
+    if(G.passMode){G.passMode=false;act({t:'especial',k:'passagem',r:nodeRoom(n)})}else act({t:'andar',n})});
 }
 function renderHand(){
   if(G.viewer==null){$('#handTitle').textContent='Pistas';$('#hand').innerHTML='<div class="locked">🔒 Cartas escondidas — aparecem na vez de cada jogador.</div>';return}
@@ -721,13 +796,13 @@ function canUseSpecial(pi,k){
   if(!G||G.over||pi==null||G.turn!==pi||G.usedSp||!P(pi).sp.includes(k))return false;
   const w=SPEC[k].when;
   if(w==='never')return false;
-  if(w==='move')return G.phase==='move';
+  if(w==='move')return G.phase==='move'||G.phase==='walk';
   if(w==='after')return G.phase==='after'&&!G.extraUsed;
   return ['move','suggest','after'].includes(G.phase);
 }
 function useSpecialUI(k){
   const S=SPEC[k];
-  if(k==='passagem'){G.passMode=true;renderMap();toast('🚪 Toque em qualquer cômodo do mapa');return}
+  if(k==='passagem'){G.passMode=true;renderMap();toast('🚪 Toque em qualquer cômodo do tabuleiro');return}
   if(S.alvo){
     const others=G.players.map((p,i)=>i).filter(i=>i!==G.viewer&&(P(i).n!=null?P(i).n:P(i).hand.length)>0);
     modal(`<h2>${S.e} ${S.n}</h2><p>${esc(S.d)}</p><div class="sect">Escolha o jogador</div>
@@ -753,17 +828,27 @@ function renderAction(){
     a.innerHTML=`<h3><span>Vez de ${esc(p.name)}</span></h3>${evHTML()}<div class="msg">${p.isHuman?(isLocal()?'📱 Passando o aparelho…':'🕵️ <b>'+esc(p.name)+'</b> está pensando…'):T.sus[p.sus].e+' <b>'+esc(p.name)+'</b> está investigando… 🤔'}</div>`;
     return;
   }
-  const r=T.rms[proom(G.turn)];
+  const r=T.rms[Math.max(0,proom(G.turn))];
   const accBtn=`<button class="btn red" onclick="openAccuse()">⚖️ Acusar</button>`;
   const hintBtn=G.lv===0?`<button class="btn sec" onclick="showHint()">💡 Dica</button>`:'';
   const nbBtn=`<button class="btn sec" onclick="openNotebook()">📒 Caderno</button>`;
   const who=isLocal()?esc(p.name)+', é':'É';
-  if(G.phase==='move'){
-    const can=movable();
-    a.innerHTML=`<h3><span>${who} sua vez</span>${timerHTML()}</h3>${evHTML()}
-      <div class="msg">Você está ${r.p} <b>${r.e} ${esc(r.n)}</b>. ${can.length?'Toque num cômodo brilhando no mapa para se mover.':''}
-      ${p.dragged?'<br><small style="color:var(--muted)">Você foi trazido para cá por uma pergunta — pode ficar e investigar aqui.</small>':''}</div>
-      <div class="btns">${canStay(G.turn)?`<button class="btn sec" onclick="act({t:'ficar'})">📍 Investigar aqui</button>`:''}${nbBtn}${hintBtn}${accBtn}</div>`;
+  if(G.phase==='move'||G.phase==='walk'){
+    const inRoom=proom(G.turn)>=0,pt=passTarget(G.turn),here=inRoom?`${r.p} <b>${r.e} ${esc(r.n)}</b>`:'<b>no corredor</b>';
+    let body,btns='';
+    if(G.phase==='move'){
+      body=`Você está ${here}. Role o dado para andar pelos pontos de movimentação e entrar num cômodo.`;
+      if(canRoll(G.turn))btns+=`<button class="btn" onclick="act({t:'rolar'})">🎲 Rolar dado</button>`;
+      if(pt>=0&&canRoll(G.turn))btns+=`<button class="btn sec" onclick="act({t:'passagem'})">🚪 Passagem secreta → ${esc(T.rms[pt].n)}</button>`;
+      if(canStay(G.turn))btns+=`<button class="btn sec" onclick="act({t:'ficar'})">📍 Investigar aqui</button>`;
+      if(!canRoll(G.turn)&&!canStay(G.turn))btns+=`<button class="btn sec" onclick="act({t:'encerrar'})">Encerrar vez ▶</button>`;
+      if(p.dragged&&inRoom)body+='<br><small style="color:var(--muted)">Você foi trazido para cá por uma pergunta — pode ficar e investigar aqui.</small>';
+    }else{
+      body=`<div class="die">🎲 ${G.roll}</div>Toque num ponto ou cômodo brilhando no tabuleiro (até ${G.roll} ${G.roll>1?'casas':'casa'}). Entrar num cômodo encerra o movimento.`;
+      if(!Object.keys(G.reach||{}).length)btns+=`<button class="btn sec" onclick="act({t:'encerrar'})">Encerrar vez ▶</button>`;
+    }
+    a.innerHTML=`<h3><span>${who} sua vez</span>${timerHTML()}</h3>${evHTML()}<div class="msg">${body}</div>
+      <div class="btns">${btns}${nbBtn}${hintBtn}${accBtn}</div>`;
   }else if(G.phase==='suggest'){
     a.innerHTML=`<h3><span>Interrogar ${r.p} ${esc(r.n)}</span>${timerHTML()}</h3>
       <div class="msg">Monte sua hipótese — o local é <b>${r.e} ${esc(r.n)}</b>.</div>
@@ -853,9 +938,9 @@ function rollEvent(){
   G.event=null;
   if(G.lv!==2||Math.random()>.6)return;
   const k=rnd(['apagao','testemunha','portas','pressa','boato']);
-  if(k==='apagao')G.event={k,t:'🌑 <b>Apagão!</b> Nesta rodada ninguém sai do cômodo onde está.'};
+  if(k==='apagao')G.event={k,t:'🌑 <b>Apagão!</b> Nesta rodada ninguém rola o dado: quem está num cômodo pode investigar ali.'};
   else if(k==='portas')G.event={k,t:'🚪 <b>Passagens trancadas!</b> Nesta rodada as passagens secretas não funcionam.'};
-  else if(k==='pressa')G.event={k,t:'🏃 <b>Corredores livres!</b> Nesta rodada dá para andar até 2 cômodos.'};
+  else if(k==='pressa')G.event={k,t:'🏃 <b>Corredores livres!</b> Nesta rodada todo mundo anda 2 casas a mais no dado.'};
   else if(k==='testemunha'){
     const holders=G.players.map((p,i)=>i).filter(i=>P(i).hand.length);
     const pi=rnd(holders),c=rnd(P(pi).hand);
@@ -877,7 +962,7 @@ async function runTurns(){
     while(!G.over){
       const p=P(G.turn);
       if(p.out){await advance();continue}
-      G.usedSp=false;G.extraUsed=false;G.passMode=false;G.selS=null;G.selI=null;G.lastMsg='';
+      G.usedSp=false;G.extraUsed=false;G.passMode=false;G.selS=null;G.selI=null;G.lastMsg='';G.roll=null;G.reach=null;
       if(p.isHuman){
         if(isLocal()&&G.viewer!==G.turn){G.viewer=null;render();await passTo(G.turn,'É a sua vez de investigar.')}
         if(!p.remote&&!G.net)G.viewer=G.turn;
@@ -915,16 +1000,29 @@ function applyAction(pi,a){
   if(pi!==G.turn)return;
   const okCard=(c,cat)=>Number.isInteger(c)&&c>=G.CATS[cat][0]&&c<G.CATS[cat][1];
   switch(a.t){
-    case 'mover':if(G.phase==='move'&&movable(pi).includes(a.r))doMove(a.r);break;
+    case 'rolar':if(G.phase==='move'&&canRoll(pi))doRoll();break;
+    case 'andar':if(G.phase==='walk'&&G.reach&&G.reach[a.n]!=null)doWalk(a.n);break;
+    case 'passagem':if(G.phase==='move'&&passTarget(pi)>=0&&canRoll(pi))doWalk('R'+passTarget(pi),true);break;
     case 'ficar':if(G.phase==='move'&&canStay(pi))doStay();break;
     case 'perguntar':if(G.phase==='suggest'&&okCard(a.s,0)&&okCard(a.i,1))doSuggest(a.s,a.i);break;
-    case 'encerrar':if(G.phase==='suggest'||G.phase==='after')doEnd();break;
+    case 'encerrar':if(G.phase==='suggest'||G.phase==='after'||G.phase==='walk'||(G.phase==='move'&&!canRoll(pi)&&!canStay(pi)))doEnd();break;
     case 'acusar':if(G.phase!=='wait'&&Array.isArray(a.cards)&&a.cards.every((c,k)=>okCard(c,k)))doAccuse(a.cards);break;
     case 'especial':if(canUseSpecial(pi,a.k))doSpecial(pi,a.k,a.alvo,a.r);break;
   }
 }
-function doMove(r){
-  const pi=G.turn;G.pawn[P(pi).sus]=r;P(pi).dragged=false;G.phase='suggest';render();
+function doRoll(){
+  const pi=G.turn;G.roll=rollDie();G.reach=reachFrom(G.board,pnode(pi),G.roll);
+  addLog(`🎲 <b>${esc(P(pi).name)}</b> tirou ${G.roll}.`,G.T.sus[P(pi).sus].c);
+  G.phase='walk';render();
+}
+function doWalk(n,viaPass){
+  const pi=G.turn,p=P(pi),T=G.T,r=nodeRoom(n);
+  G.pawn[p.sus]=n;p.dragged=false;G.reach=null;
+  if(viaPass)addLog(`🚪 <b>${esc(p.name)}</b> usou a passagem secreta até ${T.rms[r].e} ${esc(T.rms[r].n)}.`,T.sus[p.sus].c);
+  else if(r>=0)addLog(`${T.sus[p.sus].e} <b>${esc(p.name)}</b> entrou ${T.rms[r].p} ${T.rms[r].e} ${esc(T.rms[r].n)}.`,T.sus[p.sus].c);
+  if(r>=0)G.phase='suggest';
+  else{G.phase='after';G.lastMsg='Você parou no corredor. Na próxima vez, continue até um cômodo para interrogar a mesa.'}
+  render();
   if(window.innerWidth<880&&G.viewer===pi)$('#action').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function doStay(){P(G.turn).dragged=false;G.phase='suggest';render()}
@@ -943,7 +1041,7 @@ async function doSuggest(s,i){
 }
 async function doEnd(){
   if(G.over)return;
-  stopTimer();G.phase='wait';G.passMode=false;
+  stopTimer();G.phase='wait';G.passMode=false;G.reach=null;G.roll=null;
   await advance();
   if(isLocal())G.viewer=null;
   render();runTurns();
@@ -959,6 +1057,7 @@ async function doSpecial(pi,k,alvo,r){
   const p=P(pi),S=SPEC[k],T=G.T;
   if(S.alvo&&!(Number.isInteger(alvo)&&alvo>=0&&alvo<G.n&&alvo!==pi&&P(alvo).hand.length))return;
   if(k==='passagem'&&!(Number.isInteger(r)&&r>=0&&r<9&&r!==proom(pi)))return;
+  if(k==='passagem'&&G.event&&G.event.k==='apagao')return;
   p.sp.splice(p.sp.indexOf(k),1);G.usedSp=true;
   const pn=esc(p.name);
   if(S.alvo&&P(alvo).sp.includes('protecao')){
@@ -984,9 +1083,9 @@ async function doSpecial(pi,k,alvo,r){
     flash(pi,`🔁 <b>${esc(P(alvo).name)}</b> tem:<div style="margin:8px 0;display:flex;justify-content:center">${cardHTML(b,'flip')}</div>E viu a sua carta ${cn(a)}.`);
     flash(alvo,`🔁 <b>${pn}</b> fez uma Troca de Informações com você. ${pn} tem:<div style="margin:8px 0;display:flex;justify-content:center">${cardHTML(a,'flip')}</div>E viu a sua carta ${cn(b)}.`);
   }else if(k==='passagem'){
-    G.pawn[p.sus]=r;p.dragged=false;
+    G.pawn[p.sus]='R'+r;p.dragged=false;G.reach=null;
     addLog(`⭐ <b>${pn}</b> usou 🚪 Passagem Secreta e apareceu ${T.rms[r].p} ${T.rms[r].e} ${esc(T.rms[r].n)}.`,'#e3b54a');
-    if(G.phase==='move')G.phase='suggest';
+    if(G.phase==='move'||G.phase==='walk')G.phase='suggest';
   }else if(k==='extra'){
     G.extraUsed=true;G.selS=null;G.selI=null;
     addLog(`⭐ <b>${pn}</b> usou 💬 Interrogatório Extra.`,'#e3b54a');
@@ -998,7 +1097,7 @@ async function doSpecial(pi,k,alvo,r){
 /* pergunta (qualquer jogador) */
 async function resolveSuggestion(si,cards){
   const T=G.T,[s,i,rc]=cards,room=rc-G.RO;
-  G.pawn[s]=room;
+  G.pawn[s]='R'+room;
   const dr=G.players.findIndex(p=>p.sus===s);
   if(dr>=0&&dr!==si)P(dr).dragged=true;
   renderMap();
@@ -1075,21 +1174,31 @@ async function botTurn(pi){
     else if(p.sp.includes('troca')&&Math.random()<.35&&alvos.length){await doSpecial(pi,'troca',rnd(alvos));await sleep(500)}
     sol=k.sol();if(sol.every(x=>x>=0)){await accuse(pi,sol);return}
   }
-  const cur=proom(pi),ev=G.event&&G.event.k;
-  let opts=ev==='apagao'?[]:nbrs(cur,ev==='portas');
-  if(ev==='pressa'){const s=new Set(opts);opts.forEach(x=>nbrs(x).forEach(y=>s.add(y)));s.delete(cur);opts=[...s]}
-  if(p.dragged||!opts.length)opts.push(cur);
+  const ev=G.event&&G.event.k,B=G.board;
   const solR=sol[2]>=0;
   const score=r=>{const c=RC(r),e=k.env(c);if(e===1)return 2.2;if(k.st[c][pi]===1)return solR?2:1.2;if(e===0)return solR?1:3;return .4};
-  let best=cur,bv=-1e9;
-  for(const o of opts){let v=-1e9;for(let t=0;t<9;t++)v=Math.max(v,score(t)-.85*DIST[o][t]);v+=Math.random()*(G.diff===0?1.5:.35);if(v>bv){bv=v;best=o}}
-  // passagem secreta para um cômodo melhor e distante
-  if(G.specials&&!G.usedSp&&p.sp.includes('passagem')&&ev!=='apagao'){
-    let tb=-1,tv=-1;for(let t=0;t<9;t++)if(t!==cur){const v=score(t)+Math.random()*.2;if(v>tv){tv=v;tb=t}}
-    if(tb>=0&&!opts.includes(tb)&&tv>score(best)){await doSpecial(pi,'passagem',undefined,tb);best=tb}
-  }
-  if(G.pawn[p.sus]!==best){G.pawn[p.sus]=best;addLog(`${T.sus[p.sus].e} <b>${esc(p.name)}</b> foi para ${T.rms[best].e} ${esc(T.rms[best].n)}.`,T.sus[p.sus].c)}
-  p.dragged=false;renderMap();await sleep(600);
+  const noise=()=>Math.random()*(G.diff===0?1.5:.35);
+  const value=n=>{const r=nodeRoom(n);if(r>=0)return score(r)+1;const d=distFrom(B,n);let v=-9;for(let t=0;t<9;t++){const dd=d['R'+t];if(dd!=null)v=Math.max(v,score(t)-.55*dd)}return v};
+  let cur=proom(pi);
+  let best=null;
+  if(ev!=='apagao'){
+    const pt=passTarget(pi);
+    if(cur>=0&&p.dragged&&score(cur)+noise()>=2.4){best=pnode(pi)}
+    else if(pt>=0&&score(pt)+noise()>score(cur>=0?cur:pt)+.6&&Math.random()<.8){
+      G.pawn[p.sus]='R'+pt;addLog(`🚪 <b>${esc(p.name)}</b> usou a passagem secreta até ${T.rms[pt].e} ${esc(T.rms[pt].n)}.`,T.sus[p.sus].c);best='R'+pt;
+    }else if(G.specials&&!G.usedSp&&p.sp.includes('passagem')&&Math.random()<.5){
+      let tb=-1,tv=-1;for(let t=0;t<9;t++)if(t!==cur){const v=score(t)+Math.random()*.2;if(v>tv){tv=v;tb=t}}
+      await doSpecial(pi,'passagem',undefined,tb);best='R'+tb;
+    }else{
+      G.roll=rollDie();const reach=reachFrom(B,pnode(pi),G.roll);
+      addLog(`🎲 <b>${esc(p.name)}</b> tirou ${G.roll}.`,T.sus[p.sus].c);
+      let bv=-1e9;Object.keys(reach).forEach(n=>{const v=value(n)+noise();if(v>bv){bv=v;best=n}});
+      if(best){G.pawn[p.sus]=best;const r=nodeRoom(best);if(r>=0)addLog(`${T.sus[p.sus].e} <b>${esc(p.name)}</b> entrou ${T.rms[r].p} ${T.rms[r].e} ${esc(T.rms[r].n)}.`,T.sus[p.sus].c)}
+    }
+  }else if(cur>=0)best=pnode(pi);
+  p.dragged=false;renderMap();await sleep(650);
+  const bestRoom=best?nodeRoom(best):-1;
+  if(bestRoom<0){await sleep(300);return}
   const pick=cat=>{
     const[a,b]=G.CATS[cat],all=[];for(let c=a;c<b;c++)all.push(c);
     if(G.diff===0&&Math.random()<.3)return rnd(all);
@@ -1100,12 +1209,12 @@ async function botTurn(pi){
     if(G.diff>=2&&own.length&&Math.random()<.12)return rnd(own);
     return rnd(cand);
   };
-  await resolveSuggestion(pi,[pick(0),pick(1),RC(best)]);
+  await resolveSuggestion(pi,[pick(0),pick(1),RC(bestRoom)]);
   if(G.over)return;
   sol=k.sol();
   if(!sol.every(x=>x>=0)&&G.specials&&!G.usedSp&&p.sp.includes('extra')){
     await sleep(400);await doSpecial(pi,'extra');
-    await resolveSuggestion(pi,[pick(0),pick(1),RC(best)]);G.phase='wait';
+    await resolveSuggestion(pi,[pick(0),pick(1),RC(bestRoom)]);G.phase='wait';
     if(G.over)return;sol=k.sol();
   }
   await sleep(450);
@@ -1223,7 +1332,9 @@ function rules(){
   <p>No começo, o jogo sorteia em segredo um <b>suspeito</b>, um <b>objeto</b> e um <b>local</b> e guarda no envelope do caso. As outras cartas (as pistas) são distribuídas entre os detetives — quem tem uma carta sabe que ela <b>não</b> é a resposta.</p>
   <div class="sect">Na sua vez</div>
   <ul>
-    <li><b>Mova-se</b> para um cômodo vizinho tocando nele no mapa. Os cantos têm 🚪 passagens secretas para o canto oposto.</li>
+    <li><b>Role o dado</b> 🎲 e ande pelos pontos de movimentação do tabuleiro até o número tirado. Entrar num cômodo encerra o movimento.</li>
+    <li>Alguns cômodos têm 🚪 <b>passagem secreta</b>: em vez de rolar o dado, você vai direto para o cômodo ligado.</li>
+    <li>Se parar no corredor, não pode interrogar nessa vez — continue na próxima.</li>
     <li><b>Interrogue a mesa:</b> escolha um suspeito e um objeto; o local é o cômodo onde você está. O suspeito citado é levado até lá.</li>
     <li>Os detetives, em ordem, conferem as pistas. O primeiro que tiver uma das três cartas <b>mostra uma delas só para você</b>.</li>
     <li>Quem foi levado a um cômodo por uma pergunta pode ficar e investigar ali na sua vez.</li>
@@ -1234,7 +1345,7 @@ function rules(){
     <li>Use o <b>📒 Caderno</b> para marcar quem tem cada carta.</li>
   </ul>
   <div class="sect">Níveis</div>
-  <ul><li><b>Iniciante:</b> 6 objetos, caderno automático e dica.</li><li><b>Investigador:</b> o clássico.</li><li><b>Mestre:</b> acontecimentos a cada rodada (apagão, testemunha, passagens trancadas, corredores livres, boatos) e 90 s por vez.</li></ul>
+  <ul><li><b>Iniciante:</b> 6 objetos, caderno automático e dica.</li><li><b>Investigador:</b> o clássico.</li><li><b>Mestre:</b> acontecimentos a cada rodada (apagão, testemunha, passagens trancadas, corredores livres com +2 no dado, boatos) e 90 s por vez.</li></ul>
   <div class="sect">Cartas especiais (opcionais)</div>
   <ul>${SPK.map(k=>`<li>${SPEC[k].e} <b>${SPEC[k].n}:</b> ${SPEC[k].d}</li>`).join('')}</ul>
   <p style="color:var(--muted)">Cada detetive recebe 2 cartas especiais e pode usar uma por turno. As pistas oficiais são sempre verdadeiras; a Falsa Pista é sempre anunciada para a mesa.</p>
@@ -1535,7 +1646,7 @@ function snapshot(){
     pend:G.pend&&G.pend.pi===i?{si:G.pend.si,cards:G.pend.cards,match:G.pend.match,falsa:G.pend.falsa,key:G.pend.key}:null,
     flash:G.flash[i]||null,usedSp:G.turn===i?G.usedSp:false,extraUsed:G.extraUsed}});
   return {fase:G.over?'fimJogo':'jogo',gameId:G.gameId,theme:G.themeKey,lv:G.lv,diff:G.diff,specials:G.specials,nItm:G.nItm,
-    caseT:G.caseT,caseD:G.caseD,round:G.round,turn:G.turn,phase:G.phase,event:G.event,pawn:G.pawn,deadline:G.deadline,
+    caseT:G.caseT,caseD:G.caseD,round:G.round,turn:G.turn,phase:G.phase,event:G.event,pawn:G.pawn,roll:G.roll,reach:G.reach,deadline:G.deadline,
     players:G.players.map(p=>({uid:p.uid,name:p.name,sus:p.sus,n:p.hand.length,nsp:p.sp.length,out:p.out,isHuman:p.isHuman,dragged:p.dragged})),
     log:G.log.filter(l=>l.forP==null).slice(0,70),priv,result:G.over?G.result:null};
 }
@@ -1551,10 +1662,10 @@ function onEstado(st){
   if(fresh){
     if(CN.gameId!==st.gameId)CN={notes:[...Array(total)].map(()=>Array(n).fill('')),strike:Array(total).fill(false),manual:{},gameId:st.gameId};
     G={T,themeKey:st.theme,lv:st.lv,diff:st.diff,mode:'online',specials:st.specials,nItm,RO,total,CATS:[[0,6],[6,RO],[RO,total]],n,
-      net:true,client:true,gameId:st.gameId,caseT:st.caseT,caseD:st.caseD,flash:{},log:[]};
+      net:true,client:true,gameId:st.gameId,caseT:st.caseT,caseD:st.caseD,flash:{},log:[],board:buildBoard(st.theme)};
     if(quickT){clearInterval(quickT);quickT=null}
   }
-  Object.assign(G,{round:st.round,turn:st.turn,phase:st.phase,event:st.event,pawn:st.pawn,deadline:st.deadline,over:st.fase==='fimJogo'});
+  Object.assign(G,{round:st.round,turn:st.turn,phase:st.phase,event:st.event,pawn:st.pawn,roll:st.roll,reach:st.reach,deadline:st.deadline,over:st.fase==='fimJogo'});
   if(G.phase!=='suggest'){G.selS=G.selS;}
   const me=my.idx;
   G.viewer=me;
