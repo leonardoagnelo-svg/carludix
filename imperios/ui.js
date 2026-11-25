@@ -1152,7 +1152,13 @@
       }
       if (e.tipo === 'comprar' && humano(e.j) && e.carta) toast(`🃏 Você comprou: ${cInfo(e.carta).nome}`);
       if (e.tipo === 'proposta' && humano(e.j)) toast(`🤝 Proposta enviada a ${J.st.jogadores[e.prop.para].nome}.`);
-      if (e.tipo === 'resposta' && (humano(e.prop.de) || humano(e.prop.para))) toast(e.expirou ? '⌛ Uma proposta expirou.' : `${J.st.jogadores[e.prop.para].nome} ${e.aceitar ? 'aceitou ✅' : 'recusou ✋'} a proposta de ${J.st.jogadores[e.prop.de].nome}.`);
+      if (e.tipo === 'resposta' && (humano(e.prop.de) || humano(e.prop.para))) {
+        const pr = e.prop, B2 = J.st.jogadores[pr.para].nome, A2 = J.st.jogadores[pr.de].nome;
+        const oque = pr.tipo === 'troca' ? 'a troca de recursos' : pr.tipo === 'alianca' ? 'a aliança' : 'o tratado de paz';
+        toast(e.expirou ? `⌛ A proposta de ${A2} para ${B2} expirou.` : !e.aceitar ? `✋ ${B2} recusou ${oque} de ${A2}.`
+          : pr.tipo === 'troca' ? `✅ ${B2} aceitou a troca: ${A2} deu ${txtRec(pr.oferta)} e recebeu ${txtRec(pr.pede)}. (Troca não cria acordo.)`
+          : pr.tipo === 'alianca' ? `🤝 ${B2} aceitou a aliança: ${A2} e ${B2} são aliados por 2 rodadas.` : `🕊️ ${B2} aceitou a paz: 3 rodadas sem ataques e +2 ouros para cada um.`);
+      }
       if (e.tipo === 'bonus' && humano(e.j)) toast(e.txt);
       if (e.tipo === 'meta') toast(`🏁 ${J.st.jogadores[e.j].nome} alcançou ${J.st.cfg.meta} pontos! A rodada vai até o fim.`);
       if (e.tipo === 'eliminado') toast(`☠️ ${J.st.jogadores[e.j].nome} foi eliminado.`);
@@ -1333,7 +1339,9 @@
     if (aba === 'relacoes') corpo = `<div class="relacoes">${rivais.map(k => { const x = st.jogadores[k], s = statusCom(st, i, k);
       return `<div class="rel ${x.eliminado ? 'morto' : ''}" style="--c:${REINOS[x.reino].cor}"><img class="b" src="${brasao(x.reino)}" alt=""><img class="busto" src="img/busto-${x.reino}.webp" alt="">
         <div class="rel-i"><b>${esc(REINOS[x.reino].nome)}</b><small>${esc(x.nome)} · 👑 ${M.pontos(st, k)}</small><span class="st-rel ${s.cls}">${s.ic} ${s.txt}${s.resta ? ` · ${s.resta} rodada(s)` : ''}</span></div>
-        ${x.eliminado ? '' : `<button class="btn peq" data-neg="${k}" ${vezHumana() ? '' : 'disabled'}>🤝 Negociar</button>`}</div>`; }).join('')}</div>
+        ${x.eliminado ? '' : `<div class="rel-b"><button class="btn peq" data-neg="${k}" ${vezHumana() ? '' : 'disabled'}>⚖️ Trocar recursos</button>
+          ${!s.resta ? [['alianca', '🤝 Aliança'], ['tratado-de-paz', '🕊️ Paz'], ['tregua', '⏳ Trégua']].filter(([c]) => tem(c)).map(([c, n]) => `<button class="btn peq ouro" data-acordo="${c}" data-jog="${k}" ${vezHumana() && st.turno.cartasUsadas < 2 ? '' : 'disabled'} title="${st.turno.cartasUsadas >= 2 ? 'Você já usou 2 cartas neste turno' : 'Usa a carta da sua mão'}">${n}</button>`).join('') : ''}</div>`}</div>`; }).join('')}</div>
+      <p class="nota" style="text-align:center">${['alianca', 'tratado-de-paz', 'tregua'].some(tem) ? 'Os botões dourados usam a carta de acordo da sua mão.' : 'Trocar recursos não cria acordo. Para aliança, paz ou trégua é preciso ter a carta na mão.'}</p>
       <div class="mv-sub" style="margin-top:10px">📜 Tipos de acordo</div>
       <div class="tipos-ac">
         <div><b>🤝 Aliança</b><span>Não se atacam e as tropas passam pelos territórios do aliado (2 rodadas). Carta Aliança.</span>${tem('alianca') ? '<button class="btn peq" data-carta="alianca">Usar carta</button>' : ''}</div>
@@ -1357,6 +1365,7 @@
       const b = e.target.closest('button'); if (!b || b.disabled) return;
       if (b.dataset.aba) return telaDiplomacia(b.dataset.aba);
       if (b.dataset.neg) return negociar(+b.dataset.neg);
+      if (b.dataset.acordo) { fecharVeu(true); return executar({ t: 'carta', id: b.dataset.acordo, jog: +b.dataset.jog }); }
       if (b.dataset.carta) return escolherAlvoCarta(b.dataset.carta);
       if (b.dataset.aceitar || b.dataset.recusar) {
         const id = +(b.dataset.aceitar || b.dataset.recusar);
@@ -1367,6 +1376,7 @@
       }
     };
   }
+  const txtRec = r => RECURSOS.filter(k => r[k]).map(k => `${r[k]} ${NOME_REC[k].toLowerCase()}`).join(', ') || 'nada';
   function negociar(k) {
     const st = J.st, i = st.vez, j = st.jogadores[i], o = st.jogadores[k];
     const of = { ouro: 0, madeira: 0, pedra: 0, alimento: 0 }, pe = { ouro: 0, madeira: 0, pedra: 0, alimento: 0 };
@@ -1375,7 +1385,7 @@
       const lado = (nome, obj, chave, lim) => `<div class="neg-lado"><b>${nome}</b>${RECURSOS.map(r => `<div class="neg-l">${icR(r)}<span>${NOME_REC[r]}</span>
         <div class="passo"><button data-${chave}m="${r}" aria-label="Menos">−</button><span>${obj[r]}</span><button data-${chave}p="${r}" aria-label="Mais" ${lim && obj[r] >= lim[r] ? 'disabled' : ''}>+</button></div></div>`).join('')}</div>`;
       return `<button class="fechar" aria-label="Fechar">×</button>
-        <div class="faixa-modal"><span>⚖️ Negociar</span></div><small>Troca de recursos entre reinos</small>
+        <div class="faixa-modal"><span>⚖️ Trocar recursos</span></div><small>Só troca recursos: não cria aliança nem paz</small>
         <div class="mv-od"><div class="mv-t a"><img src="${brasao(j.reino)}" alt="" style="width:34px"><div><b>Seu reino</b><strong>${esc(REINOS[j.reino].curto)}</strong></div></div><span class="seta">⇄</span>
           <div class="mv-t b"><img src="${brasao(o.reino)}" alt="" style="width:34px"><div><b>Reino alvo</b><strong>${esc(REINOS[o.reino].curto)}</strong></div></div></div>
         <div class="neg">${lado('Você oferece', of, 'o', j.rec)}${lado('Você recebe', pe, 'p', null)}</div>

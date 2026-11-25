@@ -832,3 +832,5 @@ kbd{display:inline-block;min-width:24px;text-align:center;padding:2px 7px;border
 .niveis-est{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .niveis-est div{border:1px solid var(--ouro2);border-radius:10px;padding:6px;text-align:center;display:flex;flex-direction:column;background:rgba(255,255,255,.05)}
 .niveis-est b{font-size:13px}.niveis-est span{font-family:var(--serif);font-size:20px;color:#ffe08a;font-weight:900}.niveis-est small{font-size:12px;color:var(--dim);font-weight:800}
+.rel-b{display:flex;flex-direction:column;gap:4px;align-items:stretch}
+.rel-b .btn{white-space:nowrap}
