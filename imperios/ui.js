@@ -70,7 +70,7 @@
 
   /* ================= INÍCIO ================= */
   const moldura = (miolo, cls) => `<div class="tela ${cls || ''}"><div class="tela-in">${miolo}</div></div>`;
-  const rodapeCdx = () => `<div class="selo-cdx"><a href="${URL_UNIVERSO}" aria-label="Voltar ao CARLUDIX"><span>★</span>CARLUDIX</a></div>
+  const rodapeCdx = () => `<div class="selo-cdx"><a href="${URL_UNIVERSO}" aria-label="Voltar ao CARLUDIX">← CARLUDIX</a></div>
     <div class="rodape-links"><a href="https://carludix.com/privacidade/">🛡️ Privacidade</a><span>|</span><a href="${URL_SUG}" target="_blank" rel="noopener">✉️ Enviar sugestão</a></div>`;
   function inicio() {
     pararBots();
