@@ -33,9 +33,55 @@
   const imgC = k => `img/construcao-${k}.webp`;
   const icR = k => `<img class="icr" src="img/recurso-${k}.webp" alt="${NOME_REC[k]}">`;
   const fmtCusto = c => RECURSOS.filter(k => c[k]).map(k => `${c[k]}${icR(k)}`).join(' ') || 'grátis';
-  const opcoes = Object.assign({ reduzir: window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, velocidade: 'normal' }, store.get('opcoes', {}));
-  function salvarOpcoes() { store.set('opcoes', opcoes); document.body.classList.toggle('reduzir', !!opcoes.reduzir); }
+  const opcoes = Object.assign({ reduzir: window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, velocidade: 'normal', som: true, vibrar: true, texto: 'normal', daltonico: false }, store.get('opcoes', {}));
+
+  /* ---------- sons (gerados na hora, sem arquivos) e vibração ---------- */
+  const Som = (() => {
+    let ctx = null;
+    function audio() {
+      if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+      return ctx;
+    }
+    function tom(f, dur, tipo, vol, quando, ate) {
+      const a = audio(); if (!a) return;
+      const t = a.currentTime + (quando || 0), o = a.createOscillator(), g = a.createGain();
+      o.type = tipo || 'sine'; o.frequency.setValueAtTime(f, t);
+      if (ate) o.frequency.exponentialRampToValueAtTime(ate, t + dur);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.1, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + 0.03);
+    }
+    function batida(dur, vol, quando, f) {
+      const a = audio(); if (!a) return;
+      const t = a.currentTime + (quando || 0), n = Math.floor(a.sampleRate * dur), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 4);
+      const fonte = a.createBufferSource(), filtro = a.createBiquadFilter(), g = a.createGain();
+      fonte.buffer = b; filtro.type = 'lowpass'; filtro.frequency.value = f * 5; g.gain.value = vol;
+      fonte.connect(filtro).connect(g).connect(a.destination); fonte.start(t);
+      tom(f, dur, 'sine', vol * 0.8, quando, f * 0.55);
+    }
+    const SONS = {
+      moedas: () => { tom(1320, 0.08, 'triangle', 0.06); tom(1760, 0.12, 'triangle', 0.05, 0.07); },
+      tambor: () => { batida(0.22, 0.32, 0, 95); batida(0.22, 0.26, 0.2, 85); batida(0.32, 0.34, 0.4, 70); },
+      vitoria: () => [523, 659, 784, 1047].forEach((f, k) => tom(f, 0.22, 'triangle', 0.09, k * 0.1)),
+      derrota: () => [392, 330, 262].forEach((f, k) => tom(f, 0.3, 'sawtooth', 0.04, k * 0.15)),
+      suaVez: () => { tom(880, 0.18, 'sine', 0.09); tom(1175, 0.32, 'sine', 0.08, 0.15); },
+      construir: () => { batida(0.07, 0.25, 0, 320); batida(0.07, 0.25, 0.13, 320); },
+      evento: () => { tom(440, 0.45, 'sine', 0.07); tom(554, 0.45, 'sine', 0.05, 0.12); tom(659, 0.55, 'sine', 0.05, 0.24); },
+      fanfarra: () => [[523, 0], [659, 0.14], [784, 0.28], [1047, 0.42], [784, 0.7], [1047, 0.84]].forEach(([f, q]) => tom(f, 0.34, 'square', 0.04, q)),
+    };
+    return {
+      tocar(n) { if (!opcoes.som) return; try { if (SONS[n]) SONS[n](); } catch (e) {} },
+      vibrar(p) { if (!opcoes.vibrar) return; try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} },
+    };
+  })();
+  function aplicarOpcoesVisuais() {
+    document.body.classList.toggle('texto-grande', opcoes.texto === 'grande');
+    document.body.classList.toggle('daltonico', !!opcoes.daltonico);
+  }
+  function salvarOpcoes() { store.set('opcoes', opcoes); document.body.classList.toggle('reduzir', !!opcoes.reduzir); aplicarOpcoesVisuais(); if (J && $('#mapa')) desenharDinamico(); }
   document.body.classList.toggle('reduzir', !!opcoes.reduzir);
+  aplicarOpcoesVisuais();
   const cdx = () => `<div class="cdx"><a href="${URL_UNIVERSO}">← CARLUDIX</a><a href="https://carludix.com/privacidade/">Privacidade</a><a href="${URL_SUG}" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>`;
 
   let toastT = null;
@@ -66,7 +112,19 @@
     const cb = aoFecharVeu; aoFecharVeu = null;
     if (cb && !silencioso) cb();
   }
+  const ATALHOS = { m: 'mover', a: 'atacar', c: 'construir', r: 'recrutar', t: 'mercado', k: 'cartas', d: 'diplomacia', e: 'fim' };
+  const ATALHOS_HTML = `<ul class="atalhos"><li><kbd>M</kbd> Mover</li><li><kbd>A</kbd> Atacar</li><li><kbd>C</kbd> Construir</li><li><kbd>R</kbd> Recrutar</li><li><kbd>T</kbd> Mercado (trocas)</li><li><kbd>K</kbd> Cartas</li><li><kbd>D</kbd> Diplomacia</li><li><kbd>E</kbd> Encerrar o turno</li><li><kbd>+</kbd> <kbd>−</kbd> Aproximar e afastar o mapa</li><li><kbd>0</kbd> Ver o mapa inteiro</li><li><kbd>H</kbd> Histórico</li><li><kbd>Esc</kbd> Cancelar ou fechar</li><li><kbd>?</kbd> Ver estes atalhos</li></ul>`;
   document.addEventListener('keydown', e => {
+    if (J && $('#barra') && !e.ctrlKey && !e.metaKey && !e.altKey && !(e.target.closest && e.target.closest('input,textarea,select'))) {
+      const k = e.key.toLowerCase();
+      if (k === '?') { e.preventDefault(); const d = veu(`<button class="fechar" aria-label="Fechar">×</button><h2 class="titulo">⌨️ Atalhos de teclado</h2>${ATALHOS_HTML}`); d.onclick = ev => { if (ev.target === d || ev.target.closest('.fechar')) fecharVeu(); }; return; }
+      if (!$('#veu')) {
+        if (ATALHOS[k]) { const b = $(`#barra [data-b="${ATALHOS[k]}"]`); if (b && !b.disabled) { e.preventDefault(); acaoBarra(ATALHOS[k]); } return; }
+        const z = { '+': 'in', '=': 'in', '-': 'out', '0': 'fit' }[k];
+        if (z) { const b = $(`.zoom [data-z="${z}"]`); if (b) { e.preventDefault(); b.click(); } return; }
+        if (k === 'h') { e.preventDefault(); historico(); return; }
+      }
+    }
     if (e.key === 'Escape') { if ($('#veu') && !$('#veu').dataset.preso) fecharVeu(); else if (J && (J.modo || J.sel)) { cancelarModo(); fecharFolha(); } }
   });
   function perfil() {
@@ -116,18 +174,38 @@
     const numH = st.jogadores.filter(j => j.tipo === 'humano').length;
     s.partidas++;
     const r = st.jogadores[h].reino, pr = s.porReino[r] || (s.porReino[r] = { p: 0, v: 0 });
-    if (numH === 1) { pr.p++; if ((st.vencedores || []).includes(h)) { s.vitorias++; pr.v++; } }
+    const venceu = (st.vencedores || []).includes(h);
+    if (J && J.online) { s.online = s.online || { p: 0, v: 0 }; s.online.p++; if (venceu) s.online.v++; }
+    else if (numH === 1) {
+      pr.p++; if (venceu) { s.vitorias++; pr.v++; }
+      const nv = (st.jogadores.find(x => x.tipo === 'bot') || {}).nivel || 'estrategico';
+      s.porNivel = s.porNivel || {}; const pn = s.porNivel[nv] || (s.porNivel[nv] = { p: 0, v: 0 }); pn.p++; if (venceu) pn.v++;
+    }
     s.melhor = Math.max(s.melhor || 0, M.pontos(st, h));
     store.set('stats', s);
   }
   function estatisticas() {
     const s = store.get('stats', { partidas: 0, vitorias: 0, porReino: {} });
-    veu(`<button class="fechar" aria-label="Fechar">×</button><h2 class="titulo">📊 Estatísticas</h2>
-      <div class="est"><div><b>${s.partidas}</b>partidas</div><div><b>${s.vitorias}</b>vitórias contra bots</div><div><b>${s.melhor || 0}</b>melhor pontuação</div></div>
+    const pc = (v, p) => p ? Math.round(v / p * 100) + '%' : '—';
+    const contraBots = M.ORDEM_REINOS.reduce((t, r) => t + ((s.porReino[r] || {}).p || 0), 0);
+    const fav = M.ORDEM_REINOS.slice().sort((a, b) => ((s.porReino[b] || {}).p || 0) - ((s.porReino[a] || {}).p || 0))[0];
+    const NIV = { iniciante: 'Fácil', estrategico: 'Normal', mestre: 'Difícil' };
+    let zerar = false;
+    const d = veu(`<button class="fechar" aria-label="Fechar">×</button><h2 class="titulo">📊 Estatísticas</h2>
+      <div class="est"><div><b>${s.partidas}</b>partidas jogadas</div><div><b>${pc(s.vitorias, contraBots)}</b>de vitórias contra bots (${s.vitorias}/${contraBots})</div>
+        <div><b>${s.melhor || 0}</b>melhor pontuação</div><div><b>${s.online ? s.online.v + '/' + s.online.p : '0'}</b>vitórias online</div></div>
+      ${contraBots && (s.porReino[fav] || {}).p ? `<p class="nota" style="text-align:center">Reino favorito: <b>${esc(REINOS[fav].nome)}</b></p>` : ''}
+      ${s.porNivel ? `<label class="rot">Por dificuldade (contra bots)</label><div class="niveis-est">${['iniciante', 'estrategico', 'mestre'].map(n => { const x = s.porNivel[n] || { p: 0, v: 0 }; return `<div><b>${NIV[n]}</b><span>${pc(x.v, x.p)}</span><small>${x.v}/${x.p}</small></div>`; }).join('')}</div>` : ''}
       <label class="rot">Por reino (contra bots)</label>
-      <div class="ranking">${M.ORDEM_REINOS.map(r => { const x = s.porReino[r] || { p: 0, v: 0 }; return `<div class="rk"><span></span><img src="${brasao(r)}" alt=""><div>${esc(REINOS[r].nome)}<small>${x.p} partidas</small></div><span>${x.v} 🏆</span></div>`; }).join('')}</div>
-      <p class="nota" style="text-align:center">Guardado só neste aparelho.</p>`);
-    $('#veu').onclick = e => { if (e.target.id === 'veu' || e.target.closest('.fechar')) fecharVeu(); };
+      <div class="ranking">${M.ORDEM_REINOS.map(r => { const x = s.porReino[r] || { p: 0, v: 0 }; return `<div class="rk"><img src="${brasao(r)}" alt=""><div>${esc(REINOS[r].nome)}<small>${x.p} ${x.p === 1 ? 'partida' : 'partidas'} · ${x.v} ${x.v === 1 ? 'vitória' : 'vitórias'}</small><div class="barra-c"><i style="width:${x.p ? Math.round(x.v / x.p * 100) : 0}%"></i></div></div><span>${pc(x.v, x.p)}</span></div>`; }).join('')}</div>
+      <p class="nota" style="text-align:center">Guardado só neste aparelho.</p>
+      <div style="text-align:center"><button class="btn claro peq" data-zerar>🗑️ Zerar estatísticas</button></div>`, null, 'painel est-modal');
+    d.onclick = e => {
+      if (e.target === d || e.target.closest('.fechar')) return fecharVeu();
+      const z = e.target.closest('[data-zerar]'); if (!z) return;
+      if (!zerar) { zerar = true; z.textContent = 'Tem certeza? Toque de novo para zerar'; return; }
+      store.del('stats'); fecharVeu(true); estatisticas(); toast('Estatísticas zeradas.');
+    };
   }
 
   function configuracoes() {
@@ -136,13 +214,29 @@
       <div class="opcoes"><button class="op ${!opcoes.reduzir ? 'on' : ''}" data-red="0">Normais</button><button class="op ${opcoes.reduzir ? 'on' : ''}" data-red="1">Reduzidas</button></div>
       <label class="rot">Velocidade dos bots</label>
       <div class="opcoes">${[['lenta', 'Lenta'], ['normal', 'Normal'], ['rapida', 'Rápida']].map(([k, n]) => `<button class="op ${opcoes.velocidade === k ? 'on' : ''}" data-vel="${k}">${n}</button>`).join('')}</div>
-      <p class="nota" style="margin-top:16px">As partidas são salvas automaticamente neste aparelho.</p>`);
+      <label class="rot">Som</label>
+      <div class="opcoes"><button class="op ${opcoes.som ? 'on' : ''}" data-som="1">🔊 Ligado</button><button class="op ${!opcoes.som ? 'on' : ''}" data-som="0">🔇 Desligado</button></div>
+      <label class="rot">Vibração (celular)</label>
+      <div class="opcoes"><button class="op ${opcoes.vibrar ? 'on' : ''}" data-vib="1">Ligada</button><button class="op ${!opcoes.vibrar ? 'on' : ''}" data-vib="0">Desligada</button></div>
+      <label class="rot">Tamanho do texto</label>
+      <div class="opcoes"><button class="op ${opcoes.texto !== 'grande' ? 'on' : ''}" data-txt="normal">Normal</button><button class="op ${opcoes.texto === 'grande' ? 'on' : ''}" data-txt="grande" style="font-size:1.15em">Grande</button></div>
+      <label class="rot">Cores do mapa</label>
+      <div class="opcoes"><button class="op ${!opcoes.daltonico ? 'on' : ''}" data-dal="0">Padrão</button><button class="op ${opcoes.daltonico ? 'on' : ''}" data-dal="1">Com texturas</button></div>
+      <p class="nota">"Com texturas" coloca listras, pontos e tramas diferentes em cada reino, para quem confunde cores (daltonismo).</p>
+      <p class="nota" style="margin-top:12px">As partidas são salvas automaticamente neste aparelho.${matchMedia('(pointer:fine)').matches ? ' No computador, aperte <b>?</b> na partida para ver os atalhos de teclado.' : ''}</p>`);
     const v = $('#veu');
     v.onclick = e => {
       if (e.target === v || e.target.closest('.fechar')) return fecharVeu();
-      const r = e.target.closest('[data-red]'), s = e.target.closest('[data-vel]');
-      if (r) { opcoes.reduzir = r.dataset.red === '1'; salvarOpcoes(); configuracoes(); }
-      if (s) { opcoes.velocidade = s.dataset.vel; salvarOpcoes(); configuracoes(); }
+      const b = e.target.closest('button'); if (!b) return;
+      const d = b.dataset;
+      if (d.red) opcoes.reduzir = d.red === '1';
+      else if (d.vel) opcoes.velocidade = d.vel;
+      else if (d.som) { opcoes.som = d.som === '1'; if (opcoes.som) setTimeout(() => Som.tocar('moedas'), 30); }
+      else if (d.vib) { opcoes.vibrar = d.vib === '1'; Som.vibrar(80); }
+      else if (d.txt) opcoes.texto = d.txt;
+      else if (d.dal) opcoes.daltonico = d.dal === '1';
+      else return;
+      salvarOpcoes(); configuracoes();
     };
   }
 
@@ -332,7 +426,9 @@
   function escala() { return Math.sqrt(24 / J.mapa.territorios.length); }
   function montarMapa() {
     const m = J.mapa, arte = ARTE[m.id];
-    let s = `<defs><filter id="sombra" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.4" flood-opacity=".65"/></filter></defs>`;
+    const tx = { leao: '<path d="M0 12 L12 0" stroke-width="3"/>', aguia: '<circle cx="6" cy="6" r="2.4" stroke="none" fill="#fff"/>', cervo: '<path d="M0 6 H12" stroke-width="3"/>', flor: '<path d="M0 0 L12 12 M12 0 L0 12" stroke-width="1.8"/>', lobo: '<path d="M6 0 V12" stroke-width="3"/>', dragao: '<path d="M0 0 L12 12" stroke-width="3"/>' };
+    let s = `<defs><filter id="sombra" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.5" stdDeviation="1.4" flood-opacity=".65"/></filter>
+      ${Object.entries(tx).map(([r, d]) => `<pattern id="tx-${r}" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="scale(${(1.6 * escala()).toFixed(2)})"><g stroke="#fff" fill="none" opacity=".75">${d}</g></pattern>`).join('')}</defs>`;
     s += `<rect x="-2000" y="-2000" width="5000" height="4700" fill="#0d3a6e"/>`;
     if (arte) s += `<image href="${arte}" x="0" y="0" width="1000" height="700" preserveAspectRatio="none"/>`;
     else {
@@ -354,6 +450,7 @@
     m.territorios.forEach(t => {
       const d = st.terr[t.id], cor = corDe(d.dono);
       if (cor) dono += `<polygon points="${pts(t.poly)}" fill="${cor}" fill-opacity=".38"/>`;
+      if (cor && opcoes.daltonico) dono += `<polygon points="${pts(t.poly)}" fill="url(#tx-${st.jogadores[d.dono].reino})" fill-opacity=".55"/>`;
       if (cor) borda += `<polygon class="ter-borda" points="${pts(t.poly)}" stroke="${cor}" stroke-width="${4.2 * k}" stroke-opacity=".95"/>`;
     });
     // escolhendo a origem de um movimento ou ataque: apaga o que não serve e destaca o que serve
@@ -517,14 +614,15 @@
     if (J.online) tiqueRelogio();
     const pode = vezHumana() && !J.ocupado;
     const sel = J.sel && st.terr[J.sel].dono === st.vez ? J.sel : null;
-    const bt = (id, ic, nome, ok, extra, gasta, motivo) => `<button data-b="${id}" class="${J.modo === id ? 'on' : ''} ${extra || ''}" ${ok ? '' : 'disabled'} ${!ok && motivo ? `title="${motivo}"` : ''}><span class="ic">${ic}</span><span class="nm">${nome}</span>${gasta ? '<span class="custo-a" title="Gasta 1 ação">1⚡</span>' : ''}</button>`;
+    const tecla = id => (Object.entries(ATALHOS).find(([, v]) => v === id) || [''])[0].toUpperCase();
+    const bt = (id, ic, nome, ok, extra, gasta, motivo) => `<button data-b="${id}" data-k="${tecla(id)}" class="${J.modo === id ? 'on' : ''} ${extra || ''}" ${ok ? '' : 'disabled'} title="${!ok && motivo ? motivo : nome.replace(/ \(.*/, '') + ' (tecla ' + tecla(id) + ')'}"><span class="ic">${ic}</span><span class="nm">${nome}</span>${gasta ? '<span class="custo-a" title="Gasta 1 ação">1⚡</span>' : ''}</button>`;
     const semAcoes = pode && st.acoes === 0;
     $('#barra').innerHTML = `<div class="grupo g-acao">${bt('mover', '🚶', 'Mover', pode, '', true) + bt('atacar', '⚔️', 'Atacar', pode, '', true) + bt('construir', '🏗️', 'Construir', pode, '', true) + bt('recrutar', '🛡️', 'Recrutar', pode, '', true)}</div>
       <div class="grupo g-gestao">${bt('mercado', '⚖️', 'Mercado', pode && !st.turno.mercadoUsado, '', true, st.turno.mercadoUsado ? 'Mercado já usado neste turno' : '') + bt('cartas', '🃏', 'Cartas' + (st.cfg.cartas && humano(ver) ? ` (${jv.mao.length})` : ''), st.cfg.cartas && (pode || numHumanos() === 1), '', false, st.cfg.cartas ? '' : 'Cartas desligadas nesta partida') + bt('diplomacia', '🤝', 'Diplomacia' + (st.propostas.some(p => p.para === ver) ? ' ✉️' : ''), numHumanos() >= 1)
       + bt('fim', '⏭️', 'Encerrar', pode, 'fim' + (semAcoes ? ' pulsa' : ''))}</div>`;
     $('#fj').innerHTML = st.ordem.concat(st.jogadores.map((_, k) => k).filter(k => !st.ordem.includes(k))).map(k => {
       const x = st.jogadores[k];
-      return `<button class="cj ${k === i ? 'vez' : ''} ${x.eliminado ? 'morto' : ''}" style="--c:${REINOS[x.reino].cor}" data-j="${k}" title="${esc(x.nome + ' · ' + REINOS[x.reino].nome)}">
+      return `<button class="cj ${k === i ? 'vez' : ''} ${x.eliminado ? 'morto' : ''}" data-r="${x.reino}" style="--c:${REINOS[x.reino].cor}" data-j="${k}" title="${esc(x.nome + ' · ' + REINOS[x.reino].nome)}">
         <b>${J.online && x.tipo === 'humano' && !J.online.mesa.presente(x.uid) ? '📴 ' : ''}${esc(REINOS[x.reino].curto)}</b><small>${esc(x.nome)}</small><img src="img/bandeira-${x.reino}.webp" alt=""><span class="nums-j"><span title="Tropas em terra">⛑️${M.unidadesDe(st, k)}</span><span title="Territórios">🏰${M.territoriosDe(st, k).length}</span></span><span class="pts-j">👑 ${M.pontos(st, k)}</span><span class="txt-j">${M.unidadesDe(st, k)} tropas · ${M.territoriosDe(st, k).length} territórios</span></button>`;
     }).join('');
     desenharLado();
@@ -566,6 +664,7 @@
           <button class="btn" data-m="reino"><span class="ic">👑</span>Meu reino</button>
           <button class="btn" data-m="hist"><span class="ic">📜</span>Histórico</button>
           <button class="btn" data-m="placar"><span class="ic">🏆</span>Placar</button>
+          <button class="btn claro" data-m="som"><span class="ic">${opcoes.som ? '🔊' : '🔇'}</span>Som: ${opcoes.som ? 'ligado' : 'desligado'}</button>
           <button class="btn claro" data-m="regras"><span class="ic">📖</span>Como jogar</button>
           <button class="btn claro" data-m="tut"><span class="ic">🧭</span>Primeiros passos</button>
           <button class="btn claro" data-m="config"><span class="ic">⚙️</span>Configurações</button>
@@ -579,6 +678,7 @@
         else if (m === 'hist') historico();
         else if (m === 'placar') placar();
         else if (m === 'regras') comoJogar(true);
+        else if (m === 'som') { opcoes.som = !opcoes.som; salvarOpcoes(); fecharVeu(true); toast(opcoes.som ? '🔊 Som ligado' : '🔇 Som desligado'); if (opcoes.som) Som.tocar('moedas'); }
         else if (m === 'tut') tutorial(true);
         else if (m === 'config') configuracoes();
         else if (m === 'sair') { fecharVeu(true); if (J.online) return sairOnline(true); salvar(); J = null; inicio(); }
@@ -1010,6 +1110,7 @@
     const r = M.jogar(st, i, a);
     if (!r.ok) { toast(r.erro, 'erro'); atualizar(); return; }
     avancarGuia(a);
+    if (a.t === 'construir') Som.tocar('construir');
     if (st.propostas.length) { st.ev = r.ev; B.responderPendentes(st); r.ev = st.ev; }
     fecharFolhaSo();
     J.sel = a.t === 'atacar' || a.t === 'mover' ? a.para : J.sel;
@@ -1032,13 +1133,14 @@
       if (e.tipo === 'turno' && humano(e.j)) {
         const p = e.prod, txt = RECURSOS.filter(k => p[k]).map(k => `+${p[k]}${IC_REC[k]}`).join(' ');
         noMapa(`🌅 Produção de ${J.st.jogadores[e.j].nome}: ${txt || 'nada'}`);
+        Som.tocar('moedas');
       }
       if (e.tipo === 'rodada') noMapa(`📯 Rodada ${e.n}`);
       if (e.tipo === 'tempo') toast(humano(e.j) ? '⏳ Seu tempo acabou: o turno passou.' : `⏳ O tempo de ${e.nome} acabou: o turno passou.`);
-      if (e.tipo === 'evento') { atualizar(); return telaEvento(e.id, true, passo); }
+      if (e.tipo === 'evento') { atualizar(); Som.tocar('evento'); return telaEvento(e.id, true, passo); }
       if (e.tipo === 'objetivo') {
         const x = J.st.jogadores[e.j], o = oInfo(e.id);
-        if (humano(e.j)) return objetivoConcluido(e, passo);
+        if (humano(e.j)) { Som.tocar('vitoria'); Som.vibrar(100); return objetivoConcluido(e, passo); }
         toast(`🎯 ${x.nome} concluiu o objetivo secreto "${o.nome}" (+${M.ptsObjetivo(J.st)})!`);
       }
       if (e.tipo === 'carta') {
@@ -1095,7 +1197,10 @@
       $$('[data-forca]', d).forEach(x => { x.textContent = x.dataset.forca; });
       $$('[data-baixas],[data-res]', d).forEach(x => { x.hidden = false; });
       $('[data-ok]', d).textContent = 'Continuar';
+      const meu = humano(e.j) ? e.venceu : (e.dono != null && humano(e.dono) ? !e.venceu : null);
+      if (meu != null) { Som.tocar(meu ? 'vitoria' : 'derrota'); Som.vibrar(meu ? 60 : [80, 50, 80]); }
     };
+    Som.tocar('tambor');
     const tm = setTimeout(revelar, opcoes.reduzir ? 0 : 1100);
     d.onclick = ev => {
       if (!ev.target.closest('[data-ok]')) return;
@@ -1303,7 +1408,7 @@
     J.vezAnt = st.vez;
   }
   function resumoDesde(i) {
-    const v = J.visto && J.visto[i]; if (!v) return false;
+    const v = J.visto && J.visto[i]; if (!v || $('#veu')) return false;
     delete J.visto[i];
     const st = J.st, eu = st.jogadores[i], agora = new Set(M.territoriosDe(st, i));
     const nomeT = t => J.mapa.idx[t] ? J.mapa.idx[t].nome : t;
@@ -1430,7 +1535,7 @@
     // mesmo aparelho: tela de privacidade quando muda o humano
     if (J.modo === undefined) J.modo = null;
     if (numHumanos() > 1 && J.ultimoHumano !== i) { privacidade(i); return; }
-    if (J.avisado !== st.rodada + ':' + i) { J.avisado = st.rodada + ':' + i; if (!resumoDesde(i)) avisarPropostas(i); tutorial(); }
+    if (J.avisado !== st.rodada + ':' + i) { J.avisado = st.rodada + ':' + i; if (st.rodada > 1) Som.tocar('suaVez'); if (!resumoDesde(i)) avisarPropostas(i); tutorial(); }
     J.ultimoHumano = i;
     atualizar();
   }
@@ -2054,7 +2159,7 @@
     const st = J.st, O = J.online;
     if (st.fase === 'fim') { store.del('sala-online'); if (!J.mostrouFim) { J.mostrouFim = true; setTimeout(resultado, 900); } return; }
     if (st.vez === O.eu) {
-      if (J.avisado !== st.rodada + ':' + O.eu) { J.avisado = st.rodada + ':' + O.eu; avisoSuaVez(); setTimeout(() => { if (J && !resumoDesde(O.eu)) avisarPropostas(O.eu); }, 1500); tutorial(); }
+      if (J.avisado !== st.rodada + ':' + O.eu) { J.avisado = st.rodada + ':' + O.eu; avisoSuaVez(); if (!resumoDesde(O.eu)) avisarPropostas(O.eu); tutorial(); }
     }
     document.title = (st.fase === 'jogo' && st.vez === O.eu ? '(Sua vez) ' : '') + TITULO_PAG;
     atualizar();
@@ -2062,13 +2167,14 @@
   const TITULO_PAG = document.title;
   // "Sua vez": faixa grande no mapa, vibração curta e o título da aba muda
   function avisoSuaVez() {
+    Som.tocar('suaVez');
     $$('.sua-vez').forEach(x => x.remove());
     const d = document.createElement('div');
     d.className = 'sua-vez'; d.setAttribute('role', 'status');
     d.innerHTML = '<span>👑 Sua vez!</span>';
     document.body.appendChild(d);
     setTimeout(() => d.remove(), 2200);
-    try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
+    Som.vibrar([120, 60, 120]);
   }
   let relogioT = null;
   function tiqueRelogio() {
@@ -2187,15 +2293,29 @@
   }
 
   /* ================= COMO JOGAR ================= */
+  // cada título vira uma seção que abre e fecha (a primeira já vem aberta)
+  function recolherSecoes(raiz) {
+    const r = $('.regras', raiz); if (!r) return;
+    let det = null;
+    Array.from(r.children).forEach(el => {
+      if (el.tagName === 'H3') { det = document.createElement('details'); const sm = document.createElement('summary'); sm.innerHTML = el.innerHTML; det.appendChild(sm); el.replaceWith(det); }
+      else if (det) det.appendChild(el);
+    });
+    const p = r.querySelector('details'); if (p) p.open = true;
+    const b = document.createElement('div'); b.className = 'regras-tudo';
+    b.innerHTML = '<button class="btn claro peq" data-abrir>Abrir tudo</button><button class="btn claro peq" data-fechar-s>Fechar tudo</button>';
+    const primeira = r.querySelector('details'); if (primeira) r.insertBefore(b, primeira);
+    b.onclick = e => { const abrir = !!e.target.closest('[data-abrir]'); if (abrir || e.target.closest('[data-fechar-s]')) $$('details', r).forEach(d => { d.open = abrir; }); };
+  }
   function comoJogar(dentro) {
     const html = `<div class="regras">
       <h2 class="titulo">📜 Como jogar</h2>
-      <p>Impérios é um jogo de estratégia medieval para 2 a 6 reinos, contra bots ou no mesmo aparelho. Cada jogador governa um dos seis reinos. Conquiste territórios, construa e defenda seu império até alcançar a <b>meta de pontos</b>. Quando alguém chega lá, a rodada vai até o fim e vence quem tiver mais pontos.</p>
+      <p>Impérios é um jogo de estratégia medieval para 2 a 6 reinos, contra bots, no mesmo aparelho ou online. Cada jogador governa um dos seis reinos. Conquiste territórios, construa e defenda seu império até alcançar a <b>meta de pontos</b>. Quando alguém chega lá, a rodada vai até o fim e vence quem tiver mais pontos.</p>
       <h3>O turno</h3>
       <p>No início do seu turno você recebe a produção dos seus territórios. Depois tem <b>3 pontos de ação</b>: mover, atacar, recrutar, construir ou ir ao mercado custam 1 ação cada. Olhar o mapa não gasta nada. No fim do turno você paga a manutenção do exército: <b>1 🌾 a cada 3 unidades</b> terrestres (arredondando para cima).</p>
       <h3>Recursos</h3>
       <ul><li>🌾 Planície → alimentos · 🪵 Floresta → madeira · 🪨 Montanha → pedra · 🪙 Mina → ouro</li>
-      <li>Cada território produz ${M.AJ.prodBase}; vila +1; cidade +2. A capital dá +2🪙 e +1🌾.</li>
+      <li>Cada território produz ${M.AJ.prodBase}; vila +1; cidade +2. A capital dá +${M.AJ.capOuro}🪙 e +${M.AJ.capAli}🌾.</li>
       <li>Cidade antiga produz ouro e alimento e melhora o mercado. Fortificação natural não produz, mas defende +2.</li>
       <li>Mercado: troque 3 de um recurso por 1 de outro (2 por 1 com porto ou cidade antiga).</li></ul>
       <h3>Movimentação e expansão</h3>
@@ -2225,13 +2345,17 @@
       <h3>Unidades</h3>
       <table><tr><th>Unidade</th><th>Atq</th><th>Def</th><th>Mov</th><th>Custo</th></tr>${TIPOS_U.map(k => `<tr><td>${UNIDADES[k].nome}</td><td>${UNIDADES[k].a}</td><td>${UNIDADES[k].d}</td><td>${UNIDADES[k].m}</td><td>${fmtCusto(UNIDADES[k].custo)}</td></tr>`).join('')}</table>
       <p class="nota">Castelos recrutam todas as unidades terrestres; cidades recrutam infantaria e arqueiros; portos recrutam navios. Até 3 unidades por recrutamento.</p>
+      <h3>⌨️ Atalhos de teclado (computador)</h3>
+      ${ATALHOS_HTML}
     </div>`;
     if (dentro) {
       veu(`<button class="fechar" aria-label="Fechar">×</button>${html}`);
+      recolherSecoes($('#veu'));
       $('#veu').onclick = e => { if (e.target.id === 'veu' || e.target.closest('.fechar')) fecharVeu(); };
       return;
     }
     app.innerHTML = `<div class="pagina"><button class="voltar" data-a="voltar">← Voltar</button><div class="painel">${html}</div>${cdx()}</div>`;
+    recolherSecoes(app);
     app.onclick = e => { if (e.target.closest('[data-a="voltar"]')) inicio(); };
   }
 

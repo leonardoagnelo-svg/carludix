@@ -790,3 +790,45 @@ button.rec{color:inherit;font-family:inherit;cursor:pointer}
 .res-graf-leg span{display:flex;align-items:center;gap:5px}
 .res-graf-leg i{width:14px;height:4px;border-radius:2px;display:inline-block}
 .res-graf-leg .dim{color:var(--dim);font-weight:800}
+
+/* ---------- Pacote 4 ---------- */
+/* texto grande */
+body.texto-grande .tela-in,body.texto-grande .folha,body.texto-grande .resultado,body.texto-grande .pagina{zoom:1.12}
+body.texto-grande .barra button{font-size:14px}body.texto-grande .barra .g-gestao button .nm{font-size:13.5px}
+body.texto-grande .cj b{font-size:14.5px}body.texto-grande .cj small,body.texto-grande .cj .txt-j{font-size:13px}
+body.texto-grande .rec{font-size:15.5px}body.texto-grande .acoes{font-size:16px}body.texto-grande .topo .vez span{font-size:13px}
+body.texto-grande .evento-mapa div{font-size:15px}
+@media (min-width:1100px){body.texto-grande .lado{zoom:1.08}body.texto-grande .barra button{font-size:15.5px}}
+body.texto-grande .modal{zoom:1.1;max-height:calc(92dvh / 1.1)}
+body.texto-grande .toast,body.texto-grande .guia,body.texto-grande .dica{font-size:16px}
+/* texturas por reino (daltonismo) também nos cartões dos jogadores */
+body.daltonico .cj[data-r]{background-blend-mode:overlay}
+body.daltonico .cj[data-r="leao"]{background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.22) 0 3px,transparent 3px 10px),linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#000),color-mix(in srgb,var(--c) 35%,#000))}
+body.daltonico .cj[data-r="aguia"]{background-image:radial-gradient(rgba(255,255,255,.3) 1.6px,transparent 2px),linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#000),color-mix(in srgb,var(--c) 35%,#000));background-size:9px 9px,auto}
+body.daltonico .cj[data-r="cervo"]{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.22) 0 3px,transparent 3px 10px),linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#000),color-mix(in srgb,var(--c) 35%,#000))}
+body.daltonico .cj[data-r="flor"]{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 2px,transparent 2px 9px),repeating-linear-gradient(-45deg,rgba(255,255,255,.18) 0 2px,transparent 2px 9px),linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#000),color-mix(in srgb,var(--c) 35%,#000))}
+body.daltonico .cj[data-r="lobo"]{background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.22) 0 3px,transparent 3px 10px),linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#000),color-mix(in srgb,var(--c) 35%,#000))}
+body.daltonico .cj[data-r="dragao"]{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.22) 0 3px,transparent 3px 10px),linear-gradient(180deg,color-mix(in srgb,var(--c) 75%,#000),color-mix(in srgb,var(--c) 35%,#000))}
+/* como jogar recolhível */
+.regras details{border:2px solid var(--ouro2);border-radius:12px;margin:8px 0;background:rgba(11,20,48,.55);overflow:hidden}
+.regras summary{cursor:pointer;list-style:none;font-family:var(--serif);font-weight:900;color:var(--ouro);font-size:17px;padding:10px 40px 10px 14px;position:relative}
+.regras summary::-webkit-details-marker{display:none}
+.regras summary::after{content:"▾";position:absolute;right:14px;top:50%;transform:translateY(-50%);transition:transform .2s}
+.regras details[open] summary::after{transform:translateY(-50%) rotate(180deg)}
+.regras details > :not(summary){margin-left:14px;margin-right:14px}
+.regras details > :last-child{margin-bottom:12px}
+.regras-tudo{display:flex;gap:8px;justify-content:flex-end;margin:6px 0}
+.pagina .painel{max-width:760px;margin-left:auto;margin-right:auto}
+.atalhos{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px 14px}
+.atalhos li{font-size:14px;font-weight:700}
+kbd{display:inline-block;min-width:24px;text-align:center;padding:2px 7px;border:1px solid var(--ouro);border-bottom-width:3px;border-radius:6px;background:#0b1430;color:#ffe08a;font-family:Nunito,sans-serif;font-weight:900;font-size:13px}
+/* tecla de atalho nos botões (computador) */
+@media (pointer:fine) and (min-width:1100px){.barra button[data-k]:not([data-k=""])::before{content:attr(data-k);position:absolute;top:3px;left:6px;font-size:10.5px;font-weight:900;color:#c9c2ad;border:1px solid rgba(240,199,94,.4);border-radius:4px;padding:0 4px;line-height:1.4}}
+/* estatísticas */
+.est-modal .rk{grid-template-columns:44px 1fr auto}
+.est-modal .rk .barra-c{height:6px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:4px;max-width:220px}
+.est-modal .rk .barra-c i{display:block;height:100%;background:linear-gradient(90deg,#c8952e,#ffe08a)}
+.est-modal .rk > span{font-family:var(--serif);font-weight:900;color:#ffe08a;font-size:16px}
+.niveis-est{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.niveis-est div{border:1px solid var(--ouro2);border-radius:10px;padding:6px;text-align:center;display:flex;flex-direction:column;background:rgba(255,255,255,.05)}
+.niveis-est b{font-size:13px}.niveis-est span{font-family:var(--serif);font-size:20px;color:#ffe08a;font-weight:900}.niveis-est small{font-size:12px;color:var(--dim);font-weight:800}
