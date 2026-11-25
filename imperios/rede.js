@@ -235,6 +235,17 @@
       },
       // ao sair da página: derruba a conexão para o servidor tirar o jogador da sala na hora
       desligar() { try { D.goOffline(db); } catch (e) {} },
+      // revanche: a mesma sala volta para a espera com as mesmas pessoas (os bots saem)
+      async revanche() {
+        if (!sala || sala.anfitriao !== uid) return false;
+        clearTimeout(fimT);
+        const upd = { status: 'esperando', atualizadaEm: D.serverTimestamp() };
+        Object.entries(sala.jogadores || {}).forEach(([u, j]) => { if (!j) return; if (j.bot) upd['jogadores/' + u] = null; else if (u !== uid) upd['jogadores/' + u + '/pronto'] = false; });
+        await D.remove(RJ('estado')).catch(() => {});
+        await D.remove(RJ('pedidos')).catch(() => {});
+        await marcar(P_SALAS + codigo, D.update(RS(), upd));
+        return true;
+      },
       async apagar() { await D.remove(RS()).catch(() => {}); await D.remove(RJ()).catch(() => {}); },
       async sair() {
         offs.forEach(f => { try { f(); } catch (e) {} });

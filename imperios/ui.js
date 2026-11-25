@@ -272,13 +272,13 @@
   function retomar(s) {
     try {
       M.prepararMapa(window.ImperiosMapas[s.st.cfg.mapa]);
-      iniciarJogo({ st: s.st, modo: s.modo, cfg: s.cfg, ultimoHumano: s.ultimoHumano });
+      iniciarJogo({ st: s.st, modo: s.modo, cfg: s.cfg, ultimoHumano: s.ultimoHumano, visto: s.visto, vezAnt: s.vezAnt, guia: s.guia });
     } catch (e) { console.error(e); store.del('partida'); toast('Não foi possível continuar a partida salva.', 'erro'); inicio(); }
   }
   function salvar() {
     if (!J || J.online) return;
     if (J.st.fase === 'fim') store.del('partida');
-    else store.set('partida', { st: J.st, modo: J.modo, cfg: J.cfg, ultimoHumano: J.ultimoHumano });
+    else store.set('partida', { st: J.st, modo: J.modo, cfg: J.cfg, ultimoHumano: J.ultimoHumano, visto: J.visto, vezAnt: J.vezAnt, guia: J.guia });
   }
   // no online, "humano" é só quem está neste aparelho; os outros chegam pela rede
   const humano = i => J.online ? i === J.online.eu : J.st.jogadores[i].tipo === 'humano';
@@ -528,6 +528,7 @@
         <b>${J.online && x.tipo === 'humano' && !J.online.mesa.presente(x.uid) ? '📴 ' : ''}${esc(REINOS[x.reino].curto)}</b><small>${esc(x.nome)}</small><img src="img/bandeira-${x.reino}.webp" alt=""><span class="nums-j"><span title="Tropas em terra">⛑️${M.unidadesDe(st, k)}</span><span title="Territórios">🏰${M.territoriosDe(st, k).length}</span></span><span class="pts-j">👑 ${M.pontos(st, k)}</span><span class="txt-j">${M.unidadesDe(st, k)} tropas · ${M.territoriosDe(st, k).length} territórios</span></button>`;
     }).join('');
     desenharLado();
+    desenharGuia();
     desenharDinamico();
   }
 
@@ -1008,6 +1009,7 @@
     const antes = Object.assign({}, st.jogadores[i].rec);
     const r = M.jogar(st, i, a);
     if (!r.ok) { toast(r.erro, 'erro'); atualizar(); return; }
+    avancarGuia(a);
     if (st.propostas.length) { st.ev = r.ev; B.responderPendentes(st); r.ev = st.ev; }
     fecharFolhaSo();
     J.sel = a.t === 'atacar' || a.t === 'mover' ? a.para : J.sel;
@@ -1291,6 +1293,70 @@
       red();
     };
   }
+  /* ---------- "desde a sua última vez" ---------- */
+  // ao fim da vez de cada humano guarda como o reino estava; no começo da próxima vez dele mostra o que mudou
+  function fotoVisto(i) { const st = J.st; return { r: st.rodada, terr: M.territoriosDe(st, i), pts: M.pontos(st, i), nlog: st.nlog || 0, ev: st.evento ? st.evento.id : null }; }
+  function acompanharVez() {
+    if (!J) return;
+    const st = J.st; J.visto = J.visto || {};
+    if (J.vezAnt != null && (J.vezAnt !== st.vez || st.fase !== 'jogo') && humano(J.vezAnt)) J.visto[J.vezAnt] = fotoVisto(J.vezAnt);
+    J.vezAnt = st.vez;
+  }
+  function resumoDesde(i) {
+    const v = J.visto && J.visto[i]; if (!v) return false;
+    delete J.visto[i];
+    const st = J.st, eu = st.jogadores[i], agora = new Set(M.territoriosDe(st, i));
+    const nomeT = t => J.mapa.idx[t] ? J.mapa.idx[t].nome : t;
+    const perdidos = v.terr.filter(t => !agora.has(t));
+    const ganhos = [...agora].filter(t => !v.terr.includes(t));
+    const logs = st.log.filter(l => (l.n || 0) > v.nlog);
+    const comigo = logs.filter(l => l.txt.includes(eu.nome) && /⚔️|🛡️|🃏|🕵️|💣|🔥/.test(l.txt)).slice(-5);
+    const outras = logs.filter(l => /⚔️/.test(l.txt) && !l.txt.includes(eu.nome)).length;
+    const dpts = M.pontos(st, i) - v.pts;
+    const evNovo = st.evento && st.evento.id !== v.ev ? eInfo(st.evento.id) : null;
+    const props = st.propostas.filter(p => p.para === i).length;
+    const lider = M.classificacao(st)[0];
+    if (!perdidos.length && !ganhos.length && !comigo.length && !evNovo && !props && !outras) return false;
+    const it = [];
+    if (perdidos.length) it.push(`<li class="ruim">🏴 Você perdeu <b>${perdidos.length}</b> ${perdidos.length === 1 ? 'território' : 'territórios'}: ${perdidos.map(t => `${esc(nomeT(t))}${st.terr[t].dono != null ? ' (agora do ' + esc(REINOS[st.jogadores[st.terr[t].dono].reino].curto) + ')' : ''}`).join(', ')}.</li>`);
+    if (ganhos.length) it.push(`<li class="bom">🚩 Você ganhou: ${ganhos.map(t => esc(nomeT(t))).join(', ')}.</li>`);
+    comigo.forEach(l => it.push(`<li>${esc(l.txt)}</li>`));
+    if (outras) it.push(`<li>⚔️ ${outras} ${outras === 1 ? 'batalha' : 'batalhas'} entre outros reinos.</li>`);
+    if (evNovo) it.push(`<li>🌍 Novo evento: <b>${esc(evNovo.nome)}</b>. ${esc(evNovo.txt || '')}</li>`);
+    if (props) it.push(`<li>✉️ ${props} ${props === 1 ? 'proposta nova' : 'propostas novas'} na Diplomacia.</li>`);
+    it.push(`<li>👑 Seus pontos: <b>${M.pontos(st, i)}</b>${dpts ? ` (${dpts > 0 ? '+' : ''}${dpts})` : ''}${lider && lider.i !== i ? ` · quem lidera: ${esc(REINOS[st.jogadores[lider.i].reino].curto)} com ${lider.pts}` : ' · você lidera!'}</li>`);
+    const d = veu(`<button class="fechar" aria-label="Fechar">×</button><div class="faixa-modal"><span>📜 Desde a sua vez</span></div><small>${esc(eu.nome)} · da rodada ${v.r} até agora</small>
+      <ul class="resumo-vez">${it.join('')}</ul>
+      <div class="botoes-rodape" style="grid-template-columns:1fr">${props ? '<button class="bm azul" data-dip>✉️ Ver propostas</button>' : ''}<button class="bm vermelho" data-ok>👑 Jogar meu turno</button></div>`, null, 'real');
+    d.onclick = e => {
+      if (e.target === d || e.target.closest('.fechar') || e.target.closest('[data-ok]')) return fecharVeu();
+      if (e.target.closest('[data-dip]')) { fecharVeu(true); telaDiplomacia(); }
+    };
+    return true;
+  }
+
+  /* ---------- primeiro turno guiado (só na primeira partida contra bots) ---------- */
+  const GUIA = [
+    { a: ['recrutar'], txt: 'Recrute tropas: toque em <b>Recrutar</b> e depois na sua capital 👑.' },
+    { a: ['mover', 'atacar'], txt: 'Expanda: toque em <b>Mover</b>, escolha um território seu com tropas e depois um vizinho livre.' },
+    { a: ['fim'], txt: 'Toque em <b>Encerrar</b> para passar a vez. Os bots jogam e depois volta para você.' },
+  ];
+  function desenharGuia() {
+    let el = $('#guia');
+    $$('#barra .guia-alvo').forEach(b => b.classList.remove('guia-alvo'));
+    if (!J || J.guia == null || J.guia >= GUIA.length || !vezHumana() || J.online) { if (el) el.remove(); return; }
+    const g = GUIA[J.guia];
+    if (!el) { el = document.createElement('div'); el.id = 'guia'; el.className = 'guia'; $('#mapa').appendChild(el); }
+    el.innerHTML = `<span class="g-n">${J.guia + 1}/${GUIA.length}</span><span>${g.txt}</span><button data-pular-guia>Pular</button>`;
+    el.onclick = e => { if (e.target.closest('[data-pular-guia]')) { J.guia = null; store.set('guia-visto', true); desenharGuia(); } };
+    const alvo = $(`#barra [data-b="${g.a[0]}"]`); if (alvo) alvo.classList.add('guia-alvo');
+  }
+  function avancarGuia(a) {
+    if (!J || J.guia == null || !GUIA[J.guia] || !GUIA[J.guia].a.includes(a.t)) return;
+    J.guia++;
+    if (J.guia >= GUIA.length) { J.guia = null; store.set('guia-visto', true); setTimeout(() => toast('👑 Muito bem! Agora o reino é seu.'), 600); }
+  }
+
   function avisarPropostas(i) {
     const n = J.st.propostas.filter(p => p.para === i).length;
     if (n) setTimeout(() => toast(`✉️ Você tem ${n} proposta(s) de outros reinos. Abra a Diplomacia.`), 400);
@@ -1335,7 +1401,11 @@
       <div class="botoes-rodape"><button class="bm azul" data-pular>Pular</button><button class="bm vermelho" data-prox>${k < PASSOS_TUT.length - 1 ? 'Próximo →' : 'Começar!'}</button></div>`; };
     desenhar();
     d.onclick = e => {
-      if (e.target.closest('[data-pular]') || (e.target.closest('[data-prox]') && k === PASSOS_TUT.length - 1)) { store.set('tutorial-visto', true); return fecharVeu(); }
+      if (e.target.closest('[data-pular]') || (e.target.closest('[data-prox]') && k === PASSOS_TUT.length - 1)) {
+        store.set('tutorial-visto', true); fecharVeu();
+        if (J && !J.online && numHumanos() === 1 && !store.get('guia-visto', false) && J.st.rodada === 1) { J.guia = 0; atualizar(); }
+        return;
+      }
       if (e.target.closest('[data-prox]')) { k++; desenhar(); }
     };
   }
@@ -1347,6 +1417,7 @@
   function proximo() {
     if (!J) return;
     const st = J.st;
+    acompanharVez();
     if (J.online) return proximoOnline();
     if (st.fase === 'fim') { pararBots(); setTimeout(resultado, 600); return; }
     const i = st.vez;
@@ -1359,7 +1430,7 @@
     // mesmo aparelho: tela de privacidade quando muda o humano
     if (J.modo === undefined) J.modo = null;
     if (numHumanos() > 1 && J.ultimoHumano !== i) { privacidade(i); return; }
-    if (J.avisado !== st.rodada + ':' + i) { J.avisado = st.rodada + ':' + i; avisarPropostas(i); tutorial(); }
+    if (J.avisado !== st.rodada + ':' + i) { J.avisado = st.rodada + ':' + i; if (!resumoDesde(i)) avisarPropostas(i); tutorial(); }
     J.ultimoHumano = i;
     atualizar();
   }
@@ -1460,9 +1531,11 @@
       <div class="res-tabela" role="table" aria-label="Ranking final">
         <div class="res-lin res-cab" role="row"><span>Pos.</span><span>Reino e jogador</span><span>Pontos</span></div>
         ${cl.map((c, k) => { const j = st.jogadores[c.i]; return `<div class="res-lin ${v.includes(c.i) ? 'v' : ''}" role="row">${medalha(k)}
-          <span class="res-reino"><img src="${brasao(j.reino)}" alt=""><span class="res-nomes"><span class="rn">${v.includes(c.i) ? '<img src="img/premio-coroa.webp" alt="vencedor"> ' : ''}${esc(REINOS[j.reino].curto)}${j.objetivo ? ` <small title="${esc(oInfo(j.objetivo.id).nome)}">${j.objetivo.feito ? '🎯✅' : '🎯✖'}</small>` : ''}</span><span class="rj">${esc(j.nome)}${j.eliminado ? ' · eliminado' : ''}</span></span></span>
+          <span class="res-reino"><img src="${brasao(j.reino)}" alt=""><span class="res-nomes"><span class="rn">${v.includes(c.i) ? '<img src="img/premio-coroa.webp" alt="vencedor"> ' : ''}${esc(REINOS[j.reino].curto)}${j.objetivo ? ` <small title="${esc(oInfo(j.objetivo.id).nome)}">${j.objetivo.feito ? '🎯✅' : '🎯✖'}</small>` : ''}</span><span class="rj">${esc(j.nome)}${j.eliminado ? ' · eliminado' : ''}</span>${(d => `<span class="res-det">🏰 ${d.territorios} · 🏗️ ${d.construcoes} · 👑 ${d.capitais}${st.cfg.objetivos ? ' · 🎯 ' + d.objetivos : ''}</span>`)(M.detalhar(st, c.i))}</span></span>
           <b>${c.pts}</b></div>`; }).join('')}
       </div>
+      <p class="res-leg">🏰 territórios · 🏗️ construções · 👑 capitais rivais${st.cfg.objetivos ? ' · 🎯 objetivo' : ''}</p>
+      ${graficoPontos(st)}
       <div class="res-faixa-est"><div>⏳<span>Duração da partida<b>${st.t0 ? (m => m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'min' : m + ' min')(Math.max(1, Math.round((Date.now() - st.t0) / 60000))) : '—'}</b></span></div>
         <div>🃏<span>Rodadas<b>${st.rodada}</b></span></div><div>👥<span>Jogadores<b>${st.jogadores.length}</b></span></div></div>
       ${st.jogadores.some(x => x.objetivo) ? `<div class="mv-sub" style="margin-top:12px">🎯 Objetivos secretos revelados</div><div class="obj-rev">${st.jogadores.map(x => x.objetivo ? `<div class="${x.objetivo.feito ? 'ok' : ''}"><img src="img/objetivo-${x.objetivo.id}.webp" alt=""><span><b>${esc(x.nome)}</b>${esc(oInfo(x.objetivo.id).nome)}<small>${x.objetivo.feito ? '✅ concluído (+' + M.ptsObjetivo(J.st) + ')' : '✖ não concluído'}</small></span></div>` : '').join('')}</div>` : ''}
@@ -1472,9 +1545,9 @@
       </div>
       <div class="cdx-ad" data-ad="jogo-resultado"></div>
       <div class="res-botoes">
-        ${J.online ? '<button class="res-btn vermelho" data-r="online">🌐 Jogar online de novo</button>' : '<button class="res-btn vermelho" data-r="denovo">🔁 Jogar novamente</button>'}
+        ${J.online ? (J.online.mesa.souAnfitriao() ? '<button class="res-btn vermelho" data-r="revanche">🔁 Revanche (mesma sala)</button>' : '<p class="nota" style="text-align:center">Se o anfitrião 👑 pedir revanche, você volta para a sala automaticamente.</p>') + '<button class="res-btn azul" data-r="online">🌐 Outra sala online</button>' : '<button class="res-btn vermelho" data-r="denovo">🔁 Jogar novamente</button>'}
         <button class="res-btn azul" data-r="menu">🏠 Voltar ao menu</button>
-        <div class="linha"><button class="btn claro" style="flex:1" data-r="compartilhar">📤 Compartilhar</button><a class="btn claro" style="flex:1" href="${URL_SUG}" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>
+        <div class="linha"><button class="btn claro" style="flex:1" data-r="compartilhar">📤 Compartilhar imagem</button><a class="btn claro" style="flex:1" href="${URL_SUG}" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>
       </div>
       ${cdx()}
     </div>`;
@@ -1485,14 +1558,79 @@
       if (b.dataset.r === 'menu') { if (J && J.online) return sairOnline(false, true); J = null; inicio(); }
       if (b.dataset.r === 'online') return sairOnline(false);
       if (b.dataset.r === 'denovo') { const ns = M.novaPartida({ mapa: st.cfg.mapa, meta: st.cfg.meta, cartas: st.cfg.cartas, objetivos: st.cfg.objetivos, eventos: st.cfg.eventos }, jogs); ns.t0 = Date.now(); iniciarJogo({ st: ns, modo, cfg }); }
-      if (b.dataset.r === 'compartilhar') {
-        const url = location.origin + location.pathname;
-        const txt = `👑 ${nomesV} venceu uma partida de Impérios com ${M.pontos(st, v[0])} pontos! Construa seu reino também: ${url}`;
-        if (navigator.share) navigator.share({ title: 'Impérios · CARLUDIX', text: txt, url }).catch(() => {});
-        else if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('Resultado copiado!'), () => toast(txt));
-        else toast(txt);
-      }
+      if (b.dataset.r === 'revanche') { b.disabled = true; J.online.mesa.revanche().catch(err => { b.disabled = false; toast(erroOnline(err), 'erro'); }); }
+      if (b.dataset.r === 'compartilhar') compartilharResultado(st, v, nomesV, faixa);
     };
+  }
+
+  // gráfico de linhas: pontos de cada reino rodada a rodada, com a meta tracejada
+  function graficoPontos(st) {
+    const h = st.hist || [];
+    if (h.length < 2) return '';
+    const W = 320, H = 170, ml = 26, mr = 8, mt = 10, mb = 22;
+    const max = Math.max(st.cfg.meta, ...h.flat()) * 1.05;
+    const x = k => ml + (W - ml - mr) * k / (h.length - 1), y = v => mt + (H - mt - mb) * (1 - v / max);
+    const ordem = M.classificacao(st).map(c => c.i).reverse(); // o vencedor desenhado por cima
+    const linhas = ordem.map(i => { const cor = REINOS[st.jogadores[i].reino].cor; const pts = h.map((r, k) => `${x(k).toFixed(1)},${y(r[i] || 0).toFixed(1)}`).join(' ');
+      return `<polyline points="${pts}" fill="none" stroke="${cor}" stroke-width="${i === ordem[ordem.length - 1] ? 3.2 : 2.2}" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${x(h.length - 1)}" cy="${y(h[h.length - 1][i] || 0)}" r="3.5" fill="${cor}" stroke="#fff" stroke-width="1"/>`; }).join('');
+    const passo = Math.max(1, Math.ceil((h.length - 1) / 8));
+    const eixoX = h.map((_, k) => k % passo === 0 && k > 0 ? `<text x="${x(k)}" y="${H - 6}" text-anchor="middle">${k}</text>` : '').join('');
+    return `<section class="res-graf"><div class="mv-sub">📈 Pontos rodada a rodada</div>
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de pontos por rodada">
+        <line x1="${ml}" x2="${W - mr}" y1="${y(st.cfg.meta)}" y2="${y(st.cfg.meta)}" stroke="#ffe08a" stroke-dasharray="4 4" stroke-width="1.2" opacity=".8"/>
+        <text x="${ml + 2}" y="${y(st.cfg.meta) - 3}" class="meta">meta ${st.cfg.meta}</text>
+        <line x1="${ml}" x2="${W - mr}" y1="${y(0)}" y2="${y(0)}" stroke="rgba(255,255,255,.25)"/>
+        <text x="${ml - 4}" y="${y(0) + 3}" text-anchor="end">0</text>
+        ${linhas}${eixoX}
+      </svg>
+      <div class="res-graf-leg">${M.classificacao(st).map(c => `<span><i style="background:${REINOS[st.jogadores[c.i].reino].cor}"></i>${esc(REINOS[st.jogadores[c.i].reino].curto)}</span>`).join('')}<span class="dim">rodadas →</span></div></section>`;
+  }
+
+  // imagem do resultado (1080 × 1350) para mandar no WhatsApp ou postar
+  async function compartilharResultado(st, v, nomesV, faixa) {
+    toast('Preparando a imagem…');
+    try {
+      await Promise.all([document.fonts.load('900 60px Cinzel'), document.fonts.load('800 30px Nunito')]).catch(() => {});
+      const carregar = src => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src; });
+      const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const c = cv.getContext('2d');
+      const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1b3170'); g.addColorStop(.55, '#0b1430'); g.addColorStop(1, '#0b1a45');
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+      const rg = c.createRadialGradient(W / 2, 330, 40, W / 2, 330, 520); rg.addColorStop(0, 'rgba(240,199,94,.35)'); rg.addColorStop(1, 'rgba(240,199,94,0)');
+      c.fillStyle = rg; c.fillRect(0, 0, W, H);
+      c.strokeStyle = '#f0c75e'; c.lineWidth = 10; c.strokeRect(24, 24, W - 48, H - 48);
+      const jv = st.jogadores[v[0]];
+      const [logo, busto, trofeu] = await Promise.all([carregar('img/titulo.webp'), carregar(`img/busto-${jv.reino}.webp`), carregar('img/premio-trofeu.webp')]);
+      if (logo) { const w = 560, h = w * logo.height / logo.width; c.drawImage(logo, (W - w) / 2, 50, w, h); }
+      if (trofeu) c.drawImage(trofeu, 110, 250, 200, 200 * trofeu.height / trofeu.width);
+      if (busto) { const w = 360, h = w * busto.height / busto.width; c.save(); c.beginPath(); c.roundRect((W - w) / 2, 240, w, Math.min(h, 380), 24); c.clip(); c.drawImage(busto, (W - w) / 2, 240, w, h); c.restore(); c.strokeStyle = '#f0c75e'; c.lineWidth = 6; c.beginPath(); c.roundRect((W - w) / 2, 240, w, Math.min(h, 380), 24); c.stroke(); }
+      const brVence = await carregar(brasao(jv.reino)); if (brVence) c.drawImage(brVence, W - 300, 260, 190, 190 * brVence.height / brVence.width);
+      c.fillStyle = '#a31d33'; c.fillRect(140, 640, W - 280, 96); c.strokeStyle = '#f0c75e'; c.lineWidth = 4; c.strokeRect(140, 640, W - 280, 96);
+      c.textAlign = 'center'; c.fillStyle = '#ffe08a'; c.font = '900 54px Cinzel, serif'; c.fillText(faixa, W / 2, 707);
+      c.fillStyle = '#fff'; c.font = '800 36px Nunito, sans-serif'; c.fillText(`${REINOS[jv.reino].nome} · ${nomesV}`, W / 2, 790);
+      const cl = M.classificacao(st);
+      let yy = 850;
+      for (let k = 0; k < Math.min(cl.length, 6); k++) {
+        const j = st.jogadores[cl[k].i];
+        c.fillStyle = k === 0 ? 'rgba(240,199,94,.9)' : 'rgba(255,255,255,.08)'; c.beginPath(); c.roundRect(150, yy, W - 300, 62, 14); c.fill();
+        const br = await carregar(brasao(j.reino)); if (br) c.drawImage(br, 170, yy + 6, 46, 50);
+        c.textAlign = 'left'; c.fillStyle = k === 0 ? '#2a1800' : '#fff'; c.font = '900 30px Nunito, sans-serif';
+        c.fillText(`${k + 1}º  ${REINOS[j.reino].curto} · ${j.nome}`.slice(0, 40), 232, yy + 42);
+        c.textAlign = 'right'; c.font = '900 34px Cinzel, serif'; c.fillText(String(cl[k].pts), W - 175, yy + 44);
+        yy += 72;
+      }
+      c.textAlign = 'center'; c.fillStyle = '#f3e6c4'; c.font = '800 30px Nunito, sans-serif';
+      c.fillText(`${st.rodada} rodadas · meta ${st.cfg.meta} pontos`, W / 2, H - 120);
+      c.fillStyle = '#ffe08a'; c.font = '900 40px Cinzel, serif'; c.fillText('carludix.com/imperios', W / 2, H - 66);
+      const blob = await new Promise(ok => cv.toBlob(ok, 'image/png'));
+      const arq = new File([blob], 'imperios-resultado.png', { type: 'image/png' });
+      const url = location.origin + location.pathname;
+      const txt = `👑 ${nomesV} venceu uma partida de Impérios! Jogue também: ${url}`;
+      if (navigator.canShare && navigator.canShare({ files: [arq] })) { await navigator.share({ files: [arq], title: 'Impérios · CARLUDIX', text: txt }).catch(() => {}); return; }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'imperios-resultado.png'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      toast('Imagem salva! Envie para os amigos.');
+    } catch (e) { console.error(e); toast('Não deu para gerar a imagem agora.', 'erro'); }
   }
 
   /* ================= ONLINE (padrão CARLUDIX de sala de espera) ================= */
@@ -1856,8 +1994,13 @@
       const presentes = new Set(pl.st.jogadores.filter(j => j.uid && mesa.presente(j.uid)).map(j => j.uid));
       iniciarJogo({ st: pl.st, cfg: pl.st.cfg, online: { mesa, eu, n: pl.n, fila: [], presentes } });
       J.prazoAte = pl.restante != null ? Date.now() + pl.restante : null;
-      mesa.onSala(sala => {
+      if (!mesa._ouvindoJogo) mesa._ouvindoJogo = true, mesa.onSala(sala => {
         if (!J || !J.online || J.online.mesa !== mesa) return;
+        if (sala.status === 'esperando' && J.st.fase === 'fim') {
+          encerrarOnline(); store.set('sala-online', mesa.codigo);
+          toast('🔁 Revanche! Escolham os reinos e toquem em Pronto.');
+          return telaSala(mesa);
+        }
         J.st.jogadores.forEach(j => {
           if (!j.uid || j.uid === mesa.uid) return;
           const agora = mesa.presente(j.uid), P = J.online.presentes;
@@ -1907,10 +2050,11 @@
     processarEventos(pl.ev || [], pl.de, null, () => { atualizar(); proximoOnline(); tocarFila(); });
   }
   function proximoOnline() {
+    acompanharVez();
     const st = J.st, O = J.online;
     if (st.fase === 'fim') { store.del('sala-online'); if (!J.mostrouFim) { J.mostrouFim = true; setTimeout(resultado, 900); } return; }
     if (st.vez === O.eu) {
-      if (J.avisado !== st.rodada + ':' + O.eu) { J.avisado = st.rodada + ':' + O.eu; avisoSuaVez(); avisarPropostas(O.eu); tutorial(); }
+      if (J.avisado !== st.rodada + ':' + O.eu) { J.avisado = st.rodada + ':' + O.eu; avisoSuaVez(); setTimeout(() => { if (J && !resumoDesde(O.eu)) avisarPropostas(O.eu); }, 1500); tutorial(); }
     }
     document.title = (st.fase === 'jogo' && st.vez === O.eu ? '(Sua vez) ' : '') + TITULO_PAG;
     atualizar();

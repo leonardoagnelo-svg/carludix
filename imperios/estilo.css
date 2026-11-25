@@ -765,3 +765,28 @@ button.rec{color:inherit;font-family:inherit;cursor:pointer}
 .ter:focus{outline:none}
 .ter:focus-visible{outline:none;stroke:#ffe08a;stroke-width:5px}
 @media (max-width:400px){.topo .pts small{display:none}.topo .pts{padding:4px 9px 6px}.topo .acoes{padding:3px 8px}.topo .icone-btn{width:32px;height:32px}.topo .vez span{font-size:11px}}
+
+/* ---------- Pacote 3 ---------- */
+.resumo-vez{list-style:none;margin:6px 0 10px;padding:0;display:flex;flex-direction:column;gap:6px}
+.resumo-vez li{background:rgba(11,20,48,.8);border:1px solid var(--ouro2);border-radius:10px;padding:8px 10px;font-size:14px;font-weight:700;line-height:1.35}
+.resumo-vez li.ruim{border-color:#e5484d;background:rgba(229,72,77,.14)}
+.resumo-vez li.bom{border-color:#4cc36b;background:rgba(76,195,107,.12)}
+.guia{position:absolute;left:8px;right:8px;bottom:10px;z-index:3;display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#7a1426,#3d0a14);border:2px solid #ffe08a;border-radius:14px;padding:9px 10px;font-weight:800;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.55);animation:entra .3s}
+.guia .g-n{flex:none;background:#ffe08a;color:#3d0a14;border-radius:999px;padding:2px 8px;font-weight:900;font-size:12.5px}
+.guia span:nth-child(2){flex:1}
+.guia button{flex:none;background:rgba(0,0,0,.35);border:1px solid var(--ouro2);border-radius:999px;color:#fff;padding:4px 10px;font-weight:900;font-size:12.5px}
+.barra button.guia-alvo{animation:guia-pulsa 1s ease-in-out infinite;border-color:#ffe08a!important;z-index:2}
+@keyframes guia-pulsa{50%{box-shadow:0 0 0 4px #ffe08a,0 0 22px rgba(255,224,138,.9)}}
+@media (min-width:1100px){.guia{left:50%;right:auto;transform:translateX(-50%);width:min(620px,90%);bottom:14px}}
+.mapa:has(.guia) .evento-mapa{bottom:74px}
+.res-det{font-size:11.5px;font-weight:800;opacity:.85;white-space:nowrap}
+.res-lin.v .res-det{opacity:.9}
+.res-leg{text-align:center;font-size:12px;color:var(--dim);font-weight:800;margin:6px 0 0}
+.res-graf{margin-top:12px}
+.res-graf svg{width:100%;height:auto;display:block;margin-top:6px;background:rgba(11,20,48,.7);border:2px solid var(--ouro2);border-radius:12px}
+.res-graf svg text{font-family:Nunito,sans-serif;font-size:9px;font-weight:800;fill:#c9c2ad}
+.res-graf svg text.meta{fill:#ffe08a}
+.res-graf-leg{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:center;margin-top:6px;font-size:12.5px;font-weight:900}
+.res-graf-leg span{display:flex;align-items:center;gap:5px}
+.res-graf-leg i{width:14px;height:4px;border-radius:2px;display:inline-block}
+.res-graf-leg .dim{color:var(--dim);font-weight:800}

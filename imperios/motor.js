@@ -98,7 +98,8 @@
   const cabe = (tem, quer) => TIPOS_U.every(k => (quer[k] || 0) <= (tem[k] || 0));
 
   function log(st, txt, extra) {
-    st.log.push(Object.assign({ r: st.rodada, txt }, extra || {}));
+    st.nlog = (st.nlog || 0) + 1;
+    st.log.push(Object.assign({ r: st.rodada, txt, n: st.nlog }, extra || {}));
     if (st.log.length > 120) st.log.splice(0, st.log.length - 120);
   }
   function evento(st, e) { st.ev.push(e); }
@@ -161,7 +162,10 @@
 
   /* ---------- rodadas e turnos ---------- */
   function ativosIdx(st) { return st.jogadores.map((j, i) => i).filter(i => !st.jogadores[i].eliminado); }
+  // pontos de cada reino no começo de cada rodada (gráfico do resultado)
+  function anotarPontos(st) { st.hist = st.hist || []; st.hist.push(st.jogadores.map((_, i) => pontos(st, i))); }
   function novaRodada(st) {
+    anotarPontos(st);
     st.rodada++;
     const k = (st.rodada - 1) % st.ordemBase.length;
     st.ordem = st.ordemBase.slice(k).concat(st.ordemBase.slice(0, k)).filter(i => !st.jogadores[i].eliminado);
@@ -668,6 +672,7 @@
   }
   function finalizar(st, motivo) {
     st.fase = 'fim';
+    anotarPontos(st);
     st.motivoFim = motivo;
     let cand = classificacao(st).filter(c => !c.elim);
     if (motivo === 'meta') cand = cand.filter(c => c.pts >= st.cfg.meta);
