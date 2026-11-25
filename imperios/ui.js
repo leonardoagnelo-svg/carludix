@@ -302,13 +302,15 @@
       </main>
       <div class="faixa-jog" id="fj" aria-label="Reinos na partida"></div>
       <nav class="barra" id="barra" aria-label="Ações"></nav>
+      <aside class="lado" id="lado" aria-label="Evento, objetivo e histórico"></aside>
     </div>`;
     montarMapa();
     ligarMapa();
     requestAnimationFrame(() => enquadrar(focoHumano()));
-    window.onresize = () => { if (J && $('#mapa')) enquadrar(focoHumano()); };
+    window.onresize = () => { if (J && $('#mapa')) { desenharLado(); enquadrar(focoHumano()); } };
     $('#barra').onclick = e => { const b = e.target.closest('button'); if (b && !b.disabled) acaoBarra(b.dataset.b); };
     $('#fj').onclick = e => { if (e.target.closest('.cj')) placar(); };
+    $('#lado').onclick = e => { const b = e.target.closest('[data-t]'); if (b) acaoTopo(b.dataset.t); };
     $('#topo').onclick = e => {
       const r = e.target.closest('[data-rec]');
       if (r) {
@@ -352,7 +354,7 @@
     m.territorios.forEach(t => {
       const d = st.terr[t.id], cor = corDe(d.dono);
       if (cor) dono += `<polygon points="${pts(t.poly)}" fill="${cor}" fill-opacity=".38"/>`;
-      if (cor) borda += `<polygon class="ter-borda" points="${pts(t.poly)}" stroke="${cor}" stroke-width="${3.2 * k}" stroke-opacity=".95"/>`;
+      if (cor) borda += `<polygon class="ter-borda" points="${pts(t.poly)}" stroke="${cor}" stroke-width="${4.2 * k}" stroke-opacity=".95"/>`;
     });
     // escolhendo a origem de um movimento ou ataque: apaga o que não serve e destaca o que serve
     if ((J.modo === 'mover' || J.modo === 'atacar') && !J.origem && vezHumana()) {
@@ -380,20 +382,20 @@
       });
       // capital: brasão do dono
       st.jogadores.forEach(j => {
-        if (j.capital === t.id && d.dono === st.jogadores.indexOf(j)) marca += `<image href="${brasao(j.reino)}" x="${cx + tam * 0.55}" y="${cy - tam * 1.25}" width="${tam * 0.62}" height="${tam * 0.7}" filter="url(#sombra)"/>`;
+        if (j.capital === t.id && d.dono === st.jogadores.indexOf(j)) marca += `<image href="${brasao(j.reino)}" x="${cx + tam * 0.5}" y="${cy - tam * 1.3}" width="${tam * 0.8}" height="${tam * 0.9}" filter="url(#sombra)"/><image href="img/premio-coroa.webp" x="${cx + tam * 0.62}" y="${cy - tam * 1.85}" width="${tam * 0.56}" height="${tam * 0.56}" filter="url(#sombra)"/>`;
       });
       // bandeira de quem controla o território (a capital já mostra o brasão)
       if (d.dono != null && st.jogadores[d.dono].capital !== t.id) {
         const r = st.jogadores[d.dono].reino;
-        marca += `<image href="img/bandeira-${r}.webp" x="${cx - tam * 1.15}" y="${cy - tam * 0.55}" width="${tam * 0.62}" height="${tam * 0.62}" filter="url(#sombra)"/>`;
+        marca += `<image href="img/bandeira-${r}.webp" x="${cx - tam * 1.3}" y="${cy - tam * 0.7}" width="${tam * 0.8}" height="${tam * 0.8}" filter="url(#sombra)"/>`;
       }
       // tropas
       const n = M.total(d.u);
       if (n > 0 || d.dono != null) {
         const cor = corDe(d.dono) || '#5b5b5b';
-        const r = 12 * k;
-        marca += `<g filter="url(#sombra)"><circle cx="${cx}" cy="${cy + r * 0.6}" r="${r}" fill="${cor}" stroke="#ffe08a" stroke-width="${2 * k}"/>
-          <text x="${cx}" y="${cy + r * 0.6 + 5.5 * k}" font-size="${15 * k}" font-weight="900" text-anchor="middle" fill="#fff" font-family="Nunito,sans-serif">${n}</text></g>`;
+        const r = 14.5 * k;
+        marca += `<g filter="url(#sombra)"><circle cx="${cx}" cy="${cy + r * 0.6}" r="${r}" fill="${cor}" stroke="#ffe08a" stroke-width="${2.4 * k}"/>
+          <text x="${cx}" y="${cy + r * 0.6 + 6.5 * k}" font-size="${18 * k}" font-weight="900" text-anchor="middle" fill="#fff" stroke="rgba(0,0,0,.55)" stroke-width="${2.5 * k}" paint-order="stroke" font-family="Nunito,sans-serif">${n}</text></g>`;
         if (d.u.navio) marca += `<text x="${cx + r * 1.2}" y="${cy + r * 1.3}" font-size="${13 * k}">⛵</text>`;
       }
     });
@@ -511,20 +513,36 @@
       ${st.evento ? `<button class="icone-btn ev" data-t="evento" title="Evento mundial: ${esc(eInfo(st.evento.id).nome)}" aria-label="Evento mundial">🌍</button>` : ''}
       ${jv.objetivo && humano(ver) ? `<button class="icone-btn ${jv.objetivo.feito ? 'feito' : ''}" data-t="objetivo" title="Objetivo secreto" aria-label="Objetivo secreto">🎯</button>` : ''}
       ${J.online ? `<span class="relogio" id="relogio" aria-live="off"></span><button class="icone-btn" data-t="reagir" title="Reações" aria-label="Enviar reação">😀</button>` : ''}
-      <button class="pts" data-t="reino" title="Pontos de império · meta ${st.cfg.meta}">👑 ${pts}/${st.cfg.meta}</button>`;
+      <button class="pts" data-t="reino" title="Pontos de império · meta ${st.cfg.meta}" aria-label="${pts} de ${st.cfg.meta} pontos">👑 ${pts}<small>/${st.cfg.meta}</small><i style="width:${Math.min(100, Math.round(pts / st.cfg.meta * 100))}%"></i></button>`;
     if (J.online) tiqueRelogio();
     const pode = vezHumana() && !J.ocupado;
     const sel = J.sel && st.terr[J.sel].dono === st.vez ? J.sel : null;
-    const bt = (id, ic, nome, ok, extra) => `<button data-b="${id}" class="${J.modo === id ? 'on' : ''} ${extra || ''}" ${ok ? '' : 'disabled'}><span class="ic">${ic}</span>${nome}${extra === 'breve' ? '<span class="em-breve">EM BREVE</span>' : ''}</button>`;
-    $('#barra').innerHTML = bt('mover', '🚶', 'Mover', pode) + bt('atacar', '⚔️', 'Atacar', pode) + bt('construir', '🏗️', 'Construir', pode) + bt('recrutar', '🛡️', 'Recrutar', pode)
-      + bt('mercado', '⚖️', 'Mercado', pode && !st.turno.mercadoUsado) + bt('cartas', '🃏', 'Cartas' + (st.cfg.cartas && humano(ver) ? ` (${jv.mao.length})` : ''), st.cfg.cartas && (pode || numHumanos() === 1)) + bt('diplomacia', '🤝', 'Diplomacia' + (st.propostas.some(p => p.para === ver) ? ' ✉️' : ''), numHumanos() >= 1)
-      + bt('fim', '⏭️', 'Encerrar', pode, 'fim');
+    const bt = (id, ic, nome, ok, extra, gasta, motivo) => `<button data-b="${id}" class="${J.modo === id ? 'on' : ''} ${extra || ''}" ${ok ? '' : 'disabled'} ${!ok && motivo ? `title="${motivo}"` : ''}><span class="ic">${ic}</span><span class="nm">${nome}</span>${gasta ? '<span class="custo-a" title="Gasta 1 ação">1⚡</span>' : ''}</button>`;
+    const semAcoes = pode && st.acoes === 0;
+    $('#barra').innerHTML = `<div class="grupo g-acao">${bt('mover', '🚶', 'Mover', pode, '', true) + bt('atacar', '⚔️', 'Atacar', pode, '', true) + bt('construir', '🏗️', 'Construir', pode, '', true) + bt('recrutar', '🛡️', 'Recrutar', pode, '', true)}</div>
+      <div class="grupo g-gestao">${bt('mercado', '⚖️', 'Mercado', pode && !st.turno.mercadoUsado, '', true, st.turno.mercadoUsado ? 'Mercado já usado neste turno' : '') + bt('cartas', '🃏', 'Cartas' + (st.cfg.cartas && humano(ver) ? ` (${jv.mao.length})` : ''), st.cfg.cartas && (pode || numHumanos() === 1), '', false, st.cfg.cartas ? '' : 'Cartas desligadas nesta partida') + bt('diplomacia', '🤝', 'Diplomacia' + (st.propostas.some(p => p.para === ver) ? ' ✉️' : ''), numHumanos() >= 1)
+      + bt('fim', '⏭️', 'Encerrar', pode, 'fim' + (semAcoes ? ' pulsa' : ''))}</div>`;
     $('#fj').innerHTML = st.ordem.concat(st.jogadores.map((_, k) => k).filter(k => !st.ordem.includes(k))).map(k => {
       const x = st.jogadores[k];
       return `<button class="cj ${k === i ? 'vez' : ''} ${x.eliminado ? 'morto' : ''}" style="--c:${REINOS[x.reino].cor}" data-j="${k}" title="${esc(x.nome + ' · ' + REINOS[x.reino].nome)}">
-        <b>${J.online && x.tipo === 'humano' && !J.online.mesa.presente(x.uid) ? '📴 ' : ''}${esc(REINOS[x.reino].curto)}</b><small>${esc(x.nome)}</small><img src="img/bandeira-${x.reino}.webp" alt=""><span class="nums-j"><span>⛑️${M.unidadesDe(st, k)}</span><span>🏰${M.territoriosDe(st, k).length}</span></span><span>👑 ${M.pontos(st, k)}</span></button>`;
+        <b>${J.online && x.tipo === 'humano' && !J.online.mesa.presente(x.uid) ? '📴 ' : ''}${esc(REINOS[x.reino].curto)}</b><small>${esc(x.nome)}</small><img src="img/bandeira-${x.reino}.webp" alt=""><span class="nums-j"><span title="Tropas em terra">⛑️${M.unidadesDe(st, k)}</span><span title="Territórios">🏰${M.territoriosDe(st, k).length}</span></span><span class="pts-j">👑 ${M.pontos(st, k)}</span><span class="txt-j">${M.unidadesDe(st, k)} tropas · ${M.territoriosDe(st, k).length} territórios</span></button>`;
     }).join('');
+    desenharLado();
     desenharDinamico();
+  }
+
+  // coluna da direita no computador: evento, objetivo e histórico
+  function desenharLado() {
+    const el = $('#lado'); if (!el) return;
+    if (window.innerWidth < 1100) { if (el.innerHTML) el.innerHTML = ''; return; }
+    const st = J.st, ver = vezHumana() ? st.vez : (numHumanos() === 1 ? primeiroHumano(st) : st.vez), jv = st.jogadores[ver];
+    const ev = st.evento && eInfo(st.evento.id);
+    const ob = jv.objetivo && humano(ver) && oInfo(jv.objetivo.id);
+    const prog = ob ? M.progressoObjetivo(st, ver) : null;
+    el.innerHTML = `
+      ${ev ? `<button class="lado-cx" data-t="evento"><b>🌍 Evento mundial</b><span class="lc-t">${esc(ev.nome)}</span><span>${esc(ev.txt || '')}</span></button>` : ''}
+      ${ob ? `<button class="lado-cx" data-t="objetivo"><b>🎯 Objetivo secreto</b><span class="lc-t">${esc(ob.nome)}</span>${jv.objetivo.feito ? '<span>✅ Concluído</span>' : prog ? `<div class="barra-c"><i style="width:${Math.round(prog.atual / Math.max(1, prog.alvo) * 100)}%"></i></div><span>${prog.atual}/${prog.alvo}</span>` : ''}</button>` : ''}
+      <div class="lado-cx hist"><b>📜 Histórico</b><div>${st.log.slice(-40).reverse().map(l => `<p><span>R${l.r}</span> ${esc(l.txt)}</p>`).join('')}</div></div>`;
   }
 
   function dica(txt, cancelar) {
