@@ -226,6 +226,15 @@
         const res = await D.runTransaction(RS('anfitriao'), cur => (cur === antigo ? uid : undefined));
         return res.committed;
       },
+      // o anfitrião parou de responder (aba em segundo plano, celular bloqueado): outro jogador assume
+      async assumirAnfitriao() {
+        const antigo = sala && sala.anfitriao;
+        if (!antigo || antigo === uid) return false;
+        const res = await D.runTransaction(RS('anfitriao'), cur => (cur === antigo ? uid : undefined));
+        return res.committed;
+      },
+      // ao sair da página: derruba a conexão para o servidor tirar o jogador da sala na hora
+      desligar() { try { D.goOffline(db); } catch (e) {} },
       async apagar() { await D.remove(RS()).catch(() => {}); await D.remove(RJ()).catch(() => {}); },
       async sair() {
         offs.forEach(f => { try { f(); } catch (e) {} });

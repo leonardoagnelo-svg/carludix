@@ -1810,11 +1810,23 @@
         if (mesa.souAnfitriao()) ligarHost(mesa); else if (HOST && HOST.mesa === mesa) hostAgendar();
         atualizar();
       });
+      J.online.vigiaAte = Date.now() + (pl.restante != null ? pl.restante : 0) + 25000;
+      // vigia: se o anfitrião parar de responder, o jogador mais antigo presente assume
+      J.online.vigia = setInterval(() => {
+        const O = J && J.online;
+        if (!O || O.mesa !== mesa || J.st.fase !== 'jogo' || mesa.souAnfitriao() || Date.now() < O.vigiaAte) return;
+        const sala = mesa.sala || {};
+        const cand = R.ordenados(sala).find(([u, x]) => !x.bot && u !== sala.anfitriao && mesa.presente(u));
+        if (!cand || cand[0] !== mesa.uid) return;
+        O.vigiaAte = Date.now() + 15000;
+        mesa.assumirAnfitriao().then(ok => { if (ok && J && J.online) { toast('O anfitrião parou de responder. Agora você é o anfitrião 👑'); ligarHost(mesa); } }).catch(() => {});
+      }, 5000);
       if (mesa.souAnfitriao()) ligarHost(mesa, pl);
       return;
     }
     const O = J.online;
     if (pl.n <= O.n) return;
+    O.vigiaAte = Date.now() + (pl.restante != null ? pl.restante : 0) + 25000;
     O.fila.push(pl);
     while (O.fila.length > 4) O.fila.shift(); // muito atrasado: pula animações antigas
     if (!O.tocando) tocarFila();
@@ -1869,8 +1881,9 @@
     hostAgendar();
   }
   const hostBot = i => { const x = HOST.st.jogadores[i]; return x.tipo === 'bot' || !HOST.mesa.presente(x.uid); };
+  const aindaHost = () => { if (HOST && !HOST.mesa.souAnfitriao()) { clearTimeout(HOST.t); HOST = null; } return !!HOST; };
   function hostPedido(de, p) {
-    if (!HOST) return;
+    if (!aindaHost()) return;
     const st = HOST.st, s = st.jogadores.findIndex(j => j.uid === de);
     if (s < 0 || st.fase !== 'jogo') return;
     let r;
@@ -1915,14 +1928,15 @@
     if (hostBot(i)) { HOST.t = setTimeout(hostPassoBot, ({ lenta: 1300, normal: 900, rapida: 500 }[opcoes.velocidade] || 900)); return; }
     if (!HOST.prazo || HOST.prazo.chave !== chave || HOST.prazo.bot) { hostPublicar([], null, null); return; } // a pessoa voltou: começa o relógio dela
     HOST.t = setTimeout(() => {
-      if (!HOST || HOST.st.fase !== 'jogo' || HOST.st.rodada + ':' + HOST.st.vez !== chave || hostBot(HOST.st.vez)) return hostAgendar();
+      if (!aindaHost()) return;
+      if (HOST.st.fase !== 'jogo' || HOST.st.rodada + ':' + HOST.st.vez !== chave || hostBot(HOST.st.vez)) return hostAgendar();
       const quem = HOST.st.vez, nome = HOST.st.jogadores[quem].nome;
       const r = M.jogar(HOST.st, quem, { t: 'fim' });
       if (r.ok) { r.ev.unshift({ tipo: 'tempo', j: quem, nome }); hostDepois(r.ev, quem, { t: 'fim' }); }
     }, Math.max(0, HOST.prazo.ate - Date.now()) + 300);
   }
   function hostPassoBot() {
-    if (!HOST) return;
+    if (!aindaHost()) return;
     const st = HOST.st, i = st.vez;
     if (st.fase !== 'jogo' || !hostBot(i)) return hostAgendar();
     let a = B.decidir(st, i) || { t: 'fim' };
@@ -1933,6 +1947,7 @@
 
   function encerrarOnline() {
     clearInterval(relogioT);
+    if (J && J.online) clearInterval(J.online.vigia);
     if (HOST) clearTimeout(HOST.t);
     HOST = null;
     J = null;
@@ -2004,6 +2019,10 @@
     app.onclick = e => { if (e.target.closest('[data-a="voltar"]')) inicio(); };
   }
 
+  // saiu da página (link, voltar, fechar): derruba a conexão para sair da sala na hora; um bot assume o reino
+  window.addEventListener('pagehide', () => { if (mesaAtual) mesaAtual.desligar(); });
+  // voltou pelo botão "voltar" do navegador: recarrega para entrar de novo na sala
+  window.addEventListener('pageshow', e => { if (e.persisted && mesaAtual) location.reload(); });
   // ?sala=CODIGO abre direto a sala (pedindo apelido se ainda não tiver)
   const codUrl = (new URLSearchParams(location.search).get('sala') || '').toUpperCase();
   if (/^[A-Z0-9]{4}$/.test(codUrl)) pedirPerfil(() => entrarSala(codUrl));
