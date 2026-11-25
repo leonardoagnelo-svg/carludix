@@ -633,3 +633,53 @@ a{color:var(--ouro)}
 .relogio{font-weight:900;font-variant-numeric:tabular-nums;color:var(--ouro);font-size:14px;white-space:nowrap}
 .relogio.pouco{color:#ff8a8a;animation:pisca 1s infinite}
 @keyframes pisca{50%{opacity:.45}}
+
+/* ---------- Pacote 1 de UX ---------- */
+/* rodapé fixo: o botão principal fica sempre visível, o conteúdo rola por trás */
+.modal .botoes-rodape,.modal .acoes-b{position:sticky;bottom:-12px;z-index:4;margin:6px -10px -12px;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(11,20,48,0),#0b1430 26%)}
+.tela .botoes-rodape,.rodape-fixo{position:sticky;bottom:0;z-index:5;margin-left:-4px;margin-right:-4px;padding:16px 4px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(10,21,52,0),#0a1534 14px)}
+/* títulos das janelas: nunca embaixo do X */
+.faixa-modal{padding:0 46px}
+.faixa-modal span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+/* aviso (toast) num lugar só: acima da barra de ações */
+.toast{top:auto;bottom:calc(var(--toast-b,24px) + env(safe-area-inset-bottom))}
+/* dica do modo: faixa larga no topo do mapa, sem cobrir o zoom */
+.dica{left:8px;right:58px;transform:none;max-width:none;border-radius:14px;text-align:left;justify-content:space-between;font-size:14.5px;padding:8px 10px 8px 14px}
+.dica button{flex:none}
+/* topo: ações em texto e recursos tocáveis */
+.acoes{background:rgba(0,0,0,.35);border:1px solid rgba(240,199,94,.45);border-radius:999px;padding:3px 10px;font-weight:900;font-size:14px;gap:3px;white-space:nowrap}
+.acoes b{color:#ffe08a;font-size:16px}
+.acoes small{font-size:11.5px;color:var(--dim);font-weight:800;margin-left:2px}
+.acoes.fora{opacity:.55}
+button.rec{color:inherit;font-family:inherit;cursor:pointer}
+.rec small{font-size:10.5px;color:#9ff0b4;font-weight:900;margin-left:1px}
+@media (max-width:640px){.rec small{display:none}}
+/* batalha: chance em número grande */
+.prob strong{display:block;font-family:var(--serif);font-size:34px;line-height:1.1}
+.prob .barra-c{height:10px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin:4px auto 0;max-width:280px}
+.prob .barra-c i{display:block;height:100%;border-radius:999px}
+.alerta-0{background:rgba(229,72,77,.18);border:2px solid #e5484d;border-radius:12px;padding:8px 10px;font-weight:900;text-align:center;color:#ffd0d0;margin:6px 0}
+.alerta-0.leve{border-width:1px;background:rgba(240,199,94,.1);border-color:var(--ouro2);color:#ffe9b0}
+/* faixa de jogadores: reino + nome */
+.cj b{font-size:12.5px}
+.cj small{font-size:10.5px;color:#f3e6c4;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.1}
+.modal .rodape-modal{position:sticky;bottom:-12px;z-index:4;margin:6px -10px -12px;padding:10px 10px 12px;background:linear-gradient(180deg,rgba(11,20,48,0),#0b1430 22%)}
+.modal .rodape-modal .botoes-rodape{position:static;margin:6px 0 0;padding:0;background:none}
+.rodape-modal .resumo-rec{display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;font-size:13px}
+.pts-det{border:2px solid var(--ouro2);border-radius:14px;padding:10px 12px;background:rgba(11,20,48,.75);margin:8px 0}
+.pd-topo span{font-family:var(--serif);font-weight:900;font-size:15px}
+.pd-topo b{font-size:26px;color:#ffe08a}
+.pts-det .barra-c{height:10px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin:6px 0 8px}
+.pts-det .barra-c i{display:block;height:100%;background:linear-gradient(90deg,#c8952e,#ffe08a)}
+.pd-lin{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid rgba(240,199,94,.15);font-weight:800;font-size:14px}
+.pd-lin b{font-family:var(--serif);font-size:18px;color:#ffe08a}
+.res-lin{grid-template-columns:52px 1fr 52px}
+.res-nomes{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.res-nomes .rn{font-family:var(--serif);font-size:15px;display:flex;align-items:center;gap:4px}
+.res-nomes .rn img{width:20px;height:auto}
+.res-nomes .rj{font-size:12.5px;opacity:.85;font-weight:800;white-space:normal;overflow-wrap:anywhere}
+.reino2 .hab-tag{position:absolute;left:5px;top:5px;max-width:64%;background:rgba(5,9,24,.82);border:1px solid var(--ouro);border-radius:8px;padding:2px 7px;font-size:11.5px;font-weight:900;color:#fff;text-align:left;line-height:1.2}
+.reino-sala em{font-style:normal;font-family:Nunito,sans-serif;font-size:10.5px;font-weight:800;color:#f3e6c4;line-height:1.15}
+.bm.larga{width:100%}
+.sua-vez{position:fixed;left:0;right:0;top:38%;z-index:60;display:flex;justify-content:center;pointer-events:none;animation:aparece .2s}
+.sua-vez span{font-family:var(--serif);font-weight:900;font-size:clamp(26px,8vw,44px);color:#ffe08a;text-shadow:0 3px 0 #5c0f1b,0 0 24px rgba(240,199,94,.6);background:linear-gradient(90deg,rgba(122,26,42,0),rgba(122,26,42,.92) 20%,rgba(122,26,42,.92) 80%,rgba(122,26,42,0));padding:10px 60px;border-top:2px solid var(--ouro);border-bottom:2px solid var(--ouro)}
