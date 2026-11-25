@@ -284,7 +284,7 @@
       let falta = (custo[k] || 0) - sim[k];
       while (falta > 0) {
         const dar = RECURSOS.filter(x => x !== k).sort((a, b) => (sim[b] - (custo[b] || 0)) - (sim[a] - (custo[a] || 0)))[0];
-        const preco = desc ? Math.max(1, taxa - 1) : taxa;
+        const preco = desc ? Math.max(1, taxa - M.AJ.florDesc) : taxa;
         if (sim[dar] - (custo[dar] || 0) < preco) return null;
         sim[dar] -= preco; sim[k] += 1; falta--; desc = false;
         const ult = trocas.find(t => t.dar === dar && t.receber === k);

@@ -18,7 +18,7 @@
     cervo: { nome: 'Reino do Cervo', curto: 'Cervo', cor: '#1f9a5a', cor2: '#f2c14e', brasao: '🦌', governante: 'Rei Cedric', perfil: 'Agricultura e produção',
       hab: 'Recebe 2 alimentos a mais a cada turno.' },
     flor: { nome: 'Reino da Flor-de-Lis', curto: 'Flor-de-Lis', cor: '#7b3fb8', cor2: '#f2c14e', brasao: '⚜️', governante: 'Rainha Isadora', perfil: 'Comércio e diplomacia',
-      hab: 'A primeira troca com o mercado em cada turno custa 1 recurso a menos.' },
+      hab: 'A primeira troca com o mercado em cada turno custa 2 recursos a menos.' },
     lobo: { nome: 'Reino do Lobo', curto: 'Lobo', cor: '#3a3f4a', cor2: '#c9d1dc', brasao: '🐺', governante: 'Rei Magnus', perfil: 'Defesa',
       hab: '+3 de defesa na sua capital.' },
     dragao: { nome: 'Reino do Dragão', curto: 'Dragão', cor: '#e06a14', cor2: '#f2c14e', brasao: '🐉', governante: 'Rainha Valéria', perfil: 'Engenharia e construção',
@@ -27,7 +27,7 @@
   const ORDEM_REINOS = ['leao', 'aguia', 'cervo', 'flor', 'lobo', 'dragao'];
 
   const UNIDADES = {
-    infantaria: { nome: 'Infantaria', ic: '🛡️', a: 2, d: 2, m: 1, custo: { ouro: 2, alimento: 1 } },
+    infantaria: { nome: 'Infantaria', ic: '🛡️', a: 2, d: 2, m: 1, custo: { ouro: 3, alimento: 1 } },
     arqueiro: { nome: 'Arqueiro', ic: '🏹', a: 2, d: 3, m: 1, custo: { ouro: 2, madeira: 1, alimento: 1 } },
     cavalaria: { nome: 'Cavalaria', ic: '🐎', a: 4, d: 2, m: 2, custo: { ouro: 4, alimento: 2 } },
     catapulta: { nome: 'Catapulta', ic: '🪨', a: 3, d: 1, m: 1, custo: { ouro: 3, madeira: 3, alimento: 1 } },
@@ -55,7 +55,7 @@
     fortaleza: { nome: 'Fortificação natural', ic: '🗿', prod: null, def: 2, txt: 'Não produz. +2 de defesa.' },
   };
   // parâmetros de balanceamento (ajustados pelas simulações; ver BALANCEAMENTO.md)
-  const AJ = { prodBase: 1, ptsTerritorio: 1, acoes: 3 };
+  const AJ = { florDesc: 2, prodBase: 1, ptsTerritorio: 1, acoes: 3, taxaBase: 3, taxaPorto: 2, manutDiv: 3, capOuro: 2, capAli: 2 };
   const PTS_CAPITAL_RIVAL = 8;
   const MAX_RECRUTA = 3;
   const ACOES_TURNO = 3;
@@ -218,14 +218,14 @@
       if (info.terreno === 'cidade') { p.ouro += n - 1; p.alimento += 1; } else p[ter.prod] += n;
       if (info.terreno === 'mina' && evAtivo(st, 'descoberta-de-riquezas')) p.ouro += 1;
     });
-    if (j.capital != null && st.terr[j.capital].dono === i) { p.ouro += 2; p.alimento += 1; }
+    if (j.capital != null && st.terr[j.capital].dono === i) { p.ouro += AJ.capOuro; p.alimento += AJ.capAli; }
     if (j.reino === 'cervo') p.alimento += 2;
     return p;
   }
 
   const territoriosDe = (st, i) => Object.keys(st.terr).filter(t => st.terr[t].dono === i);
   const unidadesDe = (st, i) => territoriosDe(st, i).reduce((s, t) => s + totalTerra(st.terr[t].u), 0);
-  const manutencao = (st, i) => { const u = unidadesDe(st, i); return Math.ceil(u / 3) + (u > 0 && evAtivo(st, 'fome-generalizada') ? 1 : 0); };
+  const manutencao = (st, i) => { const u = unidadesDe(st, i); return Math.ceil(u / AJ.manutDiv) + (u > 0 && evAtivo(st, 'fome-generalizada') ? 1 : 0); };
 
   /* ---------- pontuação ---------- */
   function pontos(st, i) { return detalhar(st, i).total; }
@@ -240,7 +240,7 @@
       st.jogadores.forEach((o, k) => { if (k !== i && o.capitalOriginal === tid) d.capitais += PTS_CAPITAL_RIVAL; });
     });
     const o = st.jogadores[i].objetivo;
-    if (o && o.feito) d.objetivos = OBJ().PONTOS;
+    if (o && o.feito) d.objetivos = ptsObjetivo(st);
     d.total = d.territorios + d.construcoes + d.capitais + d.objetivos;
     return d;
   }
@@ -366,7 +366,7 @@
         const baratas = Math.min(prosp, q); prosp -= baratas;
         // Flor-de-Lis: a primeira troca com o mercado em cada turno custa 1 recurso a menos (texto do cartão)
         let custo = baratas + taxa * (q - baratas);
-        if (desc) { custo = Math.max(1, custo - 1); desc = false; }
+        if (desc) { custo = Math.max(1, custo - AJ.florDesc); desc = false; }
         if (sim[x.dar] < custo) return erro('Recursos insuficientes para essa troca.');
         sim[x.dar] -= custo; sim[x.receber] += q;
       }
@@ -441,8 +441,8 @@
     return null;
   }
   function taxaMercado(st, i) {
-    if (evAtivo(st, 'descoberta-de-novas-rotas')) return 2;
-    return territoriosDe(st, i).some(t => st.terr[t].porto || infoT(st, t).terreno === 'cidade') ? 2 : 3;
+    if (evAtivo(st, 'descoberta-de-novas-rotas')) return AJ.taxaPorto;
+    return territoriosDe(st, i).some(t => st.terr[t].porto || infoT(st, t).terreno === 'cidade') ? AJ.taxaPorto : AJ.taxaBase;
   }
 
   // aplica uma ação; devolve {ok, erro?, ev:[...]}
@@ -853,7 +853,8 @@
     if (st.ev) evento(st, { tipo: 'resposta', prop: pr, aceitar: !!aceitar, expirou: !!expirou });
   }
 
-  /* objetivos secretos */
+  /* objetivos secretos: valem 10 pontos; no Relâmpago (meta baixa) valem menos para não decidir sozinhos */
+  const ptsObjetivo = st => Math.max(4, Math.min(OBJ().PONTOS, Math.round(st.cfg.meta * 0.24)));
   function objetivoPossivel(st, o, n) {
     const r = o.requer || {};
     if (r.cartas && !st.cfg.cartas) return false;
@@ -910,7 +911,7 @@
     if (p.atual >= p.alvo) {
       j.objetivo.feito = true; j.objetivo.rodada = st.rodada;
       const o = OBJ().OBJETIVOS.find(x => x.id === j.objetivo.id);
-      log(st, `🎯 ${j.nome} concluiu o objetivo secreto "${o.nome}" (+${OBJ().PONTOS} pontos)!`, { j: i });
+      log(st, `🎯 ${j.nome} concluiu o objetivo secreto "${o.nome}" (+${ptsObjetivo(st)} pontos)!`, { j: i });
       evento(st, { tipo: 'objetivo', j: i, id: o.id });
     }
   }
@@ -932,6 +933,6 @@
     ACOES_TURNO, MAX_RECRUTA, PTS_CAPITAL_RIVAL, LIMITE_RODADAS, INICIAL,
     novaPartida, jogar, validar, pontos, detalhar, producao, manutencao, territoriosDe, unidadesDe, classificacao,
     destinosTerra, alvosAtaque, forcas, chance, tiposRecrutaveis, custoRecruta, custoConstr, motivoNaoConstruir, taxaMercado,
-    infoT, mapaDe, prepararMapa, emTratado, tratadosDe, evAtivo, marFechado, validarCarta, responderProposta, progressoObjetivo, cartaInfo, alvoSabotagem, ehCapital, NOME_TRATADO, limparRec, verificarObjetivos, total, totalTerra, totalRec, temRec, limparU, vazioU, clonar, descU, velocidade, podeMar, rnd, ativosIdx,
+    infoT, mapaDe, prepararMapa, emTratado, tratadosDe, evAtivo, marFechado, validarCarta, responderProposta, progressoObjetivo, cartaInfo, alvoSabotagem, ehCapital, NOME_TRATADO, limparRec, verificarObjetivos, ptsObjetivo, total, totalTerra, totalRec, temRec, limparU, vazioU, clonar, descU, velocidade, podeMar, rnd, ativosIdx,
   };
 })(typeof window !== 'undefined' ? window : globalThis);

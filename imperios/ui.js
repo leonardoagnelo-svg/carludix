@@ -885,7 +885,7 @@
           <div class="lado-t"><b>Você recebe</b><img class="grande" src="img/recurso-${receber}.webp" alt=""><span class="nome-r">${NOME_REC[receber]}</span>${sel('receber', receber)}
             <div class="passo"><button data-q="-1" aria-label="Menos">−</button><span>${qtd}</span><button data-q="1" aria-label="Mais">+</button></div></div>
         </div>
-        <div class="taxa"><span>Taxa do mercado: <b>${taxa} por 1</b>${taxa === 2 ? ' (porto ou cidade antiga)' : ''}</span>${st.turno.trocaDesc ? '<span>⚜️ Flor-de-Lis: a primeira troca custa 1 a menos</span>' : ''}</div>
+        <div class="taxa"><span>Taxa do mercado: <b>${taxa} por 1</b>${taxa === 2 ? ' (porto ou cidade antiga)' : ''}</span>${st.turno.trocaDesc ? '<span>⚜️ Flor-de-Lis: a primeira troca custa 2 a menos</span>' : ''}</div>
         ${trocas.length ? `<div class="nota" style="text-align:center">Nesta ida: ${trocas.map((t, k) => `${precos[k]}${icR(t.dar)} → ${t.qtd}${icR(t.receber)}`).join(' · ')}</div>` : ''}
         ${!v.ok ? `<p class="motivo" style="color:#ff8a8a;text-align:center">${esc(v.erro)}</p>` : ''}
         <div class="botoes-rodape"><button class="bm azul" data-mais ${v.ok && trocas.length < 7 ? '' : 'disabled'}>＋ Outra troca</button><button class="bm verde" data-ok ${v.ok ? '' : 'disabled'}>⚖️ Realizar troca</button></div>
@@ -960,7 +960,7 @@
       if (e.tipo === 'objetivo') {
         const x = J.st.jogadores[e.j], o = oInfo(e.id);
         if (humano(e.j)) return objetivoConcluido(e, passo);
-        toast(`🎯 ${x.nome} concluiu o objetivo secreto "${o.nome}" (+${OBJ.PONTOS})!`);
+        toast(`🎯 ${x.nome} concluiu o objetivo secreto "${o.nome}" (+${M.ptsObjetivo(J.st)})!`);
       }
       if (e.tipo === 'carta') {
         const x = J.st.jogadores[e.j], c = cInfo(e.id);
@@ -1109,9 +1109,9 @@
         <b class="rot-obj">Progresso do objetivo</b>
         <div class="prog"><i style="width:${pc}%"></i><span>${p.atual} / ${p.alvo}</span></div>
         ${p.fimDeTurno ? '<p class="nota" style="color:#5b4424">Conferido no fim do seu turno.</p>' : ''}
-        <div class="recompensa"><b>🏆 Recompensa</b><strong>+${OBJ.PONTOS}</strong><span>pontos de império</span></div>
+        <div class="recompensa"><b>🏆 Recompensa</b><strong>+${M.ptsObjetivo(J.st)}</strong><span>pontos de império</span></div>
       </div>
-      <div class="mv-res"><div><b>ℹ️ Informações</b><span>• Só você vê esta missão.</span><span>• Ao concluir, ela é revelada e os ${OBJ.PONTOS} pontos são seus para sempre.</span></div>
+      <div class="mv-res"><div><b>ℹ️ Informações</b><span>• Só você vê esta missão.</span><span>• Ao concluir, ela é revelada e os ${M.ptsObjetivo(J.st)} pontos são seus para sempre.</span></div>
         <div style="align-items:center;justify-content:center"><b>🎯 Status</b><span class="status ${j.objetivo.feito ? 'ok' : ''}">${j.objetivo.feito ? 'CONCLUÍDO' : 'EM ANDAMENTO'}</span></div></div>
       <button class="bm azul larga" data-x>↩ Voltar ao tabuleiro</button>`, null, 'real');
     $('#veu').onclick = e => { if (e.target.id === 'veu' || e.target.closest('.fechar') || e.target.closest('[data-x]')) fecharVeu(); };
@@ -1220,7 +1220,7 @@
     const o = oInfo(e.id);
     const d = veu(`<div class="faixa-modal"><span>🎯 Objetivo concluído!</span></div>
       <div class="evento-c"><img src="img/objetivo-${o.id}.webp" alt=""><div><h3>${esc(o.nome)}</h3><p>${esc(o.txt)}</p>
-      <div class="recompensa" style="margin-top:8px"><b>🏆 Recompensa</b><strong>+${OBJ.PONTOS}</strong><span>pontos para sempre</span></div></div></div>
+      <div class="recompensa" style="margin-top:8px"><b>🏆 Recompensa</b><strong>+${M.ptsObjetivo(J.st)}</strong><span>pontos para sempre</span></div></div></div>
       <button class="bm vermelho larga" data-ok>Continuar</button>`, null, 'real');
     d.dataset.preso = '1';
     d.onclick = ev => { if (ev.target.closest('[data-ok]')) { fecharVeu(true); depois(); } };
@@ -1380,7 +1380,7 @@
       </div>
       <div class="res-faixa-est"><div>⏳<span>Duração da partida<b>${st.t0 ? (m => m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'min' : m + ' min')(Math.max(1, Math.round((Date.now() - st.t0) / 60000))) : '—'}</b></span></div>
         <div>🃏<span>Rodadas<b>${st.rodada}</b></span></div><div>👥<span>Jogadores<b>${st.jogadores.length}</b></span></div></div>
-      ${st.jogadores.some(x => x.objetivo) ? `<div class="mv-sub" style="margin-top:12px">🎯 Objetivos secretos revelados</div><div class="obj-rev">${st.jogadores.map(x => x.objetivo ? `<div class="${x.objetivo.feito ? 'ok' : ''}"><img src="img/objetivo-${x.objetivo.id}.webp" alt=""><span><b>${esc(x.nome)}</b>${esc(oInfo(x.objetivo.id).nome)}<small>${x.objetivo.feito ? '✅ concluído (+' + OBJ.PONTOS + ')' : '✖ não concluído'}</small></span></div>` : '').join('')}</div>` : ''}
+      ${st.jogadores.some(x => x.objetivo) ? `<div class="mv-sub" style="margin-top:12px">🎯 Objetivos secretos revelados</div><div class="obj-rev">${st.jogadores.map(x => x.objetivo ? `<div class="${x.objetivo.feito ? 'ok' : ''}"><img src="img/objetivo-${x.objetivo.id}.webp" alt=""><span><b>${esc(x.nome)}</b>${esc(oInfo(x.objetivo.id).nome)}<small>${x.objetivo.feito ? '✅ concluído (+' + M.ptsObjetivo(J.st) + ')' : '✖ não concluído'}</small></span></div>` : '').join('')}</div>` : ''}
       <div class="est res-est">
         <div><b>${hEst.st.conquistas}</b>territórios conquistados</div><div><b>${hEst.st.vitorias}</b>batalhas vencidas</div><div><b>${hEst.st.defesas}</b>defesas bem-sucedidas</div>
         <div><b>${hEst.st.construcoes}</b>construções</div><div><b>${hEst.st.produzidos}</b>recursos produzidos</div><div><b>${st.rodada}</b>rodadas</div>
@@ -1434,7 +1434,7 @@
       <p>O baralho tem ${CAR.CARTAS.length} tipos de carta, 2 de cada. Cada reino começa com ${CAR.REGRAS.iniciais}; comprar uma custa ${CAR.REGRAS.compraOuro} ouros e 1 ação. Até ${CAR.REGRAS.mao} na mão, no máximo ${CAR.REGRAS.maxPorTurno} por turno (só 1 de sabotagem). Usar carta não gasta ação. Nenhuma carta conquista território de outro reino, e sabotagens nunca atingem a capital.</p>
       <table><tr><th>Carta</th><th>Efeito</th></tr>${CAR.CARTAS.map(c => `<tr><td>${esc(c.nome)}</td><td>${esc(c.txt)}</td></tr>`).join('')}</table>
       <h3>🎯 Objetivos secretos</h3>
-      <p>Cada reino recebe 1 objetivo secreto. Ao concluí-lo, ele é revelado e dá ${OBJ.PONTOS} pontos para sempre. Só aparecem objetivos possíveis na partida.</p>
+      <p>Cada reino recebe 1 objetivo secreto. Ao concluí-lo, ele é revelado e dá ${M.ptsObjetivo(J.st)} pontos para sempre. Só aparecem objetivos possíveis na partida.</p>
       <ul>${OBJ.OBJETIVOS.map(o => `<li><b>${esc(o.nome)}</b>: ${esc(o.txt)}</li>`).join('')}</ul>
       <h3>🌍 Eventos mundiais</h3>
       <p>A partir da rodada ${EVM.REGRAS.primeiroNaRodada}, a cada ${EVM.REGRAS.aCadaRodadas} rodadas é revelado um evento que vale para todos até o próximo.</p>
