@@ -1995,7 +1995,7 @@
       <p>O baralho tem ${CAR.CARTAS.length} tipos de carta, 2 de cada. Cada reino começa com ${CAR.REGRAS.iniciais}; comprar uma custa ${CAR.REGRAS.compraOuro} ouros e 1 ação. Até ${CAR.REGRAS.mao} na mão, no máximo ${CAR.REGRAS.maxPorTurno} por turno (só 1 de sabotagem). Usar carta não gasta ação. Nenhuma carta conquista território de outro reino, e sabotagens nunca atingem a capital.</p>
       <table><tr><th>Carta</th><th>Efeito</th></tr>${CAR.CARTAS.map(c => `<tr><td>${esc(c.nome)}</td><td>${esc(c.txt)}</td></tr>`).join('')}</table>
       <h3>🎯 Objetivos secretos</h3>
-      <p>Cada reino recebe 1 objetivo secreto. Ao concluí-lo, ele é revelado e dá ${M.ptsObjetivo(J.st)} pontos para sempre. Só aparecem objetivos possíveis na partida.</p>
+      <p>Cada reino recebe 1 objetivo secreto. Ao concluí-lo, ele é revelado e dá ${J && J.st ? M.ptsObjetivo(J.st) + ' pontos' : '10 pontos (6 no modo Relâmpago)'} para sempre. Só aparecem objetivos possíveis na partida.</p>
       <ul>${OBJ.OBJETIVOS.map(o => `<li><b>${esc(o.nome)}</b>: ${esc(o.txt)}</li>`).join('')}</ul>
       <h3>🌍 Eventos mundiais</h3>
       <p>A partir da rodada ${EVM.REGRAS.primeiroNaRodada}, a cada ${EVM.REGRAS.aCadaRodadas} rodadas é revelado um evento que vale para todos até o próximo.</p>
