@@ -13,7 +13,7 @@
   const P_JOGO = 'carludix/' + JOGO + '/';
   const P_ONLINE = 'carludix/online/' + JOGO + '/';
   const LETRAS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  const VELHA = 30 * 60 * 1000;
+  const VELHA = 10 * 60 * 1000;
   let fbP = null;
 
   function conectar() {
