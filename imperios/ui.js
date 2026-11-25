@@ -14,6 +14,7 @@
   ];
   const METAS = [{ v: 25, nome: 'Relâmpago', t: '10–15 min' }, { v: 50, nome: 'Clássico', t: '20–40 min' }, { v: 100, nome: 'Grande Império', t: '45–90 min' }];
   const NIVEIS = [{ id: 'iniciante', nome: 'Iniciante' }, { id: 'estrategico', nome: 'Estratégico' }, { id: 'mestre', nome: 'Mestre' }];
+  const TEMPOS = [60, 120, 180, 300];
   const NOMES_BOT = { leao: 'Rei Leônidas', aguia: 'Rainha Aurora', cervo: 'Rei Cedric', flor: 'Rainha Isadora', lobo: 'Rei Magnus', dragao: 'Rainha Valéria' };
 
   /* ---------- utilidades ---------- */
@@ -81,9 +82,10 @@
       <div class="cena"><img src="img/cena-bandeiras.webp" alt=""></div>
       <nav class="menu2" aria-label="Menu principal">
         ${salvo && salvo.st && salvo.st.fase === 'jogo' ? `<button class="bm ouro grande" data-a="continuar"><span class="ic">▶️</span>Continuar partida</button>` : ''}
+        ${store.get('sala-online', null) ? `<button class="bm verde" data-a="voltar-online"><span class="ic">🌐</span>Voltar à partida online · ${esc(store.get('sala-online'))}</button>` : ''}
         <button class="bm vermelho grande" data-a="bots"><span class="ic">⚔️</span>Jogar contra bots</button>
         <div class="par"><button class="bm azul" data-a="local"><span class="ic">👥</span>Mesmo aparelho</button>
-          <button class="bm verde" data-a="online" disabled title="Em breve"><span class="ic">🌐</span>Jogar online<small>em breve</small></button></div>
+          <button class="bm verde" data-a="online"><span class="ic">🌐</span>Jogar online</button></div>
         <button class="bm azul" data-a="regras"><span class="ic">📖</span>Como jogar</button>
         <div class="par"><button class="bm escuro peq" data-a="stats"><span class="ic">📊</span>Estatísticas</button>
           <button class="bm escuro peq" data-a="config"><span class="ic">⚙️</span>Configurações</button></div>
@@ -93,6 +95,8 @@
       const b = e.target.closest('[data-a]'); if (!b || b.disabled) return;
       const a = b.dataset.a;
       if (a === 'continuar') retomar(salvo);
+      else if (a === 'online') pedirPerfil(() => telaSalas());
+      else if (a === 'voltar-online') pedirPerfil(() => entrarSala(store.get('sala-online')));
       else if (a === 'bots' || a === 'local') configurar(a);
       else if (a === 'regras') comoJogar();
       else if (a === 'config') configuracoes();
@@ -102,7 +106,7 @@
 
   function registrarResultado(st) {
     const s = store.get('stats', { partidas: 0, vitorias: 0, porReino: {} });
-    const h = st.jogadores.findIndex(j => j.tipo === 'humano');
+    const h = primeiroHumano(st);
     if (h < 0) return;
     const numH = st.jogadores.filter(j => j.tipo === 'humano').length;
     s.partidas++;
@@ -140,7 +144,8 @@
   /* ================= CONFIGURAÇÃO ================= */
   const DIFS = [{ id: 'iniciante', nome: 'Fácil', ic: '🍃', cls: 'verde' }, { id: 'estrategico', nome: 'Normal', ic: '👑', cls: 'vermelho' }, { id: 'mestre', nome: 'Difícil', ic: '⛑️', cls: 'vinho' }];
   function configurar(modo) {
-    const c = Object.assign({ n: modo === 'bots' ? 4 : 3, mapa: 'pequeno', meta: 50, nivel: 'estrategico' }, store.get('cfg-' + modo, {}));
+    const c = Object.assign({ n: modo === 'local' ? 3 : 4, mapa: 'pequeno', meta: 50, nivel: 'estrategico', tempo: 120, publica: true }, store.get('cfg-' + modo, {}));
+    const on = modo === 'online';
     c.modo = modo;
     function desenhar() {
       const mp = MAPAS.find(m => m.id === c.mapa);
@@ -149,13 +154,18 @@
       app.innerHTML = moldura(`
         <img class="logo-topo peq" src="img/titulo.webp" alt="Impérios">
         <div class="cena-faixa"><img src="img/cena-castelo.webp" alt=""></div>
-        <h1 class="faixa-titulo"><span>${modo === 'bots' ? 'Configuração da partida' : 'Mesmo aparelho'}</span></h1>
-        <section class="caixa"><h2><span class="ic">👥</span>${modo === 'bots' ? 'Quantidade de reinos' : 'Quantidade de jogadores'}</h2>
+        <h1 class="faixa-titulo"><span>${on ? 'Criar sala online' : modo === 'bots' ? 'Configuração da partida' : 'Mesmo aparelho'}</span></h1>
+        <section class="caixa"><h2><span class="ic">👥</span>${modo === 'local' ? 'Quantidade de jogadores' : on ? 'Vagas na sala' : 'Quantidade de reinos'}</h2>
           <div class="nums">${[2, 3, 4, 5, 6].map(n => `<button class="num ${c.n === n ? 'on' : ''}" data-n="${n}" ${n > mp.max ? 'disabled' : ''}>${n}</button>`).join('')}</div>
-          <p class="nota">${modo === 'bots' ? 'Você mais ' + (c.n - 1) + ' reino(s) controlados pelo computador.' : 'Todos revezam o mesmo aparelho, com tela de privacidade entre os turnos.'}</p></section>
+          <p class="nota">${on ? 'Até ' + c.n + ' reinos. As vagas que sobrarem podem ser completadas com bots.' : modo === 'bots' ? 'Você mais ' + (c.n - 1) + ' reino(s) controlados pelo computador.' : 'Todos revezam o mesmo aparelho, com tela de privacidade entre os turnos.'}</p></section>
+        ${on ? `<section class="caixa"><h2><span class="ic">🔒</span>Tipo de sala</h2>
+          <div class="opcoes"><button class="op ${c.publica ? 'on' : ''}" data-pub="1">🌐 Pública<small>aparece na lista</small></button><button class="op ${!c.publica ? 'on' : ''}" data-pub="0">🔑 Privada<small>só com o código</small></button></div></section>
+        <section class="caixa"><h2><span class="ic">⏱️</span>Tempo por turno</h2>
+          <div class="opcoes">${TEMPOS.map(t => `<button class="op ${c.tempo === t ? 'on' : ''}" data-tempo="${t}">${t / 60} min</button>`).join('')}</div>
+          <p class="nota">Se o tempo acabar, o turno passa sozinho.</p></section>` : ''}
         <section class="caixa"><h2><span class="ic">🗺️</span>Escolha o mapa</h2>
           <div class="mapas">${MAPAS.map(m => `<button class="mapa-op ${c.mapa === m.id ? 'on' : ''}" data-mapa="${m.id}"><b>${m.nome}</b><img src="${ARTE[m.id]}" alt="" loading="lazy"><span><strong>${m.n}</strong> territórios</span><small>${m.min}–${m.max} jogadores</small></button>`).join('')}</div></section>
-        ${modo === 'bots' ? `<section class="caixa"><h2><span class="ic">⚔️</span>Dificuldade dos bots</h2>
+        ${modo !== 'local' ? `<section class="caixa"><h2><span class="ic">⚔️</span>Dificuldade dos bots</h2>
           <div class="difs">${DIFS.map(d => `<button class="dif ${d.cls} ${c.nivel === d.id ? 'on' : ''}" data-nivel="${d.id}"><span>${d.ic}</span>${d.nome}</button>`).join('')}</div>
           <p class="info">ℹ️ A dificuldade define o nível de estratégia dos adversários controlados pelo computador (bots).</p></section>` : ''}
         <section class="caixa"><h2><span class="ic">👑</span>Meta de pontos</h2>
@@ -164,14 +174,16 @@
           </section>
         <section class="caixa"><h2><span class="ic">📜</span>Regras extras</h2>
           <div class="opcoes">${[['cartas', '🃏 Cartas especiais'], ['objetivos', '🎯 Objetivos secretos'], ['eventos', '🌍 Eventos mundiais']].map(([k, n]) => `<button class="op ${c[k] !== false ? 'on' : ''}" data-extra="${k}">${n}<small>${c[k] !== false ? 'ativado' : 'desativado'}</small></button>`).join('')}</div></section>
-        <div class="botoes-rodape"><button class="bm azul" data-a="voltar">← Voltar</button><button class="bm vermelho" data-a="seguir">⚔️ Escolher reino</button></div>
+        <div class="botoes-rodape"><button class="bm azul" data-a="voltar">← Voltar</button><button class="bm vermelho" data-a="seguir">${on ? '➕ Criar sala' : '⚔️ Escolher reino'}</button></div>
       `, 'tela-config');
     }
     desenhar();
     app.onclick = e => {
       const b = e.target.closest('button'); if (!b || b.disabled) return;
-      if (b.dataset.a === 'voltar') return inicio();
+      if (b.dataset.a === 'voltar') return on ? telaSalas() : inicio();
       if (b.dataset.n) c.n = +b.dataset.n;
+      if (b.dataset.pub) c.publica = b.dataset.pub === '1';
+      if (b.dataset.tempo) c.tempo = +b.dataset.tempo;
       if (b.dataset.mapa) c.mapa = b.dataset.mapa;
       if (b.dataset.nivel) c.nivel = b.dataset.nivel;
       if (b.dataset.extra) c[b.dataset.extra] = c[b.dataset.extra] === false;
@@ -181,7 +193,7 @@
           if (v >= 15 && v <= 200) c.meta = v;
         } else c.meta = +b.dataset.meta;
       }
-      if (b.dataset.a === 'seguir') { store.set('cfg-' + modo, c); return escolherReinos(c); }
+      if (b.dataset.a === 'seguir') { store.set('cfg-' + modo, c); return on ? criarSalaOnline(c) : escolherReinos(c); }
       desenhar();
     };
   }
@@ -259,13 +271,15 @@
     } catch (e) { console.error(e); store.del('partida'); toast('Não foi possível continuar a partida salva.', 'erro'); inicio(); }
   }
   function salvar() {
-    if (!J) return;
+    if (!J || J.online) return;
     if (J.st.fase === 'fim') store.del('partida');
     else store.set('partida', { st: J.st, modo: J.modo, cfg: J.cfg, ultimoHumano: J.ultimoHumano });
   }
-  const humano = i => J.st.jogadores[i].tipo === 'humano';
+  // no online, "humano" é só quem está neste aparelho; os outros chegam pela rede
+  const humano = i => J.online ? i === J.online.eu : J.st.jogadores[i].tipo === 'humano';
   const vezHumana = () => J.st.fase === 'jogo' && humano(J.st.vez);
-  const numHumanos = () => J.st.jogadores.filter(j => j.tipo === 'humano').length;
+  const numHumanos = () => J.online ? 1 : J.st.jogadores.filter(j => j.tipo === 'humano').length;
+  function primeiroHumano(st) { return J && J.online ? J.online.eu : st.jogadores.findIndex(j => j.tipo === 'humano'); }
 
   function iniciarJogo(o) {
     pararBots(); fecharVeu(true);
@@ -402,7 +416,7 @@
     zoomEm(z === 'in' ? 0.75 : 1.33, v.x + v.w / 2, v.y + v.h / 2);
   }
   function focoHumano() {
-    const i = vezHumana() ? J.st.vez : J.st.jogadores.findIndex(j => j.tipo === 'humano');
+    const i = vezHumana() ? J.st.vez : primeiroHumano(J.st);
     const c = i >= 0 && J.st.jogadores[i].capital; return c ? J.mapa.idx[c].c : null;
   }
   function svgPonto(ev) {
@@ -463,18 +477,20 @@
     if (!J) return;
     const st = J.st, i = st.vez, j = st.jogadores[i];
     // o topo mostra os recursos de quem está jogando (humano); na vez de bot mostra o humano principal
-    const ver = vezHumana() ? i : (numHumanos() === 1 ? st.jogadores.findIndex(x => x.tipo === 'humano') : i);
+    const ver = vezHumana() ? i : (numHumanos() === 1 ? primeiroHumano(st) : i);
     const jv = st.jogadores[ver];
     const pts = M.pontos(st, ver);
     const nAcoes = vezHumana() ? st.acoes : 0;
     $('#topo').innerHTML = `
       <button class="icone-btn" data-t="menu" aria-label="Menu da partida">☰</button>
-      <div class="vez"><img src="${brasao(j.reino)}" alt=""><div><b>${esc(j.nome)}</b><span>Rodada ${st.rodada}${humano(i) ? '' : ' · pensando…'}</span></div></div>
+      <div class="vez"><img src="${brasao(j.reino)}" alt=""><div><b>${esc(j.nome)}</b><span>Rodada ${st.rodada}${humano(i) ? '' : J.online ? (controladoPorBot(i) ? ' · 🤖 jogando…' : ' · jogando…') : ' · pensando…'}</span></div></div>
       <div class="acoes" aria-label="${nAcoes} pontos de ação">${Array.from({ length: Math.max(M.AJ.acoes, nAcoes) }, (_, k) => `<i class="${k < nAcoes ? 'on' : ''}"></i>`).join('')}${vezHumana() && st.turno.movGratis && j.reino === 'aguia' ? '<span title="Movimentação gratuita disponível" style="font-size:14px">🦅</span>' : ''}</div>
       <div class="recs" aria-label="Recursos de ${esc(jv.nome)}">${RECURSOS.map(k => `<span class="rec" data-rec="${k}" title="${NOME_REC[k]}">${icR(k)} ${jv.rec[k]}</span>`).join('')}</div>
       ${st.evento ? `<button class="icone-btn ev" data-t="evento" title="Evento mundial: ${esc(eInfo(st.evento.id).nome)}" aria-label="Evento mundial">🌍</button>` : ''}
       ${jv.objetivo && humano(ver) ? `<button class="icone-btn ${jv.objetivo.feito ? 'feito' : ''}" data-t="objetivo" title="Objetivo secreto" aria-label="Objetivo secreto">🎯</button>` : ''}
+      ${J.online ? `<span class="relogio" id="relogio" aria-live="off"></span><button class="icone-btn" data-t="reagir" title="Reações" aria-label="Enviar reação">😀</button>` : ''}
       <button class="pts" data-t="reino" title="Pontos de império · meta ${st.cfg.meta}">👑 ${pts}/${st.cfg.meta}</button>`;
+    if (J.online) tiqueRelogio();
     const pode = vezHumana() && !J.ocupado;
     const sel = J.sel && st.terr[J.sel].dono === st.vez ? J.sel : null;
     const bt = (id, ic, nome, ok, extra) => `<button data-b="${id}" class="${J.modo === id ? 'on' : ''} ${extra || ''}" ${ok ? '' : 'disabled'}><span class="ic">${ic}</span>${nome}${extra === 'breve' ? '<span class="em-breve">EM BREVE</span>' : ''}</button>`;
@@ -484,7 +500,7 @@
     $('#fj').innerHTML = st.ordem.concat(st.jogadores.map((_, k) => k).filter(k => !st.ordem.includes(k))).map(k => {
       const x = st.jogadores[k];
       return `<button class="cj ${k === i ? 'vez' : ''} ${x.eliminado ? 'morto' : ''}" style="--c:${REINOS[x.reino].cor}" data-j="${k}" title="${esc(REINOS[x.reino].nome)}">
-        <b>${esc(x.nome)}</b><img src="img/bandeira-${x.reino}.webp" alt=""><span class="nums-j"><span>⛑️${M.unidadesDe(st, k)}</span><span>🏰${M.territoriosDe(st, k).length}</span></span><span>👑 ${M.pontos(st, k)}</span></button>`;
+        <b>${J.online && x.tipo === 'humano' && !J.online.mesa.presente(x.uid) ? '📴 ' : ''}${esc(x.nome)}</b><img src="img/bandeira-${x.reino}.webp" alt=""><span class="nums-j"><span>⛑️${M.unidadesDe(st, k)}</span><span>🏰${M.territoriosDe(st, k).length}</span></span><span>👑 ${M.pontos(st, k)}</span></button>`;
     }).join('');
     desenharDinamico();
   }
@@ -502,6 +518,7 @@
     if (t === 'reino') return gestaoReino();
     if (t === 'objetivo') return telaObjetivo();
     if (t === 'evento') return telaEvento(J.st.evento.id, false);
+    if (t === 'reagir') return painelReacoes();
     if (t === 'menu') {
       veu(`<button class="fechar" aria-label="Fechar">×</button><h2 class="titulo">Menu</h2>
         <div class="menu" style="margin:auto">
@@ -511,7 +528,7 @@
           <button class="btn claro" data-m="regras"><span class="ic">📖</span>Como jogar</button>
           <button class="btn claro" data-m="tut"><span class="ic">🧭</span>Primeiros passos</button>
           <button class="btn claro" data-m="config"><span class="ic">⚙️</span>Configurações</button>
-          <button class="btn vinho" data-m="sair"><span class="ic">🚪</span>Sair (a partida fica salva)</button>
+          <button class="btn vinho" data-m="sair"><span class="ic">🚪</span>${J.online ? 'Sair da sala (um bot assume)' : 'Sair (a partida fica salva)'}</button>
         </div>`);
       $('#veu').onclick = e => {
         if (e.target.id === 'veu' || e.target.closest('.fechar')) return fecharVeu();
@@ -523,7 +540,7 @@
         else if (m === 'regras') comoJogar(true);
         else if (m === 'tut') tutorial(true);
         else if (m === 'config') configuracoes();
-        else if (m === 'sair') { fecharVeu(true); salvar(); J = null; inicio(); }
+        else if (m === 'sair') { fecharVeu(true); if (J.online) return sairOnline(true); salvar(); J = null; inicio(); }
       };
     }
   }
@@ -928,6 +945,7 @@
 
   /* ---------- execução e eventos ---------- */
   function executar(a) {
+    if (J.online) { J.ocupado = true; fecharFolhaSo(); atualizar(); return enviarOnline({ t: 'acao', a }); }
     const st = J.st, i = st.vez;
     const antes = Object.assign({}, st.jogadores[i].rec);
     const r = M.jogar(st, i, a);
@@ -956,6 +974,7 @@
         noMapa(`🌅 Produção de ${J.st.jogadores[e.j].nome}: ${txt || 'nada'}`);
       }
       if (e.tipo === 'rodada') noMapa(`📯 Rodada ${e.n}`);
+      if (e.tipo === 'tempo') toast(humano(e.j) ? '⏳ Seu tempo acabou: o turno passou.' : `⏳ O tempo de ${e.nome} acabou: o turno passou.`);
       if (e.tipo === 'evento') { atualizar(); return telaEvento(e.id, true, passo); }
       if (e.tipo === 'objetivo') {
         const x = J.st.jogadores[e.j], o = oInfo(e.id);
@@ -1008,6 +1027,7 @@
       <p class="nota" data-res hidden>${e.recuo ? `Os sobreviventes recuaram para ${esc(J.mapa.idx[e.recuo].nome)}.` : ''} Empate favorece o defensor.</p>
       <button class="bm vermelho larga" data-ok>${opcoes.reduzir ? 'Continuar' : 'Pular animação'}</button></div>`, null, 'real');
     d.dataset.preso = '1';
+    autoSeguir(d, 2);
     let pronto = false;
     const revelar = () => {
       if (pronto) return; pronto = true;
@@ -1030,7 +1050,7 @@
   const cInfo = id => CAR.CARTAS.find(c => c.id === id);
   const oInfo = id => OBJ.OBJETIVOS.find(o => o.id === id);
   const eInfo = id => EVM.EVENTOS.find(e => e.id === id);
-  const eu = () => vezHumana() ? J.st.vez : Math.max(0, J.st.jogadores.findIndex(j => j.tipo === 'humano'));
+  const eu = () => vezHumana() ? J.st.vez : Math.max(0, primeiroHumano(J.st));
   const ALVO_T = ['muralha-reforcada', 'expansao-territorial', 'bloqueio-naval', 'revolta', 'peste', 'desercao', 'sabotagem'];
   const ALVO_J = ['alianca', 'tratado-de-paz', 'tregua', 'espionagem'];
 
@@ -1126,6 +1146,7 @@
         <p>${esc(e.txt)}</p><p class="nota">Um novo evento é revelado a cada ${EVM.REGRAS.aCadaRodadas} rodadas.</p></div></div>
       <button class="bm vermelho larga" data-ok>${novo ? 'Continuar' : '↩ Voltar'}</button>`, null, 'real');
     d.dataset.preso = novo ? '1' : '';
+    if (novo) autoSeguir(d, 1);
     d.onclick = ev => { if (ev.target.closest('[data-ok]') || ev.target.closest('.fechar') || (!novo && ev.target === d)) { fecharVeu(true); if (depois) depois(); } };
   }
 
@@ -1174,6 +1195,7 @@
       if (b.dataset.carta) return escolherAlvoCarta(b.dataset.carta);
       if (b.dataset.aceitar || b.dataset.recusar) {
         const id = +(b.dataset.aceitar || b.dataset.recusar);
+        if (J.online) { fecharVeu(true); return enviarOnline({ t: 'responder', id, aceitar: !!b.dataset.aceitar }); }
         const r = M.responderProposta(st, i, id, !!b.dataset.aceitar);
         if (!r.ok) toast(r.erro, 'erro'); else toast(b.dataset.aceitar ? '🤝 Proposta aceita!' : 'Proposta recusada.');
         salvar(); atualizar(); telaDiplomacia('propostas');
@@ -1223,6 +1245,7 @@
       <div class="recompensa" style="margin-top:8px"><b>🏆 Recompensa</b><strong>+${M.ptsObjetivo(J.st)}</strong><span>pontos para sempre</span></div></div></div>
       <button class="bm vermelho larga" data-ok>Continuar</button>`, null, 'real');
     d.dataset.preso = '1';
+    autoSeguir(d, 1);
     d.onclick = ev => { if (ev.target.closest('[data-ok]')) { fecharVeu(true); depois(); } };
   }
   function espiar(e, depois) {
@@ -1232,6 +1255,7 @@
       <p class="nota" style="text-align:center">${(e.mao || []).map(id => esc(cInfo(id).nome)).join(' · ')}</p>
       <button class="bm vermelho larga" data-ok>Continuar</button>`, null, 'real');
     d.dataset.preso = '1';
+    autoSeguir(d, 1);
     d.onclick = ev => { if (ev.target.closest('[data-ok]')) { fecharVeu(true); depois(); } };
   }
   /* tutorial da primeira partida */
@@ -1265,6 +1289,7 @@
   function proximo() {
     if (!J) return;
     const st = J.st;
+    if (J.online) return proximoOnline();
     if (st.fase === 'fim') { pararBots(); setTimeout(resultado, 600); return; }
     const i = st.vez;
     if (!humano(i)) {
@@ -1309,7 +1334,7 @@
   /* ---------- painéis ---------- */
   function gestaoReino() {
     const st = J.st;
-    const i = vezHumana() ? st.vez : Math.max(0, st.jogadores.findIndex(j => j.tipo === 'humano'));
+    const i = vezHumana() ? st.vez : Math.max(0, primeiroHumano(st));
     const j = st.jogadores[i], d = M.detalhar(st, i), p = M.producao(st, i);
     const ts = M.territoriosDe(st, i);
     const conts = {}; ts.forEach(t => { const x = st.terr[t]; [x.eco, x.def, x.porto && 'porto', x.maravilha && 'maravilha'].filter(Boolean).forEach(c => { conts[c] = (conts[c] || 0) + 1; }); });
@@ -1361,7 +1386,7 @@
     const faixa = vitoriaHumana ? (v.length > 1 ? 'VITÓRIA COMPARTILHADA' : 'VITÓRIA IMPERIAL') : 'FIM DA GUERRA';
     const frase = v.length > 1 ? `${v.map(i => esc(REINOS[st.jogadores[i].reino].nome)).join(' e ')} dividiram a vitória!` : `O ${esc(REINOS[jv.reino].nome)} conquistou os impérios!`;
     const medalha = k => k < 3 ? `<span class="med m${k + 1}">${k + 1}º</span>` : `<span class="med">${k + 1}º</span>`;
-    const hEst = (() => { const h = humanoVenceu ? v.find(i => humano(i)) : st.jogadores.findIndex(j => j.tipo === 'humano'); return st.jogadores[h >= 0 ? h : v[0]]; })();
+    const hEst = (() => { const h = humanoVenceu ? v.find(i => humano(i)) : primeiroHumano(st); return st.jogadores[h >= 0 ? h : v[0]]; })();
     app.innerHTML = `<div class="resultado" style="--cor:${REINOS[jv.reino].cor}">
       <div class="res-topo"><img class="res-logo" src="img/titulo.webp" alt="Impérios"></div>
       <div class="res-heroi">
@@ -1387,7 +1412,7 @@
       </div>
       <div class="cdx-ad" data-ad="jogo-resultado"></div>
       <div class="res-botoes">
-        <button class="res-btn vermelho" data-r="denovo">🔁 Jogar novamente</button>
+        ${J.online ? '<button class="res-btn vermelho" data-r="online">🌐 Jogar online de novo</button>' : '<button class="res-btn vermelho" data-r="denovo">🔁 Jogar novamente</button>'}
         <button class="res-btn azul" data-r="menu">🏠 Voltar ao menu</button>
         <div class="linha"><button class="btn claro" style="flex:1" data-r="compartilhar">📤 Compartilhar</button><a class="btn claro" style="flex:1" href="${URL_SUG}" target="_blank" rel="noopener">💡 Enviar sugestão</a></div>
       </div>
@@ -1397,7 +1422,8 @@
     const cfg = J.cfg, modo = J.modo, jogs = st.jogadores.map(j => ({ nome: j.nome, tipo: j.tipo, nivel: j.nivel, personalidade: j.personalidade, reino: j.reino }));
     app.onclick = e => {
       const b = e.target.closest('[data-r]'); if (!b) return;
-      if (b.dataset.r === 'menu') { J = null; inicio(); }
+      if (b.dataset.r === 'menu') { if (J && J.online) return sairOnline(false, true); J = null; inicio(); }
+      if (b.dataset.r === 'online') return sairOnline(false);
       if (b.dataset.r === 'denovo') { const ns = M.novaPartida({ mapa: st.cfg.mapa, meta: st.cfg.meta, cartas: st.cfg.cartas, objetivos: st.cfg.objetivos, eventos: st.cfg.eventos }, jogs); ns.t0 = Date.now(); iniciarJogo({ st: ns, modo, cfg }); }
       if (b.dataset.r === 'compartilhar') {
         const url = location.origin + location.pathname;
@@ -1407,6 +1433,526 @@
         else toast(txt);
       }
     };
+  }
+
+  /* ================= ONLINE (padrão CARLUDIX de sala de espera) ================= */
+  const R = window.ImperiosRede;
+  const AVATARES = ['🦊', '🐶', '🐱', '🐼', '🐸', '🐯', '🦁', '🐵', '🐧', '🦉', '🐢', '🐙', '🦄', '🐝', '🐞', '🐬', '⚽', '🏀', '🎾', '🃏', '♠️', '♥️', '🎲', '⭐', '🚀', '🌻', '🏰', '⚔️', '🛡️', '👑'];
+  const REACOES = ['👏', '😂', '🔥', '😮', '🙏', 'Boa jogada!', 'Boa sorte!', 'GG!'];
+  const PROIBIDAS = ['porra', 'caralho', 'karalho', 'krl', 'merda', 'merd', 'bosta', 'puta', 'puto', 'putinha', 'putaria', 'prostitut', 'buceta', 'boceta', 'bct', 'xereca', 'xoxota', 'cu', 'cuzao', 'cusao', 'foda', 'fode', 'foder', 'fuder', 'fdp', 'pqp', 'vsf', 'tnc', 'kct', 'cacete', 'kacete', 'piroca', 'penis', 'vagina', 'bunda', 'sexo', 'porno', 'punheta', 'siririca', 'tesao', 'gostosa', 'safad', 'vagabund', 'vadia', 'piranha', 'arromb', 'otario', 'idiota', 'imbecil', 'babaca', 'retardad', 'corno', 'chifrud', 'viado', 'bicha', 'boiola', 'baitola', 'traveco', 'sapatao', 'crioulo', 'nazi', 'hitler', 'estupr', 'pedofil', 'maconha', 'cocaina', 'desgraca', 'lixo humano'];
+  const TESTE = (new URLSearchParams(location.search).get('teste') || '').replace(/[^a-z0-9]/gi, '').slice(0, 8);
+  const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  function apelidoInvalido(a) {
+    a = String(a || '');
+    if (!/^[A-Za-zÀ-ÖØ-öø-ÿ0-9 ]+$/.test(a) || a.trim().length < 2 || a.length > 14) return 'Use de 2 a 14 caracteres: só letras, números e espaço.';
+    const n = semAcento(a);
+    const palavras = n.split(/[^a-z0-9]+/).filter(Boolean);
+    const PERMITIDAS = /computa|disputa|reputa|imputa/g;
+    const junto = n.replace(/[^a-z0-9]/g, '').replace(PERMITIDAS, '');
+    const leet = n.replace(/[^a-z0-9]/g, '').replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e').replace(/4/g, 'a').replace(/5/g, 's').replace(/7/g, 't').replace(PERMITIDAS, '');
+    const ruim = PROIBIDAS.some(p => {
+      const q = p.replace(/ /g, '');
+      if (q.length <= 3) return palavras.includes(q) || junto === q || leet === q;
+      return junto.includes(q) || leet.includes(q);
+    });
+    return ruim ? 'Esse apelido não é permitido. Escolha outro.' : null;
+  }
+  // apelido e avatar ficam na chave compartilhada "carludix:jogador" (vale em todos os jogos)
+  function perfilOnline() {
+    if (TESTE) return { apelido: 'Teste ' + TESTE.toUpperCase(), avatar: '🐸' };
+    try { const p = JSON.parse(localStorage.getItem('carludix:jogador') || 'null'); if (p && p.apelido && p.avatar && !apelidoInvalido(p.apelido)) return { apelido: p.apelido, avatar: p.avatar }; } catch (e) {}
+    return null;
+  }
+  function salvarPerfil(p) { if (TESTE) return; try { localStorage.setItem('carludix:jogador', JSON.stringify(p)); } catch (e) {} }
+  function pedirPerfil(depois, trocar) {
+    const atual = perfilOnline();
+    if (atual && !trocar) return depois(atual);
+    let av = (atual && atual.avatar) || AVATARES[Math.floor(Math.random() * 16)];
+    app.oninput = null;
+    app.innerHTML = moldura(`
+      <img class="logo-topo peq" src="img/titulo.webp" alt="Impérios">
+      <h1 class="faixa-titulo azul"><span>Seu apelido</span></h1>
+      <section class="caixa"><p class="sub" style="margin-bottom:10px">É assim que os outros jogadores vão te ver. Não use seu nome completo.</p>
+        <input class="txt" id="apelido" maxlength="14" placeholder="Apelido" autocomplete="off" value="${esc((atual && atual.apelido) || '')}">
+        <p class="nota" id="erro-ap" style="color:#ffb3b3;min-height:18px;margin:6px 0 0"></p>
+        <h2 style="margin-top:6px"><span class="ic">🙂</span>Escolha seu avatar</h2>
+        <div class="avatares">${AVATARES.map(a => `<button class="av-op ${a === av ? 'on' : ''}" data-av="${a}" aria-label="Avatar ${a}">${a}</button>`).join('')}</div></section>
+      <div class="botoes-rodape"><button class="bm azul" data-a="voltar">← Voltar</button><button class="bm vermelho" data-a="ok">Continuar</button></div>`, 'tela-config');
+    const inp = $('#apelido'); inp.focus();
+    const ok = () => {
+      const v = inp.value.replace(/\s+/g, ' ').trim();
+      const err = apelidoInvalido(v);
+      if (err) { $('#erro-ap').textContent = err; return; }
+      const p = { apelido: v, avatar: av };
+      salvarPerfil(p); depois(p);
+    };
+    inp.onkeydown = e => { if (e.key === 'Enter') ok(); };
+    app.onclick = e => {
+      const x = e.target.closest('[data-av]');
+      if (x) { av = x.dataset.av; $$('.av-op').forEach(b => b.classList.toggle('on', b.dataset.av === av)); return; }
+      const b = e.target.closest('[data-a]'); if (!b) return;
+      if (b.dataset.a === 'ok') ok();
+      if (b.dataset.a === 'voltar') { try { history.replaceState(null, '', location.pathname); } catch (e2) {} inicio(); }
+    };
+  }
+
+  function erroOnline(e) {
+    const m = String((e && (e.code || e.message)) || e);
+    if (/permission|PERMISSION/i.test(m)) return 'O servidor recusou o acesso' + (e && e.caminho ? ' (' + e.caminho + ')' : '') + '. Enquanto isso, jogue contra os bots ou no mesmo aparelho.';
+    if (/nao-existe/.test(m)) return 'Não achei essa sala. Confira o código.';
+    if (/cheia/.test(m)) return 'Essa sala está cheia.';
+    if (/jogando/.test(m)) return 'Essa sala já começou a jogar. Escolha outra.';
+    return 'Não deu para conectar ao servidor. Confira a internet e tente de novo.';
+  }
+  const nomeMeta = v => (METAS.find(m => m.v === v) || { nome: v + ' pts' }).nome;
+  const textoModo = c => `${(MAPAS.find(m => m.id === c.mapa) || MAPAS[0]).nome} · ${nomeMeta(c.meta)} · ${c.tempo / 60} min/turno`;
+  let limpezaOn = [];
+  function limparOn() { limpezaOn.forEach(f => { try { f(); } catch (e) {} }); limpezaOn = []; }
+
+  async function telaSalas() {
+    limparOn();
+    const eu = perfilOnline();
+    if (!eu) return pedirPerfil(() => telaSalas());
+    app.oninput = null;
+    app.innerHTML = moldura(`
+      <img class="logo-topo peq" src="img/titulo.webp" alt="Impérios">
+      <h1 class="faixa-titulo"><span>🌐 Jogar online</span></h1>
+      <p class="sub contador-on" id="contador">&nbsp;</p>
+      <nav class="menu2" aria-label="Opções online">
+        <button class="bm vermelho grande" data-a="rapido"><span class="ic">⚡</span>Jogo rápido</button>
+        <button class="bm ouro" data-a="criar"><span class="ic">➕</span>Criar sala</button>
+        <div class="entrar-cod"><input class="txt" id="cod" maxlength="4" placeholder="CÓDIGO" autocomplete="off" aria-label="Código da sala"><button class="bm azul" data-a="entrar"><span class="ic">🔑</span>Entrar com código</button></div>
+      </nav>
+      <section class="caixa" style="margin-top:12px"><h2><span class="ic">🏰</span>Salas abertas</h2>
+        <div class="salas-lista" id="salas"><div class="vazio-on">Conectando…</div></div></section>
+      <p class="nota" style="text-align:center">Você: <b>${esc(eu.avatar + ' ' + eu.apelido)}</b> · <a href="#" data-a="perfil">trocar</a></p>
+      <div class="botoes-rodape"><button class="bm azul" data-a="voltar">← Voltar</button></div>
+      ${rodapeCdx()}`, 'tela-config');
+    app.onclick = e => {
+      const b = e.target.closest('[data-a]'); if (!b) return;
+      const a = b.dataset.a;
+      if (a === 'voltar') { limparOn(); R.desmarcarOnline(); inicio(); }
+      if (a === 'criar') { limparOn(); configurar('online'); }
+      if (a === 'rapido') jogoRapido();
+      if (a === 'perfil') { e.preventDefault(); limparOn(); pedirPerfil(() => telaSalas(), true); }
+      if (a === 'entrar') { const c = $('#cod').value.trim().toUpperCase(); if (/^[A-Z0-9]{4}$/.test(c)) entrarSala(c); else toast('Digite as 4 letras do código'); }
+      if (a === 'sentar') entrarSala(b.dataset.cod);
+      if (a === 'bots-agora') { limparOn(); configurar('bots'); }
+    };
+    $('#cod').onkeydown = e => { if (e.key === 'Enter') app.querySelector('[data-a="entrar"]').click(); };
+    try {
+      R.marcarOnline().catch(() => {});
+      limpezaOn.push(await R.ouvirContador(n => { const el = $('#contador'); if (el && n !== null) el.textContent = '🟢 ' + n + (n === 1 ? ' pessoa jogando' : ' pessoas jogando') + ' online agora'; }));
+      limpezaOn.push(await R.ouvirSalas((lista, err) => {
+        const el = $('#salas'); if (!el) return;
+        if (!lista) { el.innerHTML = `<div class="vazio-on">${esc(erroOnline(err))}<div style="margin-top:10px"><button class="btn peq vinho" data-a="bots-agora">⚔️ Jogar contra bots</button></div></div>`; return; }
+        if (!lista.length) { el.innerHTML = '<div class="vazio-on">Nenhuma sala aberta agora. Crie uma ou toque em “Jogo rápido”.</div>'; return; }
+        el.innerHTML = lista.map(m => {
+          const h = (m.jogadores || {})[m.anfitriao] || {};
+          return `<div class="sala-item"><div class="av">${esc(h.avatar || '🏰')}</div><div class="info"><b>👑 ${esc(h.apelido || 'Sala')}</b><span>${esc(m.modo || '')}</span></div><div class="vagas">${m.ocupadas}/${m.max}</div><button class="btn peq ouro" data-a="sentar" data-cod="${esc(m.codigo)}">Entrar</button></div>`;
+        }).join('');
+      }));
+    } catch (e) { const el = $('#salas'); if (el) el.innerHTML = `<div class="vazio-on">${esc(erroOnline(e))}</div>`; }
+  }
+
+  function telaEspera(txt, cancelar) {
+    app.innerHTML = moldura(`<img class="logo-topo peq" src="img/titulo.webp" alt="Impérios"><section class="caixa" style="text-align:center"><h2 style="justify-content:center">${txt}</h2><p class="sub" id="msg"></p>
+      ${cancelar ? '<button class="bm azul larga" data-a="cancelar">Cancelar</button>' : ''}</section>`, 'tela-config');
+  }
+
+  async function jogoRapido() {
+    limparOn();
+    telaEspera('Procurando sala…', true);
+    let cancelado = false;
+    app.onclick = e => { if (e.target.closest('[data-a="cancelar"]')) { cancelado = true; telaSalas(); } };
+    try {
+      const lista = await new Promise((res, rej) => {
+        let feito = false, off = null;
+        R.ouvirSalas((l, err) => { if (feito) return; feito = true; if (off) off(); if (!l) rej(err); else res(l); })
+          .then(o => { off = o; if (feito) o(); }).catch(rej);
+      });
+      if (cancelado) return;
+      if (lista.length) return entrarSala(lista[0].codigo, true);
+      const c = Object.assign({ n: 4, mapa: 'pequeno', meta: 50, nivel: 'estrategico', tempo: 120, cartas: true, objetivos: true, eventos: true }, store.get('cfg-online', {}), { publica: true });
+      criarSalaOnline(c, true);
+    } catch (e) {
+      app.innerHTML = moldura(`<section class="caixa" style="text-align:center"><h2 style="justify-content:center">Online indisponível</h2><p class="sub">${esc(erroOnline(e))}</p>
+        <div class="pilha-on"><button class="bm vermelho" data-a="bots">⚔️ Jogar contra bots</button><button class="bm azul" data-a="tentar">Tentar de novo</button><button class="bm escuro" data-a="voltar">Voltar</button></div></section>`, 'tela-config');
+      app.onclick = ev => { const b = ev.target.closest('[data-a]'); if (!b) return; if (b.dataset.a === 'bots') configurar('bots'); if (b.dataset.a === 'tentar') jogoRapido(); if (b.dataset.a === 'voltar') telaSalas(); };
+    }
+  }
+
+  const cfgSala = c => ({ n: c.n, mapa: c.mapa, meta: c.meta, nivel: c.nivel || 'estrategico', tempo: c.tempo || 120, cartas: c.cartas !== false, objetivos: c.objetivos !== false, eventos: c.eventos !== false });
+  const reinosPreferidos = () => { const r = store.get('reino-online', null); const l = M.ORDEM_REINOS.slice().sort(() => Math.random() - 0.5); return r ? [r].concat(l.filter(x => x !== r)) : l; };
+  async function criarSalaOnline(c, rapido) {
+    limparOn();
+    try {
+      telaEspera('Criando sala…');
+      const cfg = cfgSala(c);
+      const cod = await R.criarSala({ cfg, publica: c.publica !== false, modo: textoModo(cfg), min: 2, max: cfg.n, perfil: perfilOnline(), reino: reinosPreferidos()[0] });
+      entrarSala(cod, rapido);
+    } catch (e) { toast(erroOnline(e), 'erro'); telaSalas(); }
+  }
+
+  let mesaAtual = null;
+  async function entrarSala(codigo, rapido) {
+    const eu = perfilOnline();
+    if (!eu) return pedirPerfil(() => entrarSala(codigo, rapido));
+    limparOn();
+    if (mesaAtual && mesaAtual.codigo !== codigo) { await mesaAtual.sair(); mesaAtual = null; } // só uma sala por vez
+    telaEspera('Entrando na sala ' + esc(codigo) + '…');
+    let mesa;
+    try { mesa = mesaAtual && mesaAtual.codigo === codigo ? mesaAtual : await R.abrirSala(codigo, Object.assign({ reinos: reinosPreferidos() }, eu)); }
+    catch (e) {
+      toast(erroOnline(e), 'erro');
+      if (/nao-existe|jogando/.test(String(e && e.message))) store.del('sala-online');
+      try { history.replaceState(null, '', location.pathname); } catch (e2) {}
+      return telaSalas();
+    }
+    mesaAtual = mesa;
+    R.marcarOnline().catch(() => {});
+    try { history.replaceState(null, '', location.pathname + '?sala=' + codigo + (TESTE ? '&teste=' + TESTE : '')); } catch (e) {}
+    mesa.onEstado(pl => receberEstado(mesa, pl));
+    mesa.onErro(msg => { if (J && J.online && J.online.mesa === mesa) { J.ocupado = false; atualizar(); } toast(msg, 'erro'); });
+    mesa.onReacao(v => mostrarReacao(mesa, v));
+    mesa.onSaiu(motivo => {
+      if (mesaAtual !== mesa) return;
+      if (J && J.online && J.online.mesa === mesa && motivo === 'removido') return;
+      mesaAtual = null; encerrarOnline(); mesa.sair();
+      store.del('sala-online');
+      toast(motivo === 'removido' ? 'O anfitrião tirou você da sala.' : 'Essa sala foi fechada.', 'erro');
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
+      telaSalas();
+    });
+    if (mesa.sala.status !== 'esperando') return; // a partida chega pelo onEstado
+    telaSala(mesa, rapido);
+  }
+
+  function telaSala(mesa, rapido) {
+    limparOn();
+    app.oninput = null;
+    app.innerHTML = moldura('<div id="espera"></div>', 'tela-config');
+    let rapidoDesde = rapido ? Date.now() : null, comecando = false;
+    const relogio = setInterval(() => { if (mesa.souAnfitriao()) mesa.tocar(); }, 60000);
+    limpezaOn.push(() => clearInterval(relogio));
+    const cfg = mesa.cfg || cfgSala({});
+    const desenhar = () => {
+      const raiz = $('#espera'); if (!raiz) return;
+      const sala = mesa.sala; if (!sala || sala.status !== 'esperando') return;
+      const host = mesa.souAnfitriao();
+      const js = R.ordenados(sala);
+      const n = sala.max || 4;
+      const meu = (sala.jogadores || {})[mesa.uid] || {};
+      const donoReino = r => js.find(([, j]) => j.reino === r);
+      const linhas = js.map(([u, j]) => {
+        const eu = u === mesa.uid, ehHost = u === sala.anfitriao;
+        return `<div class="jog-sala ${eu ? 'eu' : ''}" style="--c:${j.reino ? REINOS[j.reino].cor : '#888'}"><div class="av">${esc(j.bot ? '🤖' : j.avatar)}</div>
+          ${j.reino ? `<img class="b" src="${brasao(j.reino)}" alt="${esc(REINOS[j.reino].nome)}">` : '<span class="b">❔</span>'}
+          <div class="info"><b>${j.bot ? '🤖 ' : ''}${esc(j.apelido)}${ehHost ? ' 👑' : ''}${eu ? ' (você)' : ''}</b><span>${j.reino ? esc(REINOS[j.reino].nome) + ' · ' : ''}${j.bot ? 'bot' : j.pronto || ehHost ? '✅ pronto' : '⏳ não está pronto'}</span></div>
+          ${host && !eu ? `<button class="rem" data-rem="${esc(u)}" aria-label="Remover ${esc(j.apelido)}">Remover</button>` : ''}</div>`;
+      });
+      for (let k = js.length; k < n; k++) linhas.push(`<div class="jog-sala livre"><div class="av">＋</div><div class="info"><b>Vaga livre</b><span>esperando alguém…</span></div></div>`);
+      const cheia = js.length >= n;
+      const prontos = js.every(([u, j]) => j.bot || j.pronto || u === sala.anfitriao);
+      let banner = '';
+      if (host && rapidoDesde && !cheia) {
+        const falta = Math.max(0, Math.ceil(30 - (Date.now() - rapidoDesde) / 1000));
+        banner = falta <= 10 ? `<div class="banner-bots">Ninguém online agora. Completando com bots em ${falta}s… <button class="btn peq claro" data-a="esperar">Esperar mais</button></div>` : `<div class="banner-bots">Jogo rápido: se ninguém chegar, começa com bots em ${falta}s.</div>`;
+      }
+      raiz.innerHTML = `
+        <img class="logo-topo peq" src="img/titulo.webp" alt="Impérios">
+        <h1 class="faixa-titulo azul"><span>Sala ${esc(mesa.codigo)}</span></h1>
+        <p class="sub" style="margin:0 0 8px">${esc(sala.modo || '')} · ${sala.publica ? 'pública' : 'privada (só com código)'}</p>
+        <div class="linha c" style="margin-bottom:10px"><div class="codigo-sala">código <b>${esc(mesa.codigo)}</b></div><button class="btn claro peq" data-a="convite">🔗 Convidar</button></div>
+        <section class="caixa"><h2><span class="ic">👥</span>Jogadores ${js.length}/${n}</h2><div class="lista-sala">${linhas.join('')}</div>${banner}</section>
+        <section class="caixa" style="margin-top:10px"><h2><span class="ic">🏰</span>Seu reino</h2>
+          <div class="reinos-sala">${M.ORDEM_REINOS.map(r => { const d = donoReino(r), meuR = meu.reino === r;
+            return `<button class="reino-sala ${meuR ? 'on' : ''}" data-reino="${r}" style="--c:${REINOS[r].cor}" ${d && !meuR ? 'disabled' : ''} aria-pressed="${meuR}"><img src="${brasao(r)}" alt=""><span>${esc(REINOS[r].curto)}</span>${d && !meuR ? `<small>${esc(d[1].bot ? '🤖' : d[1].avatar)} ${esc(d[1].apelido)}</small>` : ''}</button>`; }).join('')}</div>
+          ${meu.reino ? `<div class="hab-reino"><b>${esc(REINOS[meu.reino].governante)} · ${esc(REINOS[meu.reino].perfil)}</b><span>${esc(REINOS[meu.reino].hab)}</span></div>` : ''}</section>
+        <div class="pilha-on">
+          ${!host ? `<button class="bm ${meu.pronto ? 'escuro' : 'vermelho grande'}" data-a="pronto">${meu.pronto ? '✋ Pronto ✓ (toque para desfazer)' : '✋ Pronto'}</button>` : ''}
+          ${host ? `${!cheia ? '<button class="bm azul" data-a="bots">🤖 Completar com bots</button>' : ''}
+            <button class="bm vermelho grande" data-a="comecar" ${cheia && prontos ? '' : 'disabled'}>▶ Começar</button>
+            <p class="nota" style="text-align:center">${!cheia ? (n - js.length > 1 ? 'Faltam ' + (n - js.length) + ' jogadores' : 'Falta 1 jogador') + '. Espere ou complete com bots.' : prontos ? 'Todos prontos! Pode começar.' : 'Esperando todos tocarem em “Pronto”.'}</p>`
+          : '<p class="nota" style="text-align:center">Quando todos estiverem prontos, o anfitrião 👑 começa a partida.</p>'}
+          <button class="bm escuro peq" data-a="sair">Sair da sala</button>
+        </div>
+        <div class="reacoes">${REACOES.map(r => `<button class="reac" data-r="${esc(r)}">${esc(r)}</button>`).join('')}</div>`;
+      if (sala.anfitriao && !mesa.presente(sala.anfitriao)) setTimeout(() => mesa.conferirAnfitriao().then(ok => { if (ok) { toast('O anfitrião saiu. Agora você é o anfitrião 👑'); desenhar(); } }), 1500);
+      if (host && cheia && rapidoDesde && !comecando) { comecando = true; setTimeout(() => comecarOnline(mesa), 1500); }
+    };
+    mesa.onSala(() => desenhar());
+    const tique = setInterval(() => {
+      if (!rapidoDesde || !mesa.souAnfitriao()) return;
+      if ((Date.now() - rapidoDesde) / 1000 >= 30 && !comecando) { comecando = true; completarBots(mesa).then(() => setTimeout(() => comecarOnline(mesa), 600)).catch(() => { comecando = false; }); }
+      else desenhar();
+    }, 1000);
+    limpezaOn.push(() => clearInterval(tique));
+    app.onclick = async e => {
+      const rem = e.target.closest('[data-rem]');
+      if (rem) { if (mesa.souAnfitriao()) mesa.remover(rem.dataset.rem); return; }
+      const rc = e.target.closest('[data-r]');
+      if (rc) { if (!mesa.reagir(rc.dataset.r)) toast('Calma! Uma reação a cada 2 segundos.'); return; }
+      const rn = e.target.closest('[data-reino]');
+      if (rn && !rn.disabled) { store.set('reino-online', rn.dataset.reino); mesa.escolherReino(rn.dataset.reino).then(ok => { if (!ok) toast('Esse reino já foi escolhido.'); }).catch(err => toast(erroOnline(err), 'erro')); return; }
+      const b = e.target.closest('[data-a]'); if (!b || b.disabled) return;
+      const a = b.dataset.a;
+      if (a === 'sair') { limparOn(); await mesa.sair(); mesaAtual = null; store.del('sala-online'); try { history.replaceState(null, '', location.pathname); } catch (e2) {} telaSalas(); }
+      if (a === 'convite') convidar(mesa.codigo);
+      if (a === 'pronto') { const m = (mesa.sala.jogadores || {})[mesa.uid] || {}; mesa.pronto(!m.pronto).catch(err => toast(erroOnline(err), 'erro')); }
+      if (a === 'bots') completarBots(mesa).catch(err => toast(erroOnline(err), 'erro'));
+      if (a === 'esperar') { rapidoDesde = Date.now(); desenhar(); }
+      if (a === 'comecar') { comecando = true; comecarOnline(mesa).finally(() => { comecando = false; }); }
+    };
+    void cfg;
+  }
+
+  function completarBots(mesa) {
+    const usados = Object.values(mesa.sala.jogadores || {}).map(x => x.reino).filter(Boolean);
+    const livres = M.ORDEM_REINOS.filter(r => !usados.includes(r)).sort(() => Math.random() - 0.5);
+    return mesa.porBots(livres.map(r => ({ reino: r, nome: NOMES_BOT[r] })));
+  }
+  function convidar(codigo) {
+    const url = location.origin + location.pathname + '?sala=' + codigo;
+    const texto = 'Bora jogar Impérios no CARLUDIX! Sala ' + codigo + ': ' + url;
+    if (navigator.share) navigator.share({ title: 'Impérios · CARLUDIX', text: texto, url }).catch(() => {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(texto).then(() => toast('Convite copiado! Cole no WhatsApp.')).catch(() => toast(url));
+    else toast(url);
+  }
+
+  async function comecarOnline(mesa) {
+    const sala = mesa.sala;
+    const js = R.ordenados(sala);
+    if (js.length < 2) { toast('Precisa de pelo menos 2 reinos.'); return; }
+    const cfg = mesa.cfg || cfgSala({});
+    // reinos: quem escolheu primeiro fica; quem ficou sem recebe um livre
+    const usados = new Set();
+    const reinos = js.map(([, j]) => { if (j.reino && !usados.has(j.reino)) { usados.add(j.reino); return j.reino; } return null; });
+    reinos.forEach((r, k) => { if (!r) { const l = M.ORDEM_REINOS.filter(x => !usados.has(x)); reinos[k] = l[Math.floor(Math.random() * l.length)]; usados.add(reinos[k]); } });
+    const pers = Object.keys(B.PERSONALIDADES);
+    const jogs = js.map(([u, j], k) => j.bot
+      ? { nome: '🤖 ' + NOMES_BOT[reinos[k]], tipo: 'bot', nivel: cfg.nivel, personalidade: pers[Math.floor(Math.random() * pers.length)], reino: reinos[k] }
+      : { nome: j.apelido, tipo: 'humano', uid: u, avatar: j.avatar, reino: reinos[k], nivel: 'estrategico' });
+    try { M.prepararMapa(window.ImperiosMapas[cfg.mapa]); } catch (e) {}
+    const st = M.novaPartida({ mapa: cfg.mapa, meta: cfg.meta, cartas: cfg.cartas, objetivos: cfg.objetivos, eventos: cfg.eventos }, jogs);
+    st.t0 = Date.now();
+    st.online = { tempo: cfg.tempo || 120 };
+    try { await mesa.comecar({ st, ev: [], de: null, n: 1, restante: st.online.tempo * 1000 }); } catch (e) { toast(erroOnline(e), 'erro'); }
+  }
+
+  function mostrarReacao(mesa, v) {
+    if (!REACOES.includes(v.r)) return;
+    const j = (mesa.sala.jogadores || {})[v.uid] || {};
+    let box = $('#bolhas');
+    if (!box) { box = document.createElement('div'); box.id = 'bolhas'; document.body.appendChild(box); }
+    const d = document.createElement('div');
+    d.className = 'bolha';
+    d.textContent = (j.avatar || '🙂') + ' ' + (j.apelido || '') + ': ' + v.r;
+    box.appendChild(d);
+    setTimeout(() => d.remove(), 3200);
+  }
+  function painelReacoes() {
+    if (!J || !J.online) return;
+    const d = veu(`<button class="fechar" aria-label="Fechar">×</button><div class="faixa-modal"><span>😀 Reações</span></div>
+      <div class="reacoes">${REACOES.map(r => `<button class="reac" data-r="${esc(r)}">${esc(r)}</button>`).join('')}</div>`, null, 'real');
+    d.onclick = e => {
+      if (e.target === d || e.target.closest('.fechar')) return fecharVeu();
+      const b = e.target.closest('[data-r]'); if (!b) return;
+      if (!J.online.mesa.reagir(b.dataset.r)) toast('Calma! Uma reação a cada 2 segundos.'); else fecharVeu();
+    };
+  }
+
+  /* ---------- a partida online ----------
+     O anfitrião guarda o estado oficial: aplica os pedidos dos jogadores, joga pelos bots e por quem caiu,
+     passa o turno quando o tempo acaba e grava o estado completo no Firebase. Todos (até o anfitrião)
+     desenham a partida a partir do que foi gravado. */
+  function controladoPorBot(i) {
+    if (!J || !J.online) return false;
+    const x = J.st.jogadores[i];
+    return x.tipo === 'bot' || !J.online.mesa.presente(x.uid);
+  }
+  // auto-continuar: no online ninguém fica preso numa janela enquanto a partida segue
+  function autoSeguir(d, cliques) {
+    if (!J || !J.online) return;
+    let k = 0;
+    const t = setInterval(() => {
+      if (!d.isConnected || k >= cliques) return clearInterval(t);
+      const b = d.querySelector('[data-ok]'); if (b) { k++; b.click(); }
+    }, 4500);
+  }
+  function enviarOnline(p) {
+    const O = J && J.online; if (!O) return;
+    if (HOST && HOST.mesa === O.mesa) return hostPedido(O.mesa.uid, p);
+    O.mesa.pedir(p).catch(e => { J.ocupado = false; atualizar(); toast(erroOnline(e), 'erro'); });
+  }
+
+  function receberEstado(mesa, pl) {
+    if (mesaAtual !== mesa || !pl || !pl.st) return;
+    const eu = pl.st.jogadores.findIndex(j => j.uid === mesa.uid);
+    if (eu < 0) return;
+    if (!J || !J.online || J.online.mesa !== mesa) {
+      limparOn();
+      store.set('sala-online', mesa.codigo);
+      try { M.prepararMapa(window.ImperiosMapas[pl.st.cfg.mapa]); } catch (e) {}
+      const presentes = new Set(pl.st.jogadores.filter(j => j.uid && mesa.presente(j.uid)).map(j => j.uid));
+      iniciarJogo({ st: pl.st, cfg: pl.st.cfg, online: { mesa, eu, n: pl.n, fila: [], presentes } });
+      J.prazoAte = pl.restante != null ? Date.now() + pl.restante : null;
+      mesa.onSala(sala => {
+        if (!J || !J.online || J.online.mesa !== mesa) return;
+        J.st.jogadores.forEach(j => {
+          if (!j.uid || j.uid === mesa.uid) return;
+          const agora = mesa.presente(j.uid), P = J.online.presentes;
+          if (P.has(j.uid) && !agora) toast(j.nome + ' saiu, um bot assumiu');
+          if (!P.has(j.uid) && agora) toast(j.nome + ' voltou e retomou o reino');
+          if (agora) P.add(j.uid); else P.delete(j.uid);
+        });
+        if (sala.anfitriao && !mesa.presente(sala.anfitriao)) setTimeout(() => mesa.conferirAnfitriao().then(ok => { if (ok && J && J.online) { toast('Agora você é o anfitrião 👑'); ligarHost(mesa); } }), 1500);
+        if (mesa.souAnfitriao()) ligarHost(mesa); else if (HOST && HOST.mesa === mesa) hostAgendar();
+        atualizar();
+      });
+      if (mesa.souAnfitriao()) ligarHost(mesa, pl);
+      return;
+    }
+    const O = J.online;
+    if (pl.n <= O.n) return;
+    O.fila.push(pl);
+    while (O.fila.length > 4) O.fila.shift(); // muito atrasado: pula animações antigas
+    if (!O.tocando) tocarFila();
+  }
+  function tocarFila() {
+    const O = J && J.online; if (!O) return;
+    const pl = O.fila.shift();
+    if (!pl) { O.tocando = false; return; }
+    O.tocando = true;
+    O.n = pl.n;
+    J.st = pl.st;
+    J.prazoAte = pl.restante != null ? Date.now() + pl.restante : null;
+    if (pl.de === O.eu || J.st.vez !== O.eu) J.ocupado = false;
+    if (J.st.vez !== O.eu && J.modo) { J.modo = null; J.origem = null; J.alvos = null; dica(null); }
+    if (pl.ult) {
+      const a = pl.ult;
+      if (a.t === 'atacar' || a.t === 'mover') J.sel = a.para; else if (a.t === 'construir' || a.t === 'recrutar') J.sel = a.em;
+    }
+    processarEventos(pl.ev || [], pl.de, null, () => { atualizar(); proximoOnline(); tocarFila(); });
+  }
+  function proximoOnline() {
+    const st = J.st, O = J.online;
+    if (st.fase === 'fim') { store.del('sala-online'); if (!J.mostrouFim) { J.mostrouFim = true; setTimeout(resultado, 900); } return; }
+    if (st.vez === O.eu) {
+      if (J.avisado !== st.rodada + ':' + O.eu) { J.avisado = st.rodada + ':' + O.eu; toast('👑 Sua vez!'); avisarPropostas(O.eu); tutorial(); }
+    }
+    atualizar();
+  }
+  let relogioT = null;
+  function tiqueRelogio() {
+    clearInterval(relogioT);
+    const passo = () => {
+      const el = $('#relogio');
+      if (!el || !J || !J.online) { clearInterval(relogioT); return; }
+      if (!J.prazoAte || J.st.fase !== 'jogo' || controladoPorBot(J.st.vez)) { el.textContent = ''; return; }
+      const s = Math.max(0, Math.ceil((J.prazoAte - Date.now()) / 1000));
+      el.textContent = '⏱️ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+      el.classList.toggle('pouco', s <= 20);
+      if (J.st.vez === J.online.eu && s === 20 && J.avisoTempo !== J.st.seq) { J.avisoTempo = J.st.seq; toast('⏳ Faltam 20 segundos para o seu turno acabar!'); }
+    };
+    passo(); relogioT = setInterval(passo, 1000);
+  }
+
+  /* ---------- o anfitrião ---------- */
+  let HOST = null;
+  function ligarHost(mesa, pl) {
+    if (HOST && HOST.mesa === mesa) return hostAgendar();
+    const O = J.online, ult = O.fila.length ? O.fila[O.fila.length - 1] : null;
+    const base = pl || ult || { st: J.st, n: O.n };
+    HOST = { mesa, st: JSON.parse(JSON.stringify(base.st)), n: base.n, t: null, prazo: null };
+    mesa.ouvirPedidos((p, de) => hostPedido(de, p));
+    hostAgendar();
+  }
+  const hostBot = i => { const x = HOST.st.jogadores[i]; return x.tipo === 'bot' || !HOST.mesa.presente(x.uid); };
+  function hostPedido(de, p) {
+    if (!HOST) return;
+    const st = HOST.st, s = st.jogadores.findIndex(j => j.uid === de);
+    if (s < 0 || st.fase !== 'jogo') return;
+    let r;
+    if (p.t === 'acao' && p.a) {
+      if (st.vez !== s) r = { ok: false, erro: 'Não é a sua vez.' };
+      else r = M.jogar(st, s, p.a);
+    } else if (p.t === 'responder') {
+      if (st.vez !== s) r = { ok: false, erro: 'Responda às propostas na sua vez.' };
+      else { st.ev = []; r = M.responderProposta(st, s, +p.id, !!p.aceitar); }
+    } else return;
+    if (!r.ok) {
+      if (de === HOST.mesa.uid) { if (J && J.online) { J.ocupado = false; atualizar(); } toast(r.erro, 'erro'); }
+      else HOST.mesa.avisarErro(de, r.erro);
+      return;
+    }
+    hostDepois(r.ev, s, p.t === 'acao' ? p.a : null);
+  }
+  function hostDepois(ev, quem, a) {
+    const st = HOST.st;
+    if (st.propostas.length) { st.ev = ev || []; B.responderPendentes(st, hostBot); ev = st.ev; }
+    hostPublicar(ev, quem, a);
+  }
+  function hostPublicar(ev, quem, a) {
+    const st = HOST.st;
+    HOST.n++;
+    // prazo do turno: recomeça quando muda a vez (ou quando a pessoa volta e retoma o reino)
+    const chave = st.rodada + ':' + st.vez;
+    if (st.fase === 'jogo' && !hostBot(st.vez)) {
+      if (!HOST.prazo || HOST.prazo.chave !== chave || HOST.prazo.bot) HOST.prazo = { chave, ate: Date.now() + ((st.online && st.online.tempo) || 120) * 1000 };
+    } else HOST.prazo = { chave, bot: true };
+    const restante = HOST.prazo.ate ? Math.max(0, HOST.prazo.ate - Date.now()) : null;
+    HOST.mesa.publicar({ st, ev: ev || [], de: quem, n: HOST.n, restante, ult: a || null }).catch(e => toast(erroOnline(e), 'erro'));
+    hostAgendar();
+  }
+  function hostAgendar() {
+    if (!HOST) return;
+    clearTimeout(HOST.t);
+    if (!HOST.mesa.souAnfitriao()) { HOST = null; return; }
+    const st = HOST.st;
+    if (st.fase !== 'jogo') return;
+    const i = st.vez, chave = st.rodada + ':' + i;
+    if (hostBot(i)) { HOST.t = setTimeout(hostPassoBot, ({ lenta: 1300, normal: 900, rapida: 500 }[opcoes.velocidade] || 900)); return; }
+    if (!HOST.prazo || HOST.prazo.chave !== chave || HOST.prazo.bot) { hostPublicar([], null, null); return; } // a pessoa voltou: começa o relógio dela
+    HOST.t = setTimeout(() => {
+      if (!HOST || HOST.st.fase !== 'jogo' || HOST.st.rodada + ':' + HOST.st.vez !== chave || hostBot(HOST.st.vez)) return hostAgendar();
+      const quem = HOST.st.vez, nome = HOST.st.jogadores[quem].nome;
+      const r = M.jogar(HOST.st, quem, { t: 'fim' });
+      if (r.ok) { r.ev.unshift({ tipo: 'tempo', j: quem, nome }); hostDepois(r.ev, quem, { t: 'fim' }); }
+    }, Math.max(0, HOST.prazo.ate - Date.now()) + 300);
+  }
+  function hostPassoBot() {
+    if (!HOST) return;
+    const st = HOST.st, i = st.vez;
+    if (st.fase !== 'jogo' || !hostBot(i)) return hostAgendar();
+    let a = B.decidir(st, i) || { t: 'fim' };
+    let r = M.jogar(st, i, a);
+    if (!r.ok) { a = { t: 'fim' }; r = M.jogar(st, i, a); }
+    hostDepois(r.ev, i, a);
+  }
+
+  function encerrarOnline() {
+    clearInterval(relogioT);
+    if (HOST) clearTimeout(HOST.t);
+    HOST = null;
+    J = null;
+    fecharVeu(true);
+    $$('.privacidade,#folha').forEach(x => x.remove());
+  }
+  async function sairOnline(confirmar, menu) {
+    if (confirmar && J && J.st.fase === 'jogo') {
+      const d = veu(`<h2 class="titulo">Sair da sala?</h2><p class="sub">Um bot assume o seu reino. Você pode voltar pelo link da sala (ou pelo menu) e retomar o reino.</p>
+        <div class="linha"><button class="btn claro" style="flex:1" data-n>Ficar</button><button class="btn vinho" style="flex:1" data-s>Sair</button></div>`);
+      d.onclick = e => { if (e.target === d || e.target.closest('[data-n]')) return fecharVeu(); if (e.target.closest('[data-s]')) { fecharVeu(true); sairOnline(false, true); } };
+      return;
+    }
+    const m = mesaAtual; mesaAtual = null;
+    const terminou = J && J.st && J.st.fase === 'fim';
+    encerrarOnline();
+    if (terminou) store.del('sala-online');
+    if (m) await m.sair();
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    if (menu) { R.desmarcarOnline(); inicio(); } else telaSalas();
   }
 
   /* ================= COMO JOGAR ================= */
@@ -1441,6 +1987,8 @@
       <ul>${EVM.EVENTOS.map(e => `<li><b>${esc(e.nome)}</b>: ${esc(e.txt)}</li>`).join('')}</ul>
       <h3>🤝 Diplomacia e comércio</h3>
       <p><b>Aliança</b> (2 rodadas): não se atacam e as tropas atravessam os territórios do aliado. <b>Tratado de paz</b> (3 rodadas): não se atacam e os dois ganham 2 ouros. Os dois precisam de aceite. <b>Trégua</b>: ninguém ataca até o fim da próxima rodada, sem aceite. Aliança e paz também bloqueiam sabotagens entre os dois. Pela Diplomacia você ainda pode propor uma <b>troca de recursos</b> (1 ação): ela só acontece se o outro aceitar, e de uma vez só.</p>
+      <h3>🌐 Jogar online</h3>
+      <p>Em <b>Jogar online</b>, entre no <b>Jogo rápido</b>, crie uma sala (pública ou privada) ou entre com o código de 4 letras. Na sala, cada um escolhe o seu reino e toca em <b>Pronto</b>; o anfitrião 👑 pode completar as vagas com bots 🤖. Cada turno tem um tempo limite: se acabar, o turno passa sozinho. Se alguém cair, um bot joga pelo reino dele até ele voltar pelo link da sala. Não há chat, só reações prontas.</p>
       <h3>Os reinos</h3>
       <ul>${M.ORDEM_REINOS.map(r => `<li>${REINOS[r].brasao} <b>${REINOS[r].nome}</b> (${REINOS[r].perfil}): ${REINOS[r].hab}</li>`).join('')}</ul>
       <h3>Unidades</h3>
@@ -1456,5 +2004,8 @@
     app.onclick = e => { if (e.target.closest('[data-a="voltar"]')) inicio(); };
   }
 
-  inicio();
+  // ?sala=CODIGO abre direto a sala (pedindo apelido se ainda não tiver)
+  const codUrl = (new URLSearchParams(location.search).get('sala') || '').toUpperCase();
+  if (/^[A-Z0-9]{4}$/.test(codUrl)) pedirPerfil(() => entrarSala(codUrl));
+  else inicio();
 })();

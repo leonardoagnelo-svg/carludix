@@ -377,10 +377,12 @@
   function bonusObjetivo(id, a, st) { const f = OBJ_ACOES[id]; return f ? f(a) : 0; }
 
   // bots respondem na hora às propostas que recebem
-  function responderPendentes(st) {
+  // ehBot(k): quem o computador controla (no online, também o reino de quem caiu)
+  function responderPendentes(st, ehBot) {
+    ehBot = ehBot || (k => st.jogadores[k].tipo === 'bot');
     st.propostas.slice().forEach(pr => {
       const k = pr.para, b = st.jogadores[k];
-      if (!b || b.tipo !== 'bot' || !st.propostas.includes(pr)) return;
+      if (!b || !ehBot(k) || !st.propostas.includes(pr)) return;
       let aceita = false;
       const ptsA = M.pontos(st, pr.de), ptsB = M.pontos(st, k);
       if (pr.tipo === 'troca') {
